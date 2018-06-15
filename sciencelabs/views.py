@@ -17,7 +17,7 @@ def favicon():
 class View(FlaskView):
 
     def index(self):
-        # index page for adding events and things
+        config_title = 'Math Lab'
         return render_template('index.html', **locals())
 
     def about(self):

@@ -8,7 +8,15 @@ from raven.contrib.flask import Sentry
 
 
 app = Flask(__name__)
+
 app.config.from_object('config.config')
+
+# create logging
+if not app.debug:
+    from logging import FileHandler
+    file_handler = FileHandler(app.config['INSTALL_LOCATION'] + '/error.log')
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.DEBUG)
 
 app.config["flask_profiler"] = {
     "enabled": True,
@@ -21,18 +29,17 @@ app.config["flask_profiler"] = {
     ]
 }
 
-
-@app.route('/')
-def hello():
-    return "Hello World"
-
-
-@app.route('/<name>')
-def hello_name(name):
-    return "Hello {}!".format(name)
-
-
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+
+from sciencelabs.views import View
+
+View.register(app)
+
+
+@app.route("/homepage", methods=["POST"])
+def homepage():
+    return 0
+
 flask_profiler.init_app(app)
 
 if __name__ == "__main__":
