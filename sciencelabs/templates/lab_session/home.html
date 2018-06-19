@@ -1,5 +1,19 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block body_content %}
-    <p>Session home page</p>
+    <nav class="nav nav-pills nav-fill">
+        <a id="available-sessions" class="nav-item nav-link active" href="#">Available Sessions</a>
+        <a id="closed-sessions" class="nav-item nav-link" href="#">Closed Sessions</a>
+        <a id="create-session" class="nav-item nav-link" href="#">Create a Session</a>
+        <a id="restore-session" class="nav-item nav-link" href="#">Restore a Deleted Session</a>
+    </nav>
+    <div id="session_content"></div>
+    <div class="card welcome">
+        <div class="card-body">
+            <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
+        </div>
+    </div>
+    <div>
+        <h3 class="text-center reminders">There are no sessions scheduled.</h3>
+    </div>
 {% endblock %}

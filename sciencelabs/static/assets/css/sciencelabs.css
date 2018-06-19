@@ -17,3 +17,19 @@ div.footer{
 div.dropdown{
     cursor: pointer;
 }
+
+nav a{
+    color: gray;
+}
+
+nav a:hover{
+    color: black;
+}
+
+nav a.active{
+    color: white!important;
+    background-color: #0F2C52!important;
+}
+.nav.nav-pills{
+    margin: 10px 20%;
+}
