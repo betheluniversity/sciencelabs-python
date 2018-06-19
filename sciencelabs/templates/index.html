@@ -1,32 +1,22 @@
 {% extends 'sciencelabs_base.html' %}
-{% import 'nav.html' as nav %}
 
 {% set title = 'Home' %}
 
 {% block body_content %}
-    {{ nav.render(title) }}
-    <div class="row">
-        <div class="large-12 columns">
-
-            <div>
-                <p>Welcome to the Bethel University Math Lab</p> {# Change "Math Lab" to {{ config_title }} #}
-            </div>
-
+    <div class="card welcome">
+        <div class="card-body">
+            <p class="card-text">Welcome to the Bethel University {{ app_settings['LAB_TITLE'] }}</p>
         </div>
-
     </div>
-
-    <div class="row">
-        <div class="large-12 columns">
-            <h3 class="text-center">Welcome to the AESC Attendance Application for the Math Lab</h3> {# Change "Math Lab" to {{ config_title }} #}
-            <p>
-                Reminders:
-            <ol>
-                <li>Use Chrome when running the help session sign in application</li>
-                <li>When sessions are open, do not have other Chrome browsers open that require CAS authentication
-                    (such as BLink or Gmail) while running the help session sign in</li>
-            </ol>
-            </p>
-        </div>
+    <div>
+        <h3 class="text-center reminders">Welcome to the AESC Attendance Application for the {{ app_settings['LAB_TITLE'] }}</h3>
+        <p class="reminders">
+            Reminders:
+        <ol class="reminders">
+            <li>Use Chrome when running the help session sign in application</li>
+            <li>When sessions are open, do not have other Chrome browsers open that require CAS authentication
+                (such as BLink or Gmail) while running the help session sign in</li>
+        </ol>
+        </p>
     </div>
 {% endblock %}

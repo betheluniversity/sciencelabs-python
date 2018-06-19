@@ -1,0 +1,19 @@
+div.welcome{
+    background-color: aliceblue;
+    margin: 35px 20%;
+}
+
+.reminders{
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+div.footer{
+    background-color: lightgray;
+    margin: 35px 20%;
+    text-align: right;
+}
+
+div.dropdown{
+    cursor: pointer;
+}
