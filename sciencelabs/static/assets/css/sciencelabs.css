@@ -33,3 +33,33 @@ nav a.active{
 .nav.nav-pills{
     margin: 10px 20%;
 }
+
+form.semester-selector{
+    direction: rtl;
+    margin: 35px 20%;
+}
+
+form.search-sessions{
+    margin: 35px 20%;
+}
+
+a.semester-menu{
+    background-color: white;
+}
+
+div.semester-menu:hover{
+    background-color: red;
+}
+
+button.btn-primary{
+    background-color: #0069AA;
+}
+
+div.sessions-table{
+    margin: 35px 20%;
+}
+
+div.info{
+    margin: 35px 20%;
+    background-color: lightgray;
+}

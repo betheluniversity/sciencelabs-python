@@ -1,13 +1,15 @@
 {% extends 'sciencelabs_base.html' %}
 
-{% block body_content %}
-    <nav class="nav nav-pills nav-fill">
-        <a id="available-sessions" class="nav-item nav-link active" href="#">Available Sessions</a>
-        <a id="closed-sessions" class="nav-item nav-link" href="#">Closed Sessions</a>
-        <a id="create-session" class="nav-item nav-link" href="#">Create a Session</a>
-        <a id="restore-session" class="nav-item nav-link" href="#">Restore a Deleted Session</a>
+{% block subnav %}
+    <nav id="session-nav" class="nav nav-pills nav-fill">
+        <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
     </nav>
-    <div id="session_content"></div>
+{% endblock %}
+
+{% block body_content %}
     <div class="card welcome">
         <div class="card-body">
             <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>

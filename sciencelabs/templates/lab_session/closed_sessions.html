@@ -1,0 +1,34 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+    <nav id="session-nav" class="nav nav-pills nav-fill">
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
+        <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
+    </nav>
+{% endblock %}
+
+{% block body_content %}
+    <form class="form-inline semester-selector">
+        <button type="button" class="btn btn-primary">Set</button>
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle semester-menu" role="button" id="dropdownMenuLink"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Semester Choices</a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item">Semester Choices</a>
+            </div>
+        </div>
+    </form>
+    <div class="card welcome">
+        <div class="card-body">
+            <p class="card-text">Past Sessions for Spring 2018</p>
+        </div>
+    </div>
+    <form class="form search-sessions">
+        <div class="form-group">
+            <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
+        </div>
+    </form>
+    <div class="sessions-table">Table of Sessions</div>
+{% endblock %}

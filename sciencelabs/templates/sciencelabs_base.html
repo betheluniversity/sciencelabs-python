@@ -26,6 +26,7 @@
 
     <body>
         {{ nav.render(app_settings['LAB_TITLE']) }}
+        {% block subnav %}{% endblock %}
         {% block body_content %}{% endblock %}
         {% block modalhtml %}{% endblock %}
 
@@ -37,6 +38,8 @@
 
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+        {% block scripts %}{% endblock %}
 
         {% block footer %}
             <div class="footer card">

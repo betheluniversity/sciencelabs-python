@@ -1,0 +1,26 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+    <nav id="session-nav" class="nav nav-pills nav-fill">
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
+        <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
+        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
+    </nav>
+{% endblock %}
+
+{% block body_content %}
+    <div class="card welcome">
+        <div class="card-body">
+            <p class="card-text">Create a new session</p>
+        </div>
+    </div>
+    <div class="card info">
+        <div class="card-body">
+            <p class="card-text">This section can be used to create a past or a future session that is separate from
+            those created using the Schedule tab.</p>
+            <p class="card-text">For future sessions, actual start and end times will be left blank.</p>
+            <p class="card-text">For historical sessions, both scheduled and actual start and end times may be set.</p>
+        </div>
+    </div>
+{% endblock %}
