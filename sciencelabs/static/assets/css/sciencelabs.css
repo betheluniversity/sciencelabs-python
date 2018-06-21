@@ -1,16 +1,13 @@
-div.welcome{
-    background-color: aliceblue;
-    margin: 35px 20%;
+.margins{
+    margin: 20px 10%!important;
 }
 
-.reminders{
-    margin-left: 20%;
-    margin-right: 20%;
+div.welcome{
+    background-color: aliceblue;
 }
 
 div.footer{
     background-color: lightgray;
-    margin: 35px 20%;
     text-align: right;
 }
 
@@ -30,17 +27,13 @@ nav a.active{
     color: white!important;
     background-color: #0F2C52!important;
 }
-.nav.nav-pills{
-    margin: 10px 20%;
-}
 
 form.semester-selector{
     direction: rtl;
-    margin: 35px 20%;
 }
 
-form.search-sessions{
-    margin: 35px 20%;
+form.create-session-form{
+    margin-top: 15px;
 }
 
 a.semester-menu{
@@ -55,11 +48,6 @@ button.btn-primary{
     background-color: #0069AA;
 }
 
-div.sessions-table{
-    margin: 35px 20%;
-}
-
 div.info{
-    margin: 35px 20%;
     background-color: lightgray;
 }

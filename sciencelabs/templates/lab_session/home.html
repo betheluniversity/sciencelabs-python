@@ -1,7 +1,7 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-    <nav id="session-nav" class="nav nav-pills nav-fill">
+    <nav id="session-nav" class="nav nav-pills nav-fill margins">
         <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
         <a class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
         <a class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
@@ -10,12 +10,12 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="card welcome">
+    <div class="card welcome margins">
         <div class="card-body">
             <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
         </div>
     </div>
     <div>
-        <h3 class="text-center reminders">There are no sessions scheduled.</h3>
+        <h3 class="text-center margins">There are no sessions scheduled.</h3>
     </div>
 {% endblock %}

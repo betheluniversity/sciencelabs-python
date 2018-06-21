@@ -1,7 +1,7 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-    <nav id="session-nav" class="nav nav-pills nav-fill">
+    <nav id="session-nav" class="nav nav-pills nav-fill margins">
         <a class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
         <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
         <a class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
@@ -10,25 +10,31 @@
 {% endblock %}
 
 {% block body_content %}
-    <form class="form-inline semester-selector">
+    <form class="form-inline semester-selector margins">
         <button type="button" class="btn btn-primary">Set</button>
-        <div class="dropdown">
-            <a class="btn btn-secondary dropdown-toggle semester-menu" role="button" id="dropdownMenuLink"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Semester Choices</a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <a class="dropdown-item">Semester Choices</a>
-            </div>
-        </div>
+        <select class="custom-select">
+            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                <option value="{{ semester }}">{{ semester }}</option>
+            {% endfor %}
+        </select>
     </form>
-    <div class="card welcome">
+    <div class="card welcome margins">
         <div class="card-body">
             <p class="card-text">Past Sessions for Spring 2018</p>
         </div>
     </div>
-    <form class="form search-sessions">
+    <form class="form margins">
         <div class="form-group">
             <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
         </div>
     </form>
-    <div class="sessions-table">Table of Sessions</div>
+    <div class="margins" id="sessions-table">Table of Sessions</div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        });
+    </script>
 {% endblock %}
