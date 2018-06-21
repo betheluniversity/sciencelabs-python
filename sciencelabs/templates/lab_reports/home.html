@@ -1,0 +1,66 @@
+{% extends 'sciencelabs_base.html' %}
+
+    {% block subnav %}
+            <a class="nav-link disabled" href="student">Student</a>
+            <a class="nav-link disabled" href="semester">Term</a>
+            <a class="nav-link disabled" href="month">Monthly</a>
+            <a class="nav-link disabled" href="annual">Cumulative</a>
+            <a class="nav-link disabled" href="session">Session</a>
+            <a class="nav-link disabled" href="course">Course</a>
+    {% endblock %}
+
+    {% block header %}
+        <div class="card-body">
+            <p class="col-sm-12" style="padding: 0px; margin: 0px">Click on an icon or one of the tabs across the top to view specialized {{ app_settings['LAB_TITLE'] }} reports</p>
+        </div>
+    {% endblock %}
+
+
+{% block body_content %}
+
+    <div class="header card-body" style="background-color: white; padding: 0px">
+        <div class="row row-group">
+        <a class="col-sm-4 col-group" href="student">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png" style="max-height: 100px; max-width: 100px;" alt="Student Icon">
+            <div>
+                <label>Student</label>
+            </div>
+        </a>
+        <a class="col-sm-4 col-group" href="course">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png" style="max-height: 100px; max-width: 100px;" alt="Teacher Icon">
+            <div>
+                <label>Course</label>
+            </div>
+
+        </a>
+        <a class="col-sm-4 col-group" href="session">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png" style="max-height: 100px; max-width: 100px;" alt="Classroom Icon">
+            <div>
+                <label>Session</label>
+            </div>
+        </a>
+        </div>
+            <div class="row row-group">
+        <a class="col-sm-4 col-group" href="semester">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png" style="max-height: 100px; max-width: 100px;" alt="Report Card Icon">
+            <div>
+                <label>Term</label>
+            </div>
+        </a>
+        <a class="col-sm-4 col-group" href="month">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png" style="max-height: 100px; max-width: 100px;" alt="Calendar Icon">
+            <div>
+                <label>Monthly</label>
+            </div>
+        </a>
+        <a class="col-sm-4 col-group" href="annual">
+        <img src="http://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13137-white-medium-small-square.png"  style="max-height: 100px; max-width: 100px;" alt="Drawer Icon">
+            <div>
+                <label>Cumulative</label>
+            </div>
+        </a>
+            </div>
+
+    </div>
+
+{% endblock %}

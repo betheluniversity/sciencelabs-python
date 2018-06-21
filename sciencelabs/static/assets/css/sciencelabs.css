@@ -9,11 +9,40 @@ div.welcome{
 }
 
 div.footer{
-    background-color: lightgray;
-    margin: 35px 20%;
+    background-color: #f2f2f2;
+    border-color: #d8d8d8;
+    margin: 35px 10%;
     text-align: right;
 }
 
 div.dropdown{
     cursor: pointer;
+}
+
+div.header{
+    background-color: white;
+    margin: 10px 10%;
+    text-align: left;
+    border-color: #bdd4f3;
+    padding: 0px;
+}
+
+div.row-group{
+    background-color: #0069AA;
+    border-color: white;
+    border-style: solid;
+    height: 200px;
+    margin: 0px
+}
+
+.active{
+    background-color: #0F2C52;
+}
+
+.col-group{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    color: white;
+
 }

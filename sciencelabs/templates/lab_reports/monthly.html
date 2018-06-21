@@ -1,0 +1,16 @@
+{% extends 'sciencelabs_base.html' %}
+
+    {% block subnav %}
+            <a class="nav-link disabled" href="/report/student">Student</a>
+            <a class="nav-link disabled" href="/report/semester">Term</a>
+            <a class="nav-link disabled" href="/report/month">Monthly</a>
+            <a class="nav-link disabled" href="/report/annual">Cumulative</a>
+            <a class="nav-link disabled" href="/report/session">Session</a>
+            <a class="nav-link disabled" href="/report/course">Course</a>
+    {% endblock %}
+
+    {% block header %}
+        <div class="card-body">
+            <p class="col-sm-12" style="padding: 0px; margin: 0px">Attendance for Month YEAR</p>
+        </div>
+    {% endblock %}
