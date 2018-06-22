@@ -56,3 +56,10 @@ div.row-group{
     background-color: #0F2C52;
     border-color: #0c2342;
 }
+
+.button-labels{
+    padding: 4px 6px;
+    font-size: 10px;
+    border-radius: 8%;
+    background-color: #0069AA !important;
+}
