@@ -1,13 +1,4 @@
-{% extends 'sciencelabs_base.html' %}
-
-{% block subnav %}
-    <nav id="session-nav" class="nav nav-pills nav-fill margins">
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
-        <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
-    </nav>
-{% endblock %}
+{% extends 'lab_session/home.html' %}
 
 {% block body_content %}
     <div class="row margins">
@@ -117,9 +108,6 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block scripts %}
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
     <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>

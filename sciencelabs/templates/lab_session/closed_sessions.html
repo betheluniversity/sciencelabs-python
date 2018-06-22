@@ -1,40 +1,36 @@
-{% extends 'sciencelabs_base.html' %}
-
-{% block subnav %}
-    <nav id="session-nav" class="nav nav-pills nav-fill margins">
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
-        <a class="nav-item nav-link active" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
-        <a class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
-    </nav>
-{% endblock %}
+{% extends 'lab_session/home.html' %}
 
 {% block body_content %}
-    <form class="form-inline semester-selector margins">
-        <button type="button" class="btn btn-primary">Set</button>
-        <select class="custom-select">
-            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                <option value="{{ semester }}">{{ semester }}</option>
-            {% endfor %}
-        </select>
-    </form>
-    <div class="card welcome margins">
-        <div class="card-body">
-            <p class="card-text">Past Sessions for Spring 2018</p>
+    <div class="margins">
+        <form class="form-inline semester-selector margins">
+            <button type="button" class="btn btn-primary">Set</button>
+            <select class="custom-select">
+                {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                    <option value="{{ semester }}">{{ semester }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <div class="card welcome margins">
+            <div class="card-body">
+                <p class="card-text">Past Sessions for Spring 2018</p>
+            </div>
         </div>
+        <form class="form margins">
+            <div class="form-group">
+                <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
+            </div>
+        </form>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Room</th>
+                    <th scope="col">Tutors</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+        </table>
     </div>
-    <form class="form margins">
-        <div class="form-group">
-            <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
-        </div>
-    </form>
-    <div class="margins" id="sessions-table">Table of Sessions</div>
-{% endblock %}
-
-{% block scripts %}
-    <script type="text/javascript">
-        $(document).ready(function(){
-
-        });
-    </script>
 {% endblock %}
