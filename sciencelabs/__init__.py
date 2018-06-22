@@ -17,7 +17,7 @@ sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.I
 
 from sciencelabs.views import View
 from sciencelabs.lab_session import LabSessionView
-from sciencelabs.lab_reports import ReportView
+from sciencelabs.reports import ReportView
 View.register(app)
 LabSessionView.register(app)
 ReportView.register(app)

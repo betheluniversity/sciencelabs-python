@@ -1,0 +1,28 @@
+{% extends 'reports/home.html' %}
+
+    {% block header %}
+        <div class="card-body btn-group">
+            <p style="padding: 0px; margin: 0px">Student Attendance</p>
+            <a href="" id="buttons" class="btn btn-primary">CSV Export</a>
+        </div>
+    {% endblock %}
+
+{% block semester_switch %}
+
+    <div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" style="float: right;" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown link
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="">Action</a>
+    <a class="dropdown-item" href="">Another action</a>
+    <a class="dropdown-item" onclick="document.getElementsByName(this)" href="">Something else here</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_content %}
+
+{% endblock %}
+

@@ -1,0 +1,15 @@
+{% extends 'reports/home.html' %}
+
+    {% block header %}
+        <div class="card-body btn-group">
+            <p class="col-sm-12" style="padding: 0px; margin: 0px">Attendance for {{ app_settings['LAB_TITLE'] }}</p>
+            <a href="" id="buttons" class="btn btn-primary">CSV Export</a>
+        </div>
+        <div class="card-body">
+            <p style="padding: 0px; margin: 0px;"><strong>Fall 2014 - Present:</strong> Records in this current attendance application include professor, course, student, and tutor information. </p>
+            <p style="padding: 0px; margin: 0px;"><strong>Spring 2004 - Spring 2014 *:</strong> Records for this time period were imported from an old web based attendance application and do not include professor or tutor information. These session are titled, “Old Math Lab”.</p>
+            <p style="padding: 0px; margin: 0px;"><strong>Fall 1992 - Fall 2003:</strong> Records from this time period were transcribed from paper sign ins and only include monthly attendance totals.</p>
+        </div>
+    {% endblock %}
+
+{% block body_content %}{% endblock %}

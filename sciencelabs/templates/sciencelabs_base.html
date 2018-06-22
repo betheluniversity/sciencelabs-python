@@ -16,6 +16,10 @@
             <!-- Sciencelabs CSS -->
             <link href="{{ url_for('static', filename='assets/css/sciencelabs.css') }}" rel="stylesheet"/>
 
+            <!-- Fonts and icons -->
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+            <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
+
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
         {% endblock %}
@@ -27,6 +31,7 @@
     <body>
         {{ nav.render(app_settings['LAB_TITLE']) }}
         <div class="nav header">{% block subnav %}{% endblock %}</div>
+        <div class="nav header">{% block semester_switch %}{% endblock %}</div>
         <div class="header card">{% block header %}{% endblock %}</div>
         {% block body_content %}{% endblock %}
         {% block modalhtml %}{% endblock %}
