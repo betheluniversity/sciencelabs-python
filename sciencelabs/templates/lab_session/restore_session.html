@@ -20,6 +20,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Date Deleted</th>
                     <th scope="col">Time</th>
                     <th scope="col">Room</th>
                     <th scope="col">Tutors</th>
@@ -27,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for session in app_settings['SESSIONS'] %}
+                {% for session in app_settings['DELETED_SESSIONS'] %}
                     <tr>
                     {% for info in session %}
                         <td>{{ info }}</td>
