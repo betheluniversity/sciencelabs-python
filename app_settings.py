@@ -62,5 +62,10 @@ app_settings = {
         'Spring 2005',
         'Interim 2005',
         'Fall 2004',
-        'Spring 2004']
+        'Spring 2004'],
+    'SESSIONS': [
+        ['Calc 2 Help Session (2/1/2018)', '02/01/2018', '6:55pm - 8:06pm', 'HC 114', 'Tutors', 'Edit/Delete'],
+        ['Calc 3 Help Session (2/2/2018)', '02/02/2018', '6:50pm - 8:07pm', 'HC 113', 'Tutored', 'Edit+Delete'],
+        ['Calc 4 Help Session (2/3/2018)', '02/03/2018', '6:45pm - 8:09pm', 'HC 11', 'Tutoring', 'Edit-Delete']
+    ]
 }

@@ -1,18 +1,40 @@
 {% extends 'lab_session/home.html' %}
 
 {% block body_content %}
-    <form class="form-inline semester-selector margins">
-        <button type="button" class="btn btn-primary">Set</button>
-        <select class="custom-select">
-            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                <option value="{{ semester }}">{{ semester }}</option>
-            {% endfor %}
-        </select>
-    </form>
-    <div class="card welcome margins">
-        <div class="card-body">
-            <p class="card-text">Deleted Sessions for Spring 2018</p>
+    <div class="margins">
+        <form class="form-inline semester-selector">
+            <button type="button" class="btn btn-primary">Set</button>
+            <select class="custom-select">
+                {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                    <option value="{{ semester }}">{{ semester }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <div class="card welcome margins">
+            <div class="card-body">
+                <p class="card-text">Deleted Sessions for Spring 2018</p>
+            </div>
         </div>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Room</th>
+                    <th scope="col">Tutors</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in app_settings['SESSIONS'] %}
+                    <tr>
+                    {% for info in session %}
+                        <td>{{ info }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="margins">Table of Sessions</div>
 {% endblock %}

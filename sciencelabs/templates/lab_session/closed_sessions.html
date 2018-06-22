@@ -31,6 +31,15 @@
                     <th scope="col"></th>
                 </tr>
             </thead>
+            <tbody>
+                {% for session in app_settings['SESSIONS'] %}
+                    <tr>
+                    {% for info in session %}
+                        <td>{{ info }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 {% endblock %}
