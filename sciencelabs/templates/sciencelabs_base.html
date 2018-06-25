@@ -40,21 +40,7 @@
 
         {{ nav.render(app_settings['LAB_TITLE']) }}
         <div class="nav header">{% block subnav %}{% endblock %}</div>
-
-            <div class="nav header">{% block semester_switch %}
-{#                <div style="position: absolute; margin 10px;">#}
-{#                <a class="btn btn-primary dropdown-toggle" style=" border-radius: 0px; color: black; background-color: white; border-color: #cccccc;" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown link</a>#}
-{#                <a class="btn btn-primary" style="background-color: #0069AA; border-color: #005488; color: white;">Set</a>#}
-{#                </div>#}
-{#                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">#}
-{#                    <a class="dropdown-item" href="">Action</a>#}
-{#                    <a class="dropdown-item" href="">Another action</a>#}
-{#                    <a class="dropdown-item" href="">Something else here</a>#}
-{#            </div>#}
-        {% endblock %}</div>
-
-
-
+        <div class="nav header">{% block semester_switch %}{% endblock %}</div>
         <div class="header card">{% block header %}{% endblock %}</div>
         {% block body_content %}{% endblock %}
         {% block modalhtml %}{% endblock %}
