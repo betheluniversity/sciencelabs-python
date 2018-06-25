@@ -82,8 +82,8 @@ div.info{
     background-color: #0069AA;
 }
 
-#buttons{
-   border-radius: 0px;
+#csv_buttons{
+   border-radius: 0px !important;
    margin: -5px 0 0 0;
    position: absolute;
    right: 10px;

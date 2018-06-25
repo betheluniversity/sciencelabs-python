@@ -1,12 +1,106 @@
 {% extends 'reports/home.html' %}
 
-    {% block header %}
-        <div class="header card margins">
-            <div class="card-body btn-group">
-                <p style="padding: 0px; margin: 0px">Report for Semester YEAR</p>
-                <a href="" id="buttons" class="btn btn-primary">CSV Export</a>
+{% block semester_switch %}{% endblock %}
+
+    {% block header %}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+                        <div class="semester-selector">
+                            <div class="btn-group">
+                                <form class="form-inline">
+                                    <button style="border-radius: .25rem !important;" type="button" class="btn btn-primary">Set</button>
+                                    <select class="custom-select">
+                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                            <option value="{{ semester }}">{{ semester }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">Report for Semester YEAR</p>
+                                <a href="" id="csv_buttons" class="btn btn-primary">CSV Export</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <p>
+                            <strong>Term Statistics</strong>
+                            <ul style="list-style-type: none;">
+                                <li>
+                                    <strong>Sessions held:</strong>
+                                </li>
+                                <li>
+                                    <strong>Total attendance:</strong>
+                                </li>
+                                <li>
+                                    <strong>Unique student attendance:</strong>
+                                </li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <p>
+                            <br>
+                            <ul style="list-style-type: none;">
+                                <li>
+                                    <strong>Average total time spent per student:</strong>
+                                </li>
+                                <li>
+                                    <strong>Average student attendance per session:</strong>
+                                </li>
+                                <li>
+                                    <strong>Average number of visits per student:</strong>
+                                </li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                     <label for="session-name">Search:</label>
+                    <input type="text" class="form-control" id="session-name">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        This page contains term and schedule statistics for the term listed at the top of the page.
+                    </p>
+                    <p class="card-text">
+                        Schedule statistic data is <strong>sortable</strong>; click on the arrow next to any column
+                        header to sort by the column field.
+                    </p>
+                    <p class="card-text">
+                        To view term data from a different term, choose an option from the term menu in the upper right
+                        hand corner of the page and press the <span class="button-labels">Set</span> button.
+
+
+                    </p>
+                    <p class="card-text">
+                        <strong>Set Term Warning:</strong><br>
+                        Within each section of reports (except cumulative reports), the term can be changed. When
+                        logging in to the application, the default term will be the current term. If the term is changed
+                        in one reporting section, the newly set term will be maintained across all sections of reports
+                        until set to a new term again.
+                    </p>
+                </div>
             </div>
         </div>
-    {% endblock %}
-
-{% block body_content %}{% endblock %}
+    </div>
+{% endblock %}

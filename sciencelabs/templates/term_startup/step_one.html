@@ -1,9 +1,121 @@
 {% extends 'term_startup/home.html' %}
 
-    {% block header %}
-        <div class="header card margins">
-            <div class="card-body btn-group">
-                <p style="padding: 0px; margin: 0px">Step 1: Set Term</p>
+    {% block header %}{% endblock %}
+
+    {% block body_content %}
+        <div class="row">
+            <div class="col-md-8">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="header card">
+                                <div class="card-body btn-group">
+                                    <p style="padding: 0px; margin: 0px">Step 1: Set Term</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="session-name">New Term</label>
+                            <select class="custom-select">
+                                {% for semester in app_settings['SEMESTER_SEASON'] %}
+                                    <option value="{{ semester }}">{{ semester }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="room-number">Year</label>
+                            <select class="custom-select">
+                                {% for semester in app_settings['YEAR'] %}
+                                    <option value="{{ semester }}">{{ semester }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="session-date">Start Date (click to select)</label>
+                            <input type="text" class="form-control" id="start-date">
+                        </div>
+                        <div class="form-group col-md-6">
+                        <label for="session-date">End Date click to select)</label>
+                        <input type="text" class="form-control" id="end-date">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <button type="button" class="btn btn-primary" id="save-session">Set Term</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="card info">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Warning:</strong> once a term has been set, no sessions from the
+                            previous term can be created or held. Records of previously held sessions will be maintained
+                            in the reporting section, but all student users will be deactivated for future sessions.
+                            Make sure the previous term is completed before initiating the term startup process.
+                        </p>
+                        <p class="card-text">To begin the term startup process, enter the term, year, and start and end
+                            dates for the term. When all fields are complete, press the
+                            <span class="button-labels">Set Term</span> button to transition the entire system to the
+                            new term.
+                        </p>
+                        <p class="card-text">
+                            Once the new term has been set, go on to the next step by pressing the
+                            <span id="gray" class="button-labels">Step 2: Edit Users</span> tab located at the top of
+                            the page.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
+        <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
+        <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+        <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
+        <script>
+            $(document).ready(function () {
+
+                var picker = new Pikaday({
+                    field: document.getElementById('start-date')
+                });
+
+                $('#all-courses').click(function(){
+                    if($(this).hasClass('all')){
+                        $(this).removeClass('all');
+                        $('.custom-control-input').prop('checked', false);
+                        $(this).text('Select All Courses');
+                    }else {
+                        $(this).addClass('all');
+                        $('.custom-control-input').prop('checked', true);
+                        $(this).text('Deselect All Courses');
+                    }
+                });
+
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+
+                var picker = new Pikaday({
+                    field: document.getElementById('end-date')
+                });
+
+                $('#all-courses').click(function(){
+                    if($(this).hasClass('all')){
+                        $(this).removeClass('all');
+                        $('.custom-control-input').prop('checked', false);
+                        $(this).text('Select All Courses');
+                    }else {
+                        $(this).addClass('all');
+                        $('.custom-control-input').prop('checked', true);
+                        $(this).text('Deselect All Courses');
+                    }
+                });
+
+            });
+        </script>
     {% endblock %}

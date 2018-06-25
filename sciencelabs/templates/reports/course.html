@@ -1,5 +1,79 @@
 {% extends 'reports/home.html' %}
 
+{% block semester_switch %}{% endblock %}
+
 {% block header %}{% endblock %}
 
-{% block body_content %}{% endblock %}
+{% block body_content %}
+   <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+                        <div class="semester-selector">
+                            <div class="btn-group">
+                                <form class="form-inline">
+                                    <button style="border-radius: .25rem !important;" type="button" class="btn btn-primary">Set</button>
+                                    <select class="custom-select">
+                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                            <option value="{{ semester }}">{{ semester }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <p><strong>Active Courses for ***SEMESTER YEAR***</strong></p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                     <label for="session-name">Search:</label>
+                    <input type="text" class="form-control" id="session-name">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        All Math Lab course reports for the term given at the top of the page are listed along with
+                        their total attendance. Total attendance gives the total number of visits for the course. Unique
+                        attendance gives the number of unique students who have attended the help session. Percentage
+                        gives the percentage of a specific course attendance out of all attendance for all Math Lab
+                        courses.
+                    </p>
+                    <p class="card-text">
+                        To <strong>search</strong> for a course report, type any portion of the course number, course
+                        name, professor, or attendance in the search box.
+                    </p>
+                    <p class="card-text">
+                        Course reports are also <strong>sortable</strong>; click on the arrow next to any column header
+                        to sort by the column field.
+                    </p>
+
+                    <p class="card-text">
+                        For <strong>further information</strong> concerning a course report, click on the
+                        <span id="darkblue" class="button-labels">View</span> button next to the course name.
+                    </p>
+                    <p class="card-text">
+                        To view course report data from a different term, choose an option from the term menu in the
+                        upper right hand corner of the page and press the <span class="button-labels">Set</span> button.
+                    </p>
+
+                    <p class="card-text">
+                        <strong>Set Term Warning:</strong><br>
+                        Within each section of reports (except cumulative reports), the term can be changed. When
+                        logging in to the application, the default term will be the current term. If the term is changed
+                        in one reporting section, the newly set term will be maintained across all sections of reports
+                        until set to a new term again.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
