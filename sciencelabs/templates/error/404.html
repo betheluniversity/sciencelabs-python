@@ -1,7 +1,37 @@
+{% extends 'sciencelabs_base.html' %}
+
 {% block title %} 404 Error {% endblock %}
 
 {% set title = '404 Error' %}
 
-{% block main_content %}
-    <h1>404 Error</h1>
+{% block body_content %}
+
+    <div class="row">
+
+        <section id="oops">
+            <div class="row">
+                <div class="large-9 medium-9 small-12 columns small-centered">
+                    <h1 class="oversized"> It's probably not a problem, probably.</h1>
+                </div>
+            </div>
+            <!-- Sentry JS SDK 2.1.+ required -->
+            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
+
+            {% if sentry_event_id %}
+                <script>
+                    Raven.showReportDialog({
+                        eventId: '{{ sentry_event_id }}',
+                        dsn: '{{ public_dsn }}'
+                    });
+                </script>
+            {% endif %}
+        </section>
+
+        <!-- Main Blog Content -->
+        <div class="large-9 columns" role="content">
+
+
+        </div>
+
+    </div>
 {% endblock %}

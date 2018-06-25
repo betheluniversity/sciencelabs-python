@@ -1,19 +1,53 @@
-div.welcome{
-    background-color: aliceblue;
-    margin: 35px 20%;
+.margins{
+    margin: 20px 10%!important;
 }
 
-.reminders{
-    margin-left: 20%;
-    margin-right: 20%;
+div.welcome{
+    background-color: aliceblue;
 }
 
 div.footer{
     background-color: lightgray;
-    margin: 35px 20%;
     text-align: right;
 }
 
 div.dropdown{
     cursor: pointer;
+}
+
+nav a{
+    color: gray;
+}
+
+nav a:hover{
+    color: black;
+}
+
+nav a.active{
+    color: white!important;
+    background-color: #0F2C52!important;
+}
+
+form.semester-selector{
+    direction: rtl;
+}
+
+form.create-session-form{
+    margin-top: 15px;
+}
+
+a.semester-menu{
+    background-color: white;
+}
+
+div.semester-menu:hover{
+    background-color: red;
+}
+
+button.btn-primary{
+    background-color: #0069AA;
+}
+
+div.info{
+    background-color: lightgray;
 }
