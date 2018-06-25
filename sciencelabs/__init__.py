@@ -17,8 +17,12 @@ sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.I
 
 from sciencelabs.views import View
 from sciencelabs.lab_session import LabSessionView
+from sciencelabs.reports import ReportView
+from sciencelabs.term_startup import TermStartupView
 View.register(app)
 LabSessionView.register(app)
+ReportView.register(app)
+TermStartupView.register(app)
 
 app.jinja_env.globals.update(app_settings=app_settings)
 
