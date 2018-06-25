@@ -44,20 +44,7 @@
         {{ nav.render(app_settings['LAB_TITLE']) }}
 
         <div class="nav margins">{% block subnav %}{% endblock %}</div>
-
-        <div class="margins semester-selector">
-        {% block semester_switch %}
-            <form class="form-inline">
-                <button type="button" class="btn btn-primary">Set</button>
-                <select class="custom-select">
-                    {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                        <option value="{{ semester }}">{{ semester }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-        {% endblock %}
-        </div>
-
+        <div class="margins semester-selector">{% block semester_switch %}{% endblock %}</div>
         {% block header %}{% endblock %}
 
         <div class="margins">{% block body_content %}{% endblock %}</div>
