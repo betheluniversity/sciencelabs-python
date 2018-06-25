@@ -16,13 +16,15 @@ app.config.from_object('config.config')
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
 from sciencelabs.views import View
-from sciencelabs.lab_session import LabSessionView
+from sciencelabs.session import SessionView
 from sciencelabs.reports import ReportView
 from sciencelabs.term_startup import TermStartupView
+from sciencelabs.users import UsersView
 View.register(app)
-LabSessionView.register(app)
+SessionView.register(app)
 ReportView.register(app)
 TermStartupView.register(app)
+UsersView.register(app)
 
 app.jinja_env.globals.update(app_settings=app_settings)
 

@@ -1,0 +1,50 @@
+{% extends 'users/home.html' %}
+
+{% block header %}
+    <div class="header card margins">
+        <div class="card-body">
+            <p class="card-text">Add a User</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="user-first-name">First Name</label>
+                        <input type="text" class="form-control" id="user-first-name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="user-last-name">Last Name</label>
+                        <input type="text" class="form-control" id="user-last-name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="search-users">Search</button>
+                    </div>
+                </div>
+            </form>
+            <h3>TABLE OF USERS</h3>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">Search for a user to add by entering first name and last name (enter name or
+                        first few characters). Once you have entered a first and last name, press enter or the
+                        <span style="background-color: #0069AA" class="button-labels">Search</span> button. When the user appears, press
+                        <span style="background-color: #0069AA" class="button-labels">AddUser</span>. If the user does not appear, check the
+                        spelling of the user name as the system is pulling user data from Banner.</p>
+                    <p class="card-text">* <strong>Professors</strong> are automatically added to the user list when
+                        their courses are pulled from Banner when the current term is selected, and need not be added
+                        manually.</p>
+                    <p class="card-text">* Users with first or last names which include spaces may need to be searched
+                        by only the first part of their first or last name.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
