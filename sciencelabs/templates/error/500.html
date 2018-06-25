@@ -1,7 +1,32 @@
+{% extends 'sciencelabs_base.html' %}
+
 {% block title %} 500 Error {% endblock %}
 
 {% set title = '500 Error' %}
 
-{% block main_content %}
-    <h1>500 Error</h1>
+{% block body_content %}
+
+    <div class="row">
+
+        <section id="oops">
+            <div class="row">
+                <div class="large-9 medium-9 small-12 columns small-centered">
+                    <h1 class="oversized">Whoops! Tinker lost its connection.</h1>
+                    <h5>We’re fixing the loose wire right now. Check back soon!</h5>
+                </div>
+            </div>
+
+            <!-- Sentry JS SDK 2.1.+ required -->
+            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
+
+            {% if sentry_event_id %}
+                <script>
+                    Raven.showReportDialog({
+                        eventId: '{{ sentry_event_id }}',
+                        dsn: '{{ public_dsn }}'
+                    });
+                </script>
+            {% endif %}
+        </section>
+    </div>
 {% endblock %}
