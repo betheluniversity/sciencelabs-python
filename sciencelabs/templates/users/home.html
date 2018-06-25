@@ -1,0 +1,73 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+        <a id="home" class="nav-item nav-link disabled" href="{{ url_for('UsersView:index') }}">Users</a>
+        <a id="add" class="nav-item nav-link disabled" href="{{ url_for('UsersView:add_user') }}">Add</a>
+{% endblock %}
+
+{% block header %}
+    <div class="header card margins">
+        <div class="card-body">
+            <p class="card-text">{{ app_settings['LAB_TITLE'] }} Users</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form class="form">
+                <div class="form-group">
+                    <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
+                </div>
+            </form>
+            <h3>TABLE OF USERS</h3>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">All help session users are listed on this page. To search for a user, type any
+                        portion of the user's first or last name, role, or email in the search box. To add a user,
+                        click the <span id="gray" class="button-labels">Add</span> tab at the top of this section. To
+                        edit a user, click the <span id="darkblue" class="button-labels">Edit</span> button next to
+                        their name. To sort users according to role, type desired role in search box. To deactivate
+                        users, check the box next to a user's name and press the
+                        <span id="red" class="button-labels">Deactivate</span> button when you have selected all users
+                        you wish to delete.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Student</span> only has ability to
+                        edit profile and attend a session in the lab.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Professor</span> has the ability to
+                        view reports from their current and past courses, and edit their profile.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Tutor</span> has the ability to edit
+                        their tutor calendar, or edit their profile.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Lead Tutor</span> has the ability to
+                        start a session, edit student attendance during session, as well as all tutor abilities.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Administrator</span> has complete
+                        access to all features of the application, with the exception of editing their own roles.</p>
+                    <p class="card-text"><span id="darkblue" class="button-labels">Academic Counselor</span> has the
+                        ability to view all reports.</p>
+                    <p class="card-text">*<strong>Professors</strong> are automatically added to the user list when
+                        their courses are pulled from Banner when the current term is selected, and need not be added
+                        manually.</p>
+                    <p class="card-text">*Users with first or last names which include spaces may need to be searched
+                        by only the first part of their first or last name.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var url = window.location.pathname;
+            if(url == '/users/'){
+                $('#home').addClass('active');
+            }else{
+                $('#add').addClass('active');
+            }
+
+        });
+    </script>
+{% endblock %}

@@ -1,10 +1,10 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        <a id="home" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
-        <a id="closed" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
-        <a id="create" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
-        <a id="restore" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
+        <a id="home" class="nav-item nav-link disabled" href="{{ url_for('SessionView:index') }}">Available Sessions</a>
+        <a id="closed" class="nav-item nav-link disabled" href="{{ url_for('SessionView:closed') }}">Closed Sessions</a>
+        <a id="create" class="nav-item nav-link disabled" href="{{ url_for('SessionView:create') }}">Create a Session</a>
+        <a id="restore" class="nav-item nav-link disabled" href="{{ url_for('SessionView:restore') }}">Restore a Deleted Session</a>
 {% endblock %}
 
 {% block header %}
@@ -24,11 +24,11 @@
         $(document).ready(function(){
 
             var url = window.location.pathname;
-            if(url == '/labsession/'){
+            if(url == '/session/'){
                 $('#home').addClass('active');
-            }else if(url == '/labsession/closed/'){
+            }else if(url == '/session/closed/'){
                 $('#closed').addClass('active');
-            }else if(url == '/labsession/create/'){
+            }else if(url == '/session/create/'){
                 $('#create').addClass('active');
             }else{
                 $('#restore').addClass('active');
