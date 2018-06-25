@@ -1,0 +1,135 @@
+{% extends 'lab_session/home.html' %}
+
+{% block body_content %}
+    <div class="row margins">
+        <div class="col-md-8">
+            <div class="card welcome">
+                <div class="card-body">
+                    <p class="card-text">Create a new session</p>
+                </div>
+            </div>
+            <form class="create-session-form">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="session-name">Name of Session</label>
+                        <input type="text" class="form-control" id="session-name">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="room-number">Room Number</label>
+                        <input type="text" class="form-control" id="room-number">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="">Semester</label>
+                        <select class="custom-select">
+                            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                <option value="{{ semester }}">{{ semester }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="session-date">Date (click to select)</label>
+                        <input type="text" class="form-control" id="session-date">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="scheduled-start">Scheduled Start Time</label>
+                        <input type="time" class="form-control" id="scheduled-start">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="scheduled-end">Scheduled End Time</label>
+                        <input type="time" class="form-control" id="scheduled-end">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-leads">Lead Tutors</label>
+                        <input type="text" class="form-control" id="choose-leads" placeholder="Choose lead tutors...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-tutors">Tutors</label>
+                        <input type="text" class="form-control" id="choose-tutors" placeholder="Choose tutors...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="actual-start">Actual Start Time</label>
+                        <input type="time" class="form-control" id="actual-start">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="actual-end">Actual End Time</label>
+                        <input type="time" class="form-control" id="actual-end">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {% for id, name in app_settings['COURSE_OPTIONS'].items() %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input type="checkbox" class="custom-control-input" id="{{ id }}">
+                                <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="comments">Comments</label>
+                        <textarea class="form-control" id="comments"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="anon-students">Anonymous Students</label>
+                        <input type="text" class="form-control" id="anon-students" value="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary" id="save-session">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">This section can be used to create a past or a future session that is separate from
+                    those created using the Schedule tab.</p>
+                    <p class="card-text">For future sessions, actual start and end times will be left blank.</p>
+                    <p class="card-text">For historical sessions, both scheduled and actual start and end times may be set.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
+    <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+    <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+
+            var picker = new Pikaday({
+                field: document.getElementById('session-date')
+            });
+
+            $('#all-courses').click(function(){
+                if($(this).hasClass('all')){
+                    $(this).removeClass('all');
+                    $('.custom-control-input').prop('checked', false);
+                    $(this).text('Select All Courses');
+                }else {
+                    $(this).addClass('all');
+                    $('.custom-control-input').prop('checked', true);
+                    $(this).text('Deselect All Courses');
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

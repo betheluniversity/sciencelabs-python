@@ -1,5 +1,40 @@
 {% extends 'sciencelabs_base.html' %}
 
+{% block subnav %}
+    <nav id="session-nav" class="nav nav-pills nav-fill margins">
+        <a id="home" class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
+        <a id="closed" class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
+        <a id="create" class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
+        <a id="restore" class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
+    </nav>
+{% endblock %}
+
 {% block body_content %}
-    <p>Session home page</p>
+    <div class="card welcome margins">
+        <div class="card-body">
+            <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
+        </div>
+    </div>
+    <div>
+        <h3 class="text-center margins">There are no sessions scheduled.</h3>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var url = window.location.pathname;
+            if(url == '/labsession/'){
+                $('#home').addClass('active');
+            }else if(url == '/labsession/closed/'){
+                $('#closed').addClass('active');
+            }else if(url == '/labsession/create/'){
+                $('#create').addClass('active');
+            }else{
+                $('#restore').addClass('active');
+            }
+
+        });
+    </script>
 {% endblock %}

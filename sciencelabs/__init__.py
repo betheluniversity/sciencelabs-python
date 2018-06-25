@@ -6,7 +6,7 @@ from flask import Flask
 from raven.contrib.flask import Sentry
 
 # Local
-from sciencelabs.sciencelabs_controller import get_app_settings
+from app_settings import app_settings
 
 
 app = Flask(__name__)
@@ -24,7 +24,6 @@ LabSessionView.register(app)
 ReportView.register(app)
 TermStartupView.register(app)
 
-app_settings = get_app_settings()
 app.jinja_env.globals.update(app_settings=app_settings)
 
 if __name__ == "__main__":

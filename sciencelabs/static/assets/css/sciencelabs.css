@@ -1,17 +1,14 @@
-div.welcome{
-    background-color: aliceblue;
-    margin: 35px 20%;
+.margins{
+    margin: 20px 10%!important;
 }
 
-.reminders{
-    margin-left: 20%;
-    margin-right: 20%;
+div.welcome{
+    background-color: aliceblue;
 }
 
 div.footer{
     background-color: #f2f2f2;
     border-color: #d8d8d8;
-    margin: 35px 10%;
     text-align: right;
 }
 
@@ -21,7 +18,6 @@ div.dropdown{
 
 div.header{
     background-color: white;
-    margin: 10px 10%;
     text-align: left;
     border-color: #bdd4f3;
     padding: 0px;
@@ -49,15 +45,6 @@ div.row-group{
     top: 35%;
 }
 
-#buttons{
-    border-radius: 0px;
-    margin: -5px 0 0 0;
-    position: absolute;
-    right: 10px;
-    background-color: #0F2C52;
-    border-color: #0c2342;
-}
-
 .button-labels{
     padding: 4px 6px;
     font-size: 10px;
@@ -77,4 +64,36 @@ div.row-group{
 #gray{
     color: #333333;
     background-color: #BDBCB0 !important;
+}
+
+nav a{
+    color: gray;
+}
+
+nav a:hover{
+    color: black;
+}
+
+form.semester-selector{
+    direction: rtl;
+}
+
+form.create-session-form{
+    margin-top: 15px;
+}
+
+a.semester-menu{
+    background-color: white;
+}
+
+div.semester-menu:hover{
+    background-color: red;
+}
+
+button.btn-primary{
+    background-color: #0069AA;
+}
+
+div.info{
+    background-color: lightgray;
 }
