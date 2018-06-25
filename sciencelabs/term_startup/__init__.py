@@ -7,26 +7,24 @@ from sciencelabs.term_startup.term_startup_controller import TermStartupControll
 
 
 class TermStartupView(FlaskView):
+    route_base = 'admin/transition/'
+
     def __init__(self):
         self.base = TermStartupController()
 
-    @route('/')
+    @route('/1/')
     def index(self):
-        return render_template('term_startup/home.html')
-
-    @route('/admin/transition/1')
-    def step_one(self):
         return render_template('term_startup/step_one.html')
 
-    @route('/admin/transition/2')
+    @route('/2')
     def step_two(self):
         return render_template('term_startup/step_two.html')
 
-    @route('/admin/transition/3')
+    @route('/3')
     def step_three(self):
         return render_template('term_startup/step_three.html')
 
-    @route('/admin/transition/4')
+    @route('/4')
     def step_four(self):
         return render_template('term_startup/step_four.html')
 
