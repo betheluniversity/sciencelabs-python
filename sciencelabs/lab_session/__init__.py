@@ -11,13 +11,13 @@ class LabSessionView(FlaskView):
         self.base = LabSessionController()
 
     def index(self):
-        return render_template('lab_session/home.html')
+        return render_template('session/home.html')
 
     def closed(self):
-        return render_template('lab_session/closed_sessions.html')
+        return render_template('session/closed_sessions.html')
 
     def create(self):
-        return render_template('lab_session/create_session.html')
+        return render_template('session/create_session.html')
 
     def restore(self):
-        return render_template('lab_session/restore_session.html')
+        return render_template('session/restore_session.html')

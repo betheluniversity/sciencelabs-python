@@ -1,13 +1,16 @@
-{% extends 'lab_session/home.html' %}
+{% extends 'session/home.html' %}
+
+{% block header %}
+    <div class="header card margins">
+        <div class="card-body">
+            <p class="card-text">Create a new session</p>
+        </div>
+    </div>
+{% endblock %}
 
 {% block body_content %}
-    <div class="row margins">
+    <div class="row">
         <div class="col-md-8">
-            <div class="card welcome">
-                <div class="card-body">
-                    <p class="card-text">Create a new session</p>
-                </div>
-            </div>
             <form class="create-session-form">
                 <div class="form-row">
                     <div class="form-group col-md-6">

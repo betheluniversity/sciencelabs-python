@@ -1,23 +1,22 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-    <nav id="session-nav" class="nav nav-pills nav-fill margins">
-        <a id="home" class="nav-item nav-link" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
-        <a id="closed" class="nav-item nav-link" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
-        <a id="create" class="nav-item nav-link" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
-        <a id="restore" class="nav-item nav-link" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
-    </nav>
+        <a id="home" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:index') }}">Available Sessions</a>
+        <a id="closed" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:closed') }}">Closed Sessions</a>
+        <a id="create" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:create') }}">Create a Session</a>
+        <a id="restore" class="nav-item nav-link disabled" href="{{ url_for('LabSessionView:restore') }}">Restore a Deleted Session</a>
 {% endblock %}
 
-{% block body_content %}
-    <div class="card welcome margins">
+{% block header %}
+    <div class="header card margins">
         <div class="card-body">
             <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
         </div>
     </div>
-    <div>
-        <h3 class="text-center margins">There are no sessions scheduled.</h3>
-    </div>
+{% endblock %}
+
+{% block body_content %}
+    <h3 class="text-center margins">There are no sessions scheduled.</h3>
 {% endblock %}
 
 {% block scripts %}
