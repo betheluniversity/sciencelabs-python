@@ -43,11 +43,11 @@
 
         {{ nav.render(app_settings['LAB_TITLE']) }}
 
-        <div class="nav header">{% block subnav %}{% endblock %}</div>
-        <div class="nav header">{% block semester_switch %}{% endblock %}</div>
-        <div class="header card">{% block header %}{% endblock %}</div>
+        <div class="nav margins">{% block subnav %}{% endblock %}</div>
+        <div class="margins semester-selector">{% block semester_switch %}{% endblock %}</div>
+        {% block header %}{% endblock %}
 
-        {% block body_content %}{% endblock %}
+        <div class="margins">{% block body_content %}{% endblock %}</div>
         {% block modalhtml %}{% endblock %}
         {% block scripts %}{% endblock %}
         {% block footer %}
