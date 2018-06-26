@@ -61,10 +61,16 @@ div.info{
 }
 
 .active{
+    max-height: 30px;
     background-color: #0F2C52;
     color: white !important;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 3px 16px !important;
+}
+
+.nav-bar-active{
+    background-color: #0F2C52;
+    color: white !important;
 }
 
 .button-curved{
