@@ -3,7 +3,7 @@
     {% set user = "Jordan Jasik" %}
 
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0069AA;">
-        <a class="navbar-brand" href="{{ url_for('IndexView:index') }}" style="color:#FFC600;">{{ title }}</a>
+        <a class="navbar-brand" href="{{ url_for('View:index') }}" style="color:#FFC600;">{{ title }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -60,7 +60,7 @@
                 $('#term-startup').addClass('nav-bar-active');
             }else if (url_base == 'course') {
                 $('#courses').addClass('nav-bar-active');
-            }else if (url_base == 'email') {
+            }else if (url_base == 'email_tab') {
                 $('#email').addClass('nav-bar-active');
             }
         });
