@@ -1,0 +1,113 @@
+{% extends 'schedule/home.html' %}
+
+    {% block body_content %}
+        <div class="row">
+            <div class="col-md-8">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="header card">
+                                <div class="card-body btn-group">
+                                    <p style="padding: 0px; margin: 0px">Create New Schedule for ***SEMESTER YEAR***</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="schedule-name">Schedule Name</label>
+                            <input type="text" class="form-control" id="schedule-name">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="room">Room</label>
+                            <input type="text" class="form-control" id="room">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="start-time">Start Time</label>
+                            <input type="time" class="form-control" id="start-time">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="end-time">End Time</label>
+                            <input type="time" class="form-control" id="end-time">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="session-name">Day of week</label>
+                            <select class="custom-select">
+                                <option value="sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="choose-leads">Lead Tutors</label>
+                            <input type="text" class="form-control" id="choose-leads" placeholder="Choose lead tutors...">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="choose-tutors">Tutors</label>
+                            <input type="text" class="form-control" id="choose-tutors" placeholder="Choose tutors...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            {% for id, name in app_settings['COURSE_OPTIONS'].items() %}
+                                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                    <input type="checkbox" class="custom-control-input" id="{{ id }}">
+                                    <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="card info">
+                    <div class="card-body">
+                        <p class="card-text">
+                            To view specific schedule information including courses and tutors, click the
+                            <span class="button-labels">Show</span> buttons.
+                        </p>
+                        <p class="card-text">
+                            To edit schedule information, click the
+                            <span id="darkblue" class="button-labels">Edit</span> button.
+                        </p>
+                        <p class="card-text">
+                            To delete all future instances of a schedule, click the
+                            <span id="red" class="button-labels">Delete</span> button (past occurrences of the schedule
+                            will remain in the reports section).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('#all-courses').click(function(){
+                    if($(this).hasClass('all')){
+                        $(this).removeClass('all');
+                        $('.custom-control-input').prop('checked', false);
+                        $(this).text('Select All Courses');
+                    }else {
+                        $(this).addClass('all');
+                        $('.custom-control-input').prop('checked', true);
+                        $(this).text('Deselect All Courses');
+                    }
+                });
+            });
+        </script>
+    {% endblock %}
