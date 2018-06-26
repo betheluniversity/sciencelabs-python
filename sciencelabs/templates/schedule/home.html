@@ -1,0 +1,65 @@
+{% extends 'sciencelabs_base.html' %}
+
+    {% block subnav %}
+            <a id="schedule-home" class="nav-link disabled" href="{{ url_for('ScheduleView:index') }}">Schedules</a>
+            <a id="create" class="nav-link disabled" href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
+    {% endblock %}
+
+    {% block body_content %}
+        <div class="row">
+            <div class="col-md-8">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="header card">
+                                <div class="card-body btn-group">
+                                    {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                                    <p style="padding: 0px; margin: 0px">Schedules for ***SEMESTER YEAR***</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="session-name">Search:</label>
+                            <input type="text" class="form-control" id="session-name">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="card info">
+                    <div class="card-body">
+                        <p class="card-text">
+                            To view specific schedule information including courses and tutors, click the
+                            <span class="button-labels">Show</span> buttons.
+                        </p>
+                        <p class="card-text">
+                            To edit schedule information, click the
+                            <span id="darkblue" class="button-labels">Edit</span> button.
+                        </p>
+                        <p class="card-text">
+                            To delete all future instances of a schedule, click the
+                            <span id="red" class="button-labels">Delete</span> button (past occurrences of the schedule
+                            will remain in the reports section).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var url = window.location.pathname;
+                if(url == '/schedule') {
+                    $('#schedule-home').addClass('active');
+                }else if(url == '/schedule/create') {
+                    $('#create').addClass('active');
+                }else{
+                    $('#schedule-home').addClass('active');
+                }
+            });
+        </script>
+    {% endblock %}

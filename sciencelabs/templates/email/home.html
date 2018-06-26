@@ -1,0 +1,78 @@
+{% extends 'sciencelabs_base.html' %}
+
+    {% block subnav %}
+            <a id="create_email" class="nav-link active" href="{{ url_for('EmailView:index') }}">Create Email</a>
+    {% endblock %}
+
+    {% block body_content %}
+        <div class="row">
+            <div class="col-md-8">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="header card">
+                                <div class="card-body btn-group">
+                                    <p style="padding: 0px; margin: 0px">Send Email</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="choose-recipients">Recipients</label>
+                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose recipients ...">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="subject">Subject</label>
+                            <input type="text" class="form-control" id="subject">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3 btn-group">
+                            <button type="button" class="button-curved btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
+                            <button style="left: 10px;" type="button" class="button-curved btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="cc-div" style="display: none;" class="form-group col-md-12">
+                            <label for="choose-recipients">CC</label>
+                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose CC recipients ...">
+                        </div>
+                        <div id="bcc-div" style="display: none;"  class="form-group col-md-12">
+                            <label for="choose-recipients">BCC</label>
+                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose BCC recipients ...">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="subject">Message</label>
+                            <textarea rows="15" cols="67">
+                            </textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="card info">
+                    <div class="card-body">
+                        <p class="card-text">
+                            This section gives you the option to email Math Lab users. These emails are only sent to
+                            users who are set to active in the system. See the <span class="button-labels">Users</span>
+                            tab for more information on the users currently in the system. When the email is sent, all
+                            users will be BCC’d, so that Bethel username information will not appear in the email.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function ccFunction() {
+                document.getElementById('cc-div').style.display = 'block';
+            }
+        </script>
+        <script>
+            function bccFunction() {
+                document.getElementById('bcc-div').style.display = 'block';
+            }
+        </script>
+    {% endblock %}

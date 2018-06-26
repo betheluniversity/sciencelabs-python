@@ -61,10 +61,22 @@ div.info{
 }
 
 .active{
+    max-height: 30px;
     background-color: #0F2C52;
     color: white !important;
-    border-radius: 8px;
+    border-radius: 6px;
+    padding: 3px 16px !important;
 }
+
+.nav-bar-active{
+    background-color: #0F2C52;
+    color: white !important;
+}
+
+.button-curved{
+    border-radius: .25rem !important;
+}
+
 
 .col-group{
     padding: 0px;
@@ -82,7 +94,7 @@ div.info{
     background-color: #0069AA;
 }
 
-#buttons{
+.csv-button.btn.btn-primary{
    border-radius: 0px;
    margin: -5px 0 0 0;
    position: absolute;
@@ -92,14 +104,14 @@ div.info{
 }
 
 #red{
-    background-color: #DA1736 !important;
+    background-color: #DA1736;
 }
 
 #darkblue{
-    background-color: #0F2C52 !important;
+    background-color: #0F2C52;
 }
 
 #gray{
     color: #333333;
-    background-color: #BDBCB0 !important;
+    background-color: #BDBCB0;
 }

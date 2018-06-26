@@ -11,7 +11,7 @@ class ReportView(FlaskView):
         self.base = ReportController()
 
     def index(self):
-        return render_template('reports/home.html')
+        return render_template('reports/base.html')
 
     def student(self):
         return render_template('reports/student.html')

@@ -3,7 +3,7 @@
     {% set user = "Jordan Jasik" %}
 
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0069AA;">
-        <a class="navbar-brand" href="{{ url_for('View:index') }}" style="color:#FFC600;">{{ title }}</a>
+        <a class="navbar-brand" href="{{ url_for('IndexView:index') }}" style="color:#FFC600;">{{ title }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -12,25 +12,25 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('SessionView:index') }}" style="color:#FFC600;">Session</a>
+                    <a id="session" class="nav-link" href="{{ url_for('SessionView:index') }}" style="color:#FFC600;">Session</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('ReportView:index') }}" style="color:#FFC600;">Reports</a>
+                    <a id="reports" class="nav-link" href="{{ url_for('ReportView:index') }}" style="color:#FFC600;">Reports</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('UsersView:index') }}" style="color:#FFC600;">Users</a>
+                    <a id="users" class="nav-link" href="{{ url_for('UsersView:index') }}" style="color:#FFC600;">Users</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color:#FFC600;">Schedule</a>
+                    <a id="schedule" class="nav-link" href="{{ url_for('ScheduleView:index') }}" style="color:#FFC600;">Schedule</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('TermStartupView:index') }}" style="color:#FFC600;">Term Startup</a>
+                    <a id="term-startup" class="nav-link" href="{{ url_for('TermStartupView:index') }}" style="color:#FFC600;">Term Startup</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color:#FFC600;">Courses</a>
+                    <a id="courses" class="nav-link" href="{{ url_for('CourseView:index') }}" style="color:#FFC600;">Courses</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color:#FFC600;">Email</a>
+                    <a id="email" class="nav-link" href="{{ url_for('EmailView:index') }}" style="color:#FFC600;">Email</a>
                 </li>
             </ul>
             <div class="form-inline nav-item dropdown">
@@ -43,5 +43,27 @@
             </div>
         </div>
     </nav>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var url = window.location.pathname;
+            var url_base = url.split('/')[1]
+            if(url_base == 'session') {
+                $('#session').addClass('nav-bar-active');
+            }else if(url_base == 'report') {
+                $('#reports').addClass('nav-bar-active');
+            }else if(url_base == 'users') {
+                $('#users').addClass('nav-bar-active');
+            }else if(url_base == 'schedule') {
+                $('#schedule').addClass('nav-bar-active');
+            }else if (url_base == 'admin') {
+                $('#term-startup').addClass('nav-bar-active');
+            }else if (url_base == 'course') {
+                $('#courses').addClass('nav-bar-active');
+            }else if (url_base == 'email') {
+                $('#email').addClass('nav-bar-active');
+            }
+        });
+    </script>
 
 {% endmacro %}

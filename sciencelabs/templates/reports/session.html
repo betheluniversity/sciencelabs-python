@@ -1,12 +1,78 @@
-{% extends 'reports/home.html' %}
+{% extends 'reports/base.html' %}
 
-    {% block header %}
-        <div class="header card margins">
-            <div class="card-body btn-group">
-                <p style="padding: 0px; margin: 0px">View session reports</p>
-                <a href="" id="buttons" class="btn btn-primary">CSV Export</a>
+{% block semester_switch %}{% endblock %}
+
+    {% block header %}{% endblock %}
+
+{% block body_content %}
+   <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+                        <div class="semester-selector">
+                            <div class="btn-group">
+                                <form class="form-inline">
+                                    <button type="button" class="button-curved btn btn-primary">Set</button>
+                                    <select class="custom-select">
+                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                            <option value="{{ semester }}">{{ semester }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">IndexView session reports</p>
+                                <a href="" class="csv-button btn btn-primary">CSV Export</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <p>
+                            <a href="">February</a>&emsp;
+                            <a href="">March</a>&emsp;
+                            <a href="">April</a>&emsp;
+                            <a href="">May</a></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        All Math Lab session reports for the term given at the top of the page are listed along with
+                        their total attendance. This reporting section gives an archive of all session reports. If you
+                        would like to edit a report for the current term, go to the closed sessions section of the
+                        session tab.
+                    </p>
+                    <p class="card-text">
+                        For further information concerning a session report, click on the
+                        <span id="darkblue" class="button-labels">IndexView</span> button next to the session date
+                        corresponding to a given session.
+                    </p>
+                    <p class="card-text">
+                        To view session report data from a different term, choose an option from the term menu in the
+                        upper right hand corner of the page and press the <span class="button-labels">Set</span> button.
+
+                    </p>
+                    <p class="card-text">
+                        <strong>Set Term Warning:</strong><br>
+                        Within each section of reports (except cumulative reports), the term can be changed. When
+                        logging in to the application, the default term will be the current term. If the term is changed
+                        in one reporting section, the newly set term will be maintained across all sections of reports
+                        until set to a new term again.
+                    </p>
+                </div>
             </div>
         </div>
-    {% endblock %}
-
-{% block body_content %}{% endblock %}
+    </div>
+{% endblock %}
