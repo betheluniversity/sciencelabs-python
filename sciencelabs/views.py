@@ -9,7 +9,7 @@ from flask_classy import FlaskView
 from sciencelabs import app
 
 
-class View(FlaskView):
+class IndexView(FlaskView):
 
     def index(self):
         return render_template('index.html', **locals())
