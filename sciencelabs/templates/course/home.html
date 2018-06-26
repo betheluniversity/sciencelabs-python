@@ -1,7 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
     {% block subnav %}
-            <a id="administration" class="nav-link active" href="{{ url_for('CourseView:index') }}">Administration</a>
+            <a id="administration" class="nav-link {{ 'active' if 'admin' in request.path else 'disabled'}}"
+               href="{{ url_for('CourseView:index') }}">Administration</a>
     {% endblock %}
 
 {% block body_content %}
