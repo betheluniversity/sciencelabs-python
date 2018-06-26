@@ -5,7 +5,7 @@
             <a id="term" class="nav-link disabled" href="{{ url_for('ReportView:semester') }}">Term</a>
             <a id="monthly" class="nav-link disabled" href="{{ url_for('ReportView:month') }}">Monthly</a>
             <a id="cumulative" class="nav-link disabled" href="{{ url_for('ReportView:annual') }}">Cumulative</a>
-            <a id="session" class="nav-link disabled" href="{{ url_for('ReportView:session') }}">Session</a>
+            <a id="session-report" class="nav-link disabled" href="{{ url_for('ReportView:session') }}">Session</a>
             <a id="course" class="nav-link disabled" href="{{ url_for('ReportView:course') }}">Course</a>
     {% endblock %}
 
@@ -82,7 +82,7 @@
                 }else if(url == '/report/annual/') {
                     $('#cumulative').addClass('active');
                 }else if (url == '/report/session/') {
-                    $('#session').addClass('active');
+                    $('#session-report').addClass('active');
                 }else if (url == '/report/course/') {
                     $('#course').addClass('active');
                 }

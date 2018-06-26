@@ -1,7 +1,7 @@
 {% extends 'sciencelabs_base.html' %}
 
     {% block subnav %}
-            <a id="schedule" class="nav-link disabled" href="{{ url_for('ScheduleView:index') }}">Schedules</a>
+            <a id="schedule-home" class="nav-link disabled" href="{{ url_for('ScheduleView:index') }}">Schedules</a>
             <a id="create" class="nav-link disabled" href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
     {% endblock %}
 
@@ -53,11 +53,11 @@
             $(document).ready(function(){
                 var url = window.location.pathname;
                 if(url == '/schedule') {
-                    $('#schedule').addClass('active');
+                    $('#schedule-home').addClass('active');
                 }else if(url == '/schedule/create') {
                     $('#create').addClass('active');
                 }else{
-                    $('#schedule').addClass('active');
+                    $('#schedule-home').addClass('active');
                 }
             });
         </script>

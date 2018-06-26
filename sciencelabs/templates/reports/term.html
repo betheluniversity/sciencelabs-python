@@ -13,7 +13,7 @@
                         <div class="semester-selector">
                             <div class="btn-group">
                                 <form class="form-inline">
-                                    <button style="border-radius: .25rem !important;" type="button" class="btn btn-primary">Set</button>
+                                    <button type="button" class="button-curved btn btn-primary">Set</button>
                                     <select class="custom-select">
                                         {% for semester in app_settings['SEMESTER_OPTIONS'] %}
                                             <option value="{{ semester }}">{{ semester }}</option>
@@ -29,7 +29,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                 <p style="padding: 0px; margin: 0px">Report for Semester YEAR</p>
-                                <a href="" id="csv_button" class="btn btn-primary">CSV Export</a>
+                                <a href="" class="csv-button btn btn-primary">CSV Export</a>
                             </div>
                         </div>
                     </div>
