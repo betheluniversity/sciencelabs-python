@@ -11,7 +11,7 @@ class SessionView(FlaskView):
         self.base = SessionController()
 
     def index(self):
-        return render_template('session/home.html')
+        return render_template('session/base.html')
 
     def closed(self):
         return render_template('session/closed_sessions.html')

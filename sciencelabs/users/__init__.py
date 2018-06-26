@@ -10,7 +10,7 @@ class UsersView(FlaskView):
         self.base = UsersController()
 
     def index(self):
-        return render_template('users/home.html')
+        return render_template('users/base.html')
 
     def add_user(self):
         return render_template('users/add_user.html')

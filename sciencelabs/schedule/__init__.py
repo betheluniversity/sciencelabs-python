@@ -11,7 +11,7 @@ class ScheduleView(FlaskView):
         self.base = ScheduleController()
 
     def index(self):
-        return render_template('schedule/home.html')
+        return render_template('schedule/base.html')
 
     @route('/create')
     def create_new_schedule(self):
