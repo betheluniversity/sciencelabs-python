@@ -1,7 +1,7 @@
 {% extends 'sciencelabs_base.html' %}
 
     {% block subnav %}
-            <a id="create_email" class="nav-link active" href="/email/create">Create Email</a>
+            <a id="create_email" class="nav-link active" href="{{ url_for('EmailView:index') }}">Create Email</a>
     {% endblock %}
 
     {% block body_content %}

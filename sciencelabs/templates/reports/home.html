@@ -1,12 +1,12 @@
 {% extends 'sciencelabs_base.html' %}
 
     {% block subnav %}
-            <a id="student" class="nav-link disabled" href="/report/student">Student</a>
-            <a id="term" class="nav-link disabled" href="/report/semester">Term</a>
-            <a id="monthly" class="nav-link disabled" href="/report/month">Monthly</a>
-            <a id="cumulative" class="nav-link disabled" href="/report/annual">Cumulative</a>
-            <a id="session" class="nav-link disabled" href="/report/session">Session</a>
-            <a id="course" class="nav-link disabled" href="/report/course">Course</a>
+            <a id="student" class="nav-link disabled" href="{{ url_for('ReportView:student') }}">Student</a>
+            <a id="term" class="nav-link disabled" href="{{ url_for('ReportView:semester') }}">Term</a>
+            <a id="monthly" class="nav-link disabled" href="{{ url_for('ReportView:month') }}">Monthly</a>
+            <a id="cumulative" class="nav-link disabled" href="{{ url_for('ReportView:annual') }}">Cumulative</a>
+            <a id="session" class="nav-link disabled" href="{{ url_for('ReportView:session') }}">Session</a>
+            <a id="course" class="nav-link disabled" href="{{ url_for('ReportView:course') }}">Course</a>
     {% endblock %}
 
     {% block semester_switch %}{% endblock %}
