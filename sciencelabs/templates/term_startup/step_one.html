@@ -92,8 +92,9 @@
         <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
         <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
         <script>
-            $(document).ready(function () {
 
+            $(document).ready(function () {
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 var picker = new Pikaday({
                     field: document.getElementById('start-date')
                 });
@@ -109,12 +110,11 @@
                         $(this).text('Deselect All Courses');
                     }
                 });
-
             });
         </script>
         <script>
             $(document).ready(function () {
-
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 var picker = new Pikaday({
                     field: document.getElementById('end-date')
                 });
@@ -130,7 +130,6 @@
                         $(this).text('Deselect All Courses');
                     }
                 });
-
             });
         </script>
     {% endblock %}
