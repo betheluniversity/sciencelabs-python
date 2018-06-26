@@ -1,89 +1,89 @@
 {% extends 'reports/base.html' %}
 
-    {% block semester_switch %}{% endblock %}
+{% block semester_switch %}{% endblock %}
 
-    {% block header %}{% endblock %}
+{% block header %}{% endblock %}
 
-    {% block body_content %}
-        <div class="row">
-            <div class="col-md-8">
-                <form>
-                    <div class="form-row">
-                        <div style="text-align: right;" class="form-group col-md-12">
-                            <div class="semester-selector">
-                                <div class="btn-group">
-                                    <form class="form-inline">
-                                        <button type="button" class="button-curved btn btn-primary">Set</button>
-                                        <select class="custom-select">
-                                            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                                                <option value="{{ semester }}">{{ semester }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </form>
-                                </div>
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+                        <div class="semester-selector">
+                            <div class="btn-group">
+                                <form class="form-inline">
+                                    <button type="button" class="button-curved btn btn-primary">Set</button>
+                                    <select class="custom-select">
+                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                            <option value="{{ semester }}">{{ semester }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <div class="header card">
-                                <div class="card-body btn-group">
-                                    <p style="padding: 0px; margin: 0px">Student Attendance</p>
-                                    <a href="" class="csv-button btn btn-primary">CSV Export</a>
-                                </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">Student Attendance</p>
+                                <a href="" class="csv-button btn btn-primary">CSV Export</a>
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="session-name">Limit:</label>
-                            <select class="custom-select">
-                                <option value="50">50</option>
-                                <option selected="selected" value="100">100</option>
-                                <option value="all">All</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-8">
-                         <label for="session-name">Search:</label>
-                        <input type="text" class="form-control" id="session-name">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="session-name">Limit:</label>
+                        <select class="custom-select">
+                            <option value="50">50</option>
+                            <option selected="selected" value="100">100</option>
+                            <option value="all">All</option>
+                        </select>
                     </div>
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="card info">
-                    <div class="card-body">
-                        <p class="card-text">
-                            All students who have attended a Math Lab session for the term given at the top of the page
-                            are listed along with their total attendance for all classes.
-                        </p>
-                        <p class="card-text">
-                            To <strong>search</strong> for a user, type any portion of the user's first or last name, or
-                            email in the search box.
-                        </p>
-                        <p class="card-text">
-                            Student data is also <strong>sortable</strong>; click on the arrow next to any column header
-                            to sort by the column field.
-                        </p>
-                        <p class="card-text">
-                            For <strong>further information</strong> concerning a student's attendance, click on the
-                            <span id="darkblue" class="button-labels">View</span> button next to their name.
-                        </p>
-                        <p class="card-text">
-                            To view student data from a different <strong>term</strong>, choose an option from the term
-                            menu in the upper right hand corner of the page and press the
-                            <span class="button-labels">Set</span> button.
-                        </p>
-                        <p class="card-text">
-                            <strong>Set Term Warning:</strong><br>
-                            Within each section of reports (except cumulative reports), the term can be changed. When
-                            logging in to the application, the default term will be the current term. If the term is
-                            changed in one reporting section, the newly set term will be maintained across all sections
-                            of reports until set to a new term again.
-                        </p>
+                    <div class="form-group col-md-8">
+                     <label for="session-name">Search:</label>
+                    <input type="text" class="form-control" id="session-name">
                     </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        All students who have attended a Math Lab session for the term given at the top of the page
+                        are listed along with their total attendance for all classes.
+                    </p>
+                    <p class="card-text">
+                        To <strong>search</strong> for a user, type any portion of the user's first or last name, or
+                        email in the search box.
+                    </p>
+                    <p class="card-text">
+                        Student data is also <strong>sortable</strong>; click on the arrow next to any column header
+                        to sort by the column field.
+                    </p>
+                    <p class="card-text">
+                        For <strong>further information</strong> concerning a student's attendance, click on the
+                        <span id="darkblue" class="button-labels">View</span> button next to their name.
+                    </p>
+                    <p class="card-text">
+                        To view student data from a different <strong>term</strong>, choose an option from the term
+                        menu in the upper right hand corner of the page and press the
+                        <span class="button-labels">Set</span> button.
+                    </p>
+                    <p class="card-text">
+                        <strong>Set Term Warning:</strong><br>
+                        Within each section of reports (except cumulative reports), the term can be changed. When
+                        logging in to the application, the default term will be the current term. If the term is
+                        changed in one reporting section, the newly set term will be maintained across all sections
+                        of reports until set to a new term again.
+                    </p>
                 </div>
             </div>
         </div>
-    {% endblock %}
+    </div>
+{% endblock %}
 
