@@ -1,0 +1,75 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+    <a id="profile" class="nav-link active" href="{{ url_for('ProfileView:index') }}">Profile</a>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">Edit your profile.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="first-name">First name</label>
+                        <input type="text" class="form-control" id="first-name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="last-name">Last name</label>
+                        <input type="text" class="form-control" id="last-name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="username">Username</label>
+                        <input readonly type="text" class="form-control" id="username">
+                    </div>
+                </div>
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="first-name">Email</label>
+                        <input readonly type="text" class="form-control" id="first-name">
+                    </div>
+                    <div class="form-group col-md-6">
+
+                        <label for="last-name">Receive an Email when a Session is Closed</label>
+                        <div class="form-group col-md-4">
+                        <div style="display:inline;">
+                                <input type="radio" class="form-control" id="left">
+                                <label style="text-align: right; float: left;" for="radio-left">Yes</label>
+                        </div>
+                        <div style="">
+                                <input type="radio" checked class="form-control" id="right">
+                                <label for="radio-right">No</label>
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        There are two pieces that you may edit on this page: your name and the option to receive an
+                        email when a session is closed. The gray boxes contain information that is pulled from Banner
+                        and cannot be edited (username and email).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}

@@ -37,7 +37,7 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false" style="color:#FFC600;">{{ user }}</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #0069AA;">
-                    <a class="dropdown-item" href="#" style="color:#FFC600;">My Profile</a>
+                    <a class="dropdown-item" href="{{ url_for('ProfileView:index') }}" style="color:#FFC600;">My Profile</a>
                     <a class="dropdown-item" href="#" style="color:#FFC600;">Logout</a>
                 </div>
             </div>
