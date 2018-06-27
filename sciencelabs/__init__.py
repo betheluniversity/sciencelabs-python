@@ -4,6 +4,8 @@ import logging
 # Packages
 from flask import Flask
 from raven.contrib.flask import Sentry
+from sqlalchemy import create_engine
+from sqlalchemy import MetaData, Table
 
 # Local
 from app_settings import app_settings
@@ -14,6 +16,13 @@ app = Flask(__name__)
 app.config.from_object('config.config')
 
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+
+db = create_engine('mysql://root:jj914.base@localhost/mathlab_real_db')
+connection = db.connect()
+
+metadata = MetaData()
+user = Table('user', metadata, autoload=True, autoload_with=db)
+print(repr(user))
 
 from sciencelabs.views import View
 from sciencelabs.session import SessionView

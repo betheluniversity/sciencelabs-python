@@ -73,7 +73,12 @@ app_settings = {
         ['Calc 3 Help Session (2/2/2018)', '02/02/2018', '02/06/2018', '6:50pm - 8:07pm', 'HC 113', 'Tutored', 'Restored'],
         ['Calc 4 Help Session (2/3/2018)', '02/03/2018', '02/07/2018', '6:45pm - 8:09pm', 'HC 11', 'Tutoring', 'Restoring']
     ],
-    'CONSTR':
-        "mysql://root@127.0.0.1:5432/mathlab_real_db",
-    'DB_KEY': 'banweb:3m70t9da'
+    'DATABASE': {
+        'drivername': 'mysql',
+        'host': 'localhost',
+        'port': '5432',
+        'username': 'root',
+        'password': '',
+        'database': 'mathlab_real_db'
+    }
 }
