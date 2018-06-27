@@ -52,6 +52,10 @@ div.info{
     border-color: #d8d8d8;
 }
 
+a.nav-link.button{
+    color: #FFC600 !important;
+}
+
 .margins{
     margin: 20px 10%!important;
 }
@@ -66,7 +70,6 @@ div.info{
 
 .nav-bar-active{
     background-color: #0F2C52;
-    color: #FFC600;
 }
 
 .button-curved{

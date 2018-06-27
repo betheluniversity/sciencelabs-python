@@ -12,32 +12,32 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a id="session" class="nav-link {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('SessionView:index') }}" style="color:#FFC600;">Session</a>
+                    <a id="session" class="nav-link button {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('SessionView:index') }}">Session</a>
                 </li>
                 <li class="nav-item">
-                    <a id="reports" class="nav-link  {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('ReportView:index') }}" style="color:#FFC600;">Reports</a>
+                    <a id="reports" class="nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('ReportView:index') }}">Reports</a>
                 </li>
                 <li class="nav-item">
-                    <a id="users" class="nav-link  {{ 'nav-bar-active' if 'UsersView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('UsersView:index') }}" style="color:#FFC600;">Users</a>
+                    <a id="users" class="nav-link button {{ 'nav-bar-active' if 'UsersView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('UsersView:index') }}">Users</a>
                 </li>
                 <li class="nav-item">
-                    <a id="schedule" class="nav-link  {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('ScheduleView:index') }}" style="color:#FFC600;">Schedule</a>
+                    <a id="schedule" class="nav-link button {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('ScheduleView:index') }}">Schedule</a>
                 </li>
                 <li class="nav-item">
-                    <a id="term-startup" class="nav-link  {{ 'nav-bar-active' if 'TermStartupView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('TermStartupView:index') }}" style="color:#FFC600;">Term Startup</a>
+                    <a id="term-startup" class="nav-link button {{ 'nav-bar-active' if 'TermStartupView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('TermStartupView:index') }}">Term Startup</a>
                 </li>
                 <li class="nav-item">
-                    <a id="courses" class="nav-link  {{ 'nav-bar-active' if 'CourseView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('CourseView:index') }}" style="color:#FFC600;">Courses</a>
+                    <a id="courses" class="nav-link button {{ 'nav-bar-active' if 'CourseView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('CourseView:index') }}">Courses</a>
                 </li>
                 <li class="nav-item">
-                    <a id="email" class="nav-link  {{ 'nav-bar-active' if 'EmailView' in request.url_rule.endpoint else 'disabled' }}"
-                       href="{{ url_for('EmailView:index') }}" style="color:#FFC600;">Email</a>
+                    <a id="email" class="nav-link button {{ 'nav-bar-active' if 'EmailView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('EmailView:index') }}">Email</a>
                 </li>
             </ul>
             <div class="form-inline nav-item dropdown">
