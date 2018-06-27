@@ -1,0 +1,24 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+        <a id="home" class="nav-item nav-link {{ 'active' if '/session/' == request.path else 'disabled'}}"
+           href="{{ url_for('SessionView:index') }}">Available Sessions</a>
+        <a id="closed" class="nav-item nav-link {{ 'active' if 'closed' in request.path else 'disabled'}}"
+           href="{{ url_for('SessionView:closed') }}">Closed Sessions</a>
+        <a id="create" class="nav-item nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+           href="{{ url_for('SessionView:create') }}">Create a Session</a>
+        <a id="restore" class="nav-item nav-link {{ 'active' if 'restore' in request.path else 'disabled'}}"
+           href="{{ url_for('SessionView:restore') }}">Restore a Deleted Session</a>
+{% endblock %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <h3 class="text-center">There are no sessions scheduled.</h3>
+{% endblock %}
