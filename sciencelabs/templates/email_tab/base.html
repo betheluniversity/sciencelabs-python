@@ -1,7 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
     {% block subnav %}
-            <a id="create_email" class="nav-link active" href="{{ url_for('EmailView:index') }}">Create Email</a>
+            <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+               href="{{ url_for('EmailView:index') }}">Create Email</a>
     {% endblock %}
 
     {% block body_content %}
@@ -45,8 +46,14 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label for="message">Message</label>
-                            <textarea class="form-control" id="comments"></textarea>
+                            <label for="subject">Message</label>
+                            <textarea rows="15" cols="67">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="send-email">Send</button>
                         </div>
                     </div>
                 </form>
@@ -55,10 +62,11 @@
                 <div class="card info">
                     <div class="card-body">
                         <p class="card-text">
-                            This section gives you the option to email Math Lab users. These emails are only sent to
-                            users who are set to active in the system. See the <span class="button-labels">Users</span>
-                            tab for more information on the users currently in the system. When the email is sent, all
-                            users will be BCC’d, so that Bethel username information will not appear in the email.
+                            This section gives you the option to email {{ app_settings['LAB_TITLE'] }} users. These
+                            emails are only sent to users who are set to active in the system. See the
+                            <span class="button-labels">Users</span> tab for more information on the users currently in
+                            the system. When the email is sent, all users will be BCC’d, so that Bethel username
+                            information will not appear in the email.
                         </p>
                     </div>
                 </div>
