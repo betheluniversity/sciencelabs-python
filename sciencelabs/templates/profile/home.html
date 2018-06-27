@@ -41,6 +41,7 @@
                     <div class="form-group col-md-6">
 
                         <label for="last-name">Receive an Email when a Session is Closed</label>
+                        {# TODO FIX BUTTON SPACING/PLACEMENT #}
                         <div class="form-group col-md-4">
                         <div>
                                 <input type="radio" class="form-control-static" id="left">
@@ -52,7 +53,8 @@
                         </div>
                         </div>
                         <script>
-
+                            {# TODO FIX JS SO THAT SO WHEN ONE BUTTON IS CLICKED THE OTHER WILL TURN ON AND WHEN THAT #}
+                            {# SAME BUTTON IS CLICKED IT WILL TURN OFF #}
                             $(document).ready(function(){
                                 $('input[type="radio"]').click(function(){
                                     $('input[type="radio"]').each(function(){
