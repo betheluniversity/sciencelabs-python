@@ -21,37 +21,54 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="first-name">First name</label>
-                        <input type="text" class="form-control" id="first-name">
+                        <input value="Jordan" type="text" class="form-control" id="first-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="last-name">Last name</label>
-                        <input type="text" class="form-control" id="last-name">
+                        <input value="Jasik" type="text" class="form-control" id="last-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="username">Username</label>
-                        <input readonly type="text" class="form-control" id="username">
+                        <input value="joj28267" readonly type="text" class="form-control" id="username">
                     </div>
                 </div>
                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="first-name">Email</label>
-                        <input readonly type="text" class="form-control" id="first-name">
+                        <input value="joj28267" readonly type="text" class="form-control" id="first-name">
                     </div>
                     <div class="form-group col-md-6">
 
                         <label for="last-name">Receive an Email when a Session is Closed</label>
                         <div class="form-group col-md-4">
-                        <div style="display:inline;">
-                                <input type="radio" class="form-control" id="left">
-                                <label style="text-align: right; float: left;" for="radio-left">Yes</label>
+                        <div>
+                                <input type="radio" class="form-control-static" id="left">
+                                <label style="text-align: right; float: right;" for="radio-left">Yes</label>
                         </div>
-                        <div style="">
-                                <input type="radio" checked class="form-control" id="right">
-                                <label for="radio-right">No</label>
+                        <div>
+                                <input type="radio" class="checked form-control-static" checked id="right">
+                                <label style="text-align: right; float: right;" for="radio-right">No</label>
                         </div>
                         </div>
+                        <script>
 
+                            $(document).ready(function(){
+                                $('input[type="radio"]').click(function(){
+                                    $('input[type="radio"]').each(function(){
+                                        $(this).toggleClass('checked');
+                                        $(this).hasClass('checked') ? $(this).prop('checked', true) : $(this).prop('checked', false);
+                                    });
+                                });
+                            });
+                        </script>
+
+                    </div>
+                </div>
+
+                <div style="text-align: right;" class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary" id="save-session">Save</button>
                     </div>
                 </div>
 
