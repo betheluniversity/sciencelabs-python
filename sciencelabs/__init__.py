@@ -23,6 +23,7 @@ from sciencelabs.users import UsersView
 from sciencelabs.email_tab import EmailView
 from sciencelabs.course import CourseView
 from sciencelabs.schedule import ScheduleView
+from sciencelabs.profile import ProfileView
 View.register(app)
 SessionView.register(app)
 ReportView.register(app)
@@ -31,6 +32,7 @@ UsersView.register(app)
 EmailView.register(app)
 CourseView.register(app)
 ScheduleView.register(app)
+ProfileView.register(app)
 
 app.jinja_env.globals.update(app_settings=app_settings)
 

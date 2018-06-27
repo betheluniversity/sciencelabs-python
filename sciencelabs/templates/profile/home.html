@@ -1,0 +1,94 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+    <a id="profile" class="nav-link active" href="{{ url_for('ProfileView:index') }}">Profile</a>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">Edit your profile.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="first-name">First name</label>
+                        <input value="Jordan" type="text" class="form-control" id="first-name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="last-name">Last name</label>
+                        <input value="Jasik" type="text" class="form-control" id="last-name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="username">Username</label>
+                        <input value="joj28267" readonly type="text" class="form-control" id="username">
+                    </div>
+                </div>
+                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="first-name">Email</label>
+                        <input value="joj28267" readonly type="text" class="form-control" id="first-name">
+                    </div>
+                    <div class="form-group col-md-6">
+
+                        <label for="last-name">Receive an Email when a Session is Closed</label>
+                        {# TODO FIX BUTTON SPACING/PLACEMENT #}
+                        <div class="form-group col-md-4">
+                        <div>
+                                <input type="radio" class="form-control-static" id="left">
+                                <label style="text-align: right; float: right;" for="radio-left">Yes</label>
+                        </div>
+                        <div>
+                                <input type="radio" class="checked form-control-static" checked id="right">
+                                <label style="text-align: right; float: right;" for="radio-right">No</label>
+                        </div>
+                        </div>
+                        <script>
+                            {# TODO FIX JS SO THAT SO WHEN ONE BUTTON IS CLICKED THE OTHER WILL TURN ON AND WHEN THAT #}
+                            {# SAME BUTTON IS CLICKED IT WILL TURN OFF #}
+                            $(document).ready(function(){
+                                $('input[type="radio"]').click(function(){
+                                    $('input[type="radio"]').each(function(){
+                                        $(this).toggleClass('checked');
+                                        $(this).hasClass('checked') ? $(this).prop('checked', true) : $(this).prop('checked', false);
+                                    });
+                                });
+                            });
+                        </script>
+
+                    </div>
+                </div>
+
+                <div style="text-align: right;" class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary" id="save-session">Save</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        There are two pieces that you may edit on this page: your name and the option to receive an
+                        email when a session is closed. The gray boxes contain information that is pulled from Banner
+                        and cannot be edited (username and email).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}

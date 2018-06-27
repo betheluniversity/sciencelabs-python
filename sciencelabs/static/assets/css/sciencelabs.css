@@ -47,10 +47,6 @@ button.btn-primary{
     background-color: #0069AA;
 }
 
-/*a.btn-primary{*/
-    /*background-color: #0069AA;*/
-/*}*/
-
 div.info{
     background-color: #f2f2f2;
     border-color: #d8d8d8;
@@ -70,7 +66,6 @@ div.info{
 
 .nav-bar-active{
     background-color: #0F2C52;
-    color: white !important;
 }
 
 .button-curved{
