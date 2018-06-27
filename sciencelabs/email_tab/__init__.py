@@ -13,5 +13,5 @@ class EmailView(FlaskView):
         self.base = EmailController()
 
     def index(self):
-        return render_template('email_tab/home.html')
+        return render_template('email_tab/base.html')
 
