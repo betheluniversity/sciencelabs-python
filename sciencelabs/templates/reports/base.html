@@ -1,94 +1,77 @@
 {% extends 'sciencelabs_base.html' %}
 
-    {% block subnav %}
-            <a id="student" class="nav-link disabled" href="{{ url_for('ReportView:student') }}">Student</a>
-            <a id="term" class="nav-link disabled" href="{{ url_for('ReportView:semester') }}">Term</a>
-            <a id="monthly" class="nav-link disabled" href="{{ url_for('ReportView:month') }}">Monthly</a>
-            <a id="cumulative" class="nav-link disabled" href="{{ url_for('ReportView:annual') }}">Cumulative</a>
-            <a id="session-report" class="nav-link disabled" href="{{ url_for('ReportView:session') }}">Session</a>
-            <a id="course" class="nav-link disabled" href="{{ url_for('ReportView:course') }}">Course</a>
-    {% endblock %}
+{% block subnav %}
+        <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:student') }}">Student</a>
+        <a id="term" class="nav-link {{ 'active' if 'semester' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:semester') }}">Term</a>
+        <a id="monthly" class="nav-link {{ 'active' if 'month' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:month') }}">Monthly</a>
+        <a id="cumulative" class="nav-link {{ 'active' if 'annual' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:annual') }}">Cumulative</a>
+        <a id="session-report" class="nav-link {{ 'active' if 'session' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:session') }}">Session</a>
+        <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:course') }}">Course</a>
+{% endblock %}
 
-    {% block semester_switch %}{% endblock %}
+{% block semester_switch %}{% endblock %}
 
-    {% block header %}
-        <div class="header card margins">
-            <div class="card-body">
-                <p class="col-sm-12" style="padding: 0px; margin: 0px">
-                    Click on an icon or one of the tabs across the top to view specialized
-                    {{ app_settings['LAB_TITLE'] }} reports
-                </p>
-            </div>
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="col-sm-12" style="padding: 0px; margin: 0px">Click on an icon or one of the tabs across the top to view specialized
+                {{ app_settings['LAB_TITLE'] }} reports</p>
         </div>
-    {% endblock %}
+    </div>
+{% endblock %}
 
 
-    {% block body_content %}
+{% block body_content %}
 
-        <div class="header card-body" style="background-color: white; padding: 0px">
+    <div class="header card-body" style="background-color: white; padding: 0px">
+        <div class="row row-group">
+        <a class="col-sm-4 col-group" href="student">
+        <img src="{{ url_for('static', filename='img/student.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Student Icon">
+            <div>
+                <label>Student</label>
+            </div>
+        </a>
+        <a class="col-sm-4 col-group" href="course">
+        <img src="{{ url_for('static', filename='img/course.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Teacher Icon">
+            <div>
+                <label>Course</label>
+            </div>
+
+        </a>
+        <a class="col-sm-4 col-group" href="session">
+        <img src="{{ url_for('static', filename='img/session.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Classroom Icon">
+            <div>
+                <label>Session</label>
+            </div>
+        </a>
+        </div>
             <div class="row row-group">
-            <a class="col-sm-4 col-group" href="student">
-            <img src="{{ url_for('static', filename='img/student.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Student Icon">
-                <div>
-                    <label>Student</label>
-                </div>
-            </a>
-            <a class="col-sm-4 col-group" href="course">
-            <img src="{{ url_for('static', filename='img/course.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Teacher Icon">
-                <div>
-                    <label>Course</label>
-                </div>
-
-            </a>
-            <a class="col-sm-4 col-group" href="session">
-            <img src="{{ url_for('static', filename='img/session.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Classroom Icon">
-                <div>
-                    <label>Session</label>
-                </div>
-            </a>
+        <a class="col-sm-4 col-group" href="semester">
+        <img src="{{ url_for('static', filename='img/semester.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Report Card Icon">
+            <div>
+                <label>Term</label>
             </div>
-                <div class="row row-group">
-            <a class="col-sm-4 col-group" href="semester">
-            <img src="{{ url_for('static', filename='img/semester.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Report Card Icon">
-                <div>
-                    <label>Term</label>
-                </div>
-            </a>
-            <a class="col-sm-4 col-group" href="month">
-            <img src="{{ url_for('static', filename='img/month.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Calendar Icon">
-                <div>
-                    <label>Monthly</label>
-                </div>
-            </a>
-            <a class="col-sm-4 col-group" href="annual">
-            <img src="{{ url_for('static', filename='img/cumulative.svg') }}"  style="max-height: 60px; max-width: 60px;" alt="Drawer Icon">
-                <div>
-                    <label>Cumulative</label>
-                </div>
-            </a>
-                </div>
+        </a>
+        <a class="col-sm-4 col-group" href="month">
+        <img src="{{ url_for('static', filename='img/month.svg') }}" style="max-height: 60px; max-width: 60px;" alt="Calendar Icon">
+            <div>
+                <label>Monthly</label>
+            </div>
+        </a>
+        <a class="col-sm-4 col-group" href="annual">
+        <img src="{{ url_for('static', filename='img/cumulative.svg') }}"  style="max-height: 60px; max-width: 60px;" alt="Drawer Icon">
+            <div>
+                <label>Cumulative</label>
+            </div>
+        </a>
+            </div>
 
-        </div>
+    </div>
 
-    {% endblock %}
-
-    {% block scripts %}
-        <script type="text/javascript">
-            $(document).ready(function(){
-                var url = window.location.pathname;
-                if(url == '/report/student/') {
-                    $('#student').addClass('active');
-                }else if(url == '/report/semester/') {
-                    $('#term').addClass('active');
-                }else if(url == '/report/month/') {
-                    $('#monthly').addClass('active');
-                }else if(url == '/report/annual/') {
-                    $('#cumulative').addClass('active');
-                }else if (url == '/report/session/') {
-                    $('#session-report').addClass('active');
-                }else if (url == '/report/course/') {
-                    $('#course').addClass('active');
-                }
-            });
-        </script>
-    {% endblock %}
+{% endblock %}

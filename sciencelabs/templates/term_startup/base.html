@@ -1,32 +1,17 @@
 {% extends 'sciencelabs_base.html' %}
 
-    {% block subnav %}
-            <a id="1" class="test nav-link disabled" href="{{ url_for('TermStartupView:index') }}">Step 1: Set Term</a>
-            <a id="2" class="test nav-link disabled" href="{{ url_for('TermStartupView:step_two') }}">Step 2: Review Courses</a>
-            <a id="3" class="test nav-link disabled" href="{{ url_for('TermStartupView:step_three') }}">Step 3: Edit Users</a>
-            <a id="4" class="test nav-link disabled" href="{{ url_for('TermStartupView:step_four') }}">Step 4: Review Schedules</a>
+{% block subnav %}
+        <a id="1" class="test nav-link {{ 'active' if 'transition/1' in request.path else 'disabled'}}"
+           href="{{ url_for('TermStartupView:index') }}">Step 1: Set Term</a>
+        <a id="2" class="test nav-link {{ 'active' if 'transition/2' in request.path else 'disabled'}}"
+           href="{{ url_for('TermStartupView:step_two') }}">Step 2: Review Courses</a>
+        <a id="3" class="test nav-link {{ 'active' if 'transition/3' in request.path else 'disabled'}}"
+           href="{{ url_for('TermStartupView:step_three') }}">Step 3: Edit Users</a>
+        <a id="4" class="test nav-link {{ 'active' if 'transition/4' in request.path else 'disabled'}}"
+           href="{{ url_for('TermStartupView:step_four') }}">Step 4: Review Schedules</a>
 
-            <script type="text/javascript" src="{{ url_for('static', filename='test.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='test.js') }}"></script>
 
-    {% endblock %}
+{% endblock %}
 
-    {% block semester_switch %}{% endblock %}
-
-    {% block scripts %}
-        <script type="text/javascript">
-            $(document).ready(function(){
-                var url = window.location.pathname;
-                if(url == '/admin/transition/1') {
-                    $('#1').addClass('active');
-                }else if(url == '/admin/transition/2') {
-                    $('#2').addClass('active');
-                }else if(url == '/admin/transition/3') {
-                    $('#3').addClass('active');
-                }else if(url == '/admin/transition/4') {
-                    $('#4').addClass('active');
-                }else{
-                    $('#1').addClass('active');
-                }
-            });
-        </script>
-    {% endblock %}
+{% block semester_switch %}{% endblock %}

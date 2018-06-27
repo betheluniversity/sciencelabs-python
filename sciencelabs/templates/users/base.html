@@ -1,12 +1,14 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        <a id="home" class="nav-item nav-link disabled" href="{{ url_for('UsersView:index') }}">Users</a>
-        <a id="add" class="nav-item nav-link disabled" href="{{ url_for('UsersView:add_user') }}">Add</a>
+        <a id="home" class="nav-item nav-link {{ 'active' if '/users/' == request.path else 'disabled'}}"
+           href="{{ url_for('UsersView:index') }}">Users</a>
+        <a id="add" class="nav-item nav-link {{ 'active' if 'add_user' in request.path else 'disabled'}}"
+           href="{{ url_for('UsersView:add_user') }}">Add</a>
 {% endblock %}
 
 {% block header %}
-    <div class="header card margins">
+    <div class="header card">
         <div class="card-body">
             <p class="card-text">{{ app_settings['LAB_TITLE'] }} Users</p>
         </div>
@@ -55,19 +57,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    <script type="text/javascript">
-        $(document).ready(function(){
-
-            var url = window.location.pathname;
-            if(url == '/users/'){
-                $('#home').addClass('active');
-            }else{
-                $('#add').addClass('active');
-            }
-
-        });
-    </script>
 {% endblock %}
