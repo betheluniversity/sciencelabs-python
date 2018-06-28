@@ -1,5 +1,5 @@
-SQLAlchemy==1.1.15
-Flask-SQLAlchemy==2.1
+SQLAlchemy
+Flask-SQLAlchemy
 SQLAlchemy-migrate
 Flask
 raven
