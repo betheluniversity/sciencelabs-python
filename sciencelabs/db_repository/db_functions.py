@@ -1,4 +1,4 @@
-from sciencelabs.db.db_connection_bw import conn_bw
+from sciencelabs.db_repository.db_connection_bw import conn_bw
 
 
 def get_results(result, label="", type=None):

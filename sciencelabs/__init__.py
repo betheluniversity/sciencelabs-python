@@ -5,8 +5,6 @@ import logging
 from flask import Flask
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
-from sqlalchemy import MetaData, Table
-from sqlalchemy import *
 
 # Local
 from app_settings import app_settings
@@ -18,52 +16,8 @@ app.config.from_object('config.config')
 
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
-db = create_engine('mysql://root:jj914.base@localhost/mathlab_real_db')
+db = create_engine(app_settings['DATABASE_KEY'])
 conn = db.connect()
-
-metadata = MetaData()
-user = Table('user', metadata, autoload=True, autoload_with=db)
-print(repr(user))
-
-print('<--------------------------------------------------------------------------------->')
-
-role = Table('Role', metadata, autoload=True, autoload_with=db)
-print(repr(role))
-
-print('<--------------------------------------------------------------------------------->')
-
-s = select([user])
-result = conn.execute(s)
-for row in result:
-    print(row)
-
-print('<--------------------------------------------------------------------------------->')
-
-s = select([user.c.username])
-result = conn.execute(s)
-for row in result:
-    print(row)
-
-print('<--------------------------------------------------------------------------------->')
-
-s = select([role])
-result = conn.execute(s)
-for row in result:
-    print(row)
-
-print('<--------------------------------------------------------------------------------->')
-
-result = conn.execute(select([user, user.c.password]))
-for row in result:
-    print(row)
-
-print('<--------------------------------------------------------------------------------->')
-
-result = conn.execute(select([user, user.c.username]).where(user.c.username == 'bam95899'))  # or user.c.usernmae
-for row in result:
-    print(row)
-
-result.close()
 
 from sciencelabs.views import View
 from sciencelabs.session import SessionView
