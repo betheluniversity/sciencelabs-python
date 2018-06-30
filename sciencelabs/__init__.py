@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 app.config.from_object('config.config')
 
-sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+#sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
 db = create_engine(app_settings['DATABASE_KEY'])
 conn = db.connect()

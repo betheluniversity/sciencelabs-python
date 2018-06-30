@@ -38,7 +38,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for session in app_settings['SESSIONS'] %}
+{#            {% for session in app_settings['SESSIONS'] %}#}
+{#                <tr>#}
+{#                {% for info in session %}#}
+{#                    <td>{{ info }}</td>#}
+{#                {% endfor %}#}
+{#                </tr>#}
+{#            {% endfor %}#}
+            {% for session in sessions %}
                 <tr>
                 {% for info in session %}
                     <td>{{ info }}</td>
