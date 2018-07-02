@@ -14,7 +14,8 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        return render_template('reports/student.html')
+        student_info = self.base.get_student_info()
+        return render_template('reports/student.html', **locals())
 
     def semester(self):
         return render_template('reports/term.html')
