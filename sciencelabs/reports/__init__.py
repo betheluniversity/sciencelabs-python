@@ -24,7 +24,8 @@ class ReportView(FlaskView):
         return render_template('reports/monthly.html')
 
     def annual(self):
-        return render_template('reports/cumulative.html')
+        cumulative_info = self.base.get_cumulative_info()
+        return render_template('reports/cumulative.html', **locals())
 
     def session(self):
         return render_template('reports/session.html')

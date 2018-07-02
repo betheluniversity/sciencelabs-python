@@ -35,3 +35,7 @@ class ReportController:
                 row[1]
             ])
         return courses
+
+    # TODO FINISH METHOD
+    def get_cumulative_info(self):
+        return []
