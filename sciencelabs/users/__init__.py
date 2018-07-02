@@ -5,12 +5,14 @@ from flask_classy import FlaskView
 # Local
 from sciencelabs.users.users_controller import UsersController
 
+
 class UsersView(FlaskView):
     def __init__(self):
         self.base = UsersController()
 
     def index(self):
-        return render_template('users/base.html')
+        users_info = self.base.get_users_info()
+        return render_template('users/base.html', **locals())
 
     def add_user(self):
         return render_template('users/add_user.html')
