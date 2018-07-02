@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sciencelabs import conn
 from sciencelabs.db_repository import session
 
+
 class SessionController:
     def __init__(self):
         super(SessionController, self).__init__
