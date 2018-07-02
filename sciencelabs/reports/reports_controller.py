@@ -11,6 +11,7 @@ class ReportController:
         super(ReportController, self).__init__
 
     def get_student_info(self):
+        # TODO STILL NEED ATTENDANCE AND REPORT
         student_list = conn.execute(select([user]))
         students = []
         for row in student_list:

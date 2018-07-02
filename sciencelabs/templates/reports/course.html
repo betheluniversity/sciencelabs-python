@@ -36,6 +36,31 @@
                     <input type="text" class="form-control" id="search">
                     </div>
                 </div>
+                {# TODO FILL TABLE #}
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Code</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Sec</th>
+                            <th scope="col">Prof</th>
+                            <th scope="col">Tot</th>
+                            <th scope="col">Unq</th>
+                            <th scope="col">Pct</th>
+                            <th scope="col">Report</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in student_info %}
+                            <tr>
+                            {% for info in student %}
+                                <td>{{ info }}</td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
             </form>
         </div>
         <div class="col-md-4">
