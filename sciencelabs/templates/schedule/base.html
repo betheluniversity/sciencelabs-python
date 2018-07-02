@@ -27,6 +27,30 @@
                         <input type="text" class="form-control" id="session-name">
                     </div>
                 </div>
+                {# TODO FILL TABLE #}
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">DOW</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Room</th>
+                            <th scope="col">Courses</th>
+                            <th scope="col">Tutors</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in schedule_info %}
+                            <tr>
+                            {% for info in schedule %}
+                                <td>{{ info }}</td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
             </form>
         </div>
         <div class="col-md-4">
