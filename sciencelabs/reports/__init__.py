@@ -14,19 +14,23 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        return render_template('reports/student.html')
+        student_info = self.base.get_student_info()
+        return render_template('reports/student.html', **locals())
 
     def semester(self):
-        return render_template('reports/term.html')
+        term_info = self.base.get_term_info()
+        return render_template('reports/term.html', **locals())
 
     def month(self):
         return render_template('reports/monthly.html')
 
     def annual(self):
-        return render_template('reports/cumulative.html')
+        cumulative_info = self.base.get_cumulative_info()
+        return render_template('reports/cumulative.html', **locals())
 
     def session(self):
         return render_template('reports/session.html')
 
     def course(self):
-        return render_template('reports/course.html')
+        course_info = self.base.get_course_info()
+        return render_template('reports/course.html', **locals())

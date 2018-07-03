@@ -72,5 +72,6 @@ app_settings = {
         ['Calc 2 Help Session (2/1/2018)', '02/01/2018', '02/05/2018', '6:55pm - 8:06pm', 'HC 114', 'Tutors', 'Restore'],
         ['Calc 3 Help Session (2/2/2018)', '02/02/2018', '02/06/2018', '6:50pm - 8:07pm', 'HC 113', 'Tutored', 'Restored'],
         ['Calc 4 Help Session (2/3/2018)', '02/03/2018', '02/07/2018', '6:45pm - 8:09pm', 'HC 11', 'Tutoring', 'Restoring']
-    ]
+    ],
+    'DATABASE_KEY': 'mysql://root:jj914.base@localhost/mathlab_real_db'
 }

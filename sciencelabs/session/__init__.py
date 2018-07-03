@@ -14,7 +14,8 @@ class SessionView(FlaskView):
         return render_template('session/base.html')
 
     def closed(self):
-        return render_template('session/closed_sessions.html')
+        sessions = self.base.get_closed_sessions()
+        return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         return render_template('session/create_session.html')

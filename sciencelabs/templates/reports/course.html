@@ -36,6 +36,31 @@
                     <input type="text" class="form-control" id="search">
                     </div>
                 </div>
+                {# TODO FILL TABLE #}
+                <table id="example" class="display nowrap" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Sec</th>
+                            <th>Prof</th>
+                            <th>Tot</th>
+                            <th>Unq</th>
+                            <th>Pct</th>
+                            <th>Report</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in course_info %}
+                            <tr>
+                            {% for info in course %}
+                                <td>{{ info }}</td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
             </form>
         </div>
         <div class="col-md-4">
@@ -77,4 +102,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready( function () {
+            var table = $('#example').DataTable( {
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                ],
+                "bPaginate": false,
+                "bLengthChange": false,
+            });
+        });
+    </script>
+
 {% endblock %}

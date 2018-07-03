@@ -20,4 +20,38 @@
 
 {% block semester_switch %}{% endblock %}
 
-{% block body_content %}{% endblock %}
+{% block body_content %}
+            {# TODO FILL TABLE #}
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Year</th>
+                        <th scope="col">Aug</th>
+                        <th scope="col">Sep</th>
+                        <th scope="col">Oct</th>
+                        <th scope="col">Nov</th>
+                        <th scope="col">Dec</th>
+                        <th scope="col">Fall</th>
+                        <th scope="col">Jan</th>
+                        <th scope="col">Feb</th>
+                        <th scope="col">Mar</th>
+                        <th scope="col">Apr</th>
+                        <th scope="col">May</th>
+                        <th scope="col">Spring</th>
+                        <th scope="col">Jun</th>
+                        <th scope="col">Jul</th>
+                        <th scope="col">Summer</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cumulative in cumulative_info %}
+                        <tr>
+                        {% for info in cumulative %}
+                            <td>{{ info }}</td>
+                        {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+{% endblock %}

@@ -48,8 +48,31 @@
                     <input type="text" class="form-control" id="session-name">
                     </div>
                 </div>
+                {# TODO FILL TABLE #}
+                <table id="example" class="display nowrap" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Last</th>
+                        <th>First</th>
+                        <th>Email</th>
+                        <th>Attendance</th>
+                        <th>Report</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in student_info %}
+                        <tr>
+                            {% for info in student %}
+                                <td>{{ info }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </form>
         </div>
+
+
         <div class="col-md-4">
             <div class="card info">
                 <div class="card-body">
@@ -85,4 +108,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready( function () {
+            var table = $('#example').DataTable( {
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                ],
+                "oLanguage": {
+                    "sLengthMenu": "Limit: _MENU_",
+                },
+                "aLengthMenu": [[50, 100, -1], [50, 100, "All"]],
+                "iDisplayLength": 100,
+            });
+        });
+    </script>
+
 {% endblock %}
