@@ -48,7 +48,18 @@
             {% for session in sessions %}
                 <tr>
                 {% for info in session %}
-                    <td>{{ info }}</td>
+                    {% if info == 'tutors' %}
+                        <td>
+                            <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                        </td>
+                    {% elif info == 'edit/delete' %}
+                        <td>
+                            <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
+                            <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
+                        </td>
+                    {% else %}
+                        <td>{{ info }}</td>
+                    {% endif %}
                 {% endfor %}
                 </tr>
             {% endfor %}
