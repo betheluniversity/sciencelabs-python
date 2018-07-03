@@ -38,7 +38,7 @@ class ReportController:
                 'Tot',
                 'Unq',
                 'Pct',
-                'Report'
+                'report'
             ])
         return courses
 

@@ -53,9 +53,15 @@
                     <tbody>
                         {% for course in course_info %}
                             <tr>
-                            {% for info in course %}
-                                <td>{{ info }}</td>
-                            {% endfor %}
+                                {% for info in course %}
+                                    {% if info == 'report' %}
+                                        <td>
+                                            <button id="darkblue" class="btn btn-primary">View</button>
+                                        </td>
+                                    {% else %}
+                                        <td>{{ info }}</td>
+                                    {% endif %}
+                                {% endfor %}
                             </tr>
                         {% endfor %}
                     </tbody>

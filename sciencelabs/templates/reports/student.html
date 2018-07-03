@@ -63,7 +63,13 @@
                     {% for student in student_info %}
                         <tr>
                             {% for info in student %}
-                                <td>{{ info }}</td>
+                                {% if info == 'report' %}
+                                    <td>
+                                        <button id="darkblue" class="btn btn-primary">View</button>
+                                    </td>
+                                {% else %}
+                                    <td>{{ info }}</td>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
