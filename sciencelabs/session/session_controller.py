@@ -18,6 +18,9 @@ class SessionController:
                 row[15],
                 row[3],
                 str(row[6]) + ' - ' + str(row[7]),
-                row[8]
+                row[8],
+                '',
+                ''
+                # TODO FILL '' PLACEHOLDERS WITH DATA
             ])
         return sessions
