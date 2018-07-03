@@ -34,7 +34,11 @@ class ReportController:
                 row[8] + row[5],
                 row[12],
                 row[6],
-                row[1]
+                'Prof',
+                'Tot',
+                'Unq',
+                'Pct',
+                'Report'
             ])
         return courses
 
