@@ -54,8 +54,10 @@
                         </td>
                     {% elif info == 'edit/delete' %}
                         <td>
-                            <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
-                            <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
+                            <div class="btn-group">
+                                <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
+                                <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
+                            </div>
                         </td>
                     {% else %}
                         <td>{{ info }}</td>
