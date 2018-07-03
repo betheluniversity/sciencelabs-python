@@ -20,6 +20,8 @@ class ReportController:
                 row[4],
                 row[3],
                 row[5],
+                'attendance',
+                'report'
             ])
         return students
 
