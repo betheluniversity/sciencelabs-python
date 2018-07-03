@@ -22,7 +22,9 @@ class ReportView(FlaskView):
         return render_template('reports/term.html', **locals())
 
     def month(self):
-        return render_template('reports/monthly.html')
+        monthly_closed_info = self.base.get_closed_monthly_info()
+        monthly_info = self.base.get_monthly_info()
+        return render_template('reports/monthly.html', **locals())
 
     def annual(self):
         cumulative_info = self.base.get_cumulative_info()
