@@ -19,5 +19,7 @@ class CourseController():
                 row[12],
                 row[6],
                 row[8] + row[5],
+                'Professor',
+                'Enr'
             ])
         return courses
