@@ -37,7 +37,8 @@ user_course = Table('user_course', metadata, autoload=True, autoload_with=db)
 user_role = Table('user_role', metadata, autoload=True, autoload_with=db)
 
 Base = declarative_base()
-
+Session = sessionmaker(bind=db)
+session = Session()
 
 class Course(Base):
     __tablename__ = 'Course'
@@ -58,10 +59,12 @@ class Course(Base):
     num_attendees = Column(Integer)
     room = Column(String)
 
-Session = sessionmaker(bind=db)
-session = Session()
-q = session.query(Course.professor_id).all()
-print(q)
+    def get_course_info(self):
+        # Session = sessionmaker(bind=db)
+        # session = Session()
+        # # q = (session.query(Course.dept, Course.course_num, Course.title, Course.section, Course.professor_id).all())
+        # return session.query(Course.dept)
+        return (session.query(Course.dept, Course.course_num, Course.title, Course.section, User.firstName, User.lastName).filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
 
 
 class CourseCode(Base):
@@ -198,10 +201,15 @@ class user_role(Base):
     user_id = Column(Integer, primary_key=True)
     role_id = Column(Integer)
 
-print("WOW")
-q = (session.query(Role.name).filter(User.id == user_role.user_id).filter(user_role.role_id == Role.id).all())
-print(q)
-print("WOW")
+# print("WOW")
+# q = (session.query(Role.name).filter(User.id == user_role.user_id).filter(user_role.role_id == Role.id).all())
+# print(q)
+# print("WOW")
+#
+# print("YES")
+# q = (session.query(CourseProfessors.professor_id, User.id, User.firstName, User.lastName).filter(User.id == CourseProfessors.professor_id).filter(Semester.active == 1).all())
+# print(q)
+# print("NO")
 
 
 # print('<--------------------------------------------------------------------------------->')
