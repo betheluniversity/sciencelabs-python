@@ -18,9 +18,9 @@ class ReportController:
         students = []
         for row in student_list:
             students.append([
-                row[4],
-                row[3],
-                row[5],
+                row[4],  # lastName
+                row[3],  # firstName
+                row[5],  # Email
                 'attendance',
                 'report'
             ])
@@ -35,9 +35,9 @@ class ReportController:
         courses = []
         for row in course_list:
             courses.append([
-                row[8] + row[5],
-                row[12],
-                row[6],
+                row[8] + row[5],  # dept + course_num
+                row[12],  # title
+                row[6],  # section
                 'Prof',
                 'Tot',
                 'Unq',
