@@ -1,5 +1,6 @@
 # Packages
 from sqlalchemy import select
+from sqlalchemy.util import KeyedTuple
 
 # Local
 from sciencelabs import conn
@@ -32,12 +33,21 @@ class ReportController:
         for data in semester_list:
             active_semester = data[0]
         course_list = conn.execute(select([course]).where(course.c.semester_id == active_semester)) # TODO This will need to be updated so you can pass in a semester id
+        key = KeyedTuple([])
         courses = []
         for row in course_list:
+            key = KeyedTuple([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10],
+                              row[11], row[12], row[13], row[14], row[15]], labels=['id', 'professor_id', 'semester_id',
+                                                                                    'begin_date', 'begin_time',
+                                                                                    'course_num', 'section', 'crn',
+                                                                                    'dept', 'end_date', 'end_time',
+                                                                                    'meeting_day', 'title',
+                                                                                    'course_code_id', 'num_attendees',
+                                                                                    'room'])
             courses.append([
-                row[8] + row[5],  # dept + course_num
-                row[12],  # title
-                row[6],  # section
+                key.dept + key.course_num,  # dept + course_num
+                key.title,  # title
+                key.section,  # section
                 'Prof',
                 'Tot',
                 'Unq',
