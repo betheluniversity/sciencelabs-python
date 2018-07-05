@@ -57,7 +57,7 @@ class ReportController:
         #     ])
         # return courses
         courses = []
-        for all in Course.get_course_info(self):
+        for all in Course.get_student_course_info(self):
             courses.append([
                 all[0] + all[1],
                 all[2],
