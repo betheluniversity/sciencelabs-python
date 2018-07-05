@@ -48,8 +48,11 @@
                     <input type="text" class="form-control" id="session-name">
                     </div>
                 </div>
-                {# TODO FILL TABLE #}
-                <table id="example" class="display nowrap" width="100%">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+
+                        {# TODO FILL TABLE #}
+                <table id="student-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
                         <th>Last</th>
@@ -75,6 +78,10 @@
                     {% endfor %}
                     </tbody>
                 </table>
+
+                    </div>
+                </div>
+
             </form>
         </div>
 
@@ -117,7 +124,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#example').DataTable( {
+            var table = $('#student-table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
@@ -130,6 +137,8 @@
                 },
                 "aLengthMenu": [[50, 100, -1], [50, 100, "All"]],
                 "iDisplayLength": 100,
+                {#dom: "<'floaty col-md-4'l><'floaty col-md-8'f>ti"#}
+
             });
         });
     </script>

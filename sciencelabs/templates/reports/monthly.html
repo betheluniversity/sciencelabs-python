@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
-                <table id="monthly_closed_info" class="display nowrap" width="100%">
+                <table id="monthly-closed-info-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Schedule Name</th>
@@ -93,7 +93,7 @@
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
-                <table id="monthly_info" class="display nowrap" width="100%">
+                <table id="monthly-info-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -153,13 +153,13 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#monthly_closed_info').DataTable( {
+            var table = $('#monthly-closed-info-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,
             });
 
-            var table = $('#monthly_info').DataTable( {
+            var table = $('#monthly-info-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,

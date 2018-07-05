@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
-                <table id="example" class="display nowrap" width="100%">
+                <table id="course-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Code</th>
@@ -111,7 +111,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#example').DataTable( {
+            var table = $('#course-table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
