@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sciencelabs import conn
 from sciencelabs.db_repository import user
 from sciencelabs.db_repository import course
+from sciencelabs.db_repository import semester
 
 
 class ReportController:
@@ -26,8 +27,11 @@ class ReportController:
         return students
 
     def get_course_info(self):
-        # TODO STILL NEED SOME DATA
-        course_list = conn.execute(select([course]).where(course.c.semester_id == 40013)) # TODO This will need to be updated so you can pass in a semester id
+        # TODO STILL NEED SOME DATA\
+        semester_list = conn.execute(select([semester.c.id]).where(semester.c.active == 1))
+        for data in semester_list:
+            active_semester = data[0]
+        course_list = conn.execute(select([course]).where(course.c.semester_id == active_semester)) # TODO This will need to be updated so you can pass in a semester id
         courses = []
         for row in course_list:
             courses.append([
