@@ -18,14 +18,14 @@ class SessionController(ScienceLabsController):
         session_list = conn.execute(select([session]).where(session.c.semester_id == active_semester)) # TODO This will need to be updated so you can pass in a semester id
         sessions = []
         for row in session_list:
-            if row[6] is None:
+            if row[6] is None:  # startTime
                 continue
             else:
                 sessions.append([  # calling out individual row. Order is name, date, start, end, room
-                    row[15] + ' (' + self.format_date(str(row[3])) + ')',
-                    self.format_date(str(row[3])),
-                    str(row[6]) + ' - ' + str(row[7]),
-                    row[8],
+                    row[15] + ' (' + self.format_date(str(row[3])) + ')',  # name + date
+                    self.format_date(str(row[3])),  # date
+                    str(row[6]) + ' - ' + str(row[7]),  # startTime - endTime
+                    row[8],  # room
                     'tutors',
                     'edit/delete'
                 ])
