@@ -61,7 +61,7 @@ class Course(Base):
     room = Column(String)
 
     def get_course_info(self):
-        return (session.query(Course.title, Course.section, Course.dept, Course.course_num, User.firstName, User.lastName, Course.num_attendees).filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
+        return (session.query(Course.title, Course.section, Course.dept, Course.course_num, User.firstName, User.lastName, Course.num_attendees).filter(Course.num_attendees).filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
 
     def get_student_course_info(self):
         # Session = sessionmaker(bind=db)
