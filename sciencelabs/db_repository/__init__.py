@@ -40,6 +40,7 @@ Base = declarative_base()
 Session = sessionmaker(bind=db)
 session = Session()
 
+
 class Course(Base):
     __tablename__ = 'Course'
     id = Column(Integer, primary_key=True)
