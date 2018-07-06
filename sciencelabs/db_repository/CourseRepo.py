@@ -4,6 +4,7 @@ from sciencelabs.db_repository import Base
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.UserRepo import User
 from sciencelabs.db_repository.CourseProfessorsRepo import CourseProfessors
+from sciencelabs.db_repository.SemesterRepo import Semester
 
 
 class Course(Base):
@@ -33,4 +34,4 @@ class Course(Base):
     def get_report_course_info(self):
         return (session.query(Course.dept, Course.course_num, Course.title, Course.section, User.firstName,
                               User.lastName)
-                .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
+                .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).filter(Course.semester_id == Semester.id).filter(Semester.active == 1).all())
