@@ -38,24 +38,16 @@
             </tr>
         </thead>
         <tbody>
-{#            {% for session in app_settings['SESSIONS'] %}#}
-{#                <tr>#}
-{#                {% for info in session %}#}
-{#                    <td>{{ info }}</td>#}
-{#                {% endfor %}#}
-{#                </tr>#}
-{#            {% endfor %}#}
             {% for session in sessions %}
                 <tr>
                     <td>
                         {{ session.name }}
                     </td>
                     <td>
-                        {{ session.date }}
+                        {{ session.date.strftime('%m/%d/%Y') }}
                     </td>
                     <td>
-                        {{ session.startTime }}
-                        {{ session.endTime }}
+                        {{ session.startTime|string + ' - ' + session.endTime|string }}
                     </td>
                     <td>
                         {{ session.room }}
