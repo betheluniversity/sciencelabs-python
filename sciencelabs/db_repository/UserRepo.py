@@ -4,6 +4,8 @@ from sciencelabs.db_repository import Base
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.user_roleRepo import user_role
 from sciencelabs.db_repository.RoleRepo import Role
+from sciencelabs.db_repository.StudentSessionRepo import StudentSession
+from sciencelabs.db_repository.SemesterRepo import Semester
 
 
 class User(Base):
@@ -21,33 +23,6 @@ class User(Base):
         return session.query(User.lastName, User.firstName, User.email).all()
 
     def get_user_info(self):
-        return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id).filter(user_role.role_id == Role.id).all()
+        return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id)\
+            .filter(user_role.role_id == Role.id).all()
 
-
-class UserFunctions:
-
-    def get_report_student_info(self):
-        # TODO STILL NEED ATTENDANCE AND REPORT
-        students = []
-        for row in User.get_report_student_info(self):
-            students.append([
-                row[0],
-                row[1],
-                row[2],
-                'attendance',
-                'report'
-            ])
-        return students
-
-    def get_user_info(self):
-        users = []
-        for row in User.get_user_info(self):
-            users.append([
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                'edit',
-                'check'
-            ])
-        return users

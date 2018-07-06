@@ -94,9 +94,42 @@
                     <tbody>
                     {% for term in term_info %}
                         <tr>
-                            {% for info in term %}
-                                <td>{{ info }}</td>
-                            {% endfor %}
+                            <td>
+                                {{ term.name }}
+                            </td>
+                            <td>
+                                {% if term.dayofWeek == 0 %}
+                                    Sun
+                                {% elif term.dayofWeek == 1 %}
+                                    Mon
+                                {% elif term.dayofWeek == 2 %}
+                                    Tue
+                                {% elif term.dayofWeek == 3 %}
+                                    Wed
+                                {% elif term.dayofWeek == 4 %}
+                                    Thu
+                                {% elif term.dayofWeek == 5 %}
+                                    Fri
+                                {% else %}
+                                    Sat
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                {{ term.startTime }}
+                            </td>
+                            <td>
+                                {{ term.endTime }}
+                            </td>
+                            <td>
+                                Number of Sessions
+                            </td>
+                            <td>
+                                 Attendance
+                            </td>
+                            <td>
+                                Percentage
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

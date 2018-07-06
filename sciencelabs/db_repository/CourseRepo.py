@@ -30,38 +30,7 @@ class Course(Base):
                               User.lastName, Course.num_attendees).filter(Course.num_attendees)
                 .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
 
-    def get_student_course_info(self):
+    def get_report_course_info(self):
         return (session.query(Course.dept, Course.course_num, Course.title, Course.section, User.firstName,
                               User.lastName)
                 .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
-
-
-class CourseFunctions:
-
-    def get_report_course_info(self):
-        # # TODO STILL NEED SOME DATA
-        courses = []
-        for row in Course.get_course_info(self):
-            courses.append([
-                row[0] + row[1],
-                row[2],
-                row[3],
-                str(row[4]) + ' ' + str(row[5]),
-                'Tot',
-                'Unq',
-                'Pct'
-            ])
-        return courses
-
-    def get_course_info(self):
-        # # TODO STILL NEED SOME DATA
-        courses = []
-        for all in Course.get_course_info(self):
-            courses.append([
-                all[0],
-                all[1],
-                all[2] + all[3],
-                str(all[4]) + ' ' + str(all[5]),
-                all[6]
-            ])
-        return courses

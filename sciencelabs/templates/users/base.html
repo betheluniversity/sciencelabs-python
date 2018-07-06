@@ -37,15 +37,24 @@
                     <tbody>
                         {% for user in users_info %}
                             <tr>
-                            {% for info in user %}
-                                {% if info == 'edit' %}
-                                    <td>
-                                        <button id="darkblue" class="btn btn-primary">Edit</button>
-                                    </td>
-                                {% else %}
-                                    <td>{{ info }}</td>
-                                {% endif %}
-                            {% endfor %}
+                                <td>
+                                    {{ user.lastName }}
+                                </td>
+                                <td>
+                                    {{ user.firstName }}
+                                </td>
+                                <td>
+                                    {{ user.email }}
+                                </td>
+                                <td>
+                                    {{ user.name }}
+                                </td>
+                                <td>
+                                    <button id="darkblue" class="btn btn-primary">Edit</button>
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" value="{{ info }}">
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -76,7 +85,7 @@
                         access to all features of the application, with the exception of editing their own roles.</p>
                     <p class="card-text"><span id="darkblue" class="button-labels">Academic Counselor</span> has the
                         ability to view all reports.</p>
-                    <p class="card-text">*<strong>Professors</strong> are automatically added to the user list when
+                    <p class="card-text">*<strong> Professors</strong> are automatically added to the user list when
                         their courses are pulled from Banner when the current term is selected, and need not be added
                         manually.</p>
                     <p class="card-text">*Users with first or last names which include spaces may need to be searched

@@ -4,7 +4,7 @@ from flask_classy import FlaskView
 
 # Local
 from sciencelabs.course.course_controller import CourseController
-from sciencelabs.db_repository.CourseRepo import CourseFunctions
+from sciencelabs.db_repository.CourseRepo import Course
 
 
 class CourseView(FlaskView):

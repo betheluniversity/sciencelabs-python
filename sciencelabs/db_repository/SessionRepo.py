@@ -2,6 +2,7 @@ from sqlalchemy import *
 
 from sciencelabs.db_repository import Base
 from sciencelabs.db_repository import session
+from sciencelabs.db_repository.SemesterRepo import Semester
 
 
 class Session(Base):
@@ -24,4 +25,4 @@ class Session(Base):
     name = Column(String)
 
     def get_closed_sessions(self):
-        return (session.query(Session.name, Session.date, Session.startTime, Session.endTime, Session.room).filter(Session.startTime).filter(Session.room != None).all())
+        return (session.query(Session.name, Session.date, Session.startTime, Session.endTime, Session.room).filter(Semester.active == 1).filter(Session.startTime != None).all())

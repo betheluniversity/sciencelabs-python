@@ -43,24 +43,29 @@
                     <tbody>
                         {% for schedule in schedule_info %}
                             <tr>
-                            {% for info in schedule %}
-                                {% if info == 'tutors' %}
-                                    <td>
-                                        <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
-                                    </td>
-                                {% elif info == 'courses' %}
-                                    <td>
-                                        <button id="show-courses" type="button" class="btn btn-primary">Show</button>
-                                    </td>
-                                {% elif info == 'edit/delete' %}
-                                    <td>
-                                        <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
-                                        <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
-                                    </td>
-                                {% else %}
-                                    <td>{{ info }}</td>
-                                {% endif %}
-                            {% endfor %}
+                                <td>
+                                    {{ schedule.name }}
+                                </td>
+                                <td>
+                                    {{ schedule.dayofWeek }}
+                                </td>
+                                <td>
+                                    {{ schedule.startTime }}
+                                    {{ schedule.endTime }}
+                                </td>
+                                <td>
+                                    {{ schedule.room }}
+                                </td>
+                                <td>
+                                    <button id="show-courses" type="button" class="btn btn-primary">Show</button>
+                                </td>
+                                <td>
+                                    <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                                </td>
+                                <td style="text-align: center;">
+                                    <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
+                                    <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
