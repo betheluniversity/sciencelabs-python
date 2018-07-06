@@ -11,7 +11,3 @@ class UsersController:
     def __init__(self):
         super(UsersController, self).__init__
 
-    # TODO COMPLETE THIS METHOD
-    def get_users_info(self):
-        return []
-

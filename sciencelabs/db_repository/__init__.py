@@ -148,6 +148,9 @@ class Session(Base):
     anonStudents = Column(Integer)
     name = Column(String)
 
+    def get_closed_sessions(self):
+        return (session.query(Session.name, Session.date, Session.startTime, Session.endTime, Session.room).filter(Session.startTime).filter(Session.room != None).filter(Semester.active == 1).all())
+
 
 class SessionCourseCodes(Base):
     __tablename__ = 'SessionCourseCodes'
@@ -192,6 +195,14 @@ class User(Base):
     email = Column(String)
     send_email = Column(Integer)
     deletedAt = Column(String)
+
+    def get_report_student_info(self):
+        return session.query(User.lastName, User.firstName, User.email).all()
+
+    def get_user_info(self):
+        return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id).filter(user_role.role_id == Role.id).all()
+
+
 
 
 class user_course(Base):

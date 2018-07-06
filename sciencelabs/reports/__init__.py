@@ -4,6 +4,8 @@ from flask_classy import FlaskView
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
+from sciencelabs.db_repository.UserRepo import UserFunctions
+from sciencelabs.db_repository.CourseRepo import CourseFunctions
 
 
 class ReportView(FlaskView):
@@ -14,7 +16,7 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        student_info = self.base.get_student_info()
+        student_info = UserFunctions.get_report_student_info(self)
         return render_template('reports/student.html', **locals())
 
     def semester(self):
@@ -34,5 +36,5 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
-        course_info = self.base.get_course_info()
+        course_info = CourseFunctions.get_report_course_info(self)
         return render_template('reports/course.html', **locals())

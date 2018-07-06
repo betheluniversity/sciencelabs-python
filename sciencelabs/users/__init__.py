@@ -4,6 +4,7 @@ from flask_classy import FlaskView
 
 # Local
 from sciencelabs.users.users_controller import UsersController
+from sciencelabs.db_repository.UserRepo import UserFunctions
 
 
 class UsersView(FlaskView):
@@ -11,7 +12,7 @@ class UsersView(FlaskView):
         self.base = UsersController()
 
     def index(self):
-        users_info = self.base.get_users_info()
+        users_info = UserFunctions.get_user_info(self)
         return render_template('users/base.html', **locals())
 
     def add_user(self):
