@@ -29,7 +29,8 @@ class Course(Base):
     def get_course_info(self):
         return (session.query(Course.title, Course.section, Course.dept, Course.course_num, User.firstName,
                               User.lastName, Course.num_attendees).filter(Course.num_attendees)
-                .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
+                .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id)
+                .filter(Course.semester_id == Semester.id).filter(Semester.active == 1).all())
 
     def get_report_course_info(self):
         return (session.query(Course.dept, Course.course_num, Course.title, Course.section, User.firstName,
