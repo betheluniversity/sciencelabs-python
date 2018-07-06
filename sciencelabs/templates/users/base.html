@@ -38,7 +38,13 @@
                         {% for user in users_info %}
                             <tr>
                             {% for info in user %}
-                                <td>{{ info }}</td>
+                                {% if info == 'edit' %}
+                                    <td>
+                                        <button id="darkblue" class="btn btn-primary">Edit</button>
+                                    </td>
+                                {% else %}
+                                    <td>{{ info }}</td>
+                                {% endif %}
                             {% endfor %}
                             </tr>
                         {% endfor %}
