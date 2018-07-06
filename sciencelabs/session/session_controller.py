@@ -1,8 +1,4 @@
-# Packages
-from sqlalchemy import select
-
 # Local
-from sciencelabs import conn
 from sciencelabs.db_repository import Session
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 

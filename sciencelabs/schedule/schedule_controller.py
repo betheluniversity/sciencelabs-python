@@ -1,15 +1,4 @@
-# Packages
-from sqlalchemy import select
-
-# Local
-from sciencelabs import conn
-from sciencelabs.db_repository import *
-# TODO REMOVE * AND PUT IN DB CONNECTION ABOVE WHEN COMPLETING
-
-
-
-
-class ScheduleController():
+class ScheduleController:
     def __init__(self):
         super(ScheduleController, self).__init__
 
