@@ -28,9 +28,22 @@
                             <tbody>
                                 {% for course in course_info %}
                                     <tr>
-                                    {% for info in course %}
-                                        <td>{{ info }}</td>
-                                    {% endfor %}
+                                        <td>
+                                            {{ course.title }}
+                                        </td>
+                                        <td>
+                                            {{ course.section }}
+                                        </td>
+                                        <td>
+                                            {{ course.dept + course.course_num }}
+                                        </td>
+                                        <td>
+                                            {{ course.firstName }}
+                                            {{ course.lastName }}
+                                        </td>
+                                        <td>
+                                            {{ course.num_attendees }}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
