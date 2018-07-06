@@ -27,18 +27,7 @@ class User(Base):
 class UserFunctions:
 
     def get_report_student_info(self):
-        # # TODO STILL NEED ATTENDANCE AND REPORT
-        # student_list = conn.execute(select([user]))
-        # students = []
-        # for row in student_list:
-        #     students.append([
-        #         row[4],  # lastName
-        #         row[3],  # firstName
-        #         row[5],  # Email
-        #         'attendance',
-        #         'report'
-        #     ])
-        # return students
+        # TODO STILL NEED ATTENDANCE AND REPORT
         students = []
         for row in User.get_report_student_info(self):
             students.append([

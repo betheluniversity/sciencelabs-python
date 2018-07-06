@@ -31,10 +31,6 @@ class Course(Base):
                 .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
 
     def get_student_course_info(self):
-        # Session = sessionmaker(bind=db)
-        # session = Session()
-        # # q = (session.query(Course.dept, Course.course_num, Course.title, Course.section, Course.professor_id).all())
-        # return session.query(Course.dept)
         return (session.query(Course.dept, Course.course_num, Course.title, Course.section, User.firstName,
                               User.lastName)
                 .filter(User.id == CourseProfessors.professor_id).filter(CourseProfessors.course_id == Course.id).all())
@@ -55,8 +51,6 @@ class CourseFunctions:
                 'Unq',
                 'Pct'
             ])
-            # print(all)
-        # print(Course.get_course_info(self)[1][0])
         return courses
 
     def get_course_info(self):
