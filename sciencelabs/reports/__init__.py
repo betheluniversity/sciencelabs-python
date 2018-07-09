@@ -1,6 +1,7 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView
+from datetime import datetime
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
@@ -21,6 +22,7 @@ class ReportView(FlaskView):
         return render_template('reports/student.html', **locals())
 
     def semester(self):
+        timedelta_to_time = datetime.min
         term_info = Schedule().get_report_term_info()
         return render_template('reports/term.html', **locals())
 

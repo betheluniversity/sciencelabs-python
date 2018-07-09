@@ -1,6 +1,7 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView, route
+from datetime import datetime
 
 # Local
 from sciencelabs.schedule.schedule_controller import ScheduleController
@@ -12,6 +13,7 @@ class ScheduleView(FlaskView):
         self.base = ScheduleController()
 
     def index(self):
+        timedelta_to_time = datetime.min
         schedule_info = Schedule().get_report_term_info()
         return render_template('schedule/base.html', **locals())
 

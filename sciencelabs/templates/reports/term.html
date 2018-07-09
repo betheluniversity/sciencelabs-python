@@ -116,10 +116,10 @@
 
                             </td>
                             <td>
-                                {{ term.startTime }}
+                                {{ (timedelta_to_time + term.startTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                {{ term.endTime }}
+                                {{ (timedelta_to_time + term.endTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
                                 Number of Sessions
