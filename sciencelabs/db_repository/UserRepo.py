@@ -27,3 +27,6 @@ class User(Base):
         return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id)\
             .filter(user_role.role_id == Role.id).all()
 
+    def get_user_by_id(self, user_id):
+        user = session.query(User.firstName, User.lastName).filter(User.id == user_id).one()
+        return user.firstName + ' ' + user.lastName
