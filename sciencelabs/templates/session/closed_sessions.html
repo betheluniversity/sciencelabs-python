@@ -41,7 +41,7 @@
             {% for session in sessions %}
                 <tr>
                     <td>
-                        {{ session.name }}
+                        {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}
                     </td>
                     <td>
                         {{ session.date.strftime('%m/%d/%Y') }}
