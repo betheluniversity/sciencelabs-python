@@ -26,7 +26,7 @@
             <input type="text" id="search-sessions-field" class="form-control" placeholder="Search">
         </div>
     </form>
-    <table id="example" class="display nowrap" width="100%">
+    <table id="closed-table"  class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
                 <th>Name</th>
@@ -38,29 +38,29 @@
             </tr>
         </thead>
         <tbody>
-{#            {% for session in app_settings['SESSIONS'] %}#}
-{#                <tr>#}
-{#                {% for info in session %}#}
-{#                    <td>{{ info }}</td>#}
-{#                {% endfor %}#}
-{#                </tr>#}
-{#            {% endfor %}#}
             {% for session in sessions %}
                 <tr>
-                {% for info in session %}
-                    {% if info == 'tutors' %}
-                        <td>
-                            <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
-                        </td>
-                    {% elif info == 'edit/delete' %}
-                        <td>
+                    <td>
+                        {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}
+                    </td>
+                    <td>
+                        {{ session.date.strftime('%m/%d/%Y') }}
+                    </td>
+                    <td>
+                        {{ (timedelta_to_time + session.startTime).strftime('%I:%M%p') + ' - ' + (timedelta_to_time + session.endTime).strftime('%I:%M%p') }}
+                    </td>
+                    <td>
+                        {{ session.room }}
+                    </td>
+                    <td>
+                        <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                    </td>
+                    <td>
+                        <div class="btn-group">
                             <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
                             <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
-                        </td>
-                    {% else %}
-                        <td>{{ info }}</td>
-                    {% endif %}
-                {% endfor %}
+                        </div>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -68,7 +68,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#example').DataTable( {
+            var table = $('#closed-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,

@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
-                <table id="example" class="display nowrap" width="100%">
+                <table id="course-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Code</th>
@@ -53,9 +53,31 @@
                     <tbody>
                         {% for course in course_info %}
                             <tr>
-                            {% for info in course %}
-                                <td>{{ info }}</td>
-                            {% endfor %}
+                                <td>
+                                    {{ course.dept + course.course_num }}
+                                </td>
+                                <td>
+                                    {{ course.title }}
+                                </td>
+                                <td>
+                                    {{ course.section }}
+                                </td>
+                                <td>
+                                    {{ course.firstName }}
+                                    {{ course.lastName }}
+                                </td>
+                                <td>
+                                    Tot
+                                </td>
+                                <td>
+                                    Unq
+                                </td>
+                                <td>
+                                    Pct
+                                </td>
+                                <td>
+                                    <button id="darkblue" class="btn btn-primary">View</button>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -105,7 +127,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#example').DataTable( {
+            var table = $('#course-table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },

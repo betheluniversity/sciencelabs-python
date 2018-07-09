@@ -15,7 +15,7 @@
                             <p><strong>{{ app_settings['LAB_TITLE'] }} Courses for ***SEMESTER YEAR***</strong></p>
                         </div>
                         {# TODO FILL TABLE #}
-                        <table id="example" class="display nowrap" width="100%">
+                        <table id="course-table"  class="table table-striped table-bordered" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Course</th>
@@ -28,9 +28,22 @@
                             <tbody>
                                 {% for course in course_info %}
                                     <tr>
-                                    {% for info in course %}
-                                        <td>{{ info }}</td>
-                                    {% endfor %}
+                                        <td>
+                                            {{ course.title }}
+                                        </td>
+                                        <td>
+                                            {{ course.section }}
+                                        </td>
+                                        <td>
+                                            {{ course.dept + course.course_num }}
+                                        </td>
+                                        <td>
+                                            {{ course.firstName }}
+                                            {{ course.lastName }}
+                                        </td>
+                                        <td>
+                                            {{ course.num_attendees }}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -92,8 +105,8 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#example').DataTable( {
-                "aoColumns": [],
+            var table = $('#course-table').DataTable( {
+                "aoColumns": []
             });
         });
     </script>

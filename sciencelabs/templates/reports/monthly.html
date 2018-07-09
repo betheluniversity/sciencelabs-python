@@ -7,11 +7,21 @@
 {#TODO: This tab needs another subnav that allows the user to switch between #}
 {% block body_content %}
    <div class="row">
-        <div class="col-md-8">
-            <form>
-                <div class="form-row">
-                    <div style="text-align: right;" class="form-group col-md-12">
-                        <div class="semester-selector">
+   <div class="col-md-8">
+       <form>
+           <div class="form-row">
+               <div class="form-group col-md-12">
+                   {# TODO PUT IN SELECTOR #}
+                   PUT IN SELECTOR
+               </div>
+           </div>
+       </form>
+   </div>
+       <div class="col-md-8">
+           <form>
+               <div class="form-row">
+                   <div style="text-align: right;" class="form-group col-md-12">
+                       <div class="semester-selector">
                             <div class="btn-group">
                                 <form class="form-inline">
                                     <button type="button" class="button-curved btn btn-primary">Set</button>
@@ -22,9 +32,9 @@
                                     </select>
                                 </form>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                       </div>
+                   </div>
+               </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
@@ -48,6 +58,28 @@
                     <input type="text" class="form-control" id="search-box-1">
                     </div>
                 </div>
+                {# TODO FILL TABLE #}
+                <table id="monthly-closed-info-table"  class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Schedule Name</th>
+                            <th>DOW</th>
+                            <th>Schedule Time</th>
+                            <th>Total Attendance</th>
+                            <th>% Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for monthly_closed in monthly_closed_info %}
+                            <tr>
+                            {% for info in monthly_closed %}
+                                <td>{{ info }}</td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
@@ -61,21 +93,28 @@
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
-                <table>
+                <table id="monthly-info-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
-                            <th scope="col">Schedule Name</th>
-                            <th scope="col">DOW</th>
-                            <th scope="col">Schedule Time</th>
-                            <th scope="col">Total Attendance</th>
-                            <th scope="col">% Total</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>DOW</th>
+                            <th>Scheduled Time</th>
+                            <th>Total Attendance</th>
+                            <th>report</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for student in student_info %}
+                        {% for monthly in monthly_info %}
                             <tr>
-                            {% for info in student %}
-                                <td>{{ info }}</td>
+                            {% for info in monthly %}
+                                {% if info == 'report' %}
+                                    <td>
+                                        <button id="darkblue" class="btn btn-primary">View</button>
+                                    </td>
+                                {% else %}
+                                    <td>{{ info }}</td>
+                                {% endif %}
                             {% endfor %}
                             </tr>
                         {% endfor %}
@@ -111,4 +150,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready( function () {
+            var table = $('#monthly-closed-info-table').DataTable( {
+                "aaSorting": [],
+                "bPaginate": false,
+                "bLengthChange": false,
+            });
+
+            var table = $('#monthly-info-table').DataTable( {
+                "aaSorting": [],
+                "bPaginate": false,
+                "bLengthChange": false,
+            });
+        });
+    </script>
+
+
 {% endblock %}
