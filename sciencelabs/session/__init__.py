@@ -1,6 +1,7 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView
+from datetime import datetime
 
 # Local
 from sciencelabs.session.session_controller import SessionController
@@ -15,6 +16,7 @@ class SessionView(FlaskView):
         return render_template('session/base.html')
 
     def closed(self):
+        timedelta_to_time = datetime.min
         sessions = Session.get_closed_sessions(self)
         return render_template('session/closed_sessions.html', **locals())
 

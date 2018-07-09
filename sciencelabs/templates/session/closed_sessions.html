@@ -47,7 +47,7 @@
                         {{ session.date.strftime('%m/%d/%Y') }}
                     </td>
                     <td>
-                        {{ session.startTime|string + ' - ' + session.endTime|string }}
+                        {{ (timedelta_to_time + session.startTime).strftime('%I:%M%p') + ' - ' + (timedelta_to_time + session.endTime).strftime('%I:%M%p') }}
                     </td>
                     <td>
                         {{ session.room }}
