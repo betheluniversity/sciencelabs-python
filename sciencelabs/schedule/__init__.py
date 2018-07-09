@@ -12,7 +12,7 @@ class ScheduleView(FlaskView):
         self.base = ScheduleController()
 
     def index(self):
-        schedule_info = Schedule.get_report_term_info(self)
+        schedule_info = Schedule().get_report_term_info()
         return render_template('schedule/base.html', **locals())
 
     @route('/create')
