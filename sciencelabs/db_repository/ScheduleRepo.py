@@ -18,6 +18,21 @@ class Schedule(Base):
     deletedAt = Column(String)
 
     def get_report_term_info(self):
-        return session.query(Schedule.name, Schedule.dayofWeek, Schedule.startTime, Schedule.endTime, Schedule.room)\
-            .filter(Schedule.id == Session.schedule_id).filter(Session.semester_id == Semester.id)\
-            .filter(Semester.active == 1).all()
+        return session.query(Schedule)\
+            .filter(Schedule.id == Session.schedule_id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .all()
+
+    def get_term_report(self):
+        return session.query(Schedule, func.count(Schedule.room))\
+            .filter(Schedule.id == Session.schedule_id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .group_by(Schedule.room)\
+            .all()
+
+
+        # return session.query(Schedule.name, Schedule.dayofWeek, Schedule.startTime, Schedule.endTime, Schedule.room)\
+        #     .filter(Schedule.id == Session.schedule_id).filter(Session.semester_id == Semester.id)\
+        #     .filter(Semester.active == 1).all()

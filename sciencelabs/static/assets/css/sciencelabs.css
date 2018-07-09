@@ -23,6 +23,18 @@ div.row-group{
     margin: 0px
 }
 
+/*.dataTables_wrapper .dataTables_filter{*/
+    /*width: 50%;*/
+/*}*/
+
+/*.dataTables_wrapper .dataTables_length{*/
+    /*width: 50%;*/
+/*}*/
+
+/*.dataTables_wrapper .dataTables_length select{*/
+    /*width: 100%;*/
+/*}*/
+
 nav a{
     color: gray;
 }

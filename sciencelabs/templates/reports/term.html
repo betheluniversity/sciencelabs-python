@@ -95,20 +95,20 @@
                     {% for term in term_info %}
                         <tr>
                             <td>
-                                {{ term.name }}
+                                {{ term[0].name }}
                             </td>
                             <td>
-                                {% if term.dayofWeek == 0 %}
+                                {% if term[0].dayofWeek == 0 %}
                                     Sun
-                                {% elif term.dayofWeek == 1 %}
+                                {% elif term[0].dayofWeek == 1 %}
                                     Mon
-                                {% elif term.dayofWeek == 2 %}
+                                {% elif term[0].dayofWeek == 2 %}
                                     Tue
-                                {% elif term.dayofWeek == 3 %}
+                                {% elif term[0].dayofWeek == 3 %}
                                     Wed
-                                {% elif term.dayofWeek == 4 %}
+                                {% elif term[0].dayofWeek == 4 %}
                                     Thu
-                                {% elif term.dayofWeek == 5 %}
+                                {% elif term[0].dayofWeek == 5 %}
                                     Fri
                                 {% else %}
                                     Sat
@@ -116,13 +116,13 @@
 
                             </td>
                             <td>
-                                {{ (timedelta_to_time + term.startTime).strftime('%l:%M%p') }}
+                                {{ (timedelta_to_time + term[0].startTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                {{ (timedelta_to_time + term.endTime).strftime('%l:%M%p') }}
+                                {{ (timedelta_to_time + term[0].endTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                Number of Sessions
+                                {{ term[1] }}
                             </td>
                             <td>
                                  Attendance

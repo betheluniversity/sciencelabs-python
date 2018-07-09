@@ -66,16 +66,16 @@
                     {% for student in student_info %}
                         <tr>
                             <td>
-                                {{ student.lastName }}
+                                {{ student.User.lastName }}
                             </td>
                             <td>
-                                {{ student.firstName }}
+                                {{ student.User.firstName }}
                             </td>
                             <td>
-                                {{ student.email }}
+                                {{ student.User.email }}
                             </td>
                             <td>
-                                Attendance
+                                {{ student[1] }}
                             </td>
                             <td>
                                 <button id="darkblue" class="btn btn-primary">View</button>

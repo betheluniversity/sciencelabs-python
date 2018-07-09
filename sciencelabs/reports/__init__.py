@@ -18,12 +18,12 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        student_info = User().get_report_student_info()
+        student_info = User().get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
         timedelta_to_time = datetime.min
-        term_info = Schedule().get_report_term_info()
+        term_info = Schedule().get_term_report()
         return render_template('reports/term.html', **locals())
 
     def month(self):
