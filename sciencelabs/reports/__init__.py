@@ -24,6 +24,11 @@ class ReportView(FlaskView):
     def semester(self):
         timedelta_to_time = datetime.min
         term_info = Schedule().get_term_report()
+        total_sessions = 0
+        total_attendance = 0
+        for sessions in term_info:
+            total_sessions += sessions[1]
+            total_attendance += 1
         return render_template('reports/term.html', **locals())
 
     def month(self):

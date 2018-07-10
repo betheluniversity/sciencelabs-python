@@ -42,10 +42,10 @@
                             <h3>Term Statistics</h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <b>Sessions held:</b>
+                                    <b>Sessions held:</b> {{ total_sessions }}
                                 </li>
                                 <li>
-                                    <b>Total attendance:</b>
+                                    <b>Total attendance:</b> {{ total_attendance }}
                                 </li>
                                 <li>
                                     <b>Unique student attendance:</b>
@@ -132,6 +132,20 @@
                             </td>
                         </tr>
                     {% endfor %}
+                        <tr>
+                            <th colspan="4" class="text-right">
+                                Total
+                            </th>
+                            <td>
+                                <b>{{ total_sessions }}</b>
+                            </td>
+                            <td>
+                                <b>{{ total_attendance }}</b>
+                            </td>
+                            <td>
+                                <b>100%</b>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
