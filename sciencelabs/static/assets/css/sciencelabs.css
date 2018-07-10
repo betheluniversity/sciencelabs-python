@@ -107,7 +107,12 @@ a.nav-link.button{
     background-color: #0F2C52;
     color: white !important;
     border-radius: 6px;
-    padding: 3px 16px !important;
+    padding: 3px 16px
+}
+
+.disabled{
+    max-height: 30px;
+    padding: 3px 16px;
 }
 
 .nav-bar-active{
