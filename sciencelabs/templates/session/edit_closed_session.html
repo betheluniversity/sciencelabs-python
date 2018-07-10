@@ -116,8 +116,10 @@
             {# TODO #}
         </tbody>
     </table>
-    <button type="button" class="edit btn btn-primary">Add a Student</button>
-    <button type="button" class="btn btn-primary">Add Anonymous Student</button>
+    <button onclick="location.href='{{ url_for('SessionView:add_student') }}'" type="button"
+            class="edit btn btn-primary">Add a Student</button>
+    <button onclick="location.href='{{ url_for('SessionView:add_anonymous') }}'" type="button"
+            class="btn btn-primary">Add Anonymous Student</button>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">
             <p class="card-text">Edit Tutor Attendance</p>
@@ -135,7 +137,8 @@
             {# TODO #}
         </tbody>
     </table>
-    <button type="button" class="edit btn btn-primary">Add a Tutor</button>
+    <button onclick="location.href='{{ url_for('SessionView:add_tutor') }}'" type="button"
+            class="edit btn btn-primary">Add a Tutor</button>
 
     <script>
         $(document).ready( function () {

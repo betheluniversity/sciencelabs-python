@@ -35,6 +35,10 @@ div.semester-selector{
     direction: rtl;
 }
 
+div.centered{
+    text-align:center;
+}
+
 form.create-session-form{
     margin-top: 15px;
 }
@@ -53,8 +57,14 @@ button.edit{
 }
 
 button.delete{
+    color: white;
     background-color: #DA1736;
     border-color: #DA1736;
+}
+
+button.delete-session{
+    font-size: 25px;
+    padding: 15px 40px;
 }
 
 div.info{

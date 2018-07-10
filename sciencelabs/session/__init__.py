@@ -28,5 +28,23 @@ class SessionView(FlaskView):
     def restore(self):
         return render_template('session/restore_session.html')
 
-    def edit(self):
+    def edit_session(self):
         return render_template('session/edit_closed_session.html')
+
+    def edit_student(self):
+        return render_template('session/edit_student.html')
+
+    def add_student(self):
+        return render_template('session/add_student.html')
+
+    def add_anonymous(self):
+        return render_template('session/add_anonymous.html')
+
+    def edit_tutor(self):
+        return render_template('session/edit_tutor.html')
+
+    def add_tutor(self):
+        return render_template('session/add_tutor.html')
+
+    def delete_session(self):
+        return render_template('session/delete_session.html')
