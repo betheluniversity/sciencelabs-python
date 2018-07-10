@@ -26,13 +26,8 @@ class Schedule(Base):
 
     def get_term_report(self):
         return session.query(Schedule, func.count(Schedule.id))\
-            .filter(Schedule.id == Session.schedule_id)\
+            .filter(Session.startTime != None)\
+            .filter(Session.schedule_id == Schedule.id)\
             .filter(Session.semester_id == Semester.id)\
             .filter(Semester.active == 1)\
-            .group_by(Schedule.id)\
-            .all()
-
-
-        # return session.query(Schedule.name, Schedule.dayofWeek, Schedule.startTime, Schedule.endTime, Schedule.room)\
-        #     .filter(Schedule.id == Session.schedule_id).filter(Session.semester_id == Semester.id)\
-        #     .filter(Semester.active == 1).all()
+            .group_by(Schedule.id).all()
