@@ -87,6 +87,13 @@ button.delete{
     border-color: #DA1736;
 }
 
+/*@media only screen and (max-width: 1070px){*/
+    /*.row{*/
+        /*display: flex;*/
+        /*flex-direction: column-reverse;*/
+    /*}*/
+/*}*/
+
 div.info{
     background-color: #f2f2f2;
     border-color: #d8d8d8;
