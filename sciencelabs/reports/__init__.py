@@ -44,5 +44,5 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
-        course_info = Course().get_report_course_info()
+        course_info = Course().get_active_course_info()
         return render_template('reports/course.html', **locals())
