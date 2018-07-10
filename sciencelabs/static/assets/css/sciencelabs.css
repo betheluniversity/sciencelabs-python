@@ -97,7 +97,9 @@ a.nav-link.button{
 }
 
 .margins{
-    margin: 20px 10%!important;
+    width: 100%;
+    margin: 20px auto;
+    max-width: 70rem;
 }
 
 .active{
