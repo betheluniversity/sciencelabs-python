@@ -66,8 +66,9 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
-                            <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
+                            <button onclick="location.href='{{ url_for('SessionView:edit') }}'" type="button"
+                                    class="edit btn btn-primary">Edit</button>
+                            <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
                 </tr>
