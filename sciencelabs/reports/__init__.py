@@ -8,6 +8,7 @@ from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.UserRepo import User
 from sciencelabs.db_repository.CourseRepo import Course
 from sciencelabs.db_repository.ScheduleRepo import Schedule
+from sciencelabs.db_repository.StudentSessionRepo import StudentSession
 
 
 class ReportView(FlaskView):
@@ -24,11 +25,22 @@ class ReportView(FlaskView):
     def semester(self):
         timedelta_to_time = datetime.min
         term_info = Schedule().get_term_report()
+        term_attendance = Schedule().get_session_attendance()
+        unique_attendance_info = User().get_session_attendance()
         total_sessions = 0
-        total_attendance = 0
         for sessions in term_info:
             total_sessions += sessions[1]
-            total_attendance += 1
+
+        total_attendance = 0
+        attendance_list = []
+        for sessions in term_attendance:
+            total_attendance += sessions[1]
+            attendance_list += [sessions[1]]
+
+        unique_attendance = 0
+        for attendance_data in unique_attendance_info:
+            unique_attendance += attendance_data[1]
+
         return render_template('reports/term.html', **locals())
 
     def month(self):

@@ -48,7 +48,7 @@
                                     <b>Total attendance:</b> {{ total_attendance }}
                                 </li>
                                 <li>
-                                    <b>Unique student attendance:</b>
+                                    <b>Unique student attendance:</b> {{ unique_attendance }}
                                 </li>
                             </ul>
                         </p>
@@ -62,7 +62,7 @@
                                     <b>Average total time spent per student:</b>
                                 </li>
                                 <li>
-                                    <b>Average student attendance per session:</b>
+                                    <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
                                 </li>
                                 <li>
                                     <b>Average number of visits per student:</b>
@@ -92,23 +92,23 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for term in term_info %}
+                    {% for schedule, sessions in term_info %}
                         <tr>
                             <td>
-                                {{ term[0].name }}
+                                {{ schedule.name }}
                             </td>
                             <td>
-                                {% if term[0].dayofWeek == 0 %}
+                                {% if schedule.dayofWeek == 0 %}
                                     Sun
-                                {% elif term[0].dayofWeek == 1 %}
+                                {% elif schedule.dayofWeek == 1 %}
                                     Mon
-                                {% elif term[0].dayofWeek == 2 %}
+                                {% elif schedule.dayofWeek == 2 %}
                                     Tue
-                                {% elif term[0].dayofWeek == 3 %}
+                                {% elif schedule.dayofWeek == 3 %}
                                     Wed
-                                {% elif term[0].dayofWeek == 4 %}
+                                {% elif schedule.dayofWeek == 4 %}
                                     Thu
-                                {% elif term[0].dayofWeek == 5 %}
+                                {% elif schedule.dayofWeek == 5 %}
                                     Fri
                                 {% else %}
                                     Sat
@@ -116,22 +116,24 @@
 
                             </td>
                             <td>
-                                {{ (timedelta_to_time + term[0].startTime).strftime('%l:%M%p') }}
+                                {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                {{ (timedelta_to_time + term[0].endTime).strftime('%l:%M%p') }}
+                                {{ (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                {{ term[1] }}
+                                {{ sessions }}
                             </td>
                             <td>
-                                 Attendance
+                                 {{ attendance_list[loop.index - 1] }}
                             </td>
                             <td>
-                                Percentage
+                                {{ (attendance_list[loop.index - 1] / total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
                     {% endfor %}
+                    </tbody>
+                    <tfoot>
                         <tr>
                             <th colspan="4" class="text-right">
                                 Total
@@ -146,7 +148,7 @@
                                 <b>100%</b>
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
 
             </form>
