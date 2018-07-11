@@ -27,6 +27,7 @@ div.dropdown{
 }
 
 div.header{
+    margin-top: 20px;
     background-color: #eaf1fb;
     text-align: left;
     border-color: #bdd4f3;
@@ -87,12 +88,39 @@ button.delete{
     border-color: #DA1736;
 }
 
-/*@media only screen and (max-width: 1070px){*/
-    /*.row{*/
-        /*display: flex;*/
-        /*flex-direction: column-reverse;*/
-    /*}*/
-/*}*/
+@media only screen and (max-width: 1066px){
+    .custom-large{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
+
+@media only screen and (max-width: 970px){
+    .custom-medium{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
+
+@media only screen and (max-width: 950px){
+    .custom-small{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
+
+/* Schedule/Schedules: 950px DONE */
+/* User/Users: 1050-1054px DONE */
+/* Report/Student: 950px DONE */
+/* Report/Term: 1070px DONE */
+/* Report/Course: 970px DONE */
+
+@media only screen and (max-width: 767px){
+    .custom-default{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
 
 div.info{
     background-color: #f2f2f2;
