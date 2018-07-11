@@ -17,7 +17,8 @@
 
 {% block body_content %}
     <div class="centered">
-        <button type="button" class="delete-session edit btn btn-primary">Cancel</button>
+        <button onclick="location.href='{{ url_for('SessionView:closed') }}'" type="button"
+                class="delete-session edit btn btn-primary">Cancel</button>
         <button type="button" class="delete-session delete btn btn primary">Delete</button>
     </div>
 {% endblock %}
