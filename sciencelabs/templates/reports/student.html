@@ -52,7 +52,7 @@
                     <div class="form-group col-md-12">
 
                         {# TODO FILL TABLE #}
-                <table id="student-table"  class="table table-striped table-bordered" style="width:100%">
+                <table id="table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
                         <th>Last</th>
@@ -130,7 +130,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#student-table').DataTable( {
+            var table = $('#table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
