@@ -64,10 +64,19 @@
                                     {{ schedule.room }}
                                 </td>
                                 <td>
-                                    <button id="show-courses" type="button" class="btn btn-primary">Show</button>
+                                    <button id="show-courses" type="button" class="show-courses btn btn-primary">Show</button>
                                 </td>
                                 <td>
-                                    <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                                    <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
+{#                                    <div style="display:none;margin-top:10px" class="text-left">#}
+{#                                        {% set leads, tutors = session_tutors.get_session_tutors(session.id) %}#}
+{#                                        {% for lead in leads %}#}
+{#                                            {{ lead }} <span class="button-labels">Lead</span><br />#}
+{#                                        {% endfor %}#}
+{#                                        {% for tutor in tutors %}#}
+{#                                            {{ tutor }}<br />#}
+{#                                        {% endfor %}#}
+{#                                    </div>#}
                                 </td>
                                 <td style="text-align: center;">
                                     <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
@@ -115,6 +124,20 @@
                 ],
                 "bPaginate": false,
                 "bLengthChange": false,
+            });
+            $(".show-tutors").click(function() {
+                $(this).next().toggle();
+                if($(this).text() !== 'Show')
+                    $(this).text('Show');
+                else
+                    $(this).text('Hide');
+            });
+            $(".show-courses").click(function() {
+                $(this).next().toggle();
+                if($(this).text() !== 'Show')
+                    $(this).text('Show');
+                else
+                    $(this).text('Hide');
             });
         });
     </script>
