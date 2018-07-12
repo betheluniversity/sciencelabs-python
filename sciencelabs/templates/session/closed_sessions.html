@@ -55,7 +55,7 @@
                     <td>
                         <button type="button" class="show-tutors btn btn-primary">Show</button>
                         <div style="display:none;margin-top:10px" class="text-left">
-                        {% set leads, tutors = session_tutors.get_session_tutors(self, session.id) %}
+                        {% set leads, tutors = session_tutors.get_session_tutors(session.id) %}
                         {% for lead in leads %}
                             {{ lead }} <span class="button-labels">Lead</span><br />
                         {% endfor %}
