@@ -42,16 +42,6 @@ class ReportView(FlaskView):
         for attendance_data in unique_attendance_info:
             unique_attendance += attendance_data[1]
 
-        # count = 0
-        # my_list = []
-        # for stuff in Schedule().test():
-        #     my_list += [stuff[1]]
-        #     count += stuff[1]
-        #     print(stuff[1])
-        # print(count)
-        # # sorted(my_list)
-        # print(sorted(my_list))
-
         return render_template('reports/term.html', **locals())
 
     def month(self):
