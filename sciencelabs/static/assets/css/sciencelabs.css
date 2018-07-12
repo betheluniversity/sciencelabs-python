@@ -71,6 +71,7 @@ label{
 
 input{
     width: 100%;
+    padding: 8px;
 }
 
 /*.dataTables_wrapper .dataTables_length select{*/
