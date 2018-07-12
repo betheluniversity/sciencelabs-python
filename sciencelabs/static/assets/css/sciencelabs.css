@@ -45,9 +45,34 @@ div.row-group{
     /*width: 50%;*/
 /*}*/
 
-/*.dataTables_wrapper .dataTables_length{*/
-    /*width: 50%;*/
-/*}*/
+#table_filter{
+    width: 100%;
+    text-align: left;
+}
+
+#closed-table_filter{
+    width: 100%;
+    text-align: left;
+}
+
+#table_length{
+    width: 100%;
+    text-align: left;
+}
+
+select{
+    width: 100%;
+}
+
+label{
+    width: 100%;
+
+}
+
+input{
+    width: 100%;
+    padding: 8px;
+}
 
 /*.dataTables_wrapper .dataTables_length select{*/
     /*width: 100%;*/
