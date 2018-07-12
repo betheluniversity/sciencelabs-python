@@ -35,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in users_info %}
+                        {% for user, role in users_info %}
                             <tr>
                                 <td>
                                     {{ user.lastName }}
@@ -47,7 +47,7 @@
                                     {{ user.email }}
                                 </td>
                                 <td>
-                                    {{ user.name }}
+                                    {{ role.name }}
                                 </td>
                                 <td>
                                     <button id="darkblue" class="btn btn-primary">Edit</button>
@@ -98,6 +98,8 @@
     <script>
         $(document).ready( function () {
             var table = $('#user-table').DataTable( {
+                "aaSorting": [3, 'asc'],
+
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
