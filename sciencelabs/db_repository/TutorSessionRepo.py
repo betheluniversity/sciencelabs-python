@@ -1,8 +1,6 @@
 from sqlalchemy import *
 
 from sciencelabs.db_repository import Base
-from sciencelabs.db_repository import session
-from sciencelabs.db_repository.UserRepo import User
 
 
 class TutorSession(Base):

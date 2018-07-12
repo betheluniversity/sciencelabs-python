@@ -6,7 +6,7 @@
     {% endblock %}
 
 {% block body_content %}
-        <div class="row">
+        <div class="custom-default row">
             <div class="col-md-8">
                 <form>
                     <div class="form-row">
@@ -26,7 +26,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for course in course_info %}
+                                {% for course, user in course_info %}
                                     <tr>
                                         <td>
                                             {{ course.title }}
@@ -38,8 +38,8 @@
                                             {{ course.dept + course.course_num }}
                                         </td>
                                         <td>
-                                            {{ course.firstName }}
-                                            {{ course.lastName }}
+                                            {{ user.firstName }}
+                                            {{ user.lastName }}
                                         </td>
                                         <td>
                                             {{ course.num_attendees }}
@@ -50,10 +50,14 @@
                         </table>
 
                     </div>
+                    <div class="form-group md-col-12">
+                        <h3>{{ app_settings['LAB_TITLE'] }} Courses Across all Terms</h3>
+                    </div>
                 </form>
+
             </div>
             <div class="col-md-4">
-                <div class="card info">
+                <div class="sub-info card info">
                     <div class="card-body">
                         <p class="card-text">
                             This page has two sections, the "{{ app_settings['LAB_TITLE'] }} Courses Across All Terms"

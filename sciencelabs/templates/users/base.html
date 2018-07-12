@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="custom-large row">
         <div class="col-md-8">
             <form class="form">
                 <div class="form-group">
@@ -35,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in users_info %}
+                        {% for user, role in users_info %}
                             <tr>
                                 <td>
                                     {{ user.lastName }}
@@ -47,7 +47,7 @@
                                     {{ user.email }}
                                 </td>
                                 <td>
-                                    {{ user.name }}
+                                    {{ role.name }}
                                 </td>
                                 <td>
                                     <button id="darkblue" class="btn btn-primary">Edit</button>
@@ -63,7 +63,7 @@
             </form>
         </div>
         <div class="col-md-4">
-            <div class="card info">
+            <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">All help session users are listed on this page. To search for a user, type any
                         portion of the user's first or last name, role, or email in the search box. To add a user,
@@ -98,6 +98,8 @@
     <script>
         $(document).ready( function () {
             var table = $('#user-table').DataTable( {
+                "aaSorting": [3, 'asc'],
+
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },

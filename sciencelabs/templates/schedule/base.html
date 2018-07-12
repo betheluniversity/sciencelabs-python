@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="custom-small row">
         <div class="col-md-8">
             <form>
                 <div class="form-row">
@@ -47,11 +47,24 @@
                                     {{ schedule.name }}
                                 </td>
                                 <td>
-                                    {{ schedule.dayofWeek }}
+                                    {% if schedule.dayofWeek == 0 %}
+                                    Sun
+                                {% elif schedule.dayofWeek == 1 %}
+                                    Mon
+                                {% elif schedule.dayofWeek == 2 %}
+                                    Tue
+                                {% elif schedule.dayofWeek == 3 %}
+                                    Wed
+                                {% elif schedule.dayofWeek == 4 %}
+                                    Thu
+                                {% elif schedule.dayofWeek == 5 %}
+                                    Fri
+                                {% else %}
+                                    Sat
+                                {% endif %}
                                 </td>
                                 <td>
-                                    {{ schedule.startTime }}
-                                    {{ schedule.endTime }}
+                                    {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') + ' - ' + (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
                                 </td>
                                 <td>
                                     {{ schedule.room }}
@@ -74,7 +87,7 @@
             </form>
         </div>
         <div class="col-md-4">
-            <div class="card info">
+            <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
                         To view specific schedule information including courses and tutors, click the

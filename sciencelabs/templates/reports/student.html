@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="custom-small row">
         <div class="col-md-8">
             <form>
                 <div class="form-row">
@@ -66,19 +66,19 @@
                     {% for student in student_info %}
                         <tr>
                             <td>
-                                {{ student.lastName }}
+                                {{ student.User.lastName }}
                             </td>
                             <td>
-                                {{ student.firstName }}
+                                {{ student.User.firstName }}
                             </td>
                             <td>
-                                {{ student.email }}
+                                {{ student.User.email }}
                             </td>
                             <td>
-                                Attendance
+                                {{ student[1] }}
                             </td>
                             <td>
-                                <button id="darkblue" class="btn btn-primary">View</button>
+                                <button href="/report/student/{{ student.User.id }}" id="darkblue" class="btn btn-primary">View</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -93,7 +93,7 @@
 
 
         <div class="col-md-4">
-            <div class="card info">
+            <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
                         All students who have attended a {{ app_settings['LAB_TITLE'] }} session for the term given at
