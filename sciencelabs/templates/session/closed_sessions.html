@@ -73,8 +73,10 @@
     <script>
         $(document).ready( function () {
             var table = $('#table').DataTable( {
+                "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bLengthChange": false,
+
             });
         });
     </script>
