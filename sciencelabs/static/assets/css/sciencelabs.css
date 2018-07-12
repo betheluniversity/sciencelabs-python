@@ -55,6 +55,15 @@ div.row-group{
     text-align: left;
 }
 
+#table_length{
+    width: 100%;
+    text-align: left;
+}
+
+select{
+    width: 100%;
+}
+
 label{
     width: 100%;
 
