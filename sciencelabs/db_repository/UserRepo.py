@@ -31,10 +31,17 @@ class User(Base):
             .all()
 
     def get_user_info(self):
-        return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id)\
-            .filter(user_role.role_id == Role.id).all()
+        return session.query(User, Role).filter(User.id == user_role.user_id)\
+            .filter(User.id == user_role.user_id)\
+            .filter(user_role.role_id == Role.id)\
+            .all()
 
-    def get_session_attendance(self):
-        return session.query(User, func.count(distinct(User.id))).filter(StudentSession.sessionId == Session.id).filter(Session.semester_id == Semester.id).filter(Semester.active == 1).filter(Schedule.id == Session.schedule_id).filter(StudentSession.studentId == User.id).group_by(User.id).all()
-
-
+    def get_unique_session_attendance(self):
+        return session.query(User, func.count(distinct(User.id)))\
+            .filter(StudentSession.sessionId == Session.id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .filter(Schedule.id == Session.schedule_id)\
+            .filter(StudentSession.studentId == User.id)\
+            .group_by(User.id)\
+            .all()
