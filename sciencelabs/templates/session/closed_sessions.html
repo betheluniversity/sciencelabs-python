@@ -52,18 +52,18 @@
                         <div style="display:none;margin-top:10px" class="text-left">
                         {% set leads, tutors = session_tutors.get_session_tutors(self, session.id) %}
                         {% for lead in leads %}
-                            {{ lead }} <span class="button-labels">Lead</span><br />
+                            {{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Lead</span><br />
                         {% endfor %}
                         {% for tutor in tutors %}
-                            {{ tutor }}<br />
+                            {{ tutor.firstName }} {{ tutor.lastName }}<br />
                         {% endfor %}
                         </div>
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_session') }}'" type="button"
+                            <button onclick="location.href='{{ url_for('SessionView:edit_session', session_id=session.id) }}'" type="button"
                                     class="edit btn btn-primary">Edit</button>
-                            <button onclick="location.href='{{ url_for('SessionView:delete_session') }}'" type="button"
+                            <button onclick="location.href='{{ url_for('SessionView:delete_session', session_id=session.id) }}'" type="button"
                                     class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -74,6 +74,7 @@
 
     <script>
         $(document).ready( function () {
+
             $.extend($.fn.dataTableExt.oStdClasses, {
                 // give some foundation classes to our controls
                 sWrapper: 'large-12 columns ',
@@ -85,6 +86,7 @@
                 sPageButtonDisabled: 'disabled',
                 sPageButtonActive: 'success'
             });
+
             var closedSessionTable = $('#closed-table').dataTable({
                 "order": [[1, 'asc'],[2, 'asc']],
                 "bPaginate": false,
@@ -92,6 +94,7 @@
                     "sSearch": "Search:"
                 }
             });
+
             $(".show-tutors").click(function() {
                 $(this).next().toggle();
                 if($(this).text() !== 'Show')
@@ -99,6 +102,7 @@
                 else
                     $(this).text('Hide');
             });
+
         });
     </script>
 

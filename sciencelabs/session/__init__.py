@@ -7,6 +7,7 @@ from datetime import datetime
 from sciencelabs.session.session_controller import SessionController
 from sciencelabs.db_repository.SessionRepo import Session
 from sciencelabs.db_repository.TutorSessionRepo import TutorSession
+from sciencelabs.db_repository.UserRepo import User
 
 
 class SessionView(FlaskView):
@@ -28,8 +29,12 @@ class SessionView(FlaskView):
     def restore(self):
         return render_template('session/restore_session.html')
 
-    def edit_session(self):
-        return render_template('session/edit_closed_session.html')
+    def edit_session(self, session_id):
+        timedelta_to_time = datetime.min
+        session = Session.get_session(self, session_id)
+        leads, tutors = TutorSession.get_session_tutors(self, session_id)
+        session_students = User.get_session_students(self, session_id)
+        return render_template('session/edit_closed_session.html', **locals())
 
     def edit_student(self):
         return render_template('session/edit_student.html')
@@ -46,5 +51,5 @@ class SessionView(FlaskView):
     def add_tutor(self):
         return render_template('session/add_tutor.html')
 
-    def delete_session(self):
+    def delete_session(self, session_id):
         return render_template('session/delete_session.html')

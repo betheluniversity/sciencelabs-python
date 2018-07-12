@@ -1,0 +1,53 @@
+{% extends 'session/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Edit Attendance for ***TUTOR***</p> {# TODO #}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="time-in">Time In</label>
+                        <input type="time" class="form-control" id="time-in">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="time-out">Time Out</label>
+                        <input type="time" class="form-control" id="time-out">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox" style="display:inline-block;">
+                            <input type="checkbox" class="custom-control-input" id="lead">
+                            <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="info card">
+                <div class="card-body">
+                    <p>Attendance may be edited by altering information in the given fields. To designate an unknown
+                        time in or out, leave these fields blank, or use the backspace key to clear all fields. This
+                        unknown time will be listed as "???" in all reports, and will result in zero time recorded for
+                        the user.</p>
+                    <p>When all fields are correct, press the <span class="button-labels">Save</span> button to
+                        complete the user edits.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

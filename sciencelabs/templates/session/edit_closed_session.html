@@ -3,8 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            {# TODO MAKE SURE TO UPDATE PASSSING INFO IN#}
-            <p class="card-text">Edit ***SESSION*** Information</p>
+            <p class="card-text">Edit {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }} Information</p>
         </div>
     </div>
 {% endblock %}
@@ -14,17 +13,18 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
-                <input type="text" class="form-control" id="session-name">
+                <input type="text" class="form-control" id="session-name"
+                       value="{{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
-                <input type="text" class="form-control" id="room-number">
+                <input type="text" class="form-control" id="room-number" value="{{ session.room }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="">Semester</label>
                 <select class="custom-select">
                     {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                        <option value="{{ semester }}">{{ semester }}</option>
+                        <option value="{{ semester }}">{{ semester }}</option> {# TODO #}
                     {% endfor %}
                 </select>
             </div>
@@ -32,15 +32,17 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="session-date">Date (click to select)</label>
-                <input type="text" class="form-control" id="session-date">
+                <input type="text" class="form-control" id="session-date" value="{{ session.date.strftime('%m/%d/%Y') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
-                <input type="time" class="form-control" id="scheduled-start">
+                <input type="time" class="form-control" id="scheduled-start"
+                       value="{{ (timedelta_to_time + session.schedStartTime).strftime('%H:%M') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-end">Scheduled End Time</label>
-                <input type="time" class="form-control" id="scheduled-end">
+                <input type="time" class="form-control" id="scheduled-end"
+                       value="{{ (timedelta_to_time + session.schedEndTime).strftime('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
@@ -58,11 +60,13 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="actual-start">Actual Start Time</label>
-                <input type="time" class="form-control" id="actual-start">
+                <input type="time" class="form-control" id="actual-start"
+                       value="{{ (timedelta_to_time + session.startTime).strftime('%H:%M') }}">
             </div>
             <div class="form-group col-md-6">
                 <label for="actual-end">Actual End Time</label>
-                <input type="time" class="form-control" id="actual-end">
+                <input type="time" class="form-control" id="actual-end"
+                       value="{{ (timedelta_to_time + session.endTime).strftime('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
@@ -83,13 +87,13 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="comments">Comments</label>
-                <textarea class="form-control" id="comments"></textarea>
+                <textarea class="form-control" id="comments">{{ session.comments }}</textarea>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="anon-students">Anonymous Students</label>
-                <input type="text" class="form-control" id="anon-students" value="0">
+                <input type="text" class="form-control" id="anon-students" value="{{ session.anonStudents }}">
             </div>
         </div>
         <div class="form-row">
@@ -113,7 +117,37 @@
             <th></th>
         </thead>
         <tbody>
-            {# TODO #}
+            {% for student in session_students %}
+                <tr>
+                    <td>
+                        {{ student.firstName }} {{ student.lastName }}
+                    </td>
+                    <td>
+                        {% if student.timeIn %}
+                            {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
+                        {% else %}
+                            ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if student.timeOut %}
+                            {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
+                        {% else %}
+                            ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        Course
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button onclick="location.href='{{ url_for('SessionView:edit_student') }}'"
+                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <button type="button" class="delete btn btn-primary">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <button onclick="location.href='{{ url_for('SessionView:add_student') }}'" type="button"
@@ -134,7 +168,68 @@
             <th></th>
         </thead>
         <tbody>
-            {# TODO #}
+            {% for lead in leads %}
+                <tr>
+                    <td>
+                        {{ lead.firstName }} {{ lead.lastName }}
+                    </td>
+                    <td>
+                        {% if lead.timeIn %}
+                            {{ (timedelta_to_time + lead.timeIn).strftime('%I:%M%p') }}
+                        {% else %}
+                            ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if lead.timeOut %}
+                            {{ (timedelta_to_time + lead.timeOut).strftime('%I:%M%p') }}
+                        {% else %}
+                            ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        Yes
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor') }}'"
+                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <button type="button" class="delete btn btn-primary">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for tutor in tutors %}
+                <tr>
+                    <td>
+                        {{ tutor.firstName }} {{ tutor.lastName }}
+                    </td>
+                    <td>
+                        {% if tutor.timeIn %}
+                            {{ (timedelta_to_time + tutor.timeIn).strftime('%I:%M%p') }}
+                        {% else %}
+                             ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if tutor.timeOut %}
+                            {{ (timedelta_to_time + tutor.timeOut).strftime('%I:%M%p') }}
+                        {% else %}
+                            ???
+                        {% endif %}
+                    </td>
+                    <td>
+                        No
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor') }}'"
+                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <button type="button" class="delete btn btn-primary">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <button onclick="location.href='{{ url_for('SessionView:add_tutor') }}'" type="button"
@@ -142,16 +237,35 @@
 
     <script>
         $(document).ready( function () {
-            var student_table = $('#edit-student-table').DataTable( {
-                "aaSorting": [],
-                "bPaginate": false,
-                "bLengthChange": false,
+
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sWrapper: 'large-12 columns ',
+                sLength: 'large-4 columns ',
+                sFilter: 'large-12 columns ',
+                sInfo: 'large-4 left ',
+                sPaging: 'right ',
+                sPageButton: 'button small',
+                sPageButtonDisabled: 'disabled',
+                sPageButtonActive: 'success'
             });
-            var tutor_table = $('#edit-tutor-table').DataTable( {
-                "aaSorting": [],
+
+            var tutorTable = $('#edit-tutor-table').dataTable({
+                "order": [[0, 'asc'],[1, 'asc']],
                 "bPaginate": false,
-                "bLengthChange": false,
+                "oLanguage": {
+                    "sSearch": "Search:"
+                }
             });
+
+            var studentTable = $('#edit-student-table').dataTable({
+                "order": [[0, 'asc'],[1, 'asc']],
+                "bPaginate": false,
+                "oLanguage": {
+                    "sSearch": "Search:"
+                }
+            });
+
         });
     </script>
 {% endblock %}

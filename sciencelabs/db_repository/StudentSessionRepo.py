@@ -1,7 +1,6 @@
 from sqlalchemy import *
 
 from sciencelabs.db_repository import Base
-from sciencelabs.db_repository import session
 
 
 class StudentSession(Base):
