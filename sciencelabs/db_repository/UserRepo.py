@@ -45,3 +45,4 @@ class User(Base):
             .filter(StudentSession.studentId == User.id)\
             .group_by(User.id)\
             .all()
+    

@@ -53,7 +53,16 @@
                         {{ session.room }}
                     </td>
                     <td>
-                        <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                        <button type="button" class="show-tutors btn btn-primary">Show</button>
+                        <div style="display:none;margin-top:10px" class="text-left">
+                        {% set leads, tutors = session_tutors.get_session_tutors(self, session.id) %}
+                        {% for lead in leads %}
+                            {{ lead }} <span class="button-labels">Lead</span><br />
+                        {% endfor %}
+                        {% for tutor in tutors %}
+                            {{ tutor }}<br />
+                        {% endfor %}
+                        </div>
                     </td>
                     <td>
                         <div class="btn-group">
