@@ -1,21 +1,16 @@
-from sqlalchemy import *
-
-from sciencelabs.db_repository import Base
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.UserRepo import User
+from sciencelabs.db_repository.db_tables import Session, Semester, User, TutorSession
 
 
-class TutorSession(Base):
-    __tablename__ = 'TutorSession'
-    id = Column(Integer, primary_key=True)
-    schedTimeIn = Column(String)
-    schedTimeOut = Column(String)
-    timeIn = Column(String)
-    timeOut = Column(String)
-    lead = Column(Integer)
-    tutorId = Column(Integer)
-    sessionId = Column(Integer)
-    substitutable = Column(Integer)
+class SessionFunctions:
+
+    def get_closed_sessions(self):
+        return (session.query(Session.id, Session.name, Session.date, Session.startTime, Session.endTime, Session.room)
+                .filter(Session.semester_id == Semester.id).filter(Semester.active == 1)
+                .filter(Session.startTime != None).all())
+
+    def get_session(self, session_id):
+        return session.query(Session).filter(Session.id == session_id).one()
 
     def get_session_tutors(self, session_id):
         tutors = session.query(User.id, User.firstName, User.lastName, TutorSession.lead, TutorSession.timeIn, TutorSession.timeOut)\
