@@ -19,8 +19,8 @@ class SessionView(FlaskView):
 
     def closed(self):
         timedelta_to_time = datetime.min
-        sessions = Session.get_closed_sessions(self)
-        session_tutors = TutorSession
+        sessions = Session().get_closed_sessions()
+        session_tutors = TutorSession()
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):

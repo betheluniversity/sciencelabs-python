@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="custom-default row">
         <div class="col-md-8">
             <form class="create-session-form">
                 <div class="form-row">
@@ -129,7 +129,7 @@
                 }else {
                     $(this).addClass('all');
                     $('.custom-control-input').prop('checked', true);
-                    $(this).text('Deselect All Courses');
+                    $(this).text('Select No Courses');
                 }
             });
 

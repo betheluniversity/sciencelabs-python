@@ -6,7 +6,7 @@
 
 {#TODO: This tab needs another subnav that allows the user to switch between #}
 {% block body_content %}
-   <div class="row">
+   <div class="custom-default row">
    <div class="col-md-8">
        <form>
            <div class="form-row">
@@ -52,14 +52,8 @@
                         <h4>Schedule Statistics for Closed Sessions during ***MONTH***</h4>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                     <label for="search-box-1">Search:</label>
-                    <input type="text" class="form-control" id="search-box-1">
-                    </div>
-                </div>
                 {# TODO FILL TABLE #}
-                <table id="monthly-closed-info-table"  class="table table-striped table-bordered" style="width:100%">
+                <table id="closed-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Schedule Name</th>
@@ -86,14 +80,8 @@
                         <h4>Session Statistics for ***MONTH***</h4>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                     <label for="search-box-2">Search:</label>
-                    <input type="text" class="form-control" id="search-box-2">
-                    </div>
-                </div>
                 {# TODO FILL TABLE #}
-                <table id="monthly-info-table"  class="table table-striped table-bordered" style="width:100%">
+                <table id="table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -124,7 +112,7 @@
             </form>
         </div>
         <div class="col-md-4">
-            <div class="card info">
+            <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
                         This page contains schedule and session statistics for the term and month listed at the top of
@@ -153,13 +141,13 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#monthly-closed-info-table').DataTable( {
+            var table = $('#closed-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,
             });
 
-            var table = $('#monthly-info-table').DataTable( {
+            var table = $('#table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,

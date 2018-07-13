@@ -12,7 +12,7 @@ class UsersView(FlaskView):
         self.base = UsersController()
 
     def index(self):
-        users_info = User.get_user_info(self)
+        users_info = User().get_user_info()
         return render_template('users/base.html', **locals())
 
     def add_user(self):

@@ -42,7 +42,7 @@
                         {{ session.date.strftime('%m/%d/%Y') }}
                     </td>
                     <td>
-                        {{ (timedelta_to_time + session.startTime).strftime('%I:%M%p') + ' - ' + (timedelta_to_time + session.endTime).strftime('%I:%M%p') }}
+                        {{ (timedelta_to_time + session.startTime).strftime('%l:%M%p') + ' - ' + (timedelta_to_time + session.endTime).strftime('%l:%M%p') }}
                     </td>
                     <td>
                         {{ session.room }}
@@ -50,7 +50,7 @@
                     <td>
                         <button type="button" class="show-tutors btn btn-primary">Show</button>
                         <div style="display:none;margin-top:10px" class="text-left">
-                        {% set leads, tutors = session_tutors.get_session_tutors(self, session.id) %}
+                        {% set leads, tutors = session_tutors.get_session_tutors(session.id) %}
                         {% for lead in leads %}
                             {{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Lead</span><br />
                         {% endfor %}

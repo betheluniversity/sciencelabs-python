@@ -6,7 +6,7 @@
     {% endblock %}
 
     {% block body_content %}
-        <div class="row">
+        <div class="custom-default row">
             <div class="col-md-8">
                 <form>
                     <div class="form-row">
@@ -47,8 +47,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="subject">Message</label>
-                            <textarea rows="15" cols="67">
-                            </textarea>
+                            <textarea class="form-control" rows="15" cols="67"></textarea>
                         </div>
                     </div>
                     <div class="form-row">
@@ -59,7 +58,7 @@
                 </form>
             </div>
             <div class="col-md-4">
-                <div class="card info">
+                <div class="sub-info card info">
                     <div class="card-body">
                         <p class="card-text">
                             This section gives you the option to email {{ app_settings['LAB_TITLE'] }} users. These

@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="custom-large row">
         <div class="col-md-8">
             <form>
                 <div class="form-row">
@@ -42,13 +42,13 @@
                             <h3>Term Statistics</h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <strong>Sessions held:</strong>
+                                    <b>Sessions held:</b> {{ total_sessions }}
                                 </li>
                                 <li>
-                                    <strong>Total attendance:</strong>
+                                    <b>Total attendance:</b> {{ total_attendance }}
                                 </li>
                                 <li>
-                                    <strong>Unique student attendance:</strong>
+                                    <b>Unique student attendance:</b> {{ unique_attendance }}
                                 </li>
                             </ul>
                         </p>
@@ -59,27 +59,21 @@
                             <h3><br></h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <strong>Average total time spent per student:</strong>
+                                    <b>Average total time spent per student:</b>
                                 </li>
                                 <li>
-                                    <strong>Average student attendance per session:</strong>
+                                    <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
                                 </li>
                                 <li>
-                                    <strong>Average number of visits per student:</strong>
+                                    <b>Average number of visits per student:</b>
                                 </li>
                             </ul>
                         </p>
                     </div>
                 </div>
                 <h3>Schedule Statistics for Closed Sessions</h3>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                     <label for="session-name">Search:</label>
-                    <input type="text" class="form-control" id="session-name">
-                    </div>
-                </div>
                 {# TODO FILL TABLE #}
-                <table id="term-table"  class="table table-striped table-bordered" style="width:100%">
+                <table id="table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
                         <th>Schedule Name</th>
@@ -92,23 +86,23 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for term in term_info %}
+                    {% for schedule, sessions in term_info %}
                         <tr>
                             <td>
-                                {{ term.name }}
+                                {{ schedule.name }}
                             </td>
                             <td>
-                                {% if term.dayofWeek == 0 %}
+                                {% if schedule.dayofWeek == 0 %}
                                     Sun
-                                {% elif term.dayofWeek == 1 %}
+                                {% elif schedule.dayofWeek == 1 %}
                                     Mon
-                                {% elif term.dayofWeek == 2 %}
+                                {% elif schedule.dayofWeek == 2 %}
                                     Tue
-                                {% elif term.dayofWeek == 3 %}
+                                {% elif schedule.dayofWeek == 3 %}
                                     Wed
-                                {% elif term.dayofWeek == 4 %}
+                                {% elif schedule.dayofWeek == 4 %}
                                     Thu
-                                {% elif term.dayofWeek == 5 %}
+                                {% elif schedule.dayofWeek == 5 %}
                                     Fri
                                 {% else %}
                                     Sat
@@ -116,29 +110,45 @@
 
                             </td>
                             <td>
-                                {{ term.startTime }}
+                                {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                {{ term.endTime }}
+                                {{ (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
                             </td>
                             <td>
-                                Number of Sessions
+                                {{ sessions }}
                             </td>
                             <td>
-                                 Attendance
+                                 {{ attendance_list[loop.index - 1] }}
                             </td>
                             <td>
-                                Percentage
+                                {{ (attendance_list[loop.index - 1] / total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="text-right">
+                                Total
+                            </th>
+                            <td>
+                                <b>{{ total_sessions }}</b>
+                            </td>
+                            <td>
+                                <b>{{ total_attendance }}</b>
+                            </td>
+                            <td>
+                                <b>100%</b>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </form>
         </div>
         <div class="col-md-4">
-            <div class="card info">
+            <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
                         This page contains term and schedule statistics for the term listed at the top of the page.
@@ -167,7 +177,7 @@
 
     <script>
         $(document).ready( function () {
-            var table = $('#term-table').DataTable( {
+            var table = $('#table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,

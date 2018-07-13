@@ -1,12 +1,14 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView
+from datetime import datetime
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.UserRepo import User
 from sciencelabs.db_repository.CourseRepo import Course
 from sciencelabs.db_repository.ScheduleRepo import Schedule
+from sciencelabs.db_repository.StudentSessionRepo import StudentSession
 
 
 class ReportView(FlaskView):
@@ -17,11 +19,29 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        student_info = User.get_report_student_info(self)
+        student_info = User().get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
-        term_info = Schedule.get_report_term_info(self)
+        timedelta_to_time = datetime.min
+        term_info = Schedule().get_term_report()
+        term_attendance = Schedule().get_session_attendance()
+        unique_attendance_info = User().get_unique_session_attendance()
+        total_sessions = 0
+        for sessions in term_info:
+            total_sessions += sessions[1]
+
+        total_attendance = 0
+        unique_attendance = 0
+        attendance_list = []
+        for sessions in term_attendance:
+            total_attendance += sessions[1]
+            attendance_list += [sessions[1]]
+
+        unique_attendance = 0
+        for attendance_data in unique_attendance_info:
+            unique_attendance += attendance_data[1]
+
         return render_template('reports/term.html', **locals())
 
     def month(self):
@@ -37,5 +57,5 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
-        course_info = Course.get_report_course_info(self)
+        course_info = Course().get_active_course_info()
         return render_template('reports/course.html', **locals())

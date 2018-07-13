@@ -4,6 +4,7 @@ from sciencelabs.db_repository import Base
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.SemesterRepo import Semester
 from sciencelabs.db_repository.SessionRepo import Session
+from sciencelabs.db_repository.StudentSessionRepo import StudentSession
 
 
 class Schedule(Base):
@@ -17,7 +18,25 @@ class Schedule(Base):
     term = Column(String)
     deletedAt = Column(String)
 
-    def get_report_term_info(self):
-        return session.query(Schedule.name, Schedule.dayofWeek, Schedule.startTime, Schedule.endTime, Schedule.room)\
-            .filter(Schedule.id == Session.schedule_id).filter(Session.semester_id == Semester.id)\
-            .filter(Semester.active == 1).all()
+    def get_schedule_tab_info(self):
+        return session.query(Schedule)\
+            .filter(Schedule.id == Session.schedule_id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .all()
+
+    def get_term_report(self):
+        return session.query(Schedule, func.count(Schedule.id))\
+            .filter(Session.startTime != None)\
+            .filter(Session.schedule_id == Schedule.id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .group_by(Schedule.id).all()
+
+    def get_session_attendance(self):
+        return session.query(Schedule, func.count(Schedule.id))\
+            .filter(StudentSession.sessionId == Session.id)\
+            .filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1)\
+            .filter(Schedule.id == Session.schedule_id)\
+            .group_by(Schedule.id).all()

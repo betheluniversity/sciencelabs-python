@@ -31,3 +31,4 @@ class Session(Base):
 
     def get_session(self, session_id):
         return session.query(Session).filter(Session.id == session_id).one()
+
