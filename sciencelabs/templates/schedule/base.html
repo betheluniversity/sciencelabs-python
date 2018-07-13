@@ -65,6 +65,16 @@
                                 </td>
                                 <td>
                                     <button id="show-courses" type="button" class="show-courses btn btn-primary">Show</button>
+                                    <div style="display:none;margin-top:10px" class="text-left">
+                                        {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
+                                        <ul>
+                                            {% for course in courses %}
+                                                <li>
+                                                    {{ course }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
                                 </td>
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
