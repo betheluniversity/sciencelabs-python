@@ -3,7 +3,7 @@ from sqlalchemy import *
 from sciencelabs.db_repository import Base
 
 
-class CourseCode(Base):
+class CourseCode_Table(Base):
     __tablename__ = 'CourseCode'
     id = Column(Integer, primary_key=True)
     dept = Column(String)
@@ -13,13 +13,13 @@ class CourseCode(Base):
     courseName = Column(String)
 
 
-class CourseProfessors(Base):
+class CourseProfessors_Table(Base):
     __tablename__ = 'CourseProfessors'
     course_id = Column(Integer, primary_key=True)
     professor_id = Column(Integer)
 
 
-class Course(Base):
+class Course_Table(Base):
     __tablename__ = 'Course'
     id = Column(Integer, primary_key=True)
     professor_id = Column(Integer)
@@ -39,13 +39,13 @@ class Course(Base):
     room = Column(String)
 
 
-class CourseViewer(Base):
+class CourseViewer_Table(Base):
     __tablename__ = 'CourseViewer'
     course_id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
 
 
-class Role(Base):
+class Role_Table(Base):
     __tablename__ = 'Role'
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -53,13 +53,13 @@ class Role(Base):
     sort = Column(Integer)
 
 
-class ScheduleCourseCodes(Base):
+class ScheduleCourseCodes_Table(Base):
     __tablename__ = 'ScheduleCourseCodes'
     schedule_id = Column(Integer, primary_key=True)
     coursecode_id = Column(Integer)
 
 
-class Schedule(Base):
+class Schedule_Table(Base):
     __tablename__ = 'Schedule'
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -71,7 +71,7 @@ class Schedule(Base):
     deletedAt = Column(String)
 
 
-class Semester(Base):
+class Semester_Table(Base):
     __tablename__ = 'Semester'
     id = Column(Integer, primary_key=True)
     term = Column(String)
@@ -81,19 +81,19 @@ class Semester(Base):
     active = Column(Integer)
 
 
-class SessionCourseCodes(Base):
+class SessionCourseCodes_Table(Base):
     __tablename__ = 'SessionCourseCodes'
     session_id = Column(Integer, primary_key=True)
     coursecode_id = Column(Integer)
 
 
-class SessionCourses(Base):
+class SessionCourses_Table(Base):
     __tablename__ = 'SessionCourses'
     studentsession_id = Column(Integer, primary_key=True)
     course_id = Column(Integer)
 
 
-class Session(Base):
+class Session_Table(Base):
     __tablename__ = 'Session'
     id = Column(Integer, primary_key=True)
     semester_id = Column(Integer)
@@ -112,7 +112,7 @@ class Session(Base):
     anonStudents = Column(Integer)
     name = Column(String)
 
-class StudentSession(Base):
+class StudentSession_Table(Base):
     __tablename__ = 'StudentSession'
     id = Column(Integer, primary_key=True)
     timeIn = Column(String)
@@ -123,7 +123,7 @@ class StudentSession(Base):
     otherCourseName = Column(String)
 
 
-class TutorSchedule(Base):
+class TutorSchedule_Table(Base):
     __tablename__ = 'TutorSchedule'
     id = Column(Integer, primary_key=True)
     schedTimeIn = Column(String)
@@ -133,7 +133,7 @@ class TutorSchedule(Base):
     scheduleId = Column(Integer)
 
 
-class TutorSession(Base):
+class TutorSession_Table(Base):
     __tablename__ = 'TutorSession'
     id = Column(Integer, primary_key=True)
     schedTimeIn = Column(String)
@@ -146,19 +146,19 @@ class TutorSession(Base):
     substitutable = Column(Integer)
 
 
-class user_course(Base):
+class user_course_Table(Base):
     __tablename__ = 'user_course'
     user_id = Column(Integer, primary_key=True)
     course_id = Column(Integer)
 
 
-class user_role(Base):
+class user_role_Table(Base):
     __tablename__ = 'user_role'
     user_id = Column(Integer, primary_key=True)
     role_id = Column(Integer)
 
 
-class User(Base):
+class User_Table(Base):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
     username = Column(String)

@@ -5,8 +5,8 @@ from datetime import datetime
 
 # Local
 from sciencelabs.session.session_controller import SessionController
-from sciencelabs.db_repository.session_functions import SessionFunctions
-from sciencelabs.db_repository.user_functions import UserFunctions
+from sciencelabs.db_repository.session_functions import Session
+from sciencelabs.db_repository.user_functions import User
 
 
 class SessionView(FlaskView):
@@ -18,8 +18,8 @@ class SessionView(FlaskView):
 
     def closed(self):
         timedelta_to_time = datetime.min
-        sessions = SessionFunctions().get_closed_sessions()
-        session_tutors = SessionFunctions()
+        sessions = Session().get_closed_sessions()
+        session_tutors = Session()
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
@@ -30,9 +30,9 @@ class SessionView(FlaskView):
 
     def edit_session(self, session_id):
         timedelta_to_time = datetime.min
-        session = SessionFunctions().get_session(session_id)
-        leads, tutors = SessionFunctions().get_session_tutors(session_id)
-        session_students = UserFunctions().get_session_students(session_id)
+        session = Session().get_session(session_id)
+        leads, tutors = Session().get_session_tutors(session_id)
+        session_students = User().get_session_students(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
     def edit_student(self):
@@ -46,7 +46,7 @@ class SessionView(FlaskView):
 
     def edit_tutor(self, tutor_id, session_id):
         timedelta_to_time = datetime.min
-        tutor = SessionFunctions().get_tutor_session_info(tutor_id, session_id)
+        tutor = Session().get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
     def add_tutor(self):

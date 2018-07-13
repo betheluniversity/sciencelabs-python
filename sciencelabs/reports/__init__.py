@@ -5,9 +5,9 @@ from datetime import datetime
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
-from sciencelabs.db_repository.schedule_functions import ScheduleFunctions
-from sciencelabs.db_repository.course_functions import CourseFunctions
-from sciencelabs.db_repository.user_functions import UserFunctions
+from sciencelabs.db_repository.schedule_functions import Schedule
+from sciencelabs.db_repository.course_functions import Course
+from sciencelabs.db_repository.user_functions import User
 
 
 class ReportView(FlaskView):
@@ -18,14 +18,14 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
-        student_info = UserFunctions().get_student_info()
+        student_info = User().get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
         timedelta_to_time = datetime.min
-        term_info = ScheduleFunctions().get_term_report()
-        term_attendance = ScheduleFunctions().get_session_attendance()
-        unique_attendance_info = UserFunctions().get_unique_session_attendance()
+        term_info = Schedule().get_term_report()
+        term_attendance = Schedule().get_session_attendance()
+        unique_attendance_info = User().get_unique_session_attendance()
         total_sessions = 0
         for sessions in term_info:
             total_sessions += sessions[1]
@@ -56,5 +56,5 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
-        course_info = CourseFunctions().get_active_course_info()
+        course_info = Course().get_active_course_info()
         return render_template('reports/course.html', **locals())
