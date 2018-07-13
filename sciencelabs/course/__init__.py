@@ -4,7 +4,7 @@ from flask_classy import FlaskView
 
 # Local
 from sciencelabs.course.course_controller import CourseController
-from sciencelabs.db_repository.CourseRepo import Course
+from sciencelabs.db_repository.course_functions import Course
 
 
 class CourseView(FlaskView):
@@ -12,7 +12,8 @@ class CourseView(FlaskView):
 
     def __init__(self):
         self.base = CourseController()
+        self.course = Course()
 
     def index(self):
-        course_info = Course().get_course_info()
+        course_info = self.course.get_course_info()
         return render_template('course/base.html', **locals())
