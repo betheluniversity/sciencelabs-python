@@ -36,14 +36,14 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select class="custom-select" value="{{ schedule.dayofWeek }}">
-                            <option id="sun" value="Sunday">Sunday</option>
-                            <option id="mon" value="Monday">Monday</option>
-                            <option id="tue" value="Tuesday">Tuesday</option>
-                            <option id="wed" value="Wednesday">Wednesday</option>
-                            <option id="thu" value="Thursday">Thursday</option>
-                            <option id="fri" value="Friday">Friday</option>
-                            <option id="sat" value="Saturday">Saturday</option>
+                        <select class="custom-select">
+                            <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="Sunday">Sunday</option>
+                            <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="Monday">Monday</option>
+                            <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="Tuesday">Tuesday</option>
+                            <option {% if schedule.dayofWeek == 3 %} selected="selected"{% endif %} value="Wednesday">Wednesday</option>
+                            <option {% if schedule.dayofWeek == 4 %} selected="selected"{% endif %} value="Thursday">Thursday</option>
+                            <option {% if schedule.dayofWeek == 5 %} selected="selected"{% endif %} value="Friday">Friday</option>
+                            <option {% if schedule.dayofWeek == 6 %} selected="selected"{% endif %} value="Saturday">Saturday</option>
                         </select>
                     </div>
                 </div>
