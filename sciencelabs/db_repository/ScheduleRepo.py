@@ -40,3 +40,6 @@ class Schedule(Base):
             .filter(Semester.active == 1)\
             .filter(Schedule.id == Session.schedule_id)\
             .group_by(Schedule.id).all()
+
+    def get_schedule(self, schedule_id):
+        return session.query(Schedule).filter(Schedule.id == schedule_id).one()

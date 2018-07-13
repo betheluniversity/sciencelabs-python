@@ -1,48 +1,49 @@
-{% extends 'schedule/schedules.html' %}
+{% extends 'schedule/base.html' %}
 
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
             <form>
-                <div class="form-row">
+                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
                                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                                <p style="padding: 0px; margin: 0px">Create New Schedule for ***SEMESTER YEAR***</p>
+                                <p style="padding: 0px; margin: 0px">Edit Schedule for ***SEMESTER YEAR***</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
-                        <input type="text" class="form-control" id="schedule-name">
+                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
-                        <input type="text" class="form-control" id="room">
+                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time">
+                        <input type="time" class="form-control" id="start-time" value="{{ (timedelta_to_time + schedule.startTime).strftime('%H:%M') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time">
+                        <input type="time" class="form-control" id="end-time" value="{{ (timedelta_to_time + schedule.endTime).strftime('%H:%M') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select class="custom-select">
-                            <option value="sunday">Sunday</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
+                        <select class="custom-select" value="{{ schedule.dayofWeek }}">
+                            <option id="sun" value="sunday">Sunday</option>
+                            <option id="mon" value="1">Monday</option>
+                            <option id="tue" value="Tuesday">Tuesday</option>
+                            <option id="wed" value="Wednesday">Wednesday</option>
+                            <option id="thu" value="Thursday">Thursday</option>
+                            <option id="fri" value="Friday">Friday</option>
+                            <option id="sat" value="Saturday">Saturday</option>
                         </select>
                     </div>
                 </div>
@@ -85,25 +86,16 @@
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        To create a new schedule for the listed term, enter the schedule information in the given
-                        fields.
+                        Edit schedule information in the given fields to reflect changes in the current schedule.
                     </p>
                     <p class="card-text">
-                        A schedule will be used to create recurring sessions that will occur on the chosen day of
-                        week and time, throughout the given term.
+                        To edit tutor information, click in the tutor box until a cursor appears. To add a tutor, select
+                        a name from the list that appears, or start typing a tutor name to find it quickly, and then
+                        select the tutor. If tutors need to be deleted, click on the "X" next to the tutor name.
                     </p>
                     <p class="card-text">
-                        A session is a single instance of a schedule, and may be edited individually on the
-                        <span class="button-labels">Session</span> tab.
-                    </p>
-                    <p class="card-text">
-                        Multiple schedules may occur on any day of the week. Therefore, the name of the schedule
-                        should reflect the the existence of multiple rooms or varying times of day. Please create
-                        sessions with unique identifying names. For example, 'Monday Second Room Chapel Time' and
-                        'Monday Main Room Evening' could distinguish two separate Monday schedules.
-                    </p>
-                    <p class="card-text">
-                        Click <span class="button-labels">Save</span> when you are done creating the new schedule.
+                        For more information regarding schedules and sessions, see the documentation on the
+                        <span id="gray" class="button-labels">Create New Schedule</span> tab.
                     </p>
                 </div>
             </div>
