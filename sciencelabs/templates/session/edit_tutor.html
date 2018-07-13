@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Edit Attendance for ***TUTOR***</p> {# TODO #}
+            <p class="card-text">Edit Attendance for <strong>{{ tutor.firstName }} {{ tutor.lastName }}</strong></p>
         </div>
     </div>
 {% endblock %}
@@ -15,17 +15,19 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
-                        <input type="time" class="form-control" id="time-in">
+                        <input type="time" class="form-control" id="time-in"
+                               value="{{ (timedelta_to_time + tutor.timeIn).strftime('%H:%M') }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
-                        <input type="time" class="form-control" id="time-out">
+                        <input type="time" class="form-control" id="time-out"
+                               value="{{ (timedelta_to_time + tutor.timeOut).strftime('%H:%M') }}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="lead">
+                            <input type="checkbox" class="custom-control-input" id="lead" {{ 'checked' if tutor.lead}}>
                             <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
                         </div>
                     </div>

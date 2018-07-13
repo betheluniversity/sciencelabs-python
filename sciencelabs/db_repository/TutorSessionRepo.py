@@ -18,7 +18,7 @@ class TutorSession(Base):
     substitutable = Column(Integer)
 
     def get_session_tutors(self, session_id):
-        tutors = session.query(User.firstName, User.lastName, TutorSession.lead, TutorSession.timeIn, TutorSession.timeOut)\
+        tutors = session.query(User.id, User.firstName, User.lastName, TutorSession.lead, TutorSession.timeIn, TutorSession.timeOut)\
             .filter(TutorSession.sessionId == session_id).filter(User.id == TutorSession.tutorId)
         session_leads = []
         session_tutors = []
@@ -28,3 +28,8 @@ class TutorSession(Base):
             else:
                 session_tutors.append(tutor)
         return session_leads, session_tutors
+
+    def get_tutor_session_info(self, tutor_id, session_id):
+        return session.query(User.firstName, User.lastName, TutorSession.lead, TutorSession.timeIn, TutorSession.timeOut)\
+            .filter(TutorSession.sessionId == session_id).filter(TutorSession.tutorId == tutor_id)\
+            .filter(User.id == tutor_id).one()

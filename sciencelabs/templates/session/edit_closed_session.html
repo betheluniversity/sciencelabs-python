@@ -107,7 +107,7 @@
             <p class="card-text">Edit Student Attendance</p>
         </div>
     </div>
-    <button id="student-views" type="button" class="edit btn btn-primary">View by Course</button>
+    <button id="student-views" type="button" class="edit btn btn-primary" style="margin-bottom:10px;">View by Course</button>
     <table id="edit-student-table" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <th>Name</th>
@@ -192,7 +192,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor') }}'"
+                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=lead.id ,session_id=session.id) }}'"
                                     type="button" class="edit btn btn-primary">Edit</button>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
@@ -223,7 +223,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor') }}'"
+                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}'"
                                     type="button" class="edit btn btn-primary">Edit</button>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
