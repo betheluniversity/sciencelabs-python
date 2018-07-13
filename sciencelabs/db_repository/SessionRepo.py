@@ -25,7 +25,10 @@ class Session(Base):
     name = Column(String)
 
     def get_closed_sessions(self):
-        return session.query(Session).filter(Session.semester_id == Semester.id)\
-            .filter(Semester.active == 1)\
-            .filter(Session.startTime != None)\
-            .all()
+        return (session.query(Session.id, Session.name, Session.date, Session.startTime, Session.endTime, Session.room)
+                .filter(Session.semester_id == Semester.id).filter(Semester.active == 1)
+                .filter(Session.startTime != None).all())
+
+    def get_session(self, session_id):
+        return session.query(Session).filter(Session.id == session_id).one()
+

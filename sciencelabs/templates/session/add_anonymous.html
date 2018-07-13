@@ -1,0 +1,21 @@
+{% extends 'session/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Add session attendance.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="col-md-6">
+        <form>
+            <div class="form-group">
+                <label for="anon-students">Anonymous Students</label>
+                <input type="number" id="anon-students" placeholder="0">
+            </div>
+            <button type="button" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+{% endblock %}

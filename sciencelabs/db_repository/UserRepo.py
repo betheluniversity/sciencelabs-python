@@ -9,7 +9,6 @@ from sciencelabs.db_repository.SessionRepo import Session
 from sciencelabs.db_repository.SemesterRepo import Semester
 from sciencelabs.db_repository.ScheduleRepo import Schedule
 
-
 class User(Base):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
@@ -20,6 +19,19 @@ class User(Base):
     email = Column(String)
     send_email = Column(Integer)
     deletedAt = Column(String)
+
+    def get_report_student_info(self):
+        return session.query(User.lastName, User.firstName, User.email).filter(User.id == StudentSession.studentId)\
+            .filter(StudentSession.sessionId == Session.id).filter(Session.semester_id == Semester.id)\
+            .filter(Semester.active == 1).all()
+
+    def get_user_info(self):
+        return session.query(User.lastName, User.firstName, User.email, Role.name).filter(User.id == user_role.user_id)\
+            .filter(user_role.role_id == Role.id).all()
+
+    def get_session_students(self, session_id):
+        return session.query(User.firstName, User.lastName, StudentSession.timeIn, StudentSession.timeOut)\
+            .filter(StudentSession.sessionId == session_id).filter(StudentSession.studentId == User.id).all()
 
     def get_student_info(self):
         return session.query(User, func.count(User.id))\
@@ -44,5 +56,5 @@ class User(Base):
             .filter(Schedule.id == Session.schedule_id)\
             .filter(StudentSession.studentId == User.id)\
             .group_by(User.id)\
-            .all()
-    
+            .all()   
+ 

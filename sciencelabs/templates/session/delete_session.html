@@ -1,0 +1,24 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block subnav %}
+    <a id="all" class="nav-item nav-link active" href="#">All</a>
+    <a id="active" class="nav-item nav-link disabled" href="#">Active</a>
+    <a id="pending" class="nav-item nav-link disabled" href="#">Pending</a>
+    <a id="suspended" class="nav-item nav-link disabled" href="#">Suspended</a>
+{% endblock %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Delete ***SESSION***?</p> {# TODO #}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="centered">
+        <button onclick="location.href='{{ url_for('SessionView:closed') }}'" type="button"
+                class="delete-session edit btn btn-primary">Cancel</button>
+        <button type="button" class="delete-session delete btn btn primary">Delete</button>
+    </div>
+{% endblock %}
