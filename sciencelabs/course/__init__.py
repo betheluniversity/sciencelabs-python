@@ -12,7 +12,8 @@ class CourseView(FlaskView):
 
     def __init__(self):
         self.base = CourseController()
+        self.course = Course()
 
     def index(self):
-        course_info = Course().get_course_info()
+        course_info = self.course.get_course_info()
         return render_template('course/base.html', **locals())

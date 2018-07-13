@@ -12,14 +12,16 @@ from sciencelabs.db_repository.user_functions import User
 class SessionView(FlaskView):
     def __init__(self):
         self.base = SessionController()
+        self.user = User()
+        self.session = Session()
 
     def index(self):
         return render_template('session/base.html')
 
     def closed(self):
         timedelta_to_time = datetime.min
-        sessions = Session().get_closed_sessions()
-        session_tutors = Session()
+        sessions = self.session.get_closed_sessions()
+        session_tutors = self.session
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
@@ -30,9 +32,9 @@ class SessionView(FlaskView):
 
     def edit_session(self, session_id):
         timedelta_to_time = datetime.min
-        session = Session().get_session(session_id)
-        leads, tutors = Session().get_session_tutors(session_id)
-        session_students = User().get_session_students(session_id)
+        session = self.session.get_session(session_id)
+        leads, tutors = self.session.get_session_tutors(session_id)
+        session_students = self.user.get_session_students(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
     def edit_student(self):
@@ -46,7 +48,7 @@ class SessionView(FlaskView):
 
     def edit_tutor(self, tutor_id, session_id):
         timedelta_to_time = datetime.min
-        tutor = Session().get_tutor_session_info(tutor_id, session_id)
+        tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
     def add_tutor(self):
