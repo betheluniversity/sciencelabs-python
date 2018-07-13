@@ -6,7 +6,8 @@ from datetime import datetime
 # Local
 from sciencelabs.schedule.schedule_controller import ScheduleController
 from sciencelabs.db_repository.ScheduleRepo import Schedule
-from sciencelabs.db_repository.TutorSessionRepo import TutorSession
+from sciencelabs.db_repository.TutorScheduleRepo import TutorSchedule
+from sciencelabs.db_repository.ScheduleCourseCodesRepo import ScheduleCourseCodes
 
 
 class ScheduleView(FlaskView):
@@ -16,7 +17,8 @@ class ScheduleView(FlaskView):
     def index(self):
         timedelta_to_time = datetime.min
         schedule_info = Schedule().get_schedule_tab_info()
-        session_tutors = TutorSession()
+        schedule_tutors = TutorSchedule()
+        schedule_courses =
         return render_template('schedule/base.html', **locals())
 
     @route('/create')
