@@ -18,12 +18,12 @@ class TutorSession(Base):
     substitutable = Column(Integer)
 
     def get_session_tutors(self, session_id):
-        tutors = session.query(User.firstName, User.lastName, TutorSession.lead).filter(TutorSession.sessionId == session_id).filter(User.id == TutorSession.tutorId)
+        tutors = session.query(User, TutorSession).filter(TutorSession.sessionId == session_id).filter(User.id == TutorSession.tutorId)
         session_leads = []
         session_tutors = []
-        for tutor in tutors:
+        for user, tutor in tutors:
             if tutor.lead == 1:
-                session_leads.append(tutor.firstName + ' ' + tutor.lastName)
+                session_leads.append(user.firstName + ' ' + user.lastName)
             else:
-                session_tutors.append(tutor.firstName + ' ' + tutor.lastName)
+                session_tutors.append(user.firstName + ' ' + user.lastName)
         return session_leads, session_tutors
