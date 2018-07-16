@@ -1,5 +1,6 @@
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table, StudentSession_Table
+from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table, \
+    StudentSession_Table, Course_Table, SessionCourses_Table
 
 
 class Session:
@@ -30,6 +31,8 @@ class Session:
             .filter(User_Table.id == tutor_id).one()
 
     def get_student_session_info(self, student_id, session_id):
-        return session.query(User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut) \
+        return session.query(User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
+                             StudentSession_Table.timeOut, Course_Table.title) \
             .filter(StudentSession_Table.sessionId == session_id).filter(StudentSession_Table.studentId == student_id) \
-            .filter(User_Table.id == student_id).one()
+            .filter(User_Table.id == student_id).filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id).one()
