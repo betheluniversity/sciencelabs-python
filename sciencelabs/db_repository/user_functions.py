@@ -47,3 +47,14 @@ class User:
 
     def get_student(self, student_id):
         return session.query(User_Table).filter(User_Table.id == student_id).one()
+
+    def get_one(self, student_id):
+        return session.query(User_Table, func.count(User_Table.id)) \
+            .filter(student_id == User_Table.id)\
+            .filter(User_Table.id == StudentSession_Table.studentId) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.active == 1) \
+            .group_by(User_Table.id) \
+            .one()
+
