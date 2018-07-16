@@ -49,6 +49,11 @@ def utility_processor():
     return to_return
 
 
+def datetimeformat(value, custom_format='%l:%M%p'):
+    return (datetime.min + value).strftime(custom_format)
+
+
+app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.globals.update(app_settings=app_settings)
 
 if __name__ == "__main__":

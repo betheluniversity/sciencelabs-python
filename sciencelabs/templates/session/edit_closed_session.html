@@ -37,12 +37,12 @@
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
                 <input type="time" class="form-control" id="scheduled-start"
-                       value="{{ (timedelta_to_time + session.schedStartTime).strftime('%H:%M') }}">
+                       value="{{ session.schedStartTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-end">Scheduled End Time</label>
                 <input type="time" class="form-control" id="scheduled-end"
-                       value="{{ (timedelta_to_time + session.schedEndTime).strftime('%H:%M') }}">
+                       value="{{ session.schedEndTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
@@ -61,12 +61,12 @@
             <div class="form-group col-md-6">
                 <label for="actual-start">Actual Start Time</label>
                 <input type="time" class="form-control" id="actual-start"
-                       value="{{ (timedelta_to_time + session.startTime).strftime('%H:%M') }}">
+                       value="{{ session.startTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-6">
                 <label for="actual-end">Actual End Time</label>
                 <input type="time" class="form-control" id="actual-end"
-                       value="{{ (timedelta_to_time + session.endTime).strftime('%H:%M') }}">
+                       value="{{ session.endTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
@@ -124,14 +124,14 @@
                     </td>
                     <td>
                         {% if student.timeIn %}
-                            {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
+                            {{ student.timeIn|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
                     <td>
                         {% if student.timeOut %}
-                            {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
+                            {{ student.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
@@ -172,14 +172,14 @@
                     </td>
                     <td>
                         {% if lead.timeIn %}
-                            {{ (timedelta_to_time + lead.timeIn).strftime('%I:%M%p') }}
+                            {{ lead.timeIn|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
                     <td>
                         {% if lead.timeOut %}
-                            {{ (timedelta_to_time + lead.timeOut).strftime('%I:%M%p') }}
+                            {{ lead.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
@@ -202,14 +202,14 @@
                     </td>
                     <td>
                         {% if tutor.timeIn %}
-                            {{ (timedelta_to_time + tutor.timeIn).strftime('%I:%M%p') }}
+                            {{ tutor.timeIn|datetimeformat }}
                         {% else %}
                              ???
                         {% endif %}
                     </td>
                     <td>
                         {% if tutor.timeOut %}
-                            {{ (timedelta_to_time + tutor.timeOut).strftime('%I:%M%p') }}
+                            {{ tutor.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}

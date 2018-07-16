@@ -110,10 +110,10 @@
 
                             </td>
                             <td>
-                                {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') }}
+                                {{ (schedule.startTime|datetimeformat) }}
                             </td>
                             <td>
-                                {{ (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
+                                {{ schedule.endTime|datetimeformat }}
                             </td>
                             <td>
                                 {{ sessions }}

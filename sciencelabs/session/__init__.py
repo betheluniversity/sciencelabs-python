@@ -1,7 +1,6 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView
-from datetime import datetime
 
 # Local
 from sciencelabs.session.session_controller import SessionController
@@ -19,7 +18,6 @@ class SessionView(FlaskView):
         return render_template('session/base.html')
 
     def closed(self):
-        timedelta_to_time = datetime.min
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
         return render_template('session/closed_sessions.html', **locals())
@@ -31,7 +29,6 @@ class SessionView(FlaskView):
         return render_template('session/restore_session.html')
 
     def edit_session(self, session_id):
-        timedelta_to_time = datetime.min
         session = self.session.get_session(session_id)
         leads, tutors = self.session.get_session_tutors(session_id)
         session_students = self.user.get_session_students(session_id)
@@ -47,7 +44,6 @@ class SessionView(FlaskView):
         return render_template('session/add_anonymous.html')
 
     def edit_tutor(self, tutor_id, session_id):
-        timedelta_to_time = datetime.min
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
