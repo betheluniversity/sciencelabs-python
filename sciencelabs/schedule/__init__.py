@@ -17,8 +17,8 @@ class ScheduleView(FlaskView):
         timedelta_to_time = datetime.min
         schedule_info = self.schedule.get_schedule_tab_info()
         # TODO
-        # schedule_tutors = TutorSchedule()
-        # schedule_courses = ScheduleCourseCodes()
+        schedule_tutors = self.schedule
+        schedule_courses = self.schedule
         return render_template('schedule/schedules.html', **locals())
 
     @route('/create')
