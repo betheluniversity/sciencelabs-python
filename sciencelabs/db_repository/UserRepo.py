@@ -45,4 +45,6 @@ class User(Base):
             .filter(StudentSession.studentId == User.id)\
             .group_by(User.id)\
             .all()
-    
+
+    def get_student(self, student_id):
+        return session.query(User).filter(User.id == student_id).one()

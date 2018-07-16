@@ -8,7 +8,6 @@ from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.UserRepo import User
 from sciencelabs.db_repository.CourseRepo import Course
 from sciencelabs.db_repository.ScheduleRepo import Schedule
-from sciencelabs.db_repository.StudentSessionRepo import StudentSession
 
 
 class ReportView(FlaskView):
@@ -59,3 +58,8 @@ class ReportView(FlaskView):
     def course(self):
         course_info = Course().get_active_course_info()
         return render_template('reports/course.html', **locals())
+
+    def view_student(self, student_id):
+        today = datetime.today().strftime('%m/%d/%Y')
+        student = User().get_student(student_id)
+        return render_template('reports/view_student.html', **locals())

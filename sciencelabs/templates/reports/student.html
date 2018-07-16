@@ -49,22 +49,22 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for student in student_info %}
+                    {% for student, attendance in student_info %}
                         <tr>
                             <td>
-                                {{ student.User.lastName }}
+                                {{ student.lastName }}
                             </td>
                             <td>
-                                {{ student.User.firstName }}
+                                {{ student.firstName }}
                             </td>
                             <td>
-                                {{ student.User.email }}
+                                {{ student.email }}
                             </td>
                             <td>
-                                {{ student[1] }}
+                                {{ attendance }}
                             </td>
                             <td>
-                                <a href="/report/student/{{ student.User.id }}" id="darkblue" class="btn btn-primary">View</a>
+                                <button onclick="location.href='{{ url_for('ReportView:view_student', student_id=student.id) }}'" id="darkblue" class="btn btn-primary">View</button>
                             </td>
                         </tr>
                     {% endfor %}

@@ -1,0 +1,121 @@
+{% extends 'reports/base.html' %}
+
+{% block semester_switch %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+                        <div class="semester-selector">
+                            <div class="btn-group">
+                                <form class="form-inline">
+                                    <button type="button" class="button-curved btn btn-primary">Set</button>
+                                    <select class="custom-select">
+                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                                            <option value="{{ semester }}">{{ semester }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p style="padding: 0px; margin: 0px">{{ student.firstName + ' ' + student.lastName }} Attendance for ***SEMESTER YEAR***</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form>
+                <ul style="list-style-type: none;">
+                    <li>
+                        <b>{{ student.firstName + ' ' + student.lastName }}</b>
+                        <ul style="list-style-type: none;">
+                            <li>
+                                Username: {{ student.username }}
+                            </li>
+                            <li>
+                                Email: {{ student.email }}
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form>
+                <ul style="list-style-type: none;">
+                    <li>
+                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ today }}</b>
+                    </li>
+                    <ul style="list-style-type: none;">
+                        BUTTON LINK TO COURSE
+                    </ul>
+                </ul>
+                <ul style="list-style-type: none;">
+                    <li>
+                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during ***SEMESTER YEAR***</b>
+                    </li>
+                    <ul style="list-style-type: none;">
+                        LINK TO COURSE (DEPT + COURSENUM
+                        <ul style="list-style-type: none;">
+                            <li>
+                                ATTENDANCE
+                            </li>
+                        </ul>
+                    </ul>
+                </ul>
+            </form>
+        </div>
+        <div class="col-md-12">
+            <form>
+                {# TODO FILL TABLE #}
+                <table id="table"  class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Courses</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Minutes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+{#                        {% for monthly_closed in monthly_closed_info %}#}
+{#                            <tr>#}
+{#                            {% for info in monthly_closed %}#}
+{#                                <td>{{ info }}</td>#}
+{#                            {% endfor %}#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+                    </tbody>
+                </table>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable( {
+                "oLanguage": {
+                    "sLengthMenu": "Limit: _MENU_",
+                },
+                "aLengthMenu": [[50, 100, -1], [50, 100, "All"]],
+                "iDisplayLength": 100,
+            });
+        });
+    </script>
+
+{% endblock %}
