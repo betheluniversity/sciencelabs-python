@@ -5,7 +5,7 @@ from sciencelabs.db_repository.db_tables import User_Table, Course_Table, Course
 class Course:
 
     def get_course_info(self):
-        return (session.query(Course, User_Table).filter(Course_Table.num_attendees)
+        return (session.query(Course_Table, User_Table).filter(Course_Table.num_attendees)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id).filter(CourseProfessors_Table.course_id == Course_Table.id)
                 .filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).all())
 

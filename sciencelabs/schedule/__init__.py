@@ -7,6 +7,7 @@ from datetime import datetime
 from sciencelabs.schedule.schedule_controller import ScheduleController
 from sciencelabs.db_repository.schedule_functions import Schedule
 
+
 class ScheduleView(FlaskView):
     def __init__(self):
         self.base = ScheduleController()

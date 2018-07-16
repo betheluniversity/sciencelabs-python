@@ -46,4 +46,4 @@ class User:
             .all()
 
     def get_student(self, student_id):
-        return session.query(User).filter(User.id == student_id).one()
+        return session.query(User_Table).filter(User_Table.id == student_id).one()

@@ -1,0 +1,38 @@
+{% extends 'session/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Add Student to Session</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-group">
+                   <label for="choose-student">Registered Students</label>
+                   <select class="custom-select">
+                        {# TODO: populate with students #}
+                       <option>Choose student...</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="info card">
+                <div class="card-body">
+                    <p class="card-text">To add a student select their name from the "Registered Students" drop down
+                        menu. If a student is not found in the registered list, you must add the student to the list by
+                        using the <span id="gray" class="button-labels">Add</span> option on the
+                        <span class="button-labels">Users</span> tab.</p>
+                    <p class="card-text">Once the student name appears in the "Registered Student" field, press the
+                        <span class="button-labels">Submit</span> button to pull the student's courses from Banner.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'session/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Add Tutor Attendance</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="choose-tutor">Registered Tutors</label>
+                        <select class="custom-select">
+                            {# TODO: populate with tutors #}
+                           <option>Choose tutor...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="time-in">Time In</label>
+                        <input type="time" class="form-control" id="time-in">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="time-out">Time Out</label>
+                        <input type="time" class="form-control" id="time-out">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox" style="display:inline-block;">
+                            <input type="checkbox" class="custom-control-input" id="lead">
+                            <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="info card">
+                <div class="card-body">
+                    <p>To add a tutor select their name from the "Registered Tutors" drop down menu. If a tutor is not found
+                        in the registered tutors list, you must add the tutor to the list by using the
+                        <span id="gray" class="button-labels">Add</span> option on the
+                        <span class="button-labels">Users</span> tab.</p>
+                    <p>Also fill in the "Time In" and "Time Out" fields, or leave blank if unkown.</p>
+                    <p>To designate an unknown time in or out, leave these fields blank, or use the backpace key to clear
+                        all fields. This unknown time will be listed as "???" in all reports, and will result in zero time
+                        recorded for the user.</p>
+                    <p>Finally, if necessary, designate the tutor as a lead tutor by checking the final box.</p>
+                    <p>When all fields are correct, press the <span class="button-labels">Save</span> button to add the
+                        tutor to the session.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
