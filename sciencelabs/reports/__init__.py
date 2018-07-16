@@ -5,27 +5,30 @@ from datetime import datetime
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
-from sciencelabs.db_repository.UserRepo import User
-from sciencelabs.db_repository.CourseRepo import Course
-from sciencelabs.db_repository.ScheduleRepo import Schedule
+from sciencelabs.db_repository.schedule_functions import Schedule
+from sciencelabs.db_repository.course_functions import Course
+from sciencelabs.db_repository.user_functions import User
 
 
 class ReportView(FlaskView):
     def __init__(self):
         self.base = ReportController()
+        self.schedule = Schedule()
+        self.courses = Course()
+        self.user = User()
 
     def index(self):
         return render_template('reports/base.html')
 
     def student(self):
-        student_info = User().get_student_info()
+        student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
         timedelta_to_time = datetime.min
-        term_info = Schedule().get_term_report()
-        term_attendance = Schedule().get_session_attendance()
-        unique_attendance_info = User().get_unique_session_attendance()
+        term_info = self.schedule.get_term_report()
+        term_attendance = self.schedule.get_session_attendance()
+        unique_attendance_info = self.user.get_unique_session_attendance()
         total_sessions = 0
         for sessions in term_info:
             total_sessions += sessions[1]
@@ -56,10 +59,10 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
-        course_info = Course().get_active_course_info()
+        course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())
 
     def view_student(self, student_id):
         today = datetime.today().strftime('%m/%d/%Y')
-        student = User().get_student(student_id)
+        student = self.user.get_student(student_id)
         return render_template('reports/view_student.html', **locals())

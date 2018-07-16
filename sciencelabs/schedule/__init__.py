@@ -5,20 +5,19 @@ from datetime import datetime
 
 # Local
 from sciencelabs.schedule.schedule_controller import ScheduleController
-from sciencelabs.db_repository.ScheduleRepo import Schedule
-from sciencelabs.db_repository.TutorScheduleRepo import TutorSchedule
-from sciencelabs.db_repository.ScheduleCourseCodesRepo import ScheduleCourseCodes
-
+from sciencelabs.db_repository.schedule_functions import Schedule
 
 class ScheduleView(FlaskView):
     def __init__(self):
         self.base = ScheduleController()
+        self.schedule = Schedule()
 
     def index(self):
         timedelta_to_time = datetime.min
-        schedule_info = Schedule().get_schedule_tab_info()
-        schedule_tutors = TutorSchedule()
-        schedule_courses = ScheduleCourseCodes()
+        schedule_info = self.schedule.get_schedule_tab_info()
+        # TODO
+        # schedule_tutors = TutorSchedule()
+        # schedule_courses = ScheduleCourseCodes()
         return render_template('schedule/schedules.html', **locals())
 
     @route('/create')
