@@ -63,7 +63,6 @@ class ReportView(FlaskView):
         return render_template('reports/course.html', **locals())
 
     def view_student(self, student_id):
-        today = datetime.today().strftime('%m/%d/%Y')
         student = self.user.get_student(student_id)
         attendance = self.user.get_one(student_id)[1]
         # for info in self.user.get_some(student_id):

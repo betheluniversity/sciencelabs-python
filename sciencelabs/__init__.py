@@ -5,6 +5,7 @@ import logging
 from flask import Flask
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
+from datetime import datetime
 
 # Local
 from app_settings import app_settings
@@ -37,6 +38,16 @@ EmailView.register(app)
 CourseView.register(app)
 ScheduleView.register(app)
 ProfileView.register(app)
+
+@app.context_processor
+def utility_processor():
+    to_return = {}
+    to_return.update({
+        'now': datetime.now()
+    })
+
+    return to_return
+
 
 app.jinja_env.globals.update(app_settings=app_settings)
 

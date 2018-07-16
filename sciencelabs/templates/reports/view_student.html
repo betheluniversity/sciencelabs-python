@@ -91,7 +91,7 @@
             <form>
                 <ul style="list-style-type: none;">
                     <li>
-                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ today }}</b>
+                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
                     <ul style="list-style-type: none;">
                         BUTTON LINK TO COURSE
