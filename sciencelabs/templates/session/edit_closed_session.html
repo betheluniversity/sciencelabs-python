@@ -141,8 +141,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_student') }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <a href='{{ url_for('SessionView:edit_student') }}' class="edit btn btn-primary">Edit</a>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -150,10 +149,8 @@
             {% endfor %}
         </tbody>
     </table>
-    <button onclick="location.href='{{ url_for('SessionView:add_student') }}'" type="button"
-            class="edit btn btn-primary">Add a Student</button>
-    <button onclick="location.href='{{ url_for('SessionView:add_anonymous') }}'" type="button"
-            class="btn btn-primary">Add Anonymous Student</button>
+    <a href='{{ url_for('SessionView:add_student') }}' class="edit btn btn-primary">Add a Student</a>
+    <a href='{{ url_for('SessionView:add_anonymous') }}' class="btn btn-primary">Add Anonymous Student</a>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">
             <p class="card-text">Edit Tutor Attendance</p>
@@ -192,8 +189,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=lead.id ,session_id=session.id) }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=lead.id ,session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -223,8 +219,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -232,8 +227,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <button onclick="location.href='{{ url_for('SessionView:add_tutor') }}'" type="button"
-            class="edit btn btn-primary">Add a Tutor</button>
+    <a href='{{ url_for('SessionView:add_tutor') }}' class="edit btn btn-primary">Add a Tutor</a>
 
     <script>
         $(document).ready( function () {

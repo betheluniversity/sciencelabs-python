@@ -82,8 +82,7 @@
                                     </div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button onclick="location.href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'" type="button"
-                                    class="edit btn btn-primary">Edit</button>
+                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}' class="edit btn btn-primary">Edit</a>
                                     <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
                                 </td>
                             </tr>
