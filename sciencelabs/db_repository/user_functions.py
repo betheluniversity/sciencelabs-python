@@ -48,21 +48,25 @@ class User:
     def get_student(self, student_id):
         return session.query(User_Table).filter(User_Table.id == student_id).one()
 
-    def get_student_attendance(self, student_id):
-        return session.query(User_Table, func.count(User_Table.id)) \
-            .filter(student_id == User_Table.id)\
-            .filter(User_Table.id == StudentSession_Table.studentId) \
-            .filter(StudentSession_Table.sessionId == Session_Table.id) \
-            .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
-            .group_by(User_Table.id) \
-            .one()
+    def get_student_attendance(self, student_id, course_id):
+        if not course_id:
+            return session.query(User_Table, func.count(User_Table.id)) \
+                .filter(student_id == User_Table.id)\
+                .filter(User_Table.id == StudentSession_Table.studentId) \
+                .filter(StudentSession_Table.sessionId == Session_Table.id) \
+                .filter(Session_Table.semester_id == Semester_Table.id) \
+                .filter(Semester_Table.active == 1) \
+                .group_by(User_Table.id) \
+                .one()
+        else:
+            print('got course id: ' + course_id)
 
     def get_student_courses(self, student_id):
-        return session.query(Course_Table)\
+        return session.query(Course_Table, func.count(Course_Table.id))\
             .filter(student_id == user_course_Table.user_id)\
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.active == 1)\
+            .group_by(Course_Table.id)\
             .all()
 

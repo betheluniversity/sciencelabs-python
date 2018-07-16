@@ -96,7 +96,9 @@
                     <ul style="list-style-type: none;">
                         {# TODO MAKE THIS A LINK #}
                         {% for course in courses %}
-                            <span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span>
+                            <li>
+                                <span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span>
+                            </li>
                         {% endfor %}
                     </ul>
                 </ul>
@@ -111,12 +113,12 @@
                             <a href="">{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
                             {{ ' (' + course.dept + course.course_num + ')' }}
                         </li>
+                            <ul style="list-style-type: none;">
+                                <li>
+                                    {{ attendance }} sessions attended
+                                </li>
+                            </ul>
                         {% endfor %}
-                        <ul style="list-style-type: none;">
-                            <li>
-                                {{ attendance }} sessions attended
-                            </li>
-                        </ul>
                     </ul>
                 </ul>
             </form>
