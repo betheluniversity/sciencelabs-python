@@ -2,7 +2,7 @@ from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
-    Role_Table, user_role_Table, Schedule_Table
+    Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, SessionCourseCodes_Table, CourseViewer_Table, SessionCourses_Table
 
 
 class User:
@@ -48,7 +48,7 @@ class User:
     def get_student(self, student_id):
         return session.query(User_Table).filter(User_Table.id == student_id).one()
 
-    def get_one(self, student_id):
+    def get_student_attendance(self, student_id):
         return session.query(User_Table, func.count(User_Table.id)) \
             .filter(student_id == User_Table.id)\
             .filter(User_Table.id == StudentSession_Table.studentId) \
@@ -58,6 +58,11 @@ class User:
             .group_by(User_Table.id) \
             .one()
 
-    def get_some(self, student_id):
-        pass
+    def get_student_courses(self, student_id):
+        return session.query(Course_Table)\
+            .filter(student_id == user_course_Table.user_id)\
+            .filter(user_course_Table.course_id == Course_Table.id)\
+            .filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1)\
+            .all()
 

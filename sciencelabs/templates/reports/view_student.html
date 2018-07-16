@@ -94,7 +94,10 @@
                         <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
                     <ul style="list-style-type: none;">
-                        BUTTON LINK TO COURSE
+                        {# TODO MAKE THIS A LINK #}
+                        {% for course in courses %}
+                            <span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span>
+                        {% endfor %}
                     </ul>
                 </ul>
                 <ul style="list-style-type: none;">
@@ -102,10 +105,16 @@
                         <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during ***SEMESTER YEAR***</b>
                     </li>
                     <ul style="list-style-type: none;">
-                        LINK TO COURSE (DEPT + COURSENUM
+                        {% for course in courses %}
+                        <li>
+                            {# TODO MAKE THIS A LINK #}
+                            <a href="">{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
+                            {{ ' (' + course.dept + course.course_num + ')' }}
+                        </li>
+                        {% endfor %}
                         <ul style="list-style-type: none;">
                             <li>
-                                ATTENDANCE
+                                {{ attendance }} sessions attended
                             </li>
                         </ul>
                     </ul>
