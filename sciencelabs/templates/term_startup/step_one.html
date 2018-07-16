@@ -98,37 +98,9 @@
                 var picker = new Pikaday({
                     field: document.getElementById('start-date')
                 });
-
-                $('#all-courses').click(function(){
-                    if($(this).hasClass('all')){
-                        $(this).removeClass('all');
-                        $('.custom-control-input').prop('checked', false);
-                        $(this).text('Select All Courses');
-                    }else {
-                        $(this).addClass('all');
-                        $('.custom-control-input').prop('checked', true);
-                        $(this).text('Deselect All Courses');
-                    }
-                });
-            });
-        </script>
-        <script>
-            $(document).ready(function () {
                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 var picker = new Pikaday({
                     field: document.getElementById('end-date')
-                });
-
-                $('#all-courses').click(function(){
-                    if($(this).hasClass('all')){
-                        $(this).removeClass('all');
-                        $('.custom-control-input').prop('checked', false);
-                        $(this).text('Select All Courses');
-                    }else {
-                        $(this).addClass('all');
-                        $('.custom-control-input').prop('checked', true);
-                        $(this).text('Deselect All Courses');
-                    }
                 });
             });
         </script>
