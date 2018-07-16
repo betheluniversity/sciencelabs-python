@@ -17,7 +17,7 @@ class User:
             .filter(user_role_Table.role_id == Role_Table.id).all()
 
     def get_session_students(self, session_id):
-        return session.query(User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut) \
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut) \
             .filter(StudentSession_Table.sessionId == session_id).filter(StudentSession_Table.studentId == User_Table.id).all()
 
     def get_student_info(self):
