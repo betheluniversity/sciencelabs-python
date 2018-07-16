@@ -58,3 +58,6 @@ class User:
             .group_by(User_Table.id) \
             .one()
 
+    def get_some(self, student_id):
+        pass
+
