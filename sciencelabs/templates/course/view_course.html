@@ -18,27 +18,30 @@
                             <tbody>
                             <tr>
                                 <td><b>Semester</b></td>
-                                <td>Semester</td>
+                                <td>{{ course[2].term }} {{ course[2].year }}</td>
                             </tr>
                             <tr>
                                 <td><b>Meeting Day</b></td>
-                                <td>Meeting Day</td>
+                                <td>{{ course[0].meeting_day }}</td>
                             </tr>
                             <tr>
                                 <td><b>Time</b></td>
-                                <td>Time</td>
+                                <td>{{ course[0].begin_time|datetimeformat }} - {{ course[0].end_time|datetimeformat }}</td>
                             </tr>
                             <tr>
                                 <td><b>Room</b></td>
-                                <td>Room</td>
+                                <td>{{ course[0].room }}</td>
                             </tr>
                             <tr>
                                 <td><b>Enrolled</b></td>
-                                <td>Enrolled</td>
+                                <td>{{ course[0].num_attendees }}</td>
                             </tr>
                             </tbody>
                         </table>
-
+                        <div style="float: right;" class="btn-group">
+                            <a href="" class="big-button delete btn btn-primary">Delete</a>
+                            <a href='{{ url_for('ReportView:view_course', course_id=course[0].id) }}' class="big-button edit btn btn-primary">View Report</a>
+                        </div>
                     </div>
                 </div>
             </form>

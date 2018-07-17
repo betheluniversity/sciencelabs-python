@@ -112,12 +112,12 @@ a.semester-menu{
 }
 
 .delete{
-    color: white;
+    color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
 }
 
-button.delete-session{
+.big-button{
     font-size: 25px;
     padding: 15px 40px;
 }
