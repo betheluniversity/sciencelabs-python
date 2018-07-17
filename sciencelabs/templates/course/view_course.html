@@ -1,0 +1,47 @@
+{% extends 'course/base.html' %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>{{ course[0].dept }}{{ course[0].course_num }} - {{ course[0].title }} (Section {{ course[0].section }})</h3>
+                        {# TODO FILL TABLE #}
+                        <table class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                            <tr>
+                                <td><b>Professor</b></td>
+                                <td>{{ course[1].firstName }} {{ course[1].lastName }}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><b>Semester</b></td>
+                                <td>Semester</td>
+                            </tr>
+                            <tr>
+                                <td><b>Meeting Day</b></td>
+                                <td>Meeting Day</td>
+                            </tr>
+                            <tr>
+                                <td><b>Time</b></td>
+                                <td>Time</td>
+                            </tr>
+                            <tr>
+                                <td><b>Room</b></td>
+                                <td>Room</td>
+                            </tr>
+                            <tr>
+                                <td><b>Enrolled</b></td>
+                                <td>Enrolled</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

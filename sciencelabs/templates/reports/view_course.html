@@ -17,11 +17,9 @@
         <div class="col-md-12">
             <form>
                 <div class="form-row">
-                    <div style="text-align: right;" class="form-group col-md-12">
-{#                        {% for course, professor in course_info %}#}
-                        <h4 style="text-align: left;">{{ course[0].title }} (Section {{ course[0].section }}) ({{ course[0].dept }}{{ course[0].course_num }})</h4>
-                        <h4 style="text-align: left;">{{ course[1].firstName }} {{ course[1].lastName }}</h4>
-{#                        {% endfor %}#}
+                    <div class="form-group col-md-12">
+                        <h4>{{ course[0].title }} (Section {{ course[0].section }}) ({{ course[0].dept }}{{ course[0].course_num }})</h4>
+                        <h4>{{ course[1].firstName }} {{ course[1].lastName }}</h4>
                     </div>
                 </div>
             </form>
