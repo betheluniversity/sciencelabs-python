@@ -36,7 +36,7 @@ class SessionView(FlaskView):
         session_students = self.user.get_session_students(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
-    def edit_student(self, session_id):
+    def edit_student(self):
         return render_template('session/edit_student.html')
 
     def add_student(self):
