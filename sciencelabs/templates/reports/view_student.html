@@ -90,7 +90,7 @@
                         {# TODO MAKE THIS A LINK #}
                         {% for course in courses %}
                             <li>
-                                <span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span>
+                                <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}'><span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span></a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -103,7 +103,7 @@
                         {% for course in courses %}
                         <li>
                             {# TODO MAKE THIS A LINK #}
-                            <a href="">{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
+                            <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
                             {{ ' (' + course.dept + course.course_num + ')' }}
                         </li>
                             <ul style="list-style-type: none;">
