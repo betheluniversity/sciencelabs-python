@@ -1,6 +1,6 @@
 # Packages
 from flask import render_template
-from flask_classy import FlaskView
+from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
@@ -60,6 +60,7 @@ class ReportView(FlaskView):
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())
 
+    @route('/student/<int:student_id>')
     def view_student(self, student_id):
         student = self.user.get_student(student_id)
         attendance = self.user.get_student_attendance(student_id, '')[1]
@@ -74,6 +75,7 @@ class ReportView(FlaskView):
         print(count)
         return render_template('reports/view_student.html', **locals())
 
+    @route('/course/<int:course_id>')
     def view_course(self, course_id):
         course = self.courses.get_course(course_id)
         return render_template('reports/view_course.html', **locals())
