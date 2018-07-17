@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for course in course_info %}
+                        {% for course, user in course_info %}
                             <tr>
                                 <td>
                                     {{ course.dept + course.course_num }}
@@ -57,8 +57,8 @@
                                     {{ course.section }}
                                 </td>
                                 <td>
-                                    {{ course.firstName }}
-                                    {{ course.lastName }}
+                                    {{ user.firstName }}
+                                    {{ user.lastName }}
                                 </td>
                                 <td>
                                     Tot
@@ -70,7 +70,7 @@
                                     Pct
                                 </td>
                                 <td>
-                                    <button id="darkblue" class="btn btn-primary">View</button>
+                                    <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' id="darkblue" class="btn btn-primary">View</a>
                                 </td>
                             </tr>
                         {% endfor %}

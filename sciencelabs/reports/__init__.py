@@ -63,8 +63,17 @@ class ReportView(FlaskView):
     def view_student(self, student_id):
         student = self.user.get_student(student_id)
         attendance = self.user.get_student_attendance(student_id, '')[1]
-        attendance = ''
-        # courses = self.user.get_student_courses(student_id)
-        courses = ''
-        info = self.user.get_student_attendance(student_id, '4544545')
+        courses = self.user.get_student_courses(student_id)
+        # TODO FIGURE OUT HOW TO USE THISI TO GET ATTENDANCE FOR SPECIFIC COURSE
+        info = self.user.get_student_attendance(student_id, 40161)
+        count = 0
+        for stuff in info:
+            print(stuff)
+            count += 1
+
+        print(count)
         return render_template('reports/view_student.html', **locals())
+
+    def view_course(self, course_id):
+        course = self.courses.get_course(course_id)
+        return render_template('reports/view_course.html', **locals())

@@ -5,7 +5,7 @@ from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, U
 class Session:
 
     def get_closed_sessions(self):
-        return (session.query(Session_Table.id, Session_Table.name, Session_Table.date, Session_Table.startTime, Session_Table.endTime, Session_Table.room)
+        return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
 

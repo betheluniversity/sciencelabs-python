@@ -14,7 +14,7 @@
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
                 <input type="text" class="form-control" id="session-name"
-                       value="{{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}">
+                       value="{{ session.name }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
@@ -117,21 +117,21 @@
             <th></th>
         </thead>
         <tbody>
-            {% for student in session_students %}
+            {% for student, studentsession in session_students %}
                 <tr>
                     <td>
                         {{ student.firstName }} {{ student.lastName }}
                     </td>
                     <td>
-                        {% if student.timeIn %}
-                            {{ student.timeIn|datetimeformat }}
+                        {% if studentsession.timeIn %}
+                            {{ studentsession.timeIn|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
                     <td>
-                        {% if student.timeOut %}
-                            {{ student.timeOut|datetimeformat }}
+                        {% if studentsession.timeOut %}
+                            {{ studentsession.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
