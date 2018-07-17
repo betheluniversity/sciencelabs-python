@@ -235,6 +235,9 @@
     <button onclick="location.href='{{ url_for('SessionView:add_tutor') }}'" type="button"
             class="edit btn btn-primary">Add a Tutor</button>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
+    <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+    <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
     <script>
         $(document).ready( function () {
 
