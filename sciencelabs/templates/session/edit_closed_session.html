@@ -71,14 +71,14 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
-                <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                <button type="button" class="btn btn-primary" id="all-courses">Select No Courses</button>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
                 {% for id, name in app_settings['COURSE_OPTIONS'].items() %}
                     <div class="custom-control custom-checkbox" style="display:inline-block;">
-                        <input type="checkbox" class="custom-control-input" id="{{ id }}">
+                        <input checked type="checkbox" class="custom-control-input" id="{{ id }}">
                         <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>
                     </div>
                 {% endfor %}
@@ -259,6 +259,23 @@
                     "sSearch": "Search:"
                 }
             });
+
+            $('#all-courses').click(function(){
+                $(this).toggleClass('all')
+                if($(this).hasClass('all')){
+                    $('.custom-control-input').prop('checked', false);
+                    $(this).text('Select All Courses');
+                }else {
+                    $('.custom-control-input').prop('checked', true);
+                    $(this).text('Select No Courses');
+                }
+                {#if($('.custom-control-input').prop('checked')){#}
+
+            });
+
+            {#    $(this).toggleClass('all')#}
+            {#    $('custom-control-input').prop('checked', $('custom-control-inpu').prop('checked'))#}
+
 
         });
     </script>
