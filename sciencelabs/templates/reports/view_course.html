@@ -2,8 +2,29 @@
 
 {% block semester_switch %}{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+    <div class="header card">
+        <div class="card-body btn-group">
+            <p class="card-text">Attendance for ***SEMESTER YEAR***</p>
+            <a href="" style="right: 200px;" class="csv-button  btn btn-primary">CSV Session Export</a>
+            <a href="" class="csv-button btn btn-primary">CSV Student Export</a>
+        </div>
+    </div>
+{% endblock %}
 
 {% block body_content %}
-
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-row">
+                    <div style="text-align: right;" class="form-group col-md-12">
+{#                        {% for course, professor in course_info %}#}
+                        <h4 style="text-align: left;">{{ course[0].title }} (Section {{ course[0].section }}) ({{ course[0].dept }}{{ course[0].course_num }})</h4>
+                        <h4 style="text-align: left;">{{ course[1].firstName }} {{ course[1].lastName }}</h4>
+{#                        {% endfor %}#}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

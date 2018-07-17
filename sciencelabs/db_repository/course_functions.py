@@ -18,4 +18,4 @@ class Course:
                 .all())
 
     def get_course(self, course_id):
-        return session.query(Course_Table).filter(Course_Table.id == course_id).one()
+        return session.query(Course_Table, User_Table).filter(Course_Table.id == course_id).filter(CourseProfessors_Table.course_id == course_id).filter(CourseProfessors_Table.professor_id == User_Table.id).one()
