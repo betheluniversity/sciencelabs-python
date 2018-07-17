@@ -5,10 +5,9 @@ from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, U
 
 class Session:
 
-    def get_closed_sessions(self):
+    def get_closed_sessions(self, semester_id):
         return (session.query(Session_Table.id, Session_Table.name, Session_Table.date, Session_Table.startTime, Session_Table.endTime, Session_Table.room)
-                .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).all())
+                .filter(semester_id == Session_Table.semester_id).filter(semester_id == Semester_Table.id).filter(Session_Table.startTime != None).all())
 
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()

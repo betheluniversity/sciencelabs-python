@@ -4,7 +4,7 @@
         <a id="home" class="nav-item nav-link {{ 'active' if '/session/' == request.path else 'disabled'}}"
            href="{{ url_for('SessionView:index') }}">Available Sessions</a>
         <a id="closed" class="nav-item nav-link {{ 'active' if 'closed' in request.path else 'disabled'}}"
-           href="{{ url_for('SessionView:closed') }}">Closed Sessions</a>
+           href="{{ url_for('SessionView:closed', semester_id=sem.id) }}">Closed Sessions</a>
         <a id="create" class="nav-item nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
            href="{{ url_for('SessionView:create') }}">Create a Session</a>
         <a id="restore" class="nav-item nav-link {{ 'active' if 'restore' in request.path else 'disabled'}}"
@@ -14,7 +14,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Remaining Scheduled Sessions for Spring 2018</p>
+            <p class="card-text">Remaining Scheduled Sessions for {{ sem.term }} {{ sem.year }}</p>
         </div>
     </div>
 {% endblock %}
