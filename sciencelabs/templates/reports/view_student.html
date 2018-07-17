@@ -28,7 +28,7 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">{{ student.firstName + ' ' + student.lastName }} Attendance for ***SEMESTER YEAR***</p>
+                                <p style="padding: 0px; margin: 0px">{{ student.firstName }} {{ student.lastName }} Attendance for ***SEMESTER YEAR***</p>
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
             <form>
                 <ul style="list-style-type: none;">
                     <li>
-                        <b>{{ student.firstName + ' ' + student.lastName }}</b>
+                        <b>{{ student.firstName }} {{ student.lastName }}</b>
                         <ul style="list-style-type: none;">
                             <li>
                                 Username: {{ student.username }}
@@ -75,13 +75,6 @@
                         <td><b>Total Time this Term</b></td>
                         <td>TOTAL TIME</td>
                     </tr>
-{#                        {% for monthly_closed in monthly_closed_info %}#}
-{#                            <tr>#}
-{#                            {% for info in monthly_closed %}#}
-{#                                <td>{{ info }}</td>#}
-{#                            {% endfor %}#}
-{#                            </tr>#}
-{#                        {% endfor %}#}
                     </tbody>
                 </table>
 
