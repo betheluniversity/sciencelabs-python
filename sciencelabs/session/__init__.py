@@ -1,6 +1,6 @@
 # Packages
 from flask import render_template
-from flask_classy import FlaskView
+from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.session.session_controller import SessionController
@@ -25,16 +25,18 @@ class SessionView(FlaskView):
     def create(self):
         return render_template('session/create_session.html')
 
+    @route('/deleted')
     def restore(self):
         return render_template('session/restore_session.html')
 
+    @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
         session = self.session.get_session(session_id)
         leads, tutors = self.session.get_session_tutors(session_id)
         session_students = self.user.get_session_students(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
-    def edit_student(self):
+    def edit_student(self, session_id):
         return render_template('session/edit_student.html')
 
     def add_student(self):
