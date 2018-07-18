@@ -9,7 +9,7 @@ from datetime import datetime
 
 # Local
 from app_settings import app_settings
-
+from sciencelabs.db_repository.user_functions import User
 
 app = Flask(__name__)
 
@@ -53,6 +53,7 @@ def datetimeformat(value, custom_format='%l:%M%p'):
     return (datetime.min + value).strftime(custom_format)
 
 
+app.jinja_env.globals.update(get_average_time_in_course=User().get_average_time_in_course)
 app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.globals.update(app_settings=app_settings)
 

@@ -43,7 +43,7 @@ class User:
     def get_student(self, student_id):
         return session.query(User_Table).filter(User_Table.id == student_id).one()
 
-    # TODO FIGURE OUT HOW TO USE THISI TO GET ATTENDANCE FOR SPECIFIC COURSE
+    # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
     def get_student_attendance(self, student_id, course_id):
         if not course_id:
             return session.query(User_Table, func.count(User_Table.id)) \
@@ -56,17 +56,12 @@ class User:
                 .one()
         else:
             print(course_id)
-            return session.query(StudentSession_Table, func.count(StudentSession_Table.id)) \
-                .filter(student_id == User_Table.id)\
-                .filter(User_Table.id == StudentSession_Table.studentId) \
-                .filter(StudentSession_Table.sessionId == Session_Table.id) \
-                .filter(Session_Table.id == SessionCourseCodes_Table.session_id)\
-                .filter(SessionCourseCodes_Table.coursecode_id == CourseCode_Table.id)\
-                .filter(CourseCode_Table.id == Course_Table.course_code_id)\
-                .filter(Course_Table.id == course_id)\
-                .filter(Session_Table.semester_id == Semester_Table.id) \
-                .filter(Semester_Table.active == 1) \
-                .group_by(StudentSession_Table.id) \
+            return session.query(StudentSession_Table)\
+                .filter(StudentSession_Table.sessionId == Session_Table.id)\
+                .filter(Session_Table.semester_id == Semester_Table.id)\
+                .filter(Semester_Table.active == 1)\
+                .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+                .filter(SessionCourses_Table.course_id == CourseViewer_Table.course_id)\
                 .all()
 
     def get_student_courses(self, student_id):
@@ -75,6 +70,23 @@ class User:
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.active == 1)\
-            .group_by(Course_Table.id)\
+            .all()
+
+    def get_students_in_course(self, course_id):
+        return session.query(User_Table, func.count(User_Table.id))\
+            .filter(Course_Table.id == course_id)\
+            .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(StudentSession_Table.studentId == User_Table.id)\
+            .group_by(User_Table.id)\
+            .all()
+
+    def get_average_time_in_course(self, student_id, course_id):
+        return session.query(StudentSession_Table, User_Table) \
+            .filter(Course_Table.id == course_id) \
+            .filter(SessionCourses_Table.course_id == course_id) \
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
+            .filter(StudentSession_Table.studentId == User_Table.id) \
+            .filter(User_Table.id == student_id) \
             .all()
 

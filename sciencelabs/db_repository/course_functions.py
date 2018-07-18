@@ -1,3 +1,5 @@
+from sqlalchemy import *
+
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table
 

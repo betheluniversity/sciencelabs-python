@@ -44,7 +44,7 @@
         <div class="col-md-5">
             <form>
                 {# TODO FILL TABLE #}
-                <table class="table table-striped table-bordered" style="width:100%">
+                <table id="table" class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
                         <th>Last</th>
@@ -54,9 +54,33 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for student, attendance in students %}
+                        <tr>
+                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
+                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
+                            <td>{{ attendance }}</td>
+                        {% set time = get_average_time_in_course(student.id, course[0].id) %}
+                        {% set avg_time = [0] %}
+                        {% for times, user in time %}
+                            {% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
+                        {% endfor %}
+                            <td>{{ (avg_time[0] / time|length)|round() }} min</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </form>
         </div>
     </div>
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable( {
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false
+            });
+        });
+
+    </script>
 {% endblock %}
