@@ -69,7 +69,15 @@
                     </tr>
                     <tr>
                         <td><b>Average Time per Session</b></td>
-                        <td>AVERAGE TIME</td>
+                        {% for course in courses %}
+                            {% set time = get_average_time_in_course(student.id, course.id) %}
+                            {% set avg_time = [0] %}
+                            {% for times, user in time %}
+                                {% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
+                            {% endfor %}
+                            <td>{{ (avg_time[0] / time|length)|round() }} min</td>
+
+                        {% endfor %}
                     </tr>
                     <tr>
                         <td><b>Total Time this Term</b></td>
@@ -108,7 +116,10 @@
                         </li>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    {{ attendance }} sessions attended
+                                    {% for course in courses %}
+                                        {% set time = get_average_time_in_course(student.id, course.id) %}
+                                        {{ time|length }} sessions attended
+                                    {% endfor %}
                                 </li>
                             </ul>
                         {% endfor %}
