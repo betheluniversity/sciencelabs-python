@@ -28,3 +28,4 @@ class Session:
         return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.lead, TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
             .filter(TutorSession_Table.sessionId == session_id).filter(TutorSession_Table.tutorId == tutor_id)\
             .filter(User_Table.id == tutor_id).one()
+
