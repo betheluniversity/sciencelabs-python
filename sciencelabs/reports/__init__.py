@@ -21,11 +21,13 @@ class ReportView(FlaskView):
         return render_template('reports/base.html')
 
     def student(self):
+        semester_list = self.schedule.get_semesters()
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
         semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
         timedelta_to_time = datetime.min
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
@@ -48,6 +50,7 @@ class ReportView(FlaskView):
         return render_template('reports/term.html', **locals())
 
     def month(self):
+        semester_list = self.schedule.get_semesters()
         monthly_closed_info = self.base.get_closed_monthly_info()
         monthly_info = self.base.get_monthly_info()
         return render_template('reports/monthly.html', **locals())
@@ -57,9 +60,11 @@ class ReportView(FlaskView):
         return render_template('reports/cumulative.html', **locals())
 
     def session(self):
-        return render_template('reports/session.html')
+        semester_list = self.schedule.get_semesters()
+        return render_template('reports/session.html', **locals())
 
     def course(self):
         semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())

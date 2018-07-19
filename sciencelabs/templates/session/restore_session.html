@@ -12,8 +12,8 @@
     <form class="form-inline">
         <button type="button" class="btn btn-primary">Set</button>
         <select class="custom-select">
-            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                <option value="{{ semester }}">{{ semester }}</option>
+            {% for semester in semester_list %}
+                <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
             {% endfor %}
         </select>
     </form>

@@ -26,13 +26,16 @@ class SessionView(FlaskView):
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
         semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
-        return render_template('session/create_session.html')
+        semester_list = self.schedule.get_semesters()
+        return render_template('session/create_session.html', **locals())
 
     def restore(self):
         semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
         return render_template('session/restore_session.html', **locals())
 
     def edit_session(self, session_id):
