@@ -168,37 +168,6 @@
             <th></th>
         </thead>
         <tbody>
-            {% for lead in leads %}
-                <tr>
-                    <td>
-                        {{ lead.firstName }} {{ lead.lastName }}
-                    </td>
-                    <td>
-                        {% if lead.timeIn %}
-                            {{ (timedelta_to_time + lead.timeIn).strftime('%I:%M%p') }}
-                        {% else %}
-                            ???
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if lead.timeOut %}
-                            {{ (timedelta_to_time + lead.timeOut).strftime('%I:%M%p') }}
-                        {% else %}
-                            ???
-                        {% endif %}
-                    </td>
-                    <td>
-                        Yes
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=lead.id ,session_id=session.id) }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
-                            <button type="button" class="delete btn btn-primary">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
             {% for tutor in tutors %}
                 <tr>
                     <td>
@@ -219,7 +188,11 @@
                         {% endif %}
                     </td>
                     <td>
-                        No
+                        {% if tutor.lead %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
                     </td>
                     <td>
                         <div class="btn-group">
