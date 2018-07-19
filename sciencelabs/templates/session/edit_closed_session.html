@@ -23,8 +23,8 @@
             <div class="form-group col-md-3">
                 <label for="">Semester</label>
                 <select class="custom-select">
-                    {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                        <option value="{{ semester }}">{{ semester }}</option> {# TODO #}
+                    {% for semester in semester_list %}
+                        <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -137,7 +137,15 @@
                         {% endif %}
                     </td>
                     <td>
-                        {{ student.dept }}{{ student.course_num }}
+                        <ul>
+                            {% set courses = student_courses.get_student_session_courses(session.id, student.id) %}
+                            {% for course in courses %}
+                                <li>{{ course.dept }}{{ course.course_num }}</li>
+                            {% endfor %}
+                            {% if student.otherCourse or student.otherCourseName %}
+                                <li>{{ student.otherCourseName }}<span class="button-labels">Other</span></li>
+                            {% endif %}
+                        </ul>
                     </td>
                     <td>
                         <div class="btn-group">

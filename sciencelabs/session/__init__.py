@@ -42,7 +42,9 @@ class SessionView(FlaskView):
         timedelta_to_time = datetime.min
         session = self.session.get_session(session_id)
         tutors = self.session.get_session_tutors(session_id)
-        session_students = self.user.get_session_students(session_id)
+        session_students = self.session.get_session_students(session_id)
+        student_courses = self.session
+        semester_list = self.schedule.get_semesters()
         return render_template('session/edit_closed_session.html', **locals())
 
     def edit_student(self, student_id, session_id):
