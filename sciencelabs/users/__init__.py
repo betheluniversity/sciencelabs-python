@@ -14,7 +14,11 @@ class UsersView(FlaskView):
 
     def index(self):
         users_info = self.user.get_user_info()
-        return render_template('users/base.html', **locals())
+        return render_template('users/users.html', **locals())
 
     def add_user(self):
         return render_template('users/add_user.html')
+
+    def edit_user(self, user_id):
+        user, role = self.user.get_user(user_id)
+        return render_template('users/edit_user.html', **locals())

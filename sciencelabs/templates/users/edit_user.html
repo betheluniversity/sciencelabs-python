@@ -1,0 +1,74 @@
+{% extends 'users/base.html' %}
+
+
+{% block body_content %}
+   <div class="custom-default row">
+        <div class="col-md-8">
+            <form>
+                 <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                                <p style="padding: 0px; margin: 0px">Edit {{ user.firstName }} {{ user.lastName }} ({{ user.username }})</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="user-first-name">First Name</label>
+                        <input type="text" class="form-control" id="user-first-name" value="{{ user.firstName }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="user-last-name">Last Name</label>
+                        <input type="text" class="form-control" id="user-last-name" value="{{ user.lastName }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="user-email">Email</label>
+                        <input type="text" class="form-control" id="user-email" value="{{ user.email }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="user-username">Username</label>
+                        <input readonly type="text" class="form-control" id="user-username" value="{{ user.username }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {{ role.name }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="sub-info card info">
+                <div class="card-body">
+                    <p>
+                        To edit the user, make changes and press the <span class="button-labels">Save</span> button.
+                        To remove the user, press the <span id="red" class="button-labels">Deactivate</span> button.
+                    </p>
+                    <p>
+                        Deactivating a user will remove them from the current user list. However, this user's past
+                        activity will be maintained in all historical data reports.
+                    </p>
+                    <p>
+                        You may only edit roles if you are an Administrator. You may not edit your own roles and they
+                        are not displayed.
+                    </p>
+                    <p>
+                        Professors are always able to view their own courses. Administrators can add viewing capability
+                        for a user for any course (this is added by selecting a course not currently viewable for a user
+                        and then choosing "Save").
+                    </p>
+                    <p>
+                        Users receive end of session emails and can view course reports related to all listed user and
+                        viewable courses for the user.
+                    </p>
+                </div>
+            </div>
+        </div>
+   </div>
+
+{% endblock %}

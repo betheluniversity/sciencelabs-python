@@ -40,8 +40,17 @@ class User:
             .group_by(User_Table.id) \
             .all()
 
-    def get_student(self, student_id):
-        return session.query(User_Table).filter(User_Table.id == student_id).one()
+    def get_studentsession(self, student_id):
+        return session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1)\
+            .all()
+
+    def get_user(self, user_id):
+        print(session.query(User_Table, Role_Table).filter(User_Table.id == user_id).filter(user_role_Table.user_id == user_id).filter(user_role_Table.role_id == Role_Table.id).all())
+        return session.query(User_Table, Role_Table).filter(User_Table.id == user_id).filter(user_role_Table.user_id == user_id).filter(user_role_Table.role_id == Role_Table.id).one()
 
     # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
     def get_student_attendance(self, student_id, course_id):
