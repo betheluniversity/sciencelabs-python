@@ -3,17 +3,18 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Past Sessions for {{ semester.term }} {{ semester.year }}</p>
+            {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+            <p class="card-text">Past Sessions for ***SEMESTER YEAR***</p>
         </div>
     </div>
 {% endblock %}
 
 {% block semester_switch %}
     <form class="form-inline">
-        <button type="button" class="btn btn-primary" id="set-semester">Set</button>
-        <select class="custom-select" id="semester-selector">
-            {% for semester in semester_list %}
-                <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
+        <button type="button" class="btn btn-primary">Set</button>
+        <select class="custom-select">
+            {% for semester in app_settings['SEMESTER_OPTIONS'] %}
+                <option value="{{ semester }}">{{ semester }}</option>
             {% endfor %}
         </select>
     </form>
@@ -100,11 +101,6 @@
                     $(this).text('Show');
                 else
                     $(this).text('Hide');
-            });
-
-            $("#set-semester").click(function(){
-               var semesterId =  $("#semester-selector :selected").val();
-               url = "{{ url_for }}"
             });
 
         });

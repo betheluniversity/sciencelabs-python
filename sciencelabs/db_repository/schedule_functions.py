@@ -28,15 +28,3 @@ class Schedule:
             .filter(Semester_Table.active == 1) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
             .group_by(Schedule_Table.id).all()
-
-    def get_active_semester(self):
-        return session.query(Semester_Table.id, Semester_Table.term, Semester_Table.year)\
-            .filter(Semester_Table.active == 1).one()
-
-    def get_semesters(self):
-        return session.query(Semester_Table.id, Semester_Table.term, Semester_Table.year, Semester_Table.active)\
-            .order_by(Semester_Table.year.desc()).all()
-
-    def get_semester_info(self, semester_id):
-        return session.query(Semester_Table.id, Semester_Table.term, Semester_Table.year) \
-            .filter(Semester_Table.id == semester_id).one()
