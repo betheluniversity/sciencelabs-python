@@ -13,8 +13,10 @@ class Session:
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()
 
     def get_session_tutors(self, session_id):
-        tutors = session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead, TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
-            .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)
+        tutors = session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
+                               TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
+            .filter(TutorSession_Table.sessionId == session_id)\
+            .filter(User_Table.id == TutorSession_Table.tutorId)
         session_leads = []
         session_tutors = []
         for tutor in tutors:
@@ -25,7 +27,9 @@ class Session:
         return session_leads, session_tutors
 
     def get_tutor_session_info(self, tutor_id, session_id):
-        return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.lead, TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
-            .filter(TutorSession_Table.sessionId == session_id).filter(TutorSession_Table.tutorId == tutor_id)\
+        return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
+                             TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
+            .filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id)\
             .filter(User_Table.id == tutor_id).one()
 
