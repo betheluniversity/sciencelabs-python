@@ -25,6 +25,7 @@ class ReportView(FlaskView):
         return render_template('reports/student.html', **locals())
 
     def semester(self):
+        semester = self.schedule.get_active_semester()
         timedelta_to_time = datetime.min
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
@@ -59,5 +60,6 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
+        semester = self.schedule.get_active_semester()
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())

@@ -18,8 +18,8 @@
                     <div class="form-row">
                         <div style="text-align: center;" class="form-group col-md-12">
                             {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                            <h3>Current Term: ***SEMESTER YEAR***</h3>
-                            <p>start date-end data</p>
+                            <h3>Current Term: {{ semester.term }} {{ semester.year }}</h3>
+                            <p>{{ semester.startDate.strftime('%m/%d/%Y') }}-{{ semester.endDate.strftime('%m/%d/%Y') }}</p>
                         </div>
                     </div>
                     <div class="form-row">

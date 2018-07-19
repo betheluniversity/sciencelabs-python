@@ -7,6 +7,7 @@ from datetime import datetime
 from sciencelabs.session.session_controller import SessionController
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.db_repository.user_functions import User
+from sciencelabs.db_repository.schedule_functions import Schedule
 
 
 class SessionView(FlaskView):
@@ -14,21 +15,25 @@ class SessionView(FlaskView):
         self.base = SessionController()
         self.user = User()
         self.session = Session()
+        self.schedule = Schedule()
 
     def index(self):
-        return render_template('session/base.html')
+        semester = self.schedule.get_active_semester()
+        return render_template('session/base.html', **locals())
 
     def closed(self):
         timedelta_to_time = datetime.min
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
+        semester = self.schedule.get_active_semester()
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         return render_template('session/create_session.html')
 
     def restore(self):
-        return render_template('session/restore_session.html')
+        semester = self.schedule.get_active_semester()
+        return render_template('session/restore_session.html', **locals())
 
     def edit_session(self, session_id):
         timedelta_to_time = datetime.min

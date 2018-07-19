@@ -14,10 +14,12 @@ class ScheduleView(FlaskView):
         self.schedule = Schedule()
 
     def index(self):
+        semester = self.schedule.get_active_semester()
         timedelta_to_time = datetime.min
         schedule_info = self.schedule.get_schedule_tab_info()
         return render_template('schedule/base.html', **locals())
 
     @route('/create')
     def create_new_schedule(self):
-        return render_template('schedule/create_new_schedule.html')
+        semester = self.schedule.get_active_semester()
+        return render_template('schedule/create_new_schedule.html', **locals())
