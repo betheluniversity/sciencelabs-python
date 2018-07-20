@@ -52,7 +52,8 @@
                             <li><b>Opened By:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>Opener</li>
+                                    {% set opener = user.get_opener(session.openerId) %}
+                                    <li>{{ opener.firstName }} {{ opener.lastName }}</li>
                                 </ul>
                             </li>
                         </ul>
