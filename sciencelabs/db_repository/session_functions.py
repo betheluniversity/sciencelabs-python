@@ -40,3 +40,4 @@ class Session:
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(Course_Table.id == course_id)\
             .all()
+
