@@ -1,6 +1,6 @@
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table, \
-    StudentSession_Table, Course_Table, SessionCourses_Table
+    StudentSession_Table, Course_Table, SessionCourses_Table, CourseCode_Table
 
 
 class Session:
@@ -32,13 +32,23 @@ class Session:
             .filter(SessionCourses_Table.course_id == Course_Table.id).one()
 
     def get_session_students(self, session_id):
-        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut) \
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut,
+                             StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id).all()
 
+    # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
-        return session.query(Course_Table)\
+        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
-            .filter(SessionCourses_Table.course_id == Course_Table.id).all()
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
+
+    def get_session_courses(self, session_id):
+        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+            .filter(session_id == StudentSession_Table.sessionId)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(Course_Table.id == SessionCourses_Table.course_id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id).distinct()
