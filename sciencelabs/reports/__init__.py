@@ -16,7 +16,7 @@ class ReportView(FlaskView):
         self.schedule = Schedule()
         self.courses = Course()
         self.user = User()
-        self.session = Session()
+        self.session_ = Session()
 
     def index(self):
         return render_template('reports/base.html')
@@ -78,12 +78,12 @@ class ReportView(FlaskView):
     def view_course(self, course_id):
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
-        sessions = self.session.get_sessions(course_id)
+        sessions = self.session_.get_sessions(course_id)
         user = self.user
-        session_ = self.session
+        session_ = self.session_
         return render_template('reports/view_course.html', **locals())
 
     # TODO
     def view_session(self, session_id):
-        pass
+        return render_template('reports/view_session.html', **locals())
 
