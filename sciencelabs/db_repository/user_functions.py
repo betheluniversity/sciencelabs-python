@@ -49,8 +49,7 @@ class User:
             .all()
 
     def get_user(self, user_id):
-        print(session.query(User_Table, Role_Table).filter(User_Table.id == user_id).filter(user_role_Table.user_id == user_id).filter(user_role_Table.role_id == Role_Table.id).all())
-        return session.query(User_Table, Role_Table).filter(User_Table.id == user_id).filter(user_role_Table.user_id == user_id).filter(user_role_Table.role_id == Role_Table.id).one()
+        return session.query(User_Table).filter(User_Table.id == user_id).one()
 
     # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
     def get_student_attendance(self, student_id, course_id):

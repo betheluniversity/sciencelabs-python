@@ -20,5 +20,5 @@ class UsersView(FlaskView):
         return render_template('users/add_user.html')
 
     def edit_user(self, user_id):
-        user, role = self.user.get_user(user_id)
+        user = self.user.get_user(user_id)
         return render_template('users/edit_user.html', **locals())
