@@ -7,6 +7,7 @@ from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.user_functions import User
+from sciencelabs.db_repository.session_functions import Session
 
 
 class ReportView(FlaskView):
@@ -15,6 +16,7 @@ class ReportView(FlaskView):
         self.schedule = Schedule()
         self.courses = Course()
         self.user = User()
+        self.session = Session()
 
     def index(self):
         return render_template('reports/base.html')
@@ -57,6 +59,7 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
+        user_ = self.user
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())
 
@@ -65,6 +68,7 @@ class ReportView(FlaskView):
         student = self.user.get_user(student_id)
         attendance = self.user.get_student_attendance(student_id, '')[1]
         courses = self.user.get_student_courses(student_id)
+        user = self.user
         # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
         # info = self.user.get_student_attendance(student_id, 40146)
         # TODO MAYBE USE get_average_time_in_course(student_id, course_id) to get session attendance + time
@@ -74,4 +78,11 @@ class ReportView(FlaskView):
     def view_course(self, course_id):
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
+        sessions = self.session.get_sessions(course_id)
+        count = 0
+        user = self.user
+        for things in sessions:
+            count += 1
+            # print(things)
+        print(count)  # looking for 47 for course_id = 40146
         return render_template('reports/view_course.html', **locals())

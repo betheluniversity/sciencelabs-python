@@ -1,5 +1,5 @@
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table
+from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table, Course_Table, SessionCourseCodes_Table, SessionCourses_Table, StudentSession_Table, CourseCode_Table, Schedule_Table
 
 
 class Session:
@@ -33,3 +33,10 @@ class Session:
             .filter(TutorSession_Table.tutorId == tutor_id)\
             .filter(User_Table.id == tutor_id).one()
 
+    def get_sessions(self, course_id):
+        return session.query(Session_Table, Schedule_Table).filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Session_Table.id == StudentSession_Table.sessionId)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(Course_Table.id == course_id)\
+            .all()
