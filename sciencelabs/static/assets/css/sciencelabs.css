@@ -121,6 +121,11 @@ a.semester-menu{
     top: 0px !important;
 }
 
+a.report-img:hover {
+    color: white;
+    background-color: #0E2D51;
+}
+
 .big-button{
     font-size: 25px;
     padding: 15px 40px;
