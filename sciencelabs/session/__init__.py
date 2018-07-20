@@ -70,5 +70,6 @@ class SessionView(FlaskView):
     def add_tutor(self):
         return render_template('session/add_tutor.html')
 
-    def delete_session(self):
-        return render_template('session/delete_session.html')
+    def delete_session(self, session_id):
+        session = self.session.get_session(session_id)
+        return render_template('session/delete_session.html', **locals())
