@@ -29,6 +29,43 @@
                                 </ul>
                             </li>
                         </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Scheduled Time:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Actual Time:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Opened By:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Opener</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Courses Offered:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Course List</li>
+                                </ul>
+                            </li>
+                        </ul>
+
                     </div>
                     <div class="form-group col-md-6">
                         <ul class="no-bullet">
@@ -39,20 +76,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <ul class="no-bullet">
-                            <li><b>Scheduled Time:</b></li>
-                            <li>
-                                <ul class="no-bullet">
-                                    <li>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="form-group col-md-6">
+
                         <ul class="no-bullet">
                             <li><b>Tutor Attendance:</b></li>
                             <li>
@@ -61,30 +85,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <ul class="no-bullet">
-                            <li><b>Opened By:</b></li>
-                            <li>
-                                <ul class="no-bullet">
-                                    <li>Opener</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <ul class="no-bullet">
-                            <li><b>Courses Offered:</b></li>
-                            <li>
-                                <ul class="no-bullet">
-                                    <li>Course List</li>
-                                </ul>
-                            </li>
-                        </ul>
+
                     </div>
                 </div>
 
