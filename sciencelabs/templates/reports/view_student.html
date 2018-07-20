@@ -37,7 +37,7 @@
         </div>
         <div class="col-md-6">
             <form>
-                <ul style="list-style-type: none;">
+                <ul class="no-bullet">
                     <li>
                         <b>{{ student.firstName }} {{ student.lastName }}</b>
                         <ul style="list-style-type: none;">
@@ -92,7 +92,7 @@
         </div>
         <div class="col-md-6">
             <form>
-                <ul style="list-style-type: none;">
+                <ul class="no-bullet">
                     <li>
                         <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
@@ -105,7 +105,7 @@
                         {% endfor %}
                     </ul>
                 </ul>
-                <ul style="list-style-type: none;">
+                <ul class="no-bullet">
                     <li>
                         <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during ***SEMESTER YEAR***</b>
                     </li>
@@ -116,7 +116,7 @@
                             <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
                             {{ ' (' + course.dept + course.course_num + ')' }}
                         </li>
-                            <ul style="list-style-type: none;">
+                            <ul class="no-bullet">
                                 <li>
                                     {% set time = user.get_average_time_in_course(student.id, course.id) %}
                                     {{ time|length }} sessions attended

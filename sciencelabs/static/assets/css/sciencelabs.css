@@ -130,6 +130,10 @@ a.report-img:hover {
     background-color: #0F2C52;
 }
 
+.no-bullet{
+    list-style-type: none;
+}
+
 .big-button{
     font-size: 25px;
     padding: 15px 40px;
