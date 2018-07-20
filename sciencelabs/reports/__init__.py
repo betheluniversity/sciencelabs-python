@@ -86,6 +86,8 @@ class ReportView(FlaskView):
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
         session = self.session_.get_session(session_id)
+        lead, tutors = self.session_.get_session_tutors(session_id)
+        print(lead)
         user = self.user
         return render_template('reports/view_session.html', **locals())
 

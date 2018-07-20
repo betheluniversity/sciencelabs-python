@@ -73,7 +73,7 @@
                             <li><b>Scheduled Lead Tutor:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>Lead Tutor</li>
+                                    <li>{{ lead[0].firstName }} {{ lead[0].lastName }}</li>
                                 </ul>
                             </li>
                         </ul>
@@ -82,7 +82,10 @@
                             <li><b>Tutor Attendance:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>Attendance</li>
+                                    {% for tutor in tutors %}
+                                    <li>{{ tutor.firstName }} {{ tutor.lastName }} ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>
+                                    {% endfor %}
+                                    <li>{{ lead[0].firstName }} {{ lead[0].lastName }} ({{ (((lead[0].timeOut - lead[0].timeIn).total_seconds())/60)|round|int }} min)</li>
                                 </ul>
                             </li>
                         </ul>
