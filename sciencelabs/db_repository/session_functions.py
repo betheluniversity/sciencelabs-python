@@ -1,5 +1,8 @@
+from sqlalchemy import func, distinct
+
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table, Course_Table, SessionCourseCodes_Table, SessionCourses_Table, StudentSession_Table, CourseCode_Table, Schedule_Table
+from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
+    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table
 
 
 class Session:
@@ -41,3 +44,10 @@ class Session:
             .filter(Course_Table.id == course_id)\
             .all()
 
+    def get_session_attendees(self, course_id, session_id):
+        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(Session_Table.id == StudentSession_Table.sessionId)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id)\
+            .all()

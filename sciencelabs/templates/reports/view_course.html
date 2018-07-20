@@ -37,6 +37,7 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% set total_attendees = [0] %}
                     {% for session, schedule in sessions %}
                     <tr>
                         <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
@@ -58,13 +59,16 @@
                             {% endif %}
                         </td>
                         <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
+                        {% set attendance_per_session = session_.get_session_attendees(course[0].id, session.id) %}
+                        <td>{{ attendance_per_session|length }}</td>
+                    {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
                     <tfoot>
                     <tr>
                         <td><b>Total</b></td>
-                        <td class="text-right" colspan="3"><b># ({{ students|length }} unique)</b></td>
+                        <td class="text-right" colspan="3"><b>{{ total_attendees[0] }} ({{ students|length }} unique)</b></td>
                     </tr>
                     </tfoot>
                 </table>

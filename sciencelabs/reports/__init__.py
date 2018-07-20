@@ -79,10 +79,6 @@ class ReportView(FlaskView):
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
         sessions = self.session.get_sessions(course_id)
-        count = 0
         user = self.user
-        for things in sessions:
-            count += 1
-            # print(things)
-        print(count)  # looking for 47 for course_id = 40146
+        session_ = self.session
         return render_template('reports/view_course.html', **locals())
