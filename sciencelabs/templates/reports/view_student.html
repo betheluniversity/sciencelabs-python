@@ -72,7 +72,7 @@
 
                         {% set avg_time = [0] %}
                         {% for course in courses %}
-                            {% set time = get_average_time_in_course(student.id, course.id) %}
+                            {% set time = user.get_average_time_in_course(student.id, course.id) %}
                             {% set avg_time_per_course = [0] %}
                             {% for times, user in time %}
                                 {% if avg_time_per_course.append(avg_time_per_course.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
@@ -118,7 +118,7 @@
                         </li>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    {% set time = get_average_time_in_course(student.id, course.id) %}
+                                    {% set time = user.get_average_time_in_course(student.id, course.id) %}
                                     {{ time|length }} sessions attended
                                 </li>
                             </ul>

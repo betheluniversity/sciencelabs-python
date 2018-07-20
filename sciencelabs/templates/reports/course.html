@@ -63,7 +63,7 @@
                                     {{ user.lastName }}
                                 </td>
                                 <td>
-                                    {% set attendance = get_students_in_course(course.id) %}
+                                    {% set attendance = user_.get_students_in_course(course.id) %}
                                     {% set total_attendees = [0] %}
                                     {% for attendees, attend in attendance %}
                                         {% if total_attendees.append(total_attendees.pop() + (attend)) %}{% endif %}

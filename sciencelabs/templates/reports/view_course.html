@@ -37,7 +37,36 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for session, schedule in sessions %}
+                    <tr>
+                        <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                        <td>
+                            {% if schedule.dayofWeek == 0 %}
+                                Sun
+                            {% elif schedule.dayofWeek == 1 %}
+                                Mon
+                            {% elif schedule.dayofWeek == 2 %}
+                                Tue
+                            {% elif schedule.dayofWeek == 3 %}
+                                Wed
+                            {% elif schedule.dayofWeek == 4 %}
+                                Thu
+                            {% elif schedule.dayofWeek == 5 %}
+                                Fri
+                            {% else %}
+                                Sat
+                            {% endif %}
+                        </td>
+                        <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
+                    </tr>
+                    {% endfor %}
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td><b>Total</b></td>
+                        <td class="text-right" colspan="3"><b># ({{ students|length }} unique)</b></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </form>
         </div>
@@ -59,7 +88,7 @@
                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
                             <td>{{ attendance }}</td>
-                        {% set time = get_average_time_in_course(student.id, course[0].id) %}
+                        {% set time = user.get_average_time_in_course(student.id, course[0].id) %}
                         {% set avg_time = [0] %}
                         {% for times, user in time %}
                             {% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
