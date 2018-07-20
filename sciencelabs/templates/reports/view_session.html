@@ -69,23 +69,28 @@
 
                     </div>
                     <div class="form-group col-md-6">
+                        {% for lead in leads %}
                         <ul class="no-bullet">
                             <li><b>Scheduled Lead Tutor:</b></li>
                             <li>
-                                <ul class="no-bullet">
-                                    <li>{{ lead[0].firstName }} {{ lead[0].lastName }}</li>
-                                </ul>
+                                <ul class="no-bullet">{{ lead.firstName }} {{ lead.lastName }}</ul>
                             </li>
                         </ul>
+                        {% endfor %}
 
                         <ul class="no-bullet">
                             <li><b>Tutor Attendance:</b></li>
                             <li>
                                 <ul class="no-bullet">
                                     {% for tutor in tutors %}
-                                    <li>{{ tutor.firstName }} {{ tutor.lastName }} ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>
+                                    <li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> {% if tutor.timeIn %}({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min){% endif %}</li>
                                     {% endfor %}
-                                    <li>{{ lead[0].firstName }} {{ lead[0].lastName }} ({{ (((lead[0].timeOut - lead[0].timeIn).total_seconds())/60)|round|int }} min)</li>
+                                    {% for lead in leads %}
+                                        <li>{{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Scheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>
+                                    {% endfor %}
+                                    {% for tutor in tutors %}
+                                    {% if not tutor.timeIn %}<td>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></td>{% endif %}
+                                    {% endfor %}
                                 </ul>
                             </li>
                         </ul>
