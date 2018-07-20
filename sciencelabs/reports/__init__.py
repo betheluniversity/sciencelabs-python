@@ -85,5 +85,6 @@ class ReportView(FlaskView):
 
     # TODO
     def view_session(self, session_id):
+        session = self.session_.get_session(session_id)
         return render_template('reports/view_session.html', **locals())
 

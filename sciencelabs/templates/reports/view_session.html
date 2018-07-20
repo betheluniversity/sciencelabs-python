@@ -1,7 +1,101 @@
 {% extends 'reports/base.html' %}
 
-{% block header %}{% endblock %}
+{% block header %}
+    <div class="header card">
+        <div class="card-body btn-group">
+            <p style="margin: 0px" class="card-text">{{ session.name }} ({{ session.date.strftime('%m/%d/%Y') }})</p>
+        </div>
+    </div>
+{% endblock %}
 
+<h3>General Information</h3>
 {% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>General Information</h3>
+                    </div>
+                </div>
 
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Date:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.date.strftime('%B %d, %Y') }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Scheduled Lead Tutor:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Lead Tutor</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Scheduled Time:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Tutor Attendance:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Attendance</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Opened By:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Opener</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Courses Offered:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>Course List</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>Tutor Comments</h3>
+                        <p>{{ session.comments }}</p>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
 {% endblock %}
