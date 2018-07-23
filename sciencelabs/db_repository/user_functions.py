@@ -97,3 +97,6 @@ class User:
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .filter(User_Table.id == student_id) \
             .all()
+
+    def get_student_from_studentsession(self, student_id):
+        return session.query(User_Table).fitler(User_Table.id == student_id)

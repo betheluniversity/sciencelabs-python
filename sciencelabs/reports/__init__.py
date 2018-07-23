@@ -88,16 +88,18 @@ class ReportView(FlaskView):
         session = self.session_.get_session(session_id)
         leads, tutors = self.session_.get_session_tutors(session_id)
         user = self.user
+        session_ = self.session_
         course_list = self.courses.get_courses_for_session(session_id)
         count = 0
-        for things in course_list:
-            count += 1
-            print(things)
-        print('\n' + str(count))
+        # for things in course_list:
+        #     count += 1
+        #     print(things)
+        # print('\n' + str(count))
 
         # TODO USE THIS TO GET STUDENT ATTENDANCE BY COURSE ALSO USE TO GET ALL OTHER RELEVANT INFO IN TABLE
         # TODO THEN USE USER.GET_USER(USER_ID) IN JINJA TO GET USER NAME
-        test = self.session_.get_session_attendees(40158, session_id)
+        # 40158
+        # test = self.session_.get_session_attendees(40151, session_id)
         # for things in test:
         #     print(things[0].studentId)
         return render_template('reports/view_session.html', **locals())

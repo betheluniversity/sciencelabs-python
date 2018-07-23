@@ -137,10 +137,17 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for things in stuff %}
-                                    <tr>
-                                        <td></td>
-                                    </tr>
+                                {% for course in course_list %}
+                                    {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}
+                                        <tr>
+                                        {% set student = user.get_user(studentsession.studentId) %}
+                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                            <td><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></td>
+                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
+                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                        </tr>
+                                    {% endfor %}
                                 {% endfor %}
                                 </tbody>
                             </table>
@@ -155,11 +162,6 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for things in stuff %}
-                                    <tr>
-                                        <td></td>
-                                    </tr>
-                                {% endfor %}
                                 </tbody>
                             </table>
 
@@ -184,6 +186,16 @@
                     $('#show-hide-text').html('Student Attendance by Course')
                 }
                 $("table").toggleClass('hidden')
+            });
+        });
+    </script>
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable( {
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bInfo": false,
+                "bFilter": false
             });
         });
     </script>
