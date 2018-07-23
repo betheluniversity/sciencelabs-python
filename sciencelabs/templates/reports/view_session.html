@@ -52,7 +52,7 @@
                             <li><b>Opened By:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    {% set opener = user.get_opener(session.openerId) %}
+                                    {% set opener = user.get_user(session.openerId) %}
                                     <li>{{ opener.firstName }} {{ opener.lastName }}</li>
                                 </ul>
                             </li>
@@ -62,7 +62,11 @@
                             <li><b>Courses Offered:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>Course List</li>
+                                    <li>
+                                        {% for course in course_list %}
+                                            <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.title }})</span>
+                                        {% endfor %}
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
@@ -83,13 +87,23 @@
                             <li>
                                 <ul class="no-bullet">
                                     {% for tutor in tutors %}
-                                    <li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> {% if tutor.timeIn %}({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min){% endif %}</li>
+                                    {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
                                     {% endfor %}
                                     {% for lead in leads %}
-                                        <li>{{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Scheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>
+                                        {% if lead.schedTimeIn and lead.timeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Scheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+{#                                TODO FIGURE OUT HOW TO USE TUTOR.SCHEDTIMEIN TO CHECK IF SOMEONE WORKED BUT WASN'T SHCHEDULE IE IESHA WHEN SESSION.ID = 101020#}
+                                    {% for lead in leads %}
+                                        {% if not lead.schedTimeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
                                     {% endfor %}
                                     {% for tutor in tutors %}
-                                    {% if not tutor.timeIn %}<td>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></td>{% endif %}
+                                        {% if not tutor.schedTimeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+                                    {% for lead in leads %}
+                                        {% if not lead.timeIn or not lead.timeOut %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
+                                    {% endfor %}
+                                    {% for tutor in tutors %}
+                                        {% if not tutor.timeIn or not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
                                     {% endfor %}
                                 </ul>
                             </li>
@@ -105,7 +119,47 @@
                     </div>
                 </div>
 
+                <button id="show-hide" style="margin-bottom: 20px;" type="button" class="big-button edit btn-primary">View by Course</button>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>Student Attendance by Course/Name</h3>
+                        <div class="form-group col-md-12">
+                            <h3>General Information</h3>
+
+                            <table id="table"  class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Courses</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Minutes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for things in stuff %}
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>
+
+    <script>
+        $(document).ready( function () {
+            $('#show-hide').click(function(){
+                var elem = document.getElementById('#show-hide');
+                elem.outerText='hey'
+            });
+        });
+    </script>
 {% endblock %}
