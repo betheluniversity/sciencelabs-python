@@ -95,7 +95,7 @@
                         {% set time = user.get_average_time_in_course(student.id, course[0].id) %}
                         {% set avg_time = [0] %}
                         {% for times, user in time %}
-                            {% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
+                            {% if times.timeOut and times.timeIn %}{% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}{% endif %}
                         {% endfor %}
                             <td>{{ (avg_time[0] / time|length)|round|int }} min</td>
                         </tr>
