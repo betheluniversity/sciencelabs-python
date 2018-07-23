@@ -109,65 +109,67 @@
         </div>
     </div>
     <button id="student-views" type="button" class="edit btn btn-primary" style="margin-bottom:10px;">View by Course</button>
-    <table id="edit-student-table-by-name" class="table table-striped table-bordered" style="width:100%">
-        <thead>
-            <th>Name</th>
-            <th>Time In</th>
-            <th>Time Out</th>
-            <th>Courses</th>
-            <th></th>
-        </thead>
-        <tbody>
-            {% for student in session_students %}
-                <tr>
-                    <td>
-                        {{ student.firstName }} {{ student.lastName }}
-                    </td>
-                    <td>
-                        {% if student.timeIn %}
-                            {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
-                        {% else %}
-                            ???
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if student.timeOut %}
-                            {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
-                        {% else %}
-                            ???
-                        {% endif %}
-                    </td>
-                    <td>
-                        <ul>
-                            {% set courses = student_courses.get_student_session_courses(session.id, student.id) %}
-                            {% for course in courses %}
-                                <li>{{ course.dept }}{{ course.course_num }}</li>
-                            {% endfor %}
-                            {% if student.otherCourse or student.otherCourseName %}
-                                <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+    <div id="view-by-name">
+        <table id="edit-student-table-by-name" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <th>Name</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Courses</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for student in session_students %}
+                    <tr>
+                        <td>
+                            {{ student.firstName }} {{ student.lastName }}
+                        </td>
+                        <td>
+                            {% if student.timeIn %}
+                                {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
+                            {% else %}
+                                ???
                             {% endif %}
-                        </ul>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session.id) }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
-                            <button type="button" class="delete btn btn-primary">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        <tr>
-            <th colspan="4">Anonymous Students</th>
-            <td style="text-align:right;">{{ session.anonStudents }}</td>
-        </tr>
-    </table>
+                        </td>
+                        <td>
+                            {% if student.timeOut %}
+                                {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
+                            {% else %}
+                                ???
+                            {% endif %}
+                        </td>
+                        <td>
+                            <ul>
+                                {% set courses = student_courses.get_student_session_courses(session.id, student.id) %}
+                                {% for course in courses %}
+                                    <li>{{ course.dept }}{{ course.course_num }}</li>
+                                {% endfor %}
+                                {% if student.otherCourse or student.otherCourseName %}
+                                    <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                                {% endif %}
+                            </ul>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session.id) }}'"
+                                        type="button" class="edit btn btn-primary">Edit</button>
+                                <button type="button" class="delete btn btn-primary">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tr>
+                <th colspan="4">Anonymous Students</th>
+                <td style="text-align:right;">{{ session.anonStudents }}</td>
+            </tr>
+        </table>
+    </div>
 
-    <div id="edit-student-table-by-course">
+    <div id="view-by-course">
         {% for course in session_courses %}
-            <p><strong>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</strong></p>
-            <table class="table table-striped table-bordered" style="width:100%">
+            <h5><strong>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</strong></h5>
+            <table class="course-table table table-striped table-bordered" style="width:100%">
                 <thead>
                     <th>Name</th>
                     <th>Time In</th>
@@ -205,6 +207,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <br>
         {% endfor %}
     </div>
 
@@ -272,7 +275,7 @@
     <script>
         $(document).ready( function () {
 
-            $('#edit-student-table-by-course').hide();
+            $('#view-by-course').hide();
 
             $.extend($.fn.dataTableExt.oStdClasses, {
                 // give some foundation classes to our controls
@@ -302,6 +305,13 @@
                 }
             });
 
+            var courseTables = $('.course-table').dataTable({
+                "order": [[0, 'asc'],[1, 'asc']],
+                "bPaginate": false,
+                "bFilter": false,
+                "bInfo": false
+            });
+
             var picker = new Pikaday({
                 field: document.getElementById('session-date')
             });
@@ -321,12 +331,12 @@
             $('#student-views').click(function(){
                 if($('#student-views').text() == 'View by Course'){
                     $(this).text("View by Name");
-                    $('#edit-student-table-by-course').show();
-                    $('#edit-student-table-by-name').hide();
+                    $('#view-by-course').show();
+                    $('#view-by-name').hide();
                 }else{
                     $(this).text("View by Course");
-                    $('#edit-student-table-by-course').hide();
-                    $('#edit-student-table-by-name').show();
+                    $('#view-by-course').hide();
+                    $('#view-by-name').show();
                 }
             });
 
