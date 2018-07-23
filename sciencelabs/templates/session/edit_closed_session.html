@@ -213,7 +213,7 @@
 
     <button onclick="location.href='{{ url_for('SessionView:add_student') }}'" type="button"
             class="edit btn btn-primary">Add a Student</button>
-    <button onclick="location.href='{{ url_for('SessionView:add_anonymous') }}'" type="button"
+    <button onclick="location.href='{{ url_for('SessionView:add_anonymous', session_id=session.id) }}'" type="button"
             class="btn btn-primary">Add Anonymous Student</button>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">

@@ -59,8 +59,9 @@ class SessionView(FlaskView):
     def add_student(self):
         return render_template('session/add_student.html')
 
-    def add_anonymous(self):
-        return render_template('session/add_anonymous.html')
+    def add_anonymous(self, session_id):
+        session = self.session.get_session(session_id)
+        return render_template('session/add_anonymous.html', **locals())
 
     def edit_tutor(self, tutor_id, session_id):
         timedelta_to_time = datetime.min
