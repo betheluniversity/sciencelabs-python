@@ -150,22 +150,40 @@
                                     {% endfor %}
                                 {% endfor %}
                                 </tbody>
-                            </table>
-
-                            <table id="table"  class="hidden table table-striped table-bordered" style="width:100%">
-                                <thead>
+                                <tfoot>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Time In</th>
-                                    <th>Time Out</th>
-                                    <th>Minutes</th>
+                                    <td style="border: none;"><b>Anonymous Students</b></td>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
+                                <tr>
+                                    <td style="border: none;"><b>{{ session.anonStudents }}</b></td>
+                                </tr>
+                                </tfoot>
                             </table>
 
-
+                            {% for course in course_list %}
+                                <p id="" class=""><b>{{ course.dept }}{{ course.course_num }} ({{ course.title }})</b></p>
+                                <table id="table"  class="hidden table table-striped table-bordered" style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Time In</th>
+                                        <th>Time Out</th>
+                                        <th>Minutes</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}
+                                        <tr>
+                                        {% set student = user.get_user(studentsession.studentId) %}
+                                            <td>{{ student.firstName }} {{ student.lastName }}</td>
+                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
+                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

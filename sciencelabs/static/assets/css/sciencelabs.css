@@ -45,24 +45,20 @@ div.row-group{
     margin: 0px
 }
 
-/*.dataTables_wrapper .dataTables_filter{*/
-    /*width: 50%;*/
+/*#table_filter{*/
+    /*width: 100%;*/
+    /*text-align: left;*/
 /*}*/
 
-#table_filter{
-    width: 100%;
-    text-align: left;
-}
+/*#closed-table_filter{*/
+    /*width: 100%;*/
+    /*text-align: left;*/
+/*}*/
 
-#closed-table_filter{
-    width: 100%;
-    text-align: left;
-}
-
-#table_length{
-    width: 100%;
-    text-align: left;
-}
+/*#table_length{*/
+    /*width: 100%;*/
+    /*text-align: left;*/
+/*}*/
 
 select{
     width: 100%;
@@ -170,12 +166,6 @@ a.report-img:hover {
         flex-direction: column-reverse;
     }
 }
-
-/* Schedule/Schedules: 950px DONE */
-/* User/Users: 1050-1054px DONE */
-/* Report/Student: 950px DONE */
-/* Report/Term: 1070px DONE */
-/* Report/Course: 970px DONE */
 
 div.info{
     background-color: #f2f2f2;

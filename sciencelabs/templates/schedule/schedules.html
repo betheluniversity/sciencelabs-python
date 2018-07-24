@@ -115,6 +115,12 @@
 
     <script>
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sLength: 'large-4 columns ',
+                sFilter: 'large-12 columns ',
+            });
+
             var table = $('#table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
