@@ -161,7 +161,7 @@
                             </table>
 
                             {% for course in course_list %}
-                                <p id="" class=""><b>{{ course.dept }}{{ course.course_num }} ({{ course.title }})</b></p>
+                                <p class="show-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.title }})</b></p>
                                 <table id="table"  class="hidden table table-striped table-bordered" style="width:100%">
                                     <thead>
                                     <tr>
@@ -204,6 +204,7 @@
                     $('#show-hide-text').html('Student Attendance by Name')
                 }
                 $("table").toggleClass('hidden')
+                $(".show-p").toggleClass('hidden')
             });
         });
     </script>
