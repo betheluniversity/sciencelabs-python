@@ -68,7 +68,9 @@ class ReportView(FlaskView):
         student = self.user.get_user(student_id)
         attendance = self.user.get_student_attendance(student_id, '')[1]
         courses = self.user.get_student_courses(student_id)
+        sessions = self.user.get_studentsession(student_id)
         user = self.user
+        session_ = self.session_
         # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
         # info = self.user.get_student_attendance(student_id, 40146)
         # TODO MAYBE USE get_average_time_in_course(student_id, course_id) to get session attendance + time
@@ -91,6 +93,7 @@ class ReportView(FlaskView):
         course_list = self.courses.get_courses_for_session(session_id)
         user = self.user
         session_ = self.session_
+        # TODO ADD OTHER COURSES IE SARAH YANG WHEN SESSION_ID = 101006
 
         return render_template('reports/view_session.html', **locals())
 

@@ -85,7 +85,11 @@
                     </tr>
                     <tr>
                         <td><b>Total Time this Term</b></td>
-                        <td>TOTAL TIME</td>
+                        {% set total_time = [0] %}
+                        {% for studentsession, session in sessions %}
+                            {% if total_time.append(total_time.pop() + (studentsession.timeOut - studentsession.timeIn).total_seconds()) %}{% endif %}
+                        {% endfor %}
+                        <td>{{ (total_time[0]/3600)|round(1) }} hours</td>
                     </tr>
                     </tbody>
                 </table>
@@ -147,14 +151,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>Dummy Date</td>
-                        <td>Dummy Name</td>
-                        <td>Dummy Course</td>
-                        <td>Dummy Time In</td>
-                        <td>Dummy Time Out</td>
-                        <td>Dummy Minutes</td>
-                    </tr>
+                    {% for studentsession, session in sessions %}
+                        <tr>
+                            <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                            <td><a href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ session.name }}</a></td>
+                            <td>
+                                {% for course in session_.get_student_session_courses(student.id, session.id) %}
+                                    <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
+                                {% endfor %}
+                            </td>
+                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
+                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
 

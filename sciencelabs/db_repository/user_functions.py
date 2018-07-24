@@ -41,7 +41,7 @@ class User:
             .all()
 
     def get_studentsession(self, student_id):
-        return session.query(StudentSession_Table)\
+        return session.query(StudentSession_Table, Session_Table)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == Semester_Table.id)\
