@@ -77,7 +77,9 @@
                             {% for times, user in time %}
                                 {% if avg_time_per_course.append(avg_time_per_course.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
                             {% endfor %}
-                            {% if avg_time.append(avg_time.pop() + ((avg_time_per_course[0] / time|length)|round())) %}{% endif %}
+                            {% if time|length != 0 %}
+                                {% if avg_time.append(avg_time.pop() + ((avg_time_per_course[0] / time|length)|round())) %}{% endif %}
+                            {% endif %}
                         {% endfor %}
                         <td>{{ (avg_time[0] / courses|length)|round|int }} minutes</td>
                     </tr>
@@ -111,15 +113,18 @@
                     </li>
                     <ul style="list-style-type: none;">
                         {% for course in courses %}
-                        <li>
-                            {# TODO MAKE THIS A LINK #}
-                            <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
-                            {{ ' (' + course.dept + course.course_num + ')' }}
-                        </li>
+                            {% set time = user.get_average_time_in_course(student.id, course.id) %}
+                            <li>
+                                {% if time|length != 0 %}
+                                    <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
+                                    {{ ' (' + course.dept + course.course_num + ')' }}
+                                {% endif %}
+                            </li>
                             <ul class="no-bullet">
                                 <li>
-                                    {% set time = user.get_average_time_in_course(student.id, course.id) %}
-                                    {{ time|length }} sessions attended
+                                    {% if time|length != 0 %}
+                                        {{ time|length }} sessions attended
+                                    {% endif %}
                                 </li>
                             </ul>
                         {% endfor %}
