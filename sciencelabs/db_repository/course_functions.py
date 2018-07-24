@@ -31,7 +31,4 @@ class Course:
             .one()
 
     def get_courses_for_session(self, session_id):
-        # return session.query(Course_Table).filter(Course_Table.id == SessionCourses_Table.course_id).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(StudentSession_Table.sessionId == session_id)
-        # return session.query(Course_Table).filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).filter(Semester_Table.id == Session_Table.semester_id).all()
-        # return session.query(distinct(Course_Table.id)).filter(Course_Table.course_code_id == SessionCourseCodes_Table.coursecode_id).filter(SessionCourseCodes_Table.session_id == session_id).filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).all()
-        return session.query(Course_Table).filter(Session_Table.id == session_id).filter()
+        return session.query(Course_Table).filter(Course_Table.id == SessionCourses_Table.course_id).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(StudentSession_Table.sessionId == session_id)
