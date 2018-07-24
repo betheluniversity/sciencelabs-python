@@ -45,6 +45,10 @@ div.row-group{
     margin: 0px
 }
 
+ul.no-margin{
+    margin: 0px;
+}
+
 select{
     width: 100%;
 }

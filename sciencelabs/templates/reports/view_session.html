@@ -138,13 +138,11 @@
                                 </thead>
                                 <tbody>
                                 {% for student, studentsession in student_s_list %}
-{#                                {% for course in course_list %}#}
-{#                                    {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}#}
                                         <tr>
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
 
                                             <td>
-                                                <ul>
+                                                <ul class="no-margin">
                                                     {% for course in session_.get_student_session_courses(student.id, session.id) %}
                                                         <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
@@ -154,15 +152,7 @@
                                             <td>{{ studentsession.timeIn|datetimeformat }}</td>
                                             <td>{{ studentsession.timeOut|datetimeformat }}</td>
                                             <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
-{#                                            {% set student = user.get_user(studentsession.studentId) %}#}
-{#                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>#}
-{#                                            <td><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></td>#}
-{#                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>#}
-{#                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>#}
-{#                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>#}
                                         </tr>
-{#                                    {% endfor %}#}
-{#                                {% endfor %}#}
                                 {% endfor %}
                                 </tbody>
                                 <tfoot>
