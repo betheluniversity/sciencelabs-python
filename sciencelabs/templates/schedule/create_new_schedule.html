@@ -66,10 +66,11 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            {% for id, name in app_settings['COURSE_OPTIONS'].items() %}
+                            {% for course in course_list %}
                                 <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                    <input type="checkbox" class="custom-control-input" id="{{ id }}">
-                                    <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>
+                                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
+                                    <label class="custom-control-label" for="{{ course.courseName }}">
+                                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                                 </div>
                             {% endfor %}
                         </div>

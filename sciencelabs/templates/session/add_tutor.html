@@ -17,7 +17,7 @@
                         <label for="choose-tutor">Registered Tutors</label>
                         <select class="custom-select">
                            <option>Choose tutor...</option>
-                            {% for tutor in tutors %}
+                            {% for tutor in tutor_list %}
                                 <option>{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
                         </select>

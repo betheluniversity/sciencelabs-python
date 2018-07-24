@@ -87,9 +87,9 @@
             <div class="form-group col-md-12">
                 {% for course in course_list %}
                     <div class="custom-control custom-checkbox" style="display:inline-block;">
-                        <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}">
-                        <label class="custom-control-label" for="{{ course.courseName }}">{{ course.dept }}{{ course.course_num }}
-                            ({{ course.courseName }})</label>
+                        <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
+                        <label class="custom-control-label" for="{{ course.courseName }}">
+                            {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                     </div>
                 {% endfor %}
             </div>

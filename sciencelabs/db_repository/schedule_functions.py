@@ -46,3 +46,9 @@ class Schedule:
             .filter(User_Table.id == user_role_Table.user_id)\
             .filter(or_(user_role_Table.role_id == 40003, user_role_Table.role_id == 40004))\
             .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()
+
+    def get_registered_students(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == 40002) \
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()

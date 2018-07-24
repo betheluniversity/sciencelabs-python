@@ -33,13 +33,6 @@
             </tr>
         </thead>
         <tbody>
-            {% for session in app_settings['DELETED_SESSIONS'] %}
-                <tr>
-                {% for info in session %}
-                    <td>{{ info }}</td>
-                {% endfor %}
-                </tr>
-            {% endfor %}
         </tbody>
     </table>
 {% endblock %}

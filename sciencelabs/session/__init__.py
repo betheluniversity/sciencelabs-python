@@ -33,6 +33,9 @@ class SessionView(FlaskView):
 
     def create(self):
         semester_list = self.schedule.get_semesters()
+        lead_list = self.schedule.get_registered_leads()
+        tutor_list = self.schedule.get_registered_tutors()
+        course_list = self.course.get_semester_courses(40013)
         return render_template('session/create_session.html', **locals())
 
     def restore(self):
@@ -63,7 +66,8 @@ class SessionView(FlaskView):
         return render_template('session/edit_student.html', **locals())
 
     def add_student(self):
-        return render_template('session/add_student.html')
+        student_list = self.schedule.get_registered_students()
+        return render_template('session/add_student.html', **locals())
 
     def add_anonymous(self, session_id):
         session = self.session.get_session(session_id)
@@ -75,7 +79,7 @@ class SessionView(FlaskView):
         return render_template('session/edit_tutor.html', **locals())
 
     def add_tutor(self):
-        tutors = self.schedule.get_semester_tutors(40013)
+        tutor_list = self.schedule.get_registered_tutors()
         return render_template('session/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
