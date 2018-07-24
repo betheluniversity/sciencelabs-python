@@ -51,3 +51,9 @@ class Session:
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
             .filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id)\
             .all()
+
+    def get_studentsession_from_session(self, session_id):
+        return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId).filter(StudentSession_Table.sessionId == session_id).all()
+
+    def get_student_session_courses(self, student_id, session_id):
+        return session.query(Course_Table).filter(Course_Table.id == SessionCourses_Table.course_id).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.sessionId == session_id).all()
