@@ -140,7 +140,7 @@
                                 {% for course in course_list %}
                                     {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}
                                         <tr>
-                                        {% set student = user.get_user(studentsession.studentId) %}
+                                            {% set student = user.get_user(studentsession.studentId) %}
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></td>
                                             <td>{{ studentsession.timeIn|datetimeformat }}</td>
