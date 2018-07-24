@@ -17,7 +17,8 @@ class Session:
 
     def get_session_tutors(self, session_id):
         tutors = session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
-                               TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn, TutorSession_Table.schedTimeOut)\
+                               TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
+                               TutorSession_Table.schedTimeOut)\
             .filter(TutorSession_Table.sessionId == session_id)\
             .filter(User_Table.id == TutorSession_Table.tutorId)
         session_leads = []
@@ -53,7 +54,14 @@ class Session:
             .all()
 
     def get_studentsession_from_session(self, session_id):
-        return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId).filter(StudentSession_Table.sessionId == session_id).all()
+        return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .all()
 
     def get_student_session_courses(self, student_id, session_id):
-        return session.query(Course_Table).filter(Course_Table.id == SessionCourses_Table.course_id).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.sessionId == session_id).all()
+        return session.query(Course_Table)\
+            .filter(Course_Table.id == SessionCourses_Table.course_id)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .all()
