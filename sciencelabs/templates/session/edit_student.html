@@ -28,22 +28,27 @@
                 <p>Courses</p>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="course" checked>
-                            <label class="custom-control-label" for="course">{{ student.title }}</label>
-                        </div>
+                        {% for course in student_courses %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input type="checkbox" class="custom-control-input" id="course"
+                                        {{ 'checked' if course in session_courses }}>
+                                <label class="custom-control-label" for="course">{{ course.courseName }}</label>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-2">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="other">
+                            <input type="checkbox" class="custom-control-input" id="other"
+                                    {{ 'checked' if other_course.otherCourse == 1 }}>
                             <label class="custom-control-label" for="other">Other</label>
                         </div>
                     </div>
                     <div class="form-group col-md-10">
                         <label for="course-name">Course Name or Reason</label>
-                        <input type="text" class="form-control" id="course-name">
+                        <input type="text" class="form-control" id="course-name"
+                               value="{{ other_course.otherCourseName if other_course.otherCourse == 1 else ''}}">
                     </div>
                 </div>
                 <div class="form-row">

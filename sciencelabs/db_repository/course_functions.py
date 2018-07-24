@@ -1,5 +1,6 @@
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, CourseCode_Table
+from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
+    CourseCode_Table, StudentSession_Table, SessionCourses_Table, Session_Table
 
 
 class Course:
@@ -21,3 +22,11 @@ class Course:
         return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(Course_Table.semester_id == semester_id)\
             .filter(Course_Table.course_code_id == CourseCode_Table.id).distinct()
+
+    def get_student_courses(self, student_id, semester_id):
+        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .filter(Course_Table.id == SessionCourses_Table.course_id)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id).filter(Session_Table.semester_id == semester_id) \
+            .filter(StudentSession_Table.studentId == User_Table.id).filter(User_Table.id == student_id).distinct()

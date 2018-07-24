@@ -31,10 +31,9 @@ class Session:
 
     def get_student_session_info(self, student_id, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
-                             StudentSession_Table.timeOut, Course_Table.title) \
+                             StudentSession_Table.timeOut) \
             .filter(StudentSession_Table.sessionId == session_id).filter(StudentSession_Table.studentId == student_id) \
-            .filter(User_Table.id == student_id).filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
-            .filter(SessionCourses_Table.course_id == Course_Table.id).one()
+            .filter(User_Table.id == student_id).one()
 
     def get_session_students(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut,
@@ -57,3 +56,8 @@ class Session:
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
             .filter(CourseCode_Table.id == Course_Table.course_code_id).distinct()
+
+    def get_other_course(self, session_id, student_id):
+        return session.query(StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).one()
