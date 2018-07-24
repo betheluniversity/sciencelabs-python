@@ -19,6 +19,11 @@ class Session:
             .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)\
             .order_by(TutorSession_Table.lead.desc())
 
+    def get_session_tutor_names(self, session_id):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
+            .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)\
+            .order_by(TutorSession_Table.lead.desc())
+
     def get_tutor_session_info(self, tutor_id, session_id):
         return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.lead, TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
             .filter(TutorSession_Table.sessionId == session_id).filter(TutorSession_Table.tutorId == tutor_id)\

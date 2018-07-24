@@ -1,7 +1,8 @@
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table
+from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
+    User_Table, user_role_Table
 
 
 class Schedule:
@@ -34,3 +35,14 @@ class Schedule:
 
     def get_semesters(self):
         return session.query(Semester_Table).order_by(Semester_Table.year.desc()).all()
+
+    def get_registered_leads(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == 40003)\
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).all()
+
+    def get_registered_tutors(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(or_(user_role_Table.role_id == 40003, user_role_Table.role_id == 40004))\
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()

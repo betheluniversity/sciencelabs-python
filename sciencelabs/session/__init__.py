@@ -44,6 +44,9 @@ class SessionView(FlaskView):
         timedelta_to_time = datetime.min
         session = self.session.get_session(session_id)
         tutors = self.session.get_session_tutors(session_id)
+        tutor_names = self.session.get_session_tutor_names(session_id)
+        lead_list = self.schedule.get_registered_leads()
+        tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
         semester_list = self.schedule.get_semesters()
@@ -69,7 +72,8 @@ class SessionView(FlaskView):
         return render_template('session/edit_tutor.html', **locals())
 
     def add_tutor(self):
-        return render_template('session/add_tutor.html')
+        tutors = self.schedule.get_semester_tutors(40013)
+        return render_template('session/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
         session = self.session.get_session(session_id)
