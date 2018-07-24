@@ -194,6 +194,13 @@
 
     <script>
         $(document).ready( function () {
+            var table = $('#table').DataTable( {
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bInfo": false,
+                "bFilter": false
+            });
+
             $('#show-hide').click(function(){
                 if ($(this).text() == 'View by Course') {
                     $(this).text('View by Name')
@@ -205,16 +212,6 @@
                 }
                 $("table").toggleClass('hidden')
                 $(".display-p").toggleClass('hidden')
-            });
-        });
-    </script>
-    <script>
-        $(document).ready( function () {
-            var table = $('#table').DataTable( {
-                "bPaginate": false,
-                "bLengthChange": false,
-                "bInfo": false,
-                "bFilter": false
             });
         });
     </script>
