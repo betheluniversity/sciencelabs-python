@@ -14,7 +14,7 @@
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
                 <input type="text" class="form-control" id="session-name"
-                       value="{{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}">
+                       value="{{ session.name }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
@@ -37,12 +37,12 @@
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
                 <input type="time" class="form-control" id="scheduled-start"
-                       value="{{ (timedelta_to_time + session.schedStartTime).strftime('%H:%M') }}">
+                       value="{{ session.schedStartTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-end">Scheduled End Time</label>
                 <input type="time" class="form-control" id="scheduled-end"
-                       value="{{ (timedelta_to_time + session.schedEndTime).strftime('%H:%M') }}">
+                       value="{{ session.schedEndTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         {# TODO: This looks nothing like the actual mathlab site #}
@@ -70,17 +70,17 @@
             <div class="form-group col-md-6">
                 <label for="actual-start">Actual Start Time</label>
                 <input type="time" class="form-control" id="actual-start"
-                       value="{{ (timedelta_to_time + session.startTime).strftime('%H:%M') }}">
+                       value="{{ session.startTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-6">
                 <label for="actual-end">Actual End Time</label>
                 <input type="time" class="form-control" id="actual-end"
-                       value="{{ (timedelta_to_time + session.endTime).strftime('%H:%M') }}">
+                       value="{{ session.endTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
-                <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                <button type="button" class="btn btn-primary" id="all-courses">Select No Courses</button>
             </div>
         </div>
         <div class="form-row">
@@ -245,14 +245,14 @@
                     </td>
                     <td>
                         {% if tutor.timeIn %}
-                            {{ (timedelta_to_time + tutor.timeIn).strftime('%I:%M%p') }}
+                            {{ tutor.timeIn|datetimeformat }}
                         {% else %}
                              ???
                         {% endif %}
                     </td>
                     <td>
                         {% if tutor.timeOut %}
-                            {{ (timedelta_to_time + tutor.timeOut).strftime('%I:%M%p') }}
+                            {{ tutor.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
@@ -266,8 +266,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}'"
-                                    type="button" class="edit btn btn-primary">Edit</button>
+                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -275,8 +274,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <button onclick="location.href='{{ url_for('SessionView:add_tutor') }}'" type="button"
-            class="edit btn btn-primary">Add a Tutor</button>
+    <a href='{{ url_for('SessionView:add_tutor') }}' class="edit btn btn-primary">Add a Tutor</a>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
@@ -348,7 +346,7 @@
                     $('#view-by-name').show();
                 }
             });
-
+          
         });
     </script>
 {% endblock %}

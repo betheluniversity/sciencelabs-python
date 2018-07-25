@@ -1,11 +1,4 @@
-{% extends 'sciencelabs_base.html' %}
-
-{% block subnav %}
-        <a id="schedule-home" class="nav-link {{ 'active' if '/schedule/' == request.path else 'disabled'}}"
-           href="{{ url_for('ScheduleView:index') }}">Schedules</a>
-        <a id="create" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
-           href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
-{% endblock %}
+{% extends 'schedule/base.html' %}
 
 {% block body_content %}
     <div class="custom-small row">
@@ -16,7 +9,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                                <p style="padding: 0px; margin: 0px">Schedules for {{ semester.term }} {{ semester.year }}</p>
+                                <p style="padding: 0px; margin: 0px">Schedules for ***SEMESTER YEAR***</p>
                             </div>
                         </div>
                     </div>
@@ -58,19 +51,38 @@
                                 {% endif %}
                                 </td>
                                 <td>
-                                    {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') + ' - ' + (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
+                                    {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
                                 </td>
                                 <td>
                                     {{ schedule.room }}
                                 </td>
                                 <td>
-                                    <button id="show-courses" type="button" class="btn btn-primary">Show</button>
+                                    <button id="show-courses" type="button" class="show-courses btn btn-primary">Show</button>
+                                    <div style="display:none;margin-top:10px" class="text-left">
+                                        {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
+                                        <ul>
+                                            {% for course in courses %}
+                                                <li>
+                                                    {{ course }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
                                 </td>
                                 <td>
-                                    <button id="show-tutors" type="button" class="btn btn-primary">Show</button>
+                                    <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
+                                    <div style="display:none;margin-top:10px" class="text-left">
+                                        {% set leads, tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
+                                        {% for lead in leads %}
+                                            {{ lead }} <span class="button-labels">Lead</span><br />
+                                        {% endfor %}
+                                        {% for tutor in tutors %}
+                                            {{ tutor }}<br />
+                                        {% endfor %}
+                                    </div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button id="edit-closed-session" type="button" class="edit btn btn-primary">Edit</button>
+                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}' class="edit btn btn-primary">Edit</a>
                                     <button id="delete-closed-session" type="button" class="delete btn btn-primary">Delete</button>
                                 </td>
                             </tr>
@@ -103,6 +115,12 @@
 
     <script>
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sLength: 'large-4 columns ',
+                sFilter: 'large-12 columns ',
+            });
+
             var table = $('#table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
@@ -115,6 +133,20 @@
                 ],
                 "bPaginate": false,
                 "bLengthChange": false,
+            });
+            $(".show-tutors").click(function() {
+                $(this).next().toggle();
+                if($(this).text() !== 'Show')
+                    $(this).text('Show');
+                else
+                    $(this).text('Hide');
+            });
+            $(".show-courses").click(function() {
+                $(this).next().toggle();
+                if($(this).text() !== 'Show')
+                    $(this).text('Show');
+                else
+                    $(this).text('Hide');
             });
         });
     </script>

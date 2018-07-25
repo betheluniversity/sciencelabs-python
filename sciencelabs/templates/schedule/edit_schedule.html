@@ -1,0 +1,119 @@
+{% extends 'schedule/base.html' %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-8">
+            <form>
+                 <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                                <p style="padding: 0px; margin: 0px">Edit Schedule for ***SEMESTER YEAR***</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="schedule-name">Schedule Name</label>
+                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="room">Room</label>
+                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="start-time">Start Time</label>
+                        <input type="time" class="form-control" id="start-time" value="{{ schedule.startTime|datetimeformat('%H:%M') }}">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="end-time">End Time</label>
+                        <input type="time" class="form-control" id="end-time" value="{{ schedule.endTime|datetimeformat('%H:%M') }}">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="day-of-week">Day of week</label>
+                        <select class="custom-select">
+                            <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="Sunday">Sunday</option>
+                            <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="Monday">Monday</option>
+                            <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="Tuesday">Tuesday</option>
+                            <option {% if schedule.dayofWeek == 3 %} selected="selected"{% endif %} value="Wednesday">Wednesday</option>
+                            <option {% if schedule.dayofWeek == 4 %} selected="selected"{% endif %} value="Thursday">Thursday</option>
+                            <option {% if schedule.dayofWeek == 5 %} selected="selected"{% endif %} value="Friday">Friday</option>
+                            <option {% if schedule.dayofWeek == 6 %} selected="selected"{% endif %} value="Saturday">Saturday</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-leads">Lead Tutors</label>
+                        <input type="text" class="form-control" id="choose-leads" placeholder="Choose lead tutors...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-tutors">Tutors</label>
+                        <input type="text" class="form-control" id="choose-tutors" placeholder="Choose tutors...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="all btn btn-primary" id="all-courses">Select No Courses</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {% for id, name in app_settings['COURSE_OPTIONS'].items() %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input checked type="checkbox" class="custom-control-input" id="{{ id }}">
+                                <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="save-schedule">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="sub-info card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        Edit schedule information in the given fields to reflect changes in the current schedule.
+                    </p>
+                    <p class="card-text">
+                        To edit tutor information, click in the tutor box until a cursor appears. To add a tutor, select
+                        a name from the list that appears, or start typing a tutor name to find it quickly, and then
+                        select the tutor. If tutors need to be deleted, click on the "X" next to the tutor name.
+                    </p>
+                    <p class="card-text">
+                        For more information regarding schedules and sessions, see the documentation on the
+                        <span id="gray" class="button-labels">Create New Schedule</span> tab.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#all-courses').click(function(){
+                if($(this).hasClass('all')){
+                    $(this).removeClass('all');
+                    $('.custom-control-input').prop('checked', false);
+                    $(this).text('Select All Courses');
+                }else {
+                    $(this).addClass('all');
+                    $('.custom-control-input').prop('checked', true);
+                    $(this).text('Select No Courses');
+                }
+            });
+        });
+    </script>
+{% endblock %}

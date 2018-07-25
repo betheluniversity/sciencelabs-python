@@ -1,3 +1,7 @@
+a{
+    color: #0069AA;
+}
+
 body {
   background: #fff;
   color: #222;
@@ -41,23 +45,8 @@ div.row-group{
     margin: 0px
 }
 
-/*.dataTables_wrapper .dataTables_filter{*/
-    /*width: 50%;*/
-/*}*/
-
-#table_filter{
-    width: 100%;
-    text-align: left;
-}
-
-#closed-table_filter{
-    width: 100%;
-    text-align: left;
-}
-
-#table_length{
-    width: 100%;
-    text-align: left;
+ul.no-margin{
+    margin: 0px;
 }
 
 select{
@@ -102,22 +91,39 @@ a.semester-menu{
     background-color: white;
 }
 
-button.btn-primary{
+.btn-primary{
     background-color: #0069AA;
 }
 
-button.edit{
+.edit{
     background-color: #0F2C52;
     border-color: #0F2C52;
 }
 
-button.delete{
-    color: white;
+.delete{
+    color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
 }
 
-button.delete-session{
+.report-img{
+    top: 0px !important;
+}
+
+a.report-img:hover {
+    color: white;
+    background-color: #0F2C52;
+}
+
+.no-bullet{
+    list-style-type: none;
+}
+
+.hidden{
+    display: none;
+}
+
+.big-button{
     font-size: 25px;
     padding: 15px 40px;
 }
@@ -149,12 +155,6 @@ button.delete-session{
         flex-direction: column-reverse;
     }
 }
-
-/* Schedule/Schedules: 950px DONE */
-/* User/Users: 1050-1054px DONE */
-/* Report/Student: 950px DONE */
-/* Report/Term: 1070px DONE */
-/* Report/Course: 970px DONE */
 
 div.info{
     background-color: #f2f2f2;
@@ -207,7 +207,7 @@ a.nav-link.button{
 .button-labels{
     padding: 4px 6px;
     font-size: 10px;
-    border-radius: 8%;
+    border-radius: 6%;
     color: white;
     background-color: #0069AA;
 }

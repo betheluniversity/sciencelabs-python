@@ -29,7 +29,7 @@
                                 {% for course, user in course_info %}
                                     <tr>
                                         <td>
-                                            {{ course.title }}
+                                            <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title }}</a>
                                         </td>
                                         <td>
                                             {{ course.section }}

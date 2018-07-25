@@ -10,8 +10,6 @@
         <a id="4" class="test nav-link {{ 'active' if 'transition/4' in request.path else 'disabled'}}"
            href="{{ url_for('TermStartupView:step_four') }}">Step 4: Review Schedules</a>
 
-        <script type="text/javascript" src="{{ url_for('static', filename='test.js') }}"></script>
-
 {% endblock %}
 
 {% block semester_switch %}{% endblock %}

@@ -5,10 +5,11 @@ import logging
 from flask import Flask
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
+from datetime import datetime
 
 # Local
 from app_settings import app_settings
-
+from sciencelabs.db_repository.user_functions import User
 
 app = Flask(__name__)
 
@@ -38,6 +39,22 @@ CourseView.register(app)
 ScheduleView.register(app)
 ProfileView.register(app)
 
+@app.context_processor
+def utility_processor():
+    to_return = {}
+    to_return.update({
+        'now': datetime.now()
+    })
+
+    return to_return
+
+
+def datetimeformat(value, custom_format='%l:%M%p'):
+    return (datetime.min + value).strftime(custom_format)
+
+
+# app.jinja_env.globals.update(get_students_in_course=User().get_students_in_course)
+app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.globals.update(app_settings=app_settings)
 
 if __name__ == "__main__":

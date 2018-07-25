@@ -41,7 +41,7 @@
                         {{ session.date.strftime('%m/%d/%Y') }}
                     </td>
                     <td>
-                        {{ (timedelta_to_time + session.startTime).strftime('%l:%M%p') + ' - ' + (timedelta_to_time + session.endTime).strftime('%l:%M%p') }}
+                        {{ session.startTime|datetimeformat + ' - ' + session.endTime|datetimeformat }}
                     </td>
                     <td>
                         {{ session.room }}
@@ -61,10 +61,8 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button onclick="location.href='{{ url_for('SessionView:edit_session', session_id=session.id) }}'" type="button"
-                                    class="edit btn btn-primary">Edit</button>
-                            <button onclick="location.href='{{ url_for('SessionView:delete_session', session_id=session.id) }}'" type="button"
-                                    class="delete btn btn-primary">Delete</button>
+                            <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
+                            <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
                         </div>
                     </td>
                 </tr>
@@ -73,8 +71,7 @@
     </table>
 
     <script>
-        $(document).ready( function () {
-
+         $(document).ready( function () {
             $.extend($.fn.dataTableExt.oStdClasses, {
                 // give some foundation classes to our controls
                 sWrapper: 'large-12 columns ',
@@ -86,24 +83,22 @@
                 sPageButtonDisabled: 'disabled',
                 sPageButtonActive: 'success'
             });
-
             var closedSessionTable = $('#closed-table').dataTable({
-                "order": [[1, 'asc'],[2, 'asc']],
-                "bPaginate": false,
+               "order": [[1, 'asc'],[2, 'asc']],
+                 "bPaginate": false,
                 "oLanguage": {
                     "sSearch": "Search:"
                 }
-            });
-
-            $(".show-tutors").click(function() {
-                $(this).next().toggle();
-                if($(this).text() !== 'Show')
-                    $(this).text('Show');
-                else
-                    $(this).text('Hide');
-            });
-
-        });
+             });
+             $(".show-tutors").click(function() {
+                 $(this).next().toggle();
+                 if($(this).text() !== 'Show')
+                     $(this).text('Show');
+                 else
+                     $(this).text('Hide');
+             });
+         });
+           
     </script>
 
 {% endblock %}

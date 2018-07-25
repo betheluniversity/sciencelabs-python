@@ -7,16 +7,16 @@
 {#TODO: This tab needs another subnav that allows the user to switch between #}
 {% block body_content %}
    <div class="custom-default row">
-   <div class="col-md-8">
-       <form>
-           <div class="form-row">
-               <div class="form-group col-md-12">
-                   {# TODO PUT IN SELECTOR #}
-                   PUT IN SELECTOR
-               </div>
-           </div>
-       </form>
-   </div>
+       <div class="col-md-8">
+           <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {# TODO PUT IN SELECTOR #}
+                        PUT IN SELECTOR
+                    </div>
+                </div>
+           </form>
+       </div>
        <div class="col-md-8">
            <form>
                <div class="form-row">
@@ -39,7 +39,8 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">Attendance for Month YEAR</p>
+                                    {# TODO PUT IN MONTH YEAR #}
+                                    <p style="padding: 0px; margin: 0px">Attendance for ***MONTH YEAR***</p>
                                 <a href="" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
                                 <a href="" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
@@ -140,6 +141,12 @@
     </div>
 
     <script>
+        $.extend($.fn.dataTableExt.oStdClasses, {
+            // give some foundation classes to our controls
+            sLength: 'large-4 columns ',
+            sFilter: 'large-12 columns ',
+        });
+
         $(document).ready( function () {
             var table = $('#closed-table').DataTable( {
                 "aaSorting": [],
