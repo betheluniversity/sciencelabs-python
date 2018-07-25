@@ -75,7 +75,8 @@
                             {% set time = user.get_average_time_in_course(student.id, course.id) %}
                             {% set avg_time_per_course = [0] %}
                             {% for times, user in time %}
-                                {% if avg_time_per_course.append(avg_time_per_course.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}
+
+                                {% if times.timeOut and times.timeIn %}{% if avg_time_per_course.append(avg_time_per_course.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}{% endif %}
                             {% endfor %}
                             {% if time|length != 0 %}
                                 {% if avg_time.append(avg_time.pop() + ((avg_time_per_course[0] / time|length)|round())) %}{% endif %}
@@ -87,7 +88,7 @@
                         <td><b>Total Time this Term</b></td>
                         {% set total_time = [0] %}
                         {% for studentsession, session in sessions %}
-                            {% if total_time.append(total_time.pop() + (studentsession.timeOut - studentsession.timeIn).total_seconds()) %}{% endif %}
+                            {% if studentsession.timeIn and studentsession.timeOut %}{% if total_time.append(total_time.pop() + (studentsession.timeOut - studentsession.timeIn).total_seconds()) %}{% endif %}{% endif %}
                         {% endfor %}
                         <td>{{ (total_time[0]/3600)|round(1) }} hours</td>
                     </tr>
@@ -162,7 +163,9 @@
                             </td>
                             <td>{{ studentsession.timeIn|datetimeformat }}</td>
                             <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                            {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                            {% else %} <td>???</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

@@ -50,7 +50,10 @@ def utility_processor():
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
-    return (datetime.min + value).strftime(custom_format)
+    if value:
+        return (datetime.min + value).strftime(custom_format)
+    else:
+        return '???'
 
 
 # app.jinja_env.globals.update(get_students_in_course=User().get_students_in_course)
