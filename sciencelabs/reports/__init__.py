@@ -99,6 +99,5 @@ class ReportView(FlaskView):
         course_list = self.courses.get_semester_courses(40013)
         user = self.user
         session_ = self.session_
-        # TODO ADD OTHER COURSES IE SARAH YANG WHEN SESSION_ID = 101006
         return render_template('reports/view_session.html', **locals())
 
