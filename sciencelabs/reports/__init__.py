@@ -29,7 +29,6 @@ class ReportView(FlaskView):
     def semester(self):
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
-        timedelta_to_time = datetime.min
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
         unique_attendance_info = self.user.get_unique_session_attendance()
@@ -93,7 +92,7 @@ class ReportView(FlaskView):
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
         session = self.session_.get_session(session_id)
-        leads, tutors = self.session_.get_session_tutors(session_id)
+        tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
         course_list = self.courses.get_courses_for_session(session_id)
         user = self.user

@@ -15,9 +15,7 @@ class ScheduleView(FlaskView):
         self.course = Course()
 
     def index(self):
-
         semester = self.schedule.get_active_semester()
-        timedelta_to_time = datetime.min
         schedule_info = self.schedule.get_schedule_tab_info()
         schedule_tutors = self.schedule
         schedule_courses = self.schedule
@@ -31,4 +29,5 @@ class ScheduleView(FlaskView):
 
     def edit_schedule(self, schedule_id):
         schedule = Schedule().get_schedule(schedule_id)
+        course_list = self.course.get_semester_courses(40013)
         return render_template('schedule/edit_schedule.html', **locals())

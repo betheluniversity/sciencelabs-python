@@ -17,12 +17,12 @@
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
                         <input type="time" class="form-control" id="time-in"
-                               value="{{ (timedelta_to_time + student.timeIn).strftime('%H:%M') if student.timeIn }}">
+                               value="{{ student.timeIn|datetimeformat('%H:%M') if student.timeIn }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
                         <input type="time" class="form-control" id="time-out"
-                               value="{{ (timedelta_to_time + student.timeOut).strftime('%H:%M') if student.timeOut }}">
+                               value="{{ student.timeOut|datetimeformat('%H:%M') if student.timeOut }}">
                     </div>
                 </div>
                 <p>Courses</p>

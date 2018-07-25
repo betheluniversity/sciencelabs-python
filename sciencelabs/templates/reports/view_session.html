@@ -73,13 +73,15 @@
 
                     </div>
                     <div class="form-group col-md-6">
-                        {% for lead in leads %}
+                        {% for tutor in tutors %}
+                            {% if tutor.lead %}
                         <ul class="no-bullet">
                             <li><b>Scheduled Lead Tutor:</b></li>
                             <li>
-                                <ul class="no-bullet">{{ lead.firstName }} {{ lead.lastName }}</ul>
+                                <ul class="no-bullet">{{ tutor.firstName }} {{ tutor.lastName }}</ul>
                             </li>
                         </ul>
+                            {% endif %}
                         {% endfor %}
 
                         <ul class="no-bullet">
@@ -87,20 +89,11 @@
                             <li>
                                 <ul class="no-bullet">
                                     {% for tutor in tutors %}
-                                    {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                            {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
                                     {% endfor %}
-                                    {% for lead in leads %}
-                                        {% if lead.schedTimeIn and lead.timeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Scheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
-                                    {% endfor %}
-{#                                TODO FIGURE OUT HOW TO USE TUTOR.SCHEDTIMEIN TO CHECK IF SOMEONE WORKED BUT WASN'T SHCHEDULE IE IESHA WHEN SESSION.ID = 101020#}
-                                    {% for lead in leads %}
-                                        {% if not lead.schedTimeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
-                                    {% endfor %}
+{#TODO FIGURE OUT HOW TO USE TUTOR.SCHEDTIMEIN TO CHECK IF SOMEONE WORKED BUT WASN'T SHCHEDULE IE IESHA WHEN SESSION.ID = 101020#}
                                     {% for tutor in tutors %}
                                         {% if not tutor.schedTimeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
-                                    {% endfor %}
-                                    {% for lead in leads %}
-                                        {% if not lead.timeIn or not lead.timeOut %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
                                     {% endfor %}
                                     {% for tutor in tutors %}
                                         {% if not tutor.timeIn or not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
@@ -143,7 +136,7 @@
 
                                             <td>
                                                 <ul class="no-margin">
-                                                    {% for course in session_.get_student_session_courses(student.id, session.id) %}
+                                                    {% for course in session_.get_report_student_session_courses(student.id, session.id) %}
                                                         <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
                                                 </ul>
@@ -151,7 +144,7 @@
 
                                             <td>{{ studentsession.timeIn|datetimeformat }}</td>
                                             <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                            {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>{% else %}<td>0 min</td>{% endif %}
                                         </tr>
                                 {% endfor %}
                                 </tbody>
@@ -183,7 +176,9 @@
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td>{{ studentsession.timeIn|datetimeformat }}</td>
                                             <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                            {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                            {% else %}<td>0 min</td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                     </tbody>

@@ -135,14 +135,14 @@
                         </td>
                         <td>
                             {% if student.timeIn %}
-                                {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
+                                {{ student.timeIn|datetimeformat }}
                             {% else %}
                                 ???
                             {% endif %}
                         </td>
                         <td>
                             {% if student.timeOut %}
-                                {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
+                                {{ student.timeOut|datetimeformat}}
                             {% else %}
                                 ???
                             {% endif %}
@@ -192,14 +192,14 @@
                                 <td>{{ student.firstName }} {{ student.lastName }}</td>
                                 <td>
                                     {% if student.timeIn %}
-                                        {{ (timedelta_to_time + student.timeIn).strftime('%I:%M%p') }}
+                                        {{ student.timeIn|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if student.timeOut %}
-                                        {{ (timedelta_to_time + student.timeOut).strftime('%I:%M%p') }}
+                                        {{ student.timeOut|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
