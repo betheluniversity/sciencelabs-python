@@ -44,4 +44,3 @@ class Course:
             .filter(CourseProfessors_Table.professor_id == User_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .one()
-

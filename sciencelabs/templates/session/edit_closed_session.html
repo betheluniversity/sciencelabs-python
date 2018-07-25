@@ -189,7 +189,7 @@
                     {% for student in session_students %}
                         {% if course in student_courses.get_student_session_courses(session.id, student.id) %}
                             <tr>
-                                <td>{{ student.firstName }} {{ student.lastName }}</td>
+                                <td><a href="{{ url_for('ReportView:view_student', student_id=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></td>
                                 <td>
                                     {% if student.timeIn %}
                                         {{ student.timeIn|datetimeformat }}
