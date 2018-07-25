@@ -73,7 +73,7 @@ class ReportView(FlaskView):
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
         student = self.user.get_user(student_id)
-        attendance = self.user.get_student_attendance(student_id, '')[1]
+        student_info, attendance = self.user.get_student_attendance(student_id)
         courses = self.user.get_student_courses(student_id)
         sessions = self.user.get_studentsession(student_id)
         user = self.user

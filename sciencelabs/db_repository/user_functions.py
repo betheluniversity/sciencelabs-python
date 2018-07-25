@@ -52,8 +52,7 @@ class User:
         return session.query(User_Table).filter(User_Table.id == user_id).one()
 
     # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
-    def get_student_attendance(self, student_id, course_id):
-        if not course_id:
+    def get_student_attendance(self, student_id):
             return session.query(User_Table, func.count(User_Table.id)) \
                 .filter(student_id == User_Table.id)\
                 .filter(User_Table.id == StudentSession_Table.studentId) \
@@ -62,15 +61,6 @@ class User:
                 .filter(Semester_Table.active == 1) \
                 .group_by(User_Table.id) \
                 .one()
-        else:
-            print(course_id)
-            return session.query(StudentSession_Table)\
-                .filter(StudentSession_Table.sessionId == Session_Table.id)\
-                .filter(Session_Table.semester_id == Semester_Table.id)\
-                .filter(Semester_Table.active == 1)\
-                .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-                .filter(SessionCourses_Table.course_id == CourseViewer_Table.course_id)\
-                .all()
 
     def get_student_courses(self, student_id):
         return session.query(Course_Table)\
