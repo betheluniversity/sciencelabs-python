@@ -56,6 +56,7 @@ class SessionView(FlaskView):
         return render_template('session/edit_closed_session.html', **locals())
 
     # TODO FIX ROUTE
+    @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, 40013)
@@ -74,6 +75,7 @@ class SessionView(FlaskView):
         return render_template('session/add_anonymous.html', **locals())
 
     # TODO FIX ROUTE
+    @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
