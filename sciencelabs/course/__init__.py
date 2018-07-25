@@ -24,5 +24,5 @@ class CourseView(FlaskView):
 
     @route('<int:course_id>')
     def view_course(self, course_id):
-        course = self.course.get_course(course_id)
+        course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
