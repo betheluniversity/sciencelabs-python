@@ -80,7 +80,7 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
-                <button type="button" class="btn btn-primary" id="all-courses">Select No Courses</button>
+                <button type="button" class="checked btn btn-primary" id="all-courses">Select No Courses</button>
             </div>
         </div>
         <div class="form-row">
@@ -325,14 +325,13 @@
 
             $('#all-courses').click(function(){
                 if($(this).hasClass('all')){
-                    $(this).removeClass('all');
                     $('.custom-control-input').prop('checked', false);
                     $(this).text('Select All Courses');
                 }else {
-                    $(this).addClass('all');
                     $('.custom-control-input').prop('checked', true);
                     $(this).text('Select No Courses');
                 }
+                $(this).toggleClass('all')
             });
 
             $('#student-views').click(function(){
