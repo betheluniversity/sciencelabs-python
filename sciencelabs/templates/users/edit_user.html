@@ -37,6 +37,50 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
+                        <label for="roles">Roles</label>
+                        {% for role in roles %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
+                                        {{ 'checked' if role in user_roles }}>
+                                <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="user-courses">User's Courses for Current Term</label>
+                        <div id="user-courses">
+                            {% if 'Professor' in user_roles %}
+                                <ul>
+                                    <li>Course</li>
+                                </ul>
+                            {% else %}
+                                <p>This user is not a professor for any of this lab's courses.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="user-courses">Additional Viewable Courses for the Current Term</label>
+                        <div id="user-courses">
+                            {% for course in course_list %}
+                                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}">
+                                    <label class="custom-control-label" for="{{ course.courseName }}">
+                                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="delete btn btn-primary">Deactivate</button>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
