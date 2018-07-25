@@ -16,7 +16,7 @@ class CourseView(FlaskView):
         self.course = Course()
         self.schedule = Schedule()
 
-    @route('/admin')
+    @route('/admin/')
     def index(self):
         course_info = self.course.get_course_info()
         semester = self.schedule.get_active_semester()
