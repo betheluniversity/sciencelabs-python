@@ -1,8 +1,8 @@
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
-    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table
+    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table
 
 
 class Schedule:
@@ -30,6 +30,29 @@ class Schedule:
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
             .group_by(Schedule_Table.id).all()
 
+    def get_active_semester(self):
+        return session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+
+    def get_semesters(self):
+        return session.query(Semester_Table).order_by(Semester_Table.year.desc()).all()
+
+    def get_registered_leads(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == 40003)\
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).all()
+
+    def get_registered_tutors(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(or_(user_role_Table.role_id == 40003, user_role_Table.role_id == 40004))\
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()
+
+    def get_registered_students(self):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == 40002) \
+            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()
+
     def get_schedule_courses(self, schedule_id):
         courses = session.query(ScheduleCourseCodes_Table, CourseCode_Table)\
             .filter(ScheduleCourseCodes_Table.schedule_id == schedule_id)\
@@ -55,3 +78,4 @@ class Schedule:
             else:
                 schedule_tutors.append(user.firstName + ' ' + user.lastName)
         return schedule_leads, schedule_tutors
+

@@ -3,12 +3,12 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Edit Attendance for ***STUDENT***</p> {# TODO #}
+            <p class="card-text">Edit Attendance for <strong>{{ student.firstName }} {{ student.lastName }}</strong></p>
         </div>
     </div>
 {% endblock %}
 
-{# TODO: ASK ABOUT THIS ONE - DOESN'T LOAD CORRECTLY IN THE ORIGINAL #}
+
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
@@ -16,11 +16,39 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
-                        <input type="time" class="form-control" id="time-in">
+                        <input type="time" class="form-control" id="time-in"
+                               value="{{ (timedelta_to_time + student.timeIn).strftime('%H:%M') if student.timeIn }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
-                        <input type="time" class="form-control" id="time-out">
+                        <input type="time" class="form-control" id="time-out"
+                               value="{{ (timedelta_to_time + student.timeOut).strftime('%H:%M') if student.timeOut }}">
+                    </div>
+                </div>
+                <p>Courses</p>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {% for course in student_courses %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input type="checkbox" class="custom-control-input" id="course"
+                                        {{ 'checked' if course in session_courses }}>
+                                <label class="custom-control-label" for="course">{{ course.courseName }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <div class="custom-control custom-checkbox" style="display:inline-block;">
+                            <input type="checkbox" class="custom-control-input" id="other"
+                                    {{ 'checked' if other_course.otherCourse == 1 }}>
+                            <label class="custom-control-label" for="other">Other</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-10">
+                        <label for="course-name">Course Name or Reason</label>
+                        <input type="text" class="form-control" id="course-name"
+                               value="{{ other_course.otherCourseName if other_course.otherCourse == 1 else ''}}">
                     </div>
                 </div>
                 <div class="form-row">

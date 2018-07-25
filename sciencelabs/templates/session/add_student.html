@@ -15,8 +15,10 @@
                 <div class="form-group">
                    <label for="choose-student">Registered Students</label>
                    <select class="custom-select">
-                        {# TODO: populate with students #}
                        <option>Choose student...</option>
+                       {% for student in student_list %}
+                            <option>{{ student.firstName }} {{ student.lastName }}</option>
+                       {% endfor %}
                     </select>
                 </div>
                 <button type="button" class="btn btn-primary">Submit</button>

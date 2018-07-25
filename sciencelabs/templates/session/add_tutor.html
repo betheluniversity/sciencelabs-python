@@ -16,8 +16,10 @@
                     <div class="form-group">
                         <label for="choose-tutor">Registered Tutors</label>
                         <select class="custom-select">
-                            {# TODO: populate with tutors #}
                            <option>Choose tutor...</option>
+                            {% for tutor in tutor_list %}
+                                <option>{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
