@@ -17,7 +17,8 @@ class Session:
 
     def get_session_tutors(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
-                             TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn, TutorSession_Table.schedTimeOut)\
+                             TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
+                             TutorSession_Table.schedTimeOut)\
             .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)\
             .order_by(TutorSession_Table.lead.desc())
 

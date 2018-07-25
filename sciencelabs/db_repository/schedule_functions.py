@@ -67,15 +67,9 @@ class Schedule:
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
     def get_schedule_tutors(self, schedule_id):
-        tutors = session.query(User_Table, TutorSchedule_Table)\
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.lead,
+                             TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
-            .filter(User_Table.id == TutorSchedule_Table.tutorId)
-        schedule_leads = []
-        schedule_tutors = []
-        for user, tutor in tutors:
-            if tutor.lead == 1:
-                schedule_leads.append(user.firstName + ' ' + user.lastName)
-            else:
-                schedule_tutors.append(user.firstName + ' ' + user.lastName)
-        return schedule_leads, schedule_tutors
+            .filter(User_Table.id == TutorSchedule_Table.tutorId)\
+            .order_by(TutorSchedule_Table.lead.desc())
 

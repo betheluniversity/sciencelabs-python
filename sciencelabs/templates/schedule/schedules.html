@@ -72,13 +72,14 @@
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
                                     <div style="display:none;margin-top:10px" class="text-left">
-                                        {% set leads, tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
-                                        {% for lead in leads %}
-                                            {{ lead }} <span class="button-labels">Lead</span><br />
-                                        {% endfor %}
+                                        {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
-                                            {{ tutor }}<br />
-                                        {% endfor %}
+                                        {% if tutor.lead %}
+                                            {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
+                                        {% else %}
+                                            {{ tutor.firstName }} {{ tutor.lastName }}<br>
+                                        {% endif %}
+                                            {% endfor %}
                                     </div>
                                 </td>
                                 <td style="text-align: center;">
