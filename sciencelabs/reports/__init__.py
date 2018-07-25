@@ -94,7 +94,9 @@ class ReportView(FlaskView):
         session = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
-        course_list = self.courses.get_courses_for_session(session_id)
+        session_students = self.session_.get_session_students(session_id)
+        session_courses = self.session_.get_session_courses(session_id)
+        course_list = self.courses.get_semester_courses(40013)
         user = self.user
         session_ = self.session_
         # TODO ADD OTHER COURSES IE SARAH YANG WHEN SESSION_ID = 101006
