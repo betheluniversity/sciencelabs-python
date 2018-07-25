@@ -129,10 +129,10 @@
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td>
                                                 <ul>
-                                                    {% set courses = session_.get_student_session_courses(session.id, student.id) %}
+                                                    {% set courses = session_.get_report_student_session_courses(session.id, student.id) %}
                                                     {% for course in courses %}
                                                         {# TODO FIND OUT HOW TO GET COURSE_ID #}
-                                                        <li><a href='{{ url_for('CourseView:view_course', course_id=10) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
+                                                        <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
                                                     {% if student.otherCourse or student.otherCourseName %}
                                                         <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>

@@ -88,10 +88,10 @@ class Session:
             .filter(StudentSession_Table.sessionId == session_id)\
             .all()
 
-    def get_report_student_session_courses(self, student_id, session_id):
-        return session.query(Course_Table)\
-            .filter(Course_Table.id == SessionCourses_Table.course_id)\
-            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(StudentSession_Table.studentId == student_id)\
+    def get_report_student_session_courses(self, session_id, student_id):
+        return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
-            .all()
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
