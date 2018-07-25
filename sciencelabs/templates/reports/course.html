@@ -45,7 +45,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for course in course_info %}
+                        {% set total_attendance = [0] %}
+                        {% set total_unique_attendance = [0] %}
+                        {% for course, user in course_info %}
                             <tr>
                                 <td>
                                     {{ course.dept + course.course_num }}
@@ -57,23 +59,38 @@
                                     {{ course.section }}
                                 </td>
                                 <td>
-                                    {{ course.firstName }}
-                                    {{ course.lastName }}
+                                    {{ user.firstName }}
+                                    {{ user.lastName }}
                                 </td>
                                 <td>
-                                    Tot
+                                    {% set attendance = user_.get_students_in_course(course.id) %}
+                                    {% set total_attendees = [0] %}
+                                    {% for attendees, attend in attendance %}
+                                        {% if total_attendees.append(total_attendees.pop() + (attend)) %}{% endif %}
+                                    {% endfor %}
+                                    {{ total_attendees[0] }}
+                                    {% if total_attendance.append(total_attendance.pop() + (total_attendees[0])) %}{% endif %}
                                 </td>
                                 <td>
-                                    Unq
+                                    {{ attendance|length }}
+                                    {% if total_unique_attendance.append(total_unique_attendance.pop() + (attendance|length)) %}{% endif %}
                                 </td>
                                 <td>
-                                    Pct
+{#                                    {{ (attendance|length) / course.num_attendees }}#}
                                 </td>
                                 <td>
-                                    <button id="darkblue" class="btn btn-primary">View</button>
+                                    <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' id="darkblue" class="btn btn-primary">View</a>
                                 </td>
                             </tr>
                         {% endfor %}
+                            <tr>
+                                <td><b>Total</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>{{ total_attendance[0] }}</b></td>
+                                <td><b>{{ total_unique_attendance[0] }}</b></td>
+                            </tr>
                     </tbody>
                 </table>
 

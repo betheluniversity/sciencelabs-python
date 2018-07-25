@@ -40,7 +40,7 @@
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                         <p>
                             <h3>Term Statistics</h3>
-                            <ul style="list-style-type: none;">
+                            <ul class="no-bullet">
                                 <li>
                                     <b>Sessions held:</b> {{ total_sessions }}
                                 </li>
@@ -110,10 +110,10 @@
 
                             </td>
                             <td>
-                                {{ (timedelta_to_time + schedule.startTime).strftime('%l:%M%p') }}
+                                {{ (schedule.startTime|datetimeformat) }}
                             </td>
                             <td>
-                                {{ (timedelta_to_time + schedule.endTime).strftime('%l:%M%p') }}
+                                {{ schedule.endTime|datetimeformat }}
                             </td>
                             <td>
                                 {{ sessions }}
@@ -177,6 +177,10 @@
 
     <script>
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sFilter: 'large-12 columns ',
+            });
             var table = $('#table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,

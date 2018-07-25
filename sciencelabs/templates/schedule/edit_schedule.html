@@ -28,11 +28,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time" value="{{ (timedelta_to_time + schedule.startTime).strftime('%H:%M') }}">
+                        <input type="time" class="form-control" id="start-time" value="{{ schedule.startTime|datetimeformat('%H:%M') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time" value="{{ (timedelta_to_time + schedule.endTime).strftime('%H:%M') }}">
+                        <input type="time" class="form-control" id="end-time" value="{{ schedule.endTime|datetimeformat('%H:%M') }}">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>

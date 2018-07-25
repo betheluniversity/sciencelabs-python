@@ -1,13 +1,13 @@
 # Packages
 from flask import render_template
-from flask_classy import FlaskView
-from datetime import datetime
+from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.user_functions import User
+from sciencelabs.db_repository.session_functions import Session
 
 
 class ReportView(FlaskView):
@@ -16,6 +16,7 @@ class ReportView(FlaskView):
         self.schedule = Schedule()
         self.courses = Course()
         self.user = User()
+        self.session_ = Session()
 
     def index(self):
         return render_template('reports/base.html')
@@ -25,7 +26,6 @@ class ReportView(FlaskView):
         return render_template('reports/student.html', **locals())
 
     def semester(self):
-        timedelta_to_time = datetime.min
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
         unique_attendance_info = self.user.get_unique_session_attendance()
@@ -59,10 +59,37 @@ class ReportView(FlaskView):
         return render_template('reports/session.html')
 
     def course(self):
+        user_ = self.user
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())
 
+    @route('/student/<int:student_id>')
     def view_student(self, student_id):
-        today = datetime.today().strftime('%m/%d/%Y')
-        student = self.user.get_student(student_id)
+        student = self.user.get_user(student_id)
+        attendance = self.user.get_student_attendance(student_id, '')[1]
+        courses = self.user.get_student_courses(student_id)
+        sessions = self.user.get_studentsession(student_id)
+        user = self.user
+        session_ = self.session_
         return render_template('reports/view_student.html', **locals())
+
+    @route('/course/<int:course_id>')
+    def view_course(self, course_id):
+        course = self.courses.get_course(course_id)
+        students = self.user.get_students_in_course(course_id)
+        sessions = self.session_.get_sessions(course_id)
+        user = self.user
+        session_ = self.session_
+        return render_template('reports/view_course.html', **locals())
+
+    @route('/session/<int:session_id>')
+    def view_session(self, session_id):
+        session = self.session_.get_session(session_id)
+        leads, tutors = self.session_.get_session_tutors(session_id)
+        student_s_list = self.session_.get_studentsession_from_session(session_id)
+        course_list = self.courses.get_courses_for_session(session_id)
+        user = self.user
+        session_ = self.session_
+        # TODO ADD OTHER COURSES IE SARAH YANG WHEN SESSION_ID = 101006
+        return render_template('reports/view_session.html', **locals())
+

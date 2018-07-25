@@ -1,0 +1,232 @@
+{% extends 'reports/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body btn-group">
+            <p style="margin: 0px" class="card-text">{{ session.name }} ({{ session.date.strftime('%m/%d/%Y') }})</p>
+        </div>
+    </div>
+{% endblock %}
+
+<h3>General Information</h3>
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>General Information</h3>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <ul class="no-bullet">
+                            <li><b>Date:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.date.strftime('%B %d, %Y') }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Scheduled Time:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Actual Time:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Opened By:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    {% set opener = user.get_user(session.openerId) %}
+                                    <li>{{ opener.firstName }} {{ opener.lastName }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="no-bullet">
+                            <li><b>Courses Offered:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    <li>
+                                        {% for course in course_list %}
+                                            <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.title }})</span>
+                                        {% endfor %}
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        {% for lead in leads %}
+                        <ul class="no-bullet">
+                            <li><b>Scheduled Lead Tutor:</b></li>
+                            <li>
+                                <ul class="no-bullet">{{ lead.firstName }} {{ lead.lastName }}</ul>
+                            </li>
+                        </ul>
+                        {% endfor %}
+
+                        <ul class="no-bullet">
+                            <li><b>Tutor Attendance:</b></li>
+                            <li>
+                                <ul class="no-bullet">
+                                    {% for tutor in tutors %}
+                                    {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+                                    {% for lead in leads %}
+                                        {% if lead.schedTimeIn and lead.timeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span class="button-labels">Scheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+{#                                TODO FIGURE OUT HOW TO USE TUTOR.SCHEDTIMEIN TO CHECK IF SOMEONE WORKED BUT WASN'T SHCHEDULE IE IESHA WHEN SESSION.ID = 101020#}
+                                    {% for lead in leads %}
+                                        {% if not lead.schedTimeIn %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((lead.timeOut - lead.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+                                    {% for tutor in tutors %}
+                                        {% if not tutor.schedTimeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                    {% endfor %}
+                                    {% for lead in leads %}
+                                        {% if not lead.timeIn or not lead.timeOut %}<li>{{ lead.firstName }} {{ lead.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
+                                    {% endfor %}
+                                    {% for tutor in tutors %}
+                                        {% if not tutor.timeIn or not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>Tutor Comments</h3>
+                        <p>{{ session.comments }}</p>
+                    </div>
+                </div>
+
+                <button id="show-hide" style="margin-bottom: 20px;" type="button" class="big-button edit btn-primary">View by Course</button>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3 id="show-hide-text">Student Attendance by Name</h3>
+                        <div class="form-group col-md-12">
+
+                            <table id="table"  class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Courses</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Minutes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for student, studentsession in student_s_list %}
+                                        <tr>
+                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+
+                                            <td>
+                                                <ul class="no-margin">
+                                                    {% for course in session_.get_student_session_courses(student.id, session.id) %}
+                                                        <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+
+                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
+                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                        </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td style="border: none;"><b>Anonymous Students</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none;"><b>{{ session.anonStudents }}</b></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+
+                            {% for course in course_list %}
+                                <p style="margin-top: 20px;" class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.title }})</b></p>
+                                <table id="{{ course.id }}"  class="hidden table table-striped table-bordered" style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Time In</th>
+                                        <th>Time Out</th>
+                                        <th>Minutes</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}
+                                        <tr>
+                                        {% set student = user.get_user(studentsession.studentId) %}
+                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
+                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                                            <td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable( {
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bInfo": false,
+                "bFilter": false
+            });
+
+            {% for course in course_list %}
+                var table = $('#{{ course.id }}').DataTable( {
+                    "bPaginate": false,
+                    "bLengthChange": false,
+                    "bInfo": false,
+                    "bFilter": false
+                });
+            {% endfor %}
+
+            $('#show-hide').click(function(){
+                if ($(this).text() == 'View by Course') {
+                    $(this).text('View by Name')
+                    $('#show-hide-text').html('Student Attendance by Course')
+                }
+                else {
+                    $(this).text('View by Course')
+                    $('#show-hide-text').html('Student Attendance by Name')
+                }
+                $("table").toggleClass('hidden')
+                $(".display-p").toggleClass('hidden')
+            });
+        });
+    </script>
+{% endblock %}

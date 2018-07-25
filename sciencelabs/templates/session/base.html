@@ -7,7 +7,7 @@
            href="{{ url_for('SessionView:closed') }}">Closed Sessions</a>
         <a id="create" class="nav-item nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
            href="{{ url_for('SessionView:create') }}">Create a Session</a>
-        <a id="restore" class="nav-item nav-link {{ 'active' if 'restore' in request.path else 'disabled'}}"
+        <a id="restore" class="nav-item nav-link {{ 'active' if 'delete' in request.path else 'disabled'}}"
            href="{{ url_for('SessionView:restore') }}">Restore a Deleted Session</a>
 {% endblock %}
 

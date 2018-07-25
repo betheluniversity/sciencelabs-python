@@ -1,7 +1,8 @@
 from sqlalchemy import func
 
 from sciencelabs.db_repository import session
-from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table
+from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
+    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table
 
 
 class Schedule:
@@ -43,7 +44,9 @@ class Schedule:
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
     def get_schedule_tutors(self, schedule_id):
-        tutors = session.query(User_Table, TutorSchedule_Table).filter(TutorSchedule_Table.scheduleId == schedule_id).filter(User_Table.id == TutorSchedule_Table.tutorId)
+        tutors = session.query(User_Table, TutorSchedule_Table)\
+            .filter(TutorSchedule_Table.scheduleId == schedule_id)\
+            .filter(User_Table.id == TutorSchedule_Table.tutorId)
         schedule_leads = []
         schedule_tutors = []
         for user, tutor in tutors:
