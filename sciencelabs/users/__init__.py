@@ -1,6 +1,6 @@
 # Packages
 from flask import render_template
-from flask_classy import FlaskView
+from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.users.users_controller import UsersController
@@ -16,6 +16,7 @@ class UsersView(FlaskView):
         users_info = self.user.get_user_info()
         return render_template('users/users.html', **locals())
 
+    @route('/search')
     def add_user(self):
         return render_template('users/add_user.html')
 
