@@ -173,7 +173,7 @@
 
                         {% for course in session_courses %}
             <p style="margin-top: 20px;" class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</b></p>
-            <table id="{{ course.id }}" class="hidden table table-striped table-bordered" style="width:100%">
+            <table id="{{ course.course_num }}" class="hidden table table-striped table-bordered" style="width:100%">
                 <thead>
                     <th>Name</th>
                     <th>Time In</th>
@@ -199,13 +199,10 @@
                                         ???
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session.id) }}'"
-                                                type="button" class="edit btn btn-primary">Edit</button>
-                                        <button type="button" class="delete btn btn-primary">Delete</button>
-                                    </div>
-                                </td>
+                                {% if student.timeOut and student.timeIn %}<td>{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
+                                {% else %}<td>0 min</td>
+                                {% endif %}
+
                             </tr>
                         {% endif %}
                     {% endfor %}
@@ -232,8 +229,8 @@
                 "bFilter": false
             });
 
-            {% for course in student_course_list %}
-                var table = $('#{{ course.id }}').DataTable( {
+            {% for course in session_courses %}
+                var table = $('#{{ course.course_num }}').DataTable( {
                     "bPaginate": false,
                     "bLengthChange": false,
                     "bInfo": false,
