@@ -213,11 +213,11 @@
             $('#show-hide').click(function(){
                 if ($(this).text() == 'View by Course') {
                     $(this).text('View by Name')
-                    $('#show-hide-text').html('Student Attendance by Course')
+                    $('#show-hide-text').text('Student Attendance by Course')
                 }
                 else {
                     $(this).text('View by Course')
-                    $('#show-hide-text').html('Student Attendance by Name')
+                    $('#show-hide-text').text('Student Attendance by Name')
                 }
                 $("table").toggleClass('hidden')
                 $(".display-p").toggleClass('hidden')
