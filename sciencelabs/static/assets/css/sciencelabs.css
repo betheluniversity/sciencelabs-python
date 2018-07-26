@@ -171,6 +171,10 @@ a.nav-link.button{
     max-width: 70rem;
 }
 
+.month-nav{
+    color: #6c757d;
+}
+
 .active{
     max-height: 30px;
     background-color: #0F2C52;
