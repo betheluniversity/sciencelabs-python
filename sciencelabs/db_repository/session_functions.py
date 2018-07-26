@@ -95,3 +95,6 @@ class Session:
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == Course_Table.id)\
             .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
+
+    def get_dayofWeek_from_session(self, session_id):
+        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).one()
