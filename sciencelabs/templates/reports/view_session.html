@@ -47,59 +47,63 @@
                                 </ul>
                             </li>
                         </ul>
-
-                        <ul class="no-bullet">
-                            <li><b>Opened By:</b></li>
-                            <li>
-                                <ul class="no-bullet">
-                                    {% set opener = user.get_user(session.openerId) %}
-                                    <li>{{ opener.firstName }} {{ opener.lastName }}</li>
-                                </ul>
-                            </li>
-                        </ul>
-
+                        {% if session.openerId %}
+                            <ul class="no-bullet">
+                                <li><b>Opened By:</b></li>
+                                <li>
+                                    <ul class="no-bullet">
+                                        {% set opener = user.get_user(session.openerId) %}
+                                        <li>{{ opener.firstName }} {{ opener.lastName }}</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% endif %}
                         <ul class="no-bullet">
                             <li><b>Courses Offered:</b></li>
                             <li>
                                 <ul class="no-bullet">
                                     <li>
-                                        {% for course in course_list %}
-                                            <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</span>
-                                        {% endfor %}
+                                        {% if course_list %}
+                                            {% for course in course_list %}
+                                                <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</span>
+                                            {% endfor %}
+                                        {% endif %}
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                     <div class="form-group col-md-6">
-                        {% for tutor in tutors %}
-                            {% if tutor.lead %}
-                        <ul class="no-bullet">
-                            <li><b>Scheduled Lead Tutor:</b></li>
-                            <li>
-                                <ul class="no-bullet">{{ tutor.firstName }} {{ tutor.lastName }}</ul>
-                            </li>
-                        </ul>
-                            {% endif %}
-                        {% endfor %}
+                        {% if tutors %}
+                            {% for tutor in tutors %}
+                                {% if tutor.lead %}
+                                    <ul class="no-bullet">
+                                        <li><b>Scheduled Lead Tutor:</b></li>
+                                        <li>
+                                            <ul class="no-bullet">{{ tutor.firstName }} {{ tutor.lastName }}</ul>
+                                        </li>
+                                    </ul>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                         <ul class="no-bullet">
                             <li><b>Tutor Attendance:</b></li>
                             <li>
                                 <ul class="no-bullet">
+                                {% if tutors %}
                                     {% for tutor in tutors %}
-                                            {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                            {% if tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> {% if tutor.timeIn and tutor.timeOut %} ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% else %}(???){% endif %}{% endif %}
                                     {% endfor %}
                                     {% for tutor in tutors %}
                                         {% if not tutor.schedTimeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
                                     {% endfor %}
                                     {% for tutor in tutors %}
-                                        {% if not tutor.timeIn or not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
+                                        {% if not tutor.timeIn and not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
                                     {% endfor %}
+                                {% endif %}
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                 </div>
                 <div class="form-row">
