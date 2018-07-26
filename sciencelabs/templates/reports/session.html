@@ -77,7 +77,10 @@
                                 <tr>
                                     <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                                     <td>{{ session.name }}</td>
-                                    <td>DOW</td>
+                                    <td>
+                                        {% set schedule = session_.get_dayofWeek_from_session(session.id) %}
+                                        {{ day_abbr[schedule.dayofWeek] }}
+                                    </td>
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                                     <td>
                                         {% set attendance = session_.get_session_students(session.id) %}
