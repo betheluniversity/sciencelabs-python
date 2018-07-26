@@ -89,7 +89,8 @@ class Session:
             .all()
 
     def get_report_student_session_courses(self, session_id, student_id):
-        return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName,
+                             Course_Table.title, Course_Table.section)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
