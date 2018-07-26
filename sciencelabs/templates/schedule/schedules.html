@@ -1,5 +1,10 @@
 {% extends 'schedule/base.html' %}
 
+{#    {% macro day_abbr(dayofWeek) -%}#}
+{#        {% set abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}#}
+{#        {{ abbr[dayofWeek] }}#}
+{#    {%- endmacro %}#}
+
 {% block body_content %}
     <div class="custom-small row">
         <div class="col-md-8">
@@ -35,6 +40,7 @@
                                 </td>
                                 <td>
                                     {{ day_abbr[schedule.dayofWeek] }}
+{#                                    {{ day_abbr(schedule.dayofWeek) }}#}
                                 </td>
                                 <td>
                                     {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
