@@ -41,7 +41,7 @@
                             {% set dates = [] %}
                             {% for session in sessions %}
                                 {% if ((session.date|string)[5:7]) not in dates %}
-                                    {{ dates.append((session.date|string)[5:7]) }}
+                                    <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
                                 {% endif %}
                             {% endfor %}
                         {% for date in dates %}
