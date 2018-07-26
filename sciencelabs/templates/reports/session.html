@@ -79,7 +79,10 @@
                                     <td>{{ session.name }}</td>
                                     <td>DOW</td>
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
-                                    <td>Attendance</td>
+                                    <td>
+                                        {% set attendance = session_.get_session_students(session.id) %}
+                                        {{ attendance|length }}
+                                    </td>
                                     <td>
                                         <button type="button" class="show-tutors btn btn-primary">Show</button>
                                         <div style="display:none;margin-top:10px" class="text-left">
@@ -138,7 +141,6 @@
         $(document).ready( function () {
             {% for date in dates %}
                 var table = $('#{{ date|int }}').DataTable( {
-                    "aaSorting": [],
                     "bPaginate": false,
                     "bLengthChange": false,
                     "bFilter": false
