@@ -6,17 +6,26 @@
 
 {#TODO: This tab needs another subnav that allows the user to switch between #}
 {% block body_content %}
+    <div class="form-row">
+        <div style="text-align: right;" class="form-group col-md-12">
+            {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+            <p>
+                {% set dates = [] %}
+                {% for session in sessions %}
+                    {% if ((session.date|string)[5:7]) not in dates %}
+                        <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% for date in dates %}
+                {% if date %}
+                    <a class="month-nav disabled" href="#{{ month[date|int - 1] }}">{{ month[date|int - 1] }}</a>&emsp;
+                {% endif %}
+            {% endfor %}
+            </p>
+        </div>
+    </div>
+
    <div class="custom-default row">
-       <div class="col-md-8">
-           <form>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        {# TODO PUT IN SELECTOR #}
-                        PUT IN SELECTOR
-                    </div>
-                </div>
-           </form>
-       </div>
        <div class="col-md-8">
            <form>
                <div class="form-row">
@@ -65,13 +74,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for monthly_closed in monthly_closed_info %}
-                            <tr>
-                            {% for info in monthly_closed %}
-                                <td>{{ info }}</td>
-                            {% endfor %}
-                            </tr>
-                        {% endfor %}
+                    {% for schedule in schedule_info %}
+                        <tr>
+                            <td>{{ schedule.name }}</td>
+                            <td>{{ day_abbr[schedule.dayofWeek] }}</td>
+                            <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
+                            <td>Attendance</td>
+                            <td>% Total</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
 
