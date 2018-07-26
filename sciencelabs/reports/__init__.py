@@ -61,6 +61,8 @@ class ReportView(FlaskView):
 
     def session(self):
         semester_list = self.schedule.get_semesters()
+        sessions = self.session_.get_closed_sessions()
+        session_ = self.session_
         return render_template('reports/session.html', **locals())
 
     def course(self):
