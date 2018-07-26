@@ -1,16 +1,15 @@
 {% extends 'schedule/schedules.html' %}
 
-    {% block body_content %}
-        <div class="custom-default row">
-            <div class="col-md-8">
-                <form>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <div class="header card">
-                                <div class="card-body btn-group">
-                                    {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                                    <p style="padding: 0px; margin: 0px">Create New Schedule for {{ semester.term }} {{ semester.year }}</p>
-                                </div>
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                                <p style="padding: 0px; margin: 0px">Create New Schedule for {{ semester.term }} {{ semester.year }}</p>
                             </div>
                         </div>
                     </div>
@@ -115,14 +114,13 @@
         $(document).ready(function () {
             $('#all-courses').click(function(){
                 if($(this).hasClass('all')){
-                    $(this).removeClass('all');
                     $('.custom-control-input').prop('checked', false);
                     $(this).text('Select All Courses');
                 }else {
-                    $(this).addClass('all');
                     $('.custom-control-input').prop('checked', true);
                     $(this).text('Select No Courses');
                 }
+                $(this).toggleClass('all')
             });
         });
     </script>
