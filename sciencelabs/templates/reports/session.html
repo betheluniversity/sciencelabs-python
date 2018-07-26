@@ -43,10 +43,6 @@
                                 {% if ((session.date|string)[5:7]) not in dates %}
                                     {{ dates.append((session.date|string)[5:7]) }}
                                 {% endif %}
-{#                                <a href="">February</a>&emsp;#}
-{#                                <a href="">March</a>&emsp;#}
-{#                                <a href="">April</a>&emsp;#}
-{#                                <a href="">May</a>#}
                             {% endfor %}
                         {% for date in dates %}
                             {% if date %}
