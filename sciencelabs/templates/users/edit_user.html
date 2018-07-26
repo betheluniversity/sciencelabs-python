@@ -51,9 +51,11 @@
                     <div class="form-group col-md-12">
                         <label for="user-courses">User's Courses for Current Term</label>
                         <div id="user-courses">
-                            {% if 'Professor' in user_roles %}
+                            {% if professor and professor_course %}
                                 <ul>
-                                    <li>Course</li>
+                                    {% for course in professor_courses %}
+                                        <li>{{ course.title }} (Section {{ course.section }})</li>
+                                    {% endfor %}
                                 </ul>
                             {% else %}
                                 <p>This user is not a professor for any of this lab's courses.</p>
@@ -67,9 +69,9 @@
                         <div id="user-courses">
                             {% for course in course_list %}
                                 <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}">
-                                    <label class="custom-control-label" for="{{ course.courseName }}">
-                                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                                    <input type="checkbox" class="custom-control-input" id="{{ course.id }}">
+                                    <label class="custom-control-label" for="{{ course.id }}">
+                                        {{ course.title }} (Section {{ course.section }})</label>
                                 </div>
                             {% endfor %}
                         </div>

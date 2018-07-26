@@ -107,3 +107,6 @@ class User:
             .filter(user_role_Table.user_id == User_Table.id)\
             .filter(User_Table.id == user_id)\
             .all()
+
+    def get_professor_role(self):
+        return session.query(Role_Table).filter(Role_Table.name == "Professor").one()
