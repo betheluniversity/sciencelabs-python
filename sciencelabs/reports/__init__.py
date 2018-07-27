@@ -83,6 +83,7 @@ class ReportView(FlaskView):
     def view_student(self, student_id):
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id)
+        total_sessions = self.session_.get_closed_sessions()
         courses = self.user.get_student_courses(student_id)
         sessions = self.user.get_studentsession(student_id)
         user = self.user
