@@ -110,3 +110,6 @@ class User:
 
     def get_professor_role(self):
         return session.query(Role_Table).filter(Role_Table.name == "Professor").one()
+
+    def get_all_current_users(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None).all()
