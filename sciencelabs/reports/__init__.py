@@ -53,11 +53,10 @@ class ReportView(FlaskView):
         semester_list = self.schedule.get_semesters()
         schedule_info = self.schedule.get_schedule_tab_info()
         sessions = self.session_.get_closed_sessions()
-        session_ = self.session_
+        schedule_ = self.schedule
         return render_template('reports/monthly.html', **locals())
 
     def annual(self):
-        cumulative_info = self.base.get_cumulative_info()
         return render_template('reports/cumulative.html', **locals())
 
     def session(self):
