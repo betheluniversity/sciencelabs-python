@@ -83,3 +83,10 @@ class Schedule:
                 schedule_tutors.append(user.firstName + ' ' + user.lastName)
         return schedule_leads, schedule_tutors
 
+    def get_schedule_tutor_names(self, schedule_id):
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
+            .filter(TutorSchedule_Table.scheduleId == schedule_id)\
+            .filter(User_Table.id == TutorSchedule_Table.tutorId)\
+            .order_by(TutorSchedule_Table.lead.desc())\
+            .all()
+

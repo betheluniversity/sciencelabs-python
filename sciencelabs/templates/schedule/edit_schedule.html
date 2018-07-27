@@ -47,18 +47,27 @@
                         </select>
                     </div>
                 </div>
+                {# TODO: This looks nothing like the actual mathlab site #}
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <input type="text" class="form-control" id="choose-leads" placeholder="Choose lead tutors...">
+                        <select class="form-control" id="choose-leads" multiple>
+                            {% for lead in lead_list %}
+                                <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <input type="text" class="form-control" id="choose-tutors" placeholder="Choose tutors...">
+                        <select class="form-control" id="choose-tutors" multiple>
+                            {% for tutor in tutor_list %}
+                                <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </div>
+                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-12">
