@@ -41,8 +41,9 @@ class Session:
             .filter(User_Table.id == student_id).one()
 
     def get_session_students(self, session_id):
-        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut,
-                             StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName) \
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
+                             StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
+                             StudentSession_Table.otherCourseName) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id).all()
 
@@ -98,4 +99,7 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
 
     def get_dayofWeek_from_session(self, session_id):
-        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).one()
+        return session.query(Schedule_Table)\
+            .filter(Session_Table.id == session_id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .one()
