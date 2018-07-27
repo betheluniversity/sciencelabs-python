@@ -11,14 +11,16 @@
             {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
             <p>
                 {% set dates = [] %}
+                {% set year = [] %}
                 {% for session in sessions %}
                     {% if ((session.date|string)[5:7]) not in dates %}
                         <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
+                        <p style="display: none;">{{ year.append((session.date|string)[:5]) }}</p>
                     {% endif %}
                 {% endfor %}
             {% for date in dates %}
                 {% if date %}
-                    <a style="text-decoration: none" class="month-nav" href="#{{ month[date|int - 1] }}">{{ month[date|int - 1][:3] }}</a>&emsp;&emsp;&emsp;
+                    <a style="text-decoration: none" class="month-nav" href="{{ url_for('ReportView:month', year=year[loop.index0], month=dates[loop.index0]|int) }}">{{ month[date|int - 1][:3] }}</a>&emsp;&emsp;&emsp;
                 {% endif %}
             {% endfor %}
             </p>

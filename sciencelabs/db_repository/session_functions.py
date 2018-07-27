@@ -111,3 +111,10 @@ class Session:
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
+
+    def sink_the_ship(self, start_date, end_date):
+        return (session.query(StudentSession_Table).filter(Session_Table.id == StudentSession_Table.sessionId)
+                .filter(Session_Table.date.between(start_date, end_date))
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.active == 1)
+                .filter(Session_Table.startTime != None).all())

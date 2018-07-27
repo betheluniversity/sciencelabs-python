@@ -54,6 +54,13 @@ class ReportView(FlaskView):
         schedule_info = self.schedule.get_schedule_tab_info()
         sessions = self.session_.get_closed_sessions()
         schedule_ = self.schedule
+        session_ = self.session_
+        test = self.session_.get_monthly_sessions('2018-04-01', '2018-04-31')
+        count = 0
+        for things in test:
+            count += 1
+            print(things.name)
+        print(count)
         return render_template('reports/monthly.html', **locals())
 
     def annual(self):
