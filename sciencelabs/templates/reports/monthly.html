@@ -18,7 +18,7 @@
                 {% endfor %}
             {% for date in dates %}
                 {% if date %}
-                    <a class="month-nav disabled" href="#{{ month[date|int - 1] }}">{{ month[date|int - 1] }}</a>&emsp;
+                    <a style="text-decoration: none" class="month-nav " href="#{{ month[date|int - 1] }}">{{ month[date|int - 1][:3] }}</a>&emsp;&emsp;&emsp;
                 {% endif %}
             {% endfor %}
             </p>
