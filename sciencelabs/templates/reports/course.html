@@ -93,15 +93,17 @@
                                 </td>
                             </tr>
                         {% endfor %}
-                            <tr>
-                                <td><b>Total</b></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td><b>{{ total_attendance[0] }}</b></td>
-                                <td><b>{{ total_unique_attendance[0] }}</b></td>
-                            </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><b>Total</b></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><b>{{ total_attendance[0] }}</b></td>
+                            <td><b>{{ total_unique_attendance[0] }}</b></td>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </form>
@@ -148,6 +150,10 @@
 
     <script>
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sFilter: 'large-12 columns ',
+            });
             var table = $('#table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ "asc", "desc" ] },
