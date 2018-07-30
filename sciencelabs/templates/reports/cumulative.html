@@ -45,11 +45,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for cumulative in cumulative_info %}
+                    {% for info in cumulative %}
                         <tr>
-                        {% for info in cumulative %}
-                            <td>{{ info }}</td>
-                        {% endfor %}
+                            <td>{{ cumulative[info]['academicYear'] }}</td>
+                            <td>{{ cumulative[info]['monthly'][8] }}</td>
+                            <td>{{ cumulative[info]['monthly'][9] }}</td>
+                            <td>{{ cumulative[info]['monthly'][10] }}</td>
+                            <td>{{ cumulative[info]['monthly'][11] }}</td>
+                            <td>{{ cumulative[info]['monthly'][12] }}</td>
+                            <td>{{ cumulative[info]['fallTotal'] }}</td>
+                            <td>{{ cumulative[info]['monthly'][1] }}</td>
+                            <td>{{ cumulative[info]['monthly'][2] }}</td>
+                            <td>{{ cumulative[info]['monthly'][3] }}</td>
+                            <td>{{ cumulative[info]['monthly'][4] }}</td>
+                            <td>{{ cumulative[info]['monthly'][5] }}</td>
+                            <td>{{ cumulative[info]['springTotal'] }}</td>
+                            <td>{{ cumulative[info]['monthly'][6] }}</td>
+                            <td>{{ cumulative[info]['monthly'][7] }}</td>
+                            <td>{{ cumulative[info]['summerTotal'] }}</td>
+                            <td>{{ cumulative[info]['yearTotal'] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
