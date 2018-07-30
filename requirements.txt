@@ -6,3 +6,4 @@ raven
 Flask-Classy
 blinker
 mysqlclient
+cx_Oracle

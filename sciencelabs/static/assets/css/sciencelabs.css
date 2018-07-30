@@ -221,6 +221,16 @@ a.nav-link.button{
    border-color: #0c2342;
 }
 
+.user-search-result{
+    border: 1px dotted grey;
+    padding: 10px;
+    float: left;
+}
+
+.add-user{
+    float: right;
+}
+
 #red{
     background-color: #DA1736;
 }

@@ -1,28 +1,8 @@
 from flask import abort
 from functools import wraps
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 
-from sciencelabs import app
-from sciencelabs import banner_connection_is_working
-
-
-constr = "oracle+cx_oracle://%s@(DESCRIPTION = (LOAD_BALANCE=on)\
-    (FAILOVER=ON) (ADDRESS = (PROTOCOL = TCP)(HOST = banproddb.its.bethel.edu)(PORT = 1521))\
-    (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = PROD8.its.bethel.edu)))"
-
-bw = True
-if bw:
-    constr %= app.config['DB_KEY_BW']
-else:
-    constr %= app.config['DB_KEY']
-
-
-engine_bw = create_engine(constr, convert_unicode=True)
-db_session_bw = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine_bw))
-conn_bw = engine_bw.raw_connection()
+from sciencelabs.oracle_procs.db_connection import conn_bw
+from sciencelabs.views import banner_connection_is_working
 
 
 # a decorator to call db methods multiple times, if they fail
@@ -51,7 +31,7 @@ def get_results(result, label="", type=None):
     for i, row in enumerate(result):
         row_dict = {}
         for item in row:
-            if isinstance(item, str) or isinstance(item, unicode):
+            if isinstance(item, str):  # or isinstance(item, unicode):  TODO: Make sure this isn't needed
                 item = item.split(":", 1)
             else:
                 # blob
@@ -59,8 +39,7 @@ def get_results(result, label="", type=None):
             if len(item) > 1:
                 row_dict[item[0]] = item[1]
             else:
-                # if the result set doens't have key / value pairs
-                # use a custom label
+                # if the result set doesn't have key / value pairs use a custom label
                 row_dict[label] = item[0]
 
         ret[int(i)] = row_dict
@@ -81,3 +60,18 @@ def portal_profile(username):
         # if mybethel can't get the data, then prevent anything from loading
         banner_connection_is_working['value'] = False
         return abort(503)
+
+
+def get_username_from_name(fname, lname):
+    call_cursor = conn_bw.cursor()
+    result_cursor = conn_bw.cursor()
+    fname = encode_percent(fname)
+    lname = encode_percent(lname)
+
+    call_cursor.callproc("bth_websrv_api.name_search", (fname, lname, result_cursor))
+    result = result_cursor.fetchall()
+
+    return get_results(result)
+
+def encode_percent(str):
+    return '%' + str + '%'

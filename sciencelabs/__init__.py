@@ -60,10 +60,5 @@ def datetimeformat(value, custom_format='%l:%M%p'):
 app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.globals.update(app_settings=app_settings)
 
-# this only works if it is a dict (not a normal boolean variable)
-banner_connection_is_working = {
-    'value': True
-}
-
 if __name__ == "__main__":
     app.run()

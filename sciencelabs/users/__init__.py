@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -7,6 +7,7 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
+from sciencelabs.oracle_procs.db_functions import get_username_from_name
 
 
 class UsersView(FlaskView):
@@ -36,3 +37,11 @@ class UsersView(FlaskView):
             professor = True;
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
+
+    @route("/search-users", methods=['post'])
+    def search_users(self):
+        form = request.form
+        first_name = form.get('firstName')
+        last_name = form.get('lastName')
+        results = get_username_from_name(first_name, last_name)
+        return render_template('users/user_search_results.html', **locals())

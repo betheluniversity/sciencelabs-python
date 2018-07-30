@@ -1,23 +1,23 @@
 <div class="row">
     {% if results %}
         <div class="col-md-12 user-search-results">
-            {% for result in result %}
-                {% if result.prefFirstName %}
-                    {% set firstName = result.prefFirstName %}
+            {% for key, result in results.items() %}
+                {% if result['prefFirstName'] %}
+                    {% set firstName = result['prefFirstName'] %}
                 {% else %}
-                    {% set firstName = result.firstName %}
+                    {% set firstName = result['firstName'] %}
                 {% endif %}
 
-                <div class="large-6 columns left user-search-result">
-                    <a href="#" class="edit btn btn-primary">Add User</a>
+                <div class="col-md-6 user-search-result">
+                    <a href="#" class="edit btn btn-primary add-user">Add User</a>
                     <span>
-                        {{ firstName }} {{ result.lastName }}<br /><span id="darkblue" class="button-labels">{{ result.username }}</span>
+                        {{ firstName }} {{ result['lastName'] }}<br /><span id="darkblue" class="button-labels">{{ result['username'] }}</span>
                     </span>
                 </div>
             {% endfor %}
         </div>
-    {% elif searchResults is iterable %}
-        <div class="large-12 columns user-search-results text-center">
+    {% elif results is iterable %}
+        <div class="col-md-12 user-search-results text-center">
             <h4>User does not exist in Banner. Try again.</h4>
         </div>
     {% endif %}
