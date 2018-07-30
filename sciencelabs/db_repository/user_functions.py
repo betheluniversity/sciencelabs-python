@@ -7,10 +7,6 @@ from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table
 
 class User:
 
-    def get_user_info(self):
-        return session.query(User_Table, Role_Table).filter(User_Table.id == user_role_Table.user_id) \
-            .filter(user_role_Table.role_id == Role_Table.id).all()
-
     def get_session_students(self, session_id):
         return session.query(User_Table, StudentSession_Table) \
             .filter(StudentSession_Table.sessionId == session_id).filter(StudentSession_Table.studentId == User_Table.id).all()
@@ -28,6 +24,7 @@ class User:
         return session.query(User_Table, Role_Table).filter(User_Table.id == user_role_Table.user_id) \
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
+            .filter(User_Table.deletedAt == None) \
             .all()
 
     def get_unique_session_attendance(self):
@@ -90,3 +87,19 @@ class User:
 
     def get_student_from_studentsession(self, student_id):
         return session.query(User_Table).fitler(User_Table.id == student_id)
+
+    def get_all_roles(self):
+        return session.query(Role_Table).all()
+
+    def get_user_roles(self, user_id):
+        return session.query(Role_Table)\
+            .filter(Role_Table.id == user_role_Table.role_id)\
+            .filter(user_role_Table.user_id == User_Table.id)\
+            .filter(User_Table.id == user_id)\
+            .all()
+
+    def get_professor_role(self):
+        return session.query(Role_Table).filter(Role_Table.name == "Professor").one()
+
+    def get_all_current_users(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None).all()

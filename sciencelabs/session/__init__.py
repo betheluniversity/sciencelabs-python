@@ -30,10 +30,11 @@ class SessionView(FlaskView):
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
+        active_semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
-        course_list = self.course.get_semester_courses(40013)
+        course_list = self.course.get_semester_courses(active_semester.id)
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
@@ -43,15 +44,15 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
-        session = self.session.get_session(session_id)
-        tutors = self.session.get_session_tutors(session_id)
-        tutor_names = self.session.get_session_tutor_names(session_id)
-        lead_list = self.schedule.get_registered_leads()
+        session_info = self.session.get_session(session_id)
+        session_tutors = self.session.get_session_tutors(session_id)
+        tutor_names = self.session.get_session_tutor_names(session_id)  # used for a logic check in template
+        lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
         semester_list = self.schedule.get_semesters()
-        course_list = self.course.get_semester_courses(40013)
+        course_list = self.course.get_semester_courses(40013)  # TODO: needs to update with semester selector
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
@@ -59,7 +60,7 @@ class SessionView(FlaskView):
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, 40013)
+        student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
         return render_template('session/edit_student.html', **locals())
