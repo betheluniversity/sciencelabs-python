@@ -107,19 +107,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for monthly in monthly_info %}
-                            <tr>
-                            {% for info in monthly %}
-                                {% if info == 'report' %}
-                                    <td>
-                                        <button id="darkblue" class="btn btn-primary">View</button>
-                                    </td>
-                                {% else %}
-                                    <td>{{ info }}</td>
-                                {% endif %}
-                            {% endfor %}
-                            </tr>
-                        {% endfor %}
+                    {% for session in monthly_sessions %}
+                        <tr>
+                            <td>{{ session.name }}</td>
+                            <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                            <td>{{ day_abbr[(cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7] }}</td>
+                            <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
+                            <td>Total Attendance</td>
+                            <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
 
@@ -168,7 +165,7 @@
             });
 
             var table = $('#table').DataTable( {
-                "aaSorting": [],
+                "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bLengthChange": false,
             });

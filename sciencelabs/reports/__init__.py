@@ -1,6 +1,7 @@
 # Packages
 from flask import render_template
 from flask_classy import FlaskView, route
+import calendar
 
 # Local
 from sciencelabs.reports.reports_controller import ReportController
@@ -56,17 +57,13 @@ class ReportView(FlaskView):
         return render_template('reports/term.html', **locals())
 
     def month(self):
+        cal = calendar
         semester_list = self.schedule.get_semesters()
         schedule_info = self.schedule.get_schedule_tab_info()
         sessions = self.session_.get_closed_sessions()
         schedule_ = self.schedule
         session_ = self.session_
-        test = self.session_.get_monthly_sessions('2018-04-01', '2018-04-31')
-        count = 0
-        for things in test:
-            count += 1
-            print(things.name)
-        print(count)
+        monthly_sessions = self.session_.get_monthly_sessions('2018-02-01', '2018-02-31')
         return render_template('reports/monthly.html', **locals())
 
     def annual(self):
