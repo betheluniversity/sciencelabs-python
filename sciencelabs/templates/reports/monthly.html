@@ -114,7 +114,7 @@
                             <th>DOW</th>
                             <th>Scheduled Time</th>
                             <th>Total Attendance</th>
-                            <th>report</th>
+                            <th>Report</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -171,19 +171,23 @@
     </div>
 
     <script>
-        $.extend($.fn.dataTableExt.oStdClasses, {
-            // give some foundation classes to our controls
-            sLength: 'large-4 columns ',
-            sFilter: 'large-12 columns ',
-        });
-
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sLength: 'large-4 columns ',
+                sFilter: 'large-12 columns ',
+            });
+
             var table = $('#closed-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,
             });
 
+
+        });
+        
+        $(document).ready( function () {
             var table = $('#table').DataTable( {
                 "aaSorting": [1, 'asc'],
                 "bPaginate": false,
