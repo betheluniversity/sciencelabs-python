@@ -64,7 +64,7 @@
                                     <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b>
+                                    <b>Average number of visits per student:</b> {{ (total_attendance / unique_attendance)|round(2) }}
                                 </li>
                             </ul>
                         </p>
