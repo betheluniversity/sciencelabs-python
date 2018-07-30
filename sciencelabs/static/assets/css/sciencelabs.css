@@ -20,6 +20,11 @@ p{
     line-height: 1.6;
 }
 
+.side-borders{
+    border-left: 2px solid #000000 !important;
+    border-right: 2px solid #000000 !important;
+}
+
 div.footer{
     background-color: #f2f2f2;
     border-color: #d8d8d8;

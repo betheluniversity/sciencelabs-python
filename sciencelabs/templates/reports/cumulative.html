@@ -53,19 +53,33 @@
                             <td>{{ cumulative[info]['monthly'][10] }}</td>
                             <td>{{ cumulative[info]['monthly'][11] }}</td>
                             <td>{{ cumulative[info]['monthly'][12] }}</td>
-                            <td>{{ cumulative[info]['fallTotal'] }}</td>
-                            <td>{{ cumulative[info]['monthly'][1] }}</td>
+                            <td class="side-borders">{{ cumulative[info]['fallTotal'] }}</td>
+                            <td style="border-right: 2px solid #000000">{{ cumulative[info]['monthly'][1] }}</td>
                             <td>{{ cumulative[info]['monthly'][2] }}</td>
                             <td>{{ cumulative[info]['monthly'][3] }}</td>
                             <td>{{ cumulative[info]['monthly'][4] }}</td>
                             <td>{{ cumulative[info]['monthly'][5] }}</td>
-                            <td>{{ cumulative[info]['springTotal'] }}</td>
+                            <td class="side-borders">{{ cumulative[info]['springTotal'] }}</td>
                             <td>{{ cumulative[info]['monthly'][6] }}</td>
                             <td>{{ cumulative[info]['monthly'][7] }}</td>
-                            <td>{{ cumulative[info]['summerTotal'] }}</td>
-                            <td>{{ cumulative[info]['yearTotal'] }}</td>
+                            <td class="side-borders">{{ cumulative[info]['summerTotal'] }}</td>
+                            <td style="border-right: 2px solid #000000;">{{ cumulative[info]['yearTotal'] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable({
+                columnDefs: [
+                    { orderable: false, targets: '_all' }
+                    ],
+                "aaSortingFixed": [0, 'desc'],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false
+            });
+        });
+    </script>
 {% endblock %}
