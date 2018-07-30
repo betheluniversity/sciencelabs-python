@@ -63,6 +63,7 @@ class ReportView(FlaskView):
         sessions = self.session_.get_closed_sessions()
         schedule_ = self.schedule
         session_ = self.session_
+        # TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN
         monthly_sessions = self.session_.get_monthly_sessions('2018-02-01', '2018-02-31')
         return render_template('reports/monthly.html', **locals())
 

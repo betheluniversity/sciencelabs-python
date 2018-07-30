@@ -112,13 +112,6 @@ class Session:
                 .filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
 
-    def sink_the_ship(self, start_date, end_date):
-        return (session.query(StudentSession_Table).filter(Session_Table.id == StudentSession_Table.sessionId)
-                .filter(Session_Table.date.between(start_date, end_date))
-                .filter(Session_Table.semester_id == Semester_Table.id)
-                .filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).all())
-
     def get_avg_total_time_per_student(self):
         return session.query(StudentSession_Table) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
@@ -126,3 +119,10 @@ class Session:
             .filter(Semester_Table.active == 1) \
             .filter(Schedule_Table.id == Session_Table.schedule_id)\
             .all()
+
+    def get_schedule_monthly_attendance(self, schedule_id, start_date, end_date):
+        return session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Schedule_Table.id == schedule_id)\
+            .filter(Session_Table.date.between(start_date, end_date))
