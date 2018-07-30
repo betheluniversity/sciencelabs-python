@@ -121,14 +121,13 @@
         $(document).ready(function () {
             $('#all-courses').click(function(){
                 if($(this).hasClass('all')){
-                    $(this).removeClass('all');
                     $('.custom-control-input').prop('checked', false);
                     $(this).text('Select All Courses');
                 }else {
-                    $(this).addClass('all');
                     $('.custom-control-input').prop('checked', true);
                     $(this).text('Select No Courses');
                 }
+                $(this).toggleClass('all')
             });
         });
     </script>

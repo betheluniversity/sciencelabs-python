@@ -37,8 +37,7 @@ class SessionView(FlaskView):
         course_list = self.course.get_semester_courses(active_semester.id)
         return render_template('session/create_session.html', **locals())
 
-    @route('/deleted')
-    def restore(self):
+    def deleted(self):
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         return render_template('session/restore_session.html', **locals())
@@ -57,6 +56,8 @@ class SessionView(FlaskView):
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
+    # TODO FIX ROUTE
+    @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
@@ -64,19 +65,24 @@ class SessionView(FlaskView):
         other_course = self.session.get_other_course(session_id, student_id)
         return render_template('session/edit_student.html', **locals())
 
-    def add_student(self):
+    @route('/attendance/student/<int:session_id>')
+    def add_student(self, session_id):
         student_list = self.schedule.get_registered_students()
         return render_template('session/add_student.html', **locals())
 
+    @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
         session = self.session.get_session(session_id)
         return render_template('session/add_anonymous.html', **locals())
 
+    # TODO FIX ROUTE
+    @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
-    def add_tutor(self):
+    @route('/addattendance/tutor/<int:session_id>')
+    def add_tutor(self, session_id):
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('session/add_tutor.html', **locals())
 

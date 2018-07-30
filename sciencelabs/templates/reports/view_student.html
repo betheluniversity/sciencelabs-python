@@ -157,7 +157,7 @@
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                             <td><a href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ session.name }}</a></td>
                             <td>
-                                {% for course in session_.get_student_session_courses(student.id, session.id) %}
+                                {% for course in session_.get_report_student_session_courses(session.id, student.id) %}
                                     <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
                                 {% endfor %}
                             </td>

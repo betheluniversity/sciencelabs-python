@@ -61,6 +61,8 @@ class ReportView(FlaskView):
 
     def session(self):
         semester_list = self.schedule.get_semesters()
+        sessions = self.session_.get_closed_sessions()
+        session_ = self.session_
         return render_template('reports/session.html', **locals())
 
     def course(self):
@@ -73,7 +75,7 @@ class ReportView(FlaskView):
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
         student = self.user.get_user(student_id)
-        attendance = self.user.get_student_attendance(student_id, '')[1]
+        student_info, attendance = self.user.get_student_attendance(student_id)
         courses = self.user.get_student_courses(student_id)
         sessions = self.user.get_studentsession(student_id)
         user = self.user
@@ -94,9 +96,10 @@ class ReportView(FlaskView):
         session = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
-        course_list = self.courses.get_courses_for_session(session_id)
+        session_students = self.session_.get_session_students(session_id)
+        session_courses = self.session_.get_session_courses(session_id)
+        course_list = self.courses.get_semester_courses(40013)
         user = self.user
         session_ = self.session_
-        # TODO ADD OTHER COURSES IE SARAH YANG WHEN SESSION_ID = 101006
         return render_template('reports/view_session.html', **locals())
 

@@ -1,5 +1,10 @@
 {% extends 'schedule/base.html' %}
 
+{#    {% macro day_abbr(dayofWeek) -%}#}
+{#        {% set abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}#}
+{#        {{ abbr[dayofWeek] }}#}
+{#    {%- endmacro %}#}
+
 {% block body_content %}
     <div class="custom-small row">
         <div class="col-md-8">
@@ -34,21 +39,8 @@
                                     {{ schedule.name }}
                                 </td>
                                 <td>
-                                    {% if schedule.dayofWeek == 0 %}
-                                    Sun
-                                {% elif schedule.dayofWeek == 1 %}
-                                    Mon
-                                {% elif schedule.dayofWeek == 2 %}
-                                    Tue
-                                {% elif schedule.dayofWeek == 3 %}
-                                    Wed
-                                {% elif schedule.dayofWeek == 4 %}
-                                    Thu
-                                {% elif schedule.dayofWeek == 5 %}
-                                    Fri
-                                {% else %}
-                                    Sat
-                                {% endif %}
+                                    {{ day_abbr[schedule.dayofWeek] }}
+{#                                    {{ day_abbr(schedule.dayofWeek) }}#}
                                 </td>
                                 <td>
                                     {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
@@ -72,13 +64,14 @@
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
                                     <div style="display:none;margin-top:10px" class="text-left">
-                                        {% set leads, tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
-                                        {% for lead in leads %}
-                                            {{ lead }} <span class="button-labels">Lead</span><br />
-                                        {% endfor %}
+                                        {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
-                                            {{ tutor }}<br />
-                                        {% endfor %}
+                                        {% if tutor.lead %}
+                                            {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
+                                        {% else %}
+                                            {{ tutor.firstName }} {{ tutor.lastName }}<br>
+                                        {% endif %}
+                                            {% endfor %}
                                     </div>
                                 </td>
                                 <td style="text-align: center;">

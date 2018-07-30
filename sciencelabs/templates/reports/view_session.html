@@ -47,78 +47,76 @@
                                 </ul>
                             </li>
                         </ul>
-
-                        <ul class="no-bullet">
-                            <li><b>Opened By:</b></li>
-                            <li>
-                                <ul class="no-bullet">
-                                    {% set opener = user.get_user(session.openerId) %}
-                                    <li>{{ opener.firstName }} {{ opener.lastName }}</li>
-                                </ul>
-                            </li>
-                        </ul>
-
+                        {% if session.openerId %}
+                            <ul class="no-bullet">
+                                <li><b>Opened By:</b></li>
+                                <li>
+                                    <ul class="no-bullet">
+                                        {% set opener = user.get_user(session.openerId) %}
+                                        <li>{{ opener.firstName }} {{ opener.lastName }}</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% endif %}
                         <ul class="no-bullet">
                             <li><b>Courses Offered:</b></li>
                             <li>
                                 <ul class="no-bullet">
                                     <li>
-                                        {% for course in course_list %}
-                                            <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.title }})</span>
-                                        {% endfor %}
+                                        {% if course_list %}
+                                            {% for course in course_list %}
+                                                <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</span>
+                                            {% endfor %}
+                                        {% endif %}
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                     <div class="form-group col-md-6">
-                        {% for tutor in tutors %}
-                            {% if tutor.lead %}
-                        <ul class="no-bullet">
-                            <li><b>Scheduled Lead Tutor:</b></li>
-                            <li>
-                                <ul class="no-bullet">{{ tutor.firstName }} {{ tutor.lastName }}</ul>
-                            </li>
-                        </ul>
-                            {% endif %}
-                        {% endfor %}
-
+                        {% if tutors %}
+                            {% for tutor in tutors %}
+                                {% if tutor.lead %}
+                                    <ul class="no-bullet">
+                                        <li><b>Scheduled Lead Tutor:</b></li>
+                                        <li>
+                                            <ul class="no-bullet">{{ tutor.firstName }} {{ tutor.lastName }}</ul>
+                                        </li>
+                                    </ul>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                         <ul class="no-bullet">
                             <li><b>Tutor Attendance:</b></li>
                             <li>
                                 <ul class="no-bullet">
+                                {% if tutors %}
                                     {% for tutor in tutors %}
-                                            {% if tutor.schedTimeIn and tutor.timeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
+                                            {% if tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span class="button-labels">Scheduled</span> {% if tutor.timeIn and tutor.timeOut %} ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% else %}(???){% endif %}{% endif %}
                                     {% endfor %}
-{#TODO FIGURE OUT HOW TO USE TUTOR.SCHEDTIMEIN TO CHECK IF SOMEONE WORKED BUT WASN'T SHCHEDULE IE IESHA WHEN SESSION.ID = 101020#}
                                     {% for tutor in tutors %}
                                         {% if not tutor.schedTimeIn %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="darkblue" class="button-labels">Unscheduled</span> ({{ (((tutor.timeOut - tutor.timeIn).total_seconds())/60)|round|int }} min)</li>{% endif %}
                                     {% endfor %}
                                     {% for tutor in tutors %}
-                                        {% if not tutor.timeIn or not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
+                                        {% if not tutor.timeIn and not tutor.timeOut %}<li>{{ tutor.firstName }} {{ tutor.lastName }} <span id="red" class="button-labels">Absent</span></li>{% endif %}
                                     {% endfor %}
+                                {% endif %}
                                 </ul>
                             </li>
                         </ul>
-
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <h3>Tutor Comments</h3>
                         <p>{{ session.comments }}</p>
                     </div>
                 </div>
-
                 <button id="show-hide" style="margin-bottom: 20px;" type="button" class="big-button edit btn-primary">View by Course</button>
-
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <h3 id="show-hide-text">Student Attendance by Name</h3>
                         <div class="form-group col-md-12">
-
                             <table id="table"  class="table table-striped table-bordered" style="width:100%">
                                 <thead>
                                 <tr>
@@ -130,23 +128,32 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for student, studentsession in student_s_list %}
+                                    {% for student in session_students %}
                                         <tr>
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
-
                                             <td>
-                                                <ul class="no-margin">
-                                                    {% for course in session_.get_report_student_session_courses(student.id, session.id) %}
+                                                <ul>
+                                                    {% set courses = session_.get_report_student_session_courses(session.id, student.id) %}
+                                                    {% for course in courses %}
+                                                        {# TODO FIND OUT HOW TO GET COURSE_ID #}
                                                         <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
+                                                    {% if student.otherCourse or student.otherCourseName %}
+                                                        <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                                                    {% endif %}
                                                 </ul>
                                             </td>
-
-                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
-                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                                            {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>{% else %}<td>0 min</td>{% endif %}
+                                            <td>
+                                                {{ student.timeIn|datetimeformat }}
+                                            </td>
+                                            <td>
+                                                {{ student.timeOut|datetimeformat}}
+                                            </td>
+                                            {% if student.timeOut and student.timeIn %}<td>{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
+                                            {% else %}<td>0 min</td>
+                                            {% endif %}
                                         </tr>
-                                {% endfor %}
+                                    {% endfor %}
                                 </tbody>
                                 <tfoot>
                                 <tr>
@@ -157,32 +164,35 @@
                                 </tr>
                                 </tfoot>
                             </table>
-
-                            {% for course in course_list %}
-                                <p style="margin-top: 20px;" class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.title }})</b></p>
-                                <table id="{{ course.id }}"  class="hidden table table-striped table-bordered" style="width:100%">
+                            {% for course in session_courses %}
+                                <p class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</b></p>
+                                <table id="{{ course.course_num }}" class="hidden table table-striped table-bordered" style="width:100%">
                                     <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Time In</th>
-                                        <th>Time Out</th>
-                                        <th>Minutes</th>
-                                    </tr>
+                                    <th>Name</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th></th>
                                     </thead>
                                     <tbody>
-                                    {% for studentsession, attendee in session_.get_session_attendees(course.id, session.id) %}
-                                        <tr>
-                                        {% set student = user.get_user(studentsession.studentId) %}
-                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
-                                            <td>{{ studentsession.timeIn|datetimeformat }}</td>
-                                            <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                                            {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
-                                            {% else %}<td>0 min</td>
-                                            {% endif %}
-                                        </tr>
+                                    {% for student in session_students %}
+                                        {% if course in session_.get_student_session_courses(session.id, student.id) %}
+                                            <tr>
+                                                <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                                <td>
+                                                    {{ student.timeIn|datetimeformat }}
+                                                </td>
+                                                <td>
+                                                    {{ student.timeOut|datetimeformat }}
+                                                </td>
+                                                {% if student.timeOut and student.timeIn %}<td>{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
+                                                {% else %}<td>0 min</td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endif %}
                                     {% endfor %}
                                     </tbody>
                                 </table>
+                                <br>
                             {% endfor %}
                         </div>
                     </div>
@@ -201,8 +211,8 @@
                 "bFilter": false
             });
 
-            {% for course in course_list %}
-                var table = $('#{{ course.id }}').DataTable( {
+            {% for course in session_courses %}
+                var table = $('#{{ course.course_num }}').DataTable( {
                     "bPaginate": false,
                     "bLengthChange": false,
                     "bInfo": false,
@@ -213,11 +223,11 @@
             $('#show-hide').click(function(){
                 if ($(this).text() == 'View by Course') {
                     $(this).text('View by Name')
-                    $('#show-hide-text').html('Student Attendance by Course')
+                    $('#show-hide-text').text('Student Attendance by Course')
                 }
                 else {
                     $(this).text('View by Course')
-                    $('#show-hide-text').html('Student Attendance by Name')
+                    $('#show-hide-text').text('Student Attendance by Name')
                 }
                 $("table").toggleClass('hidden')
                 $(".display-p").toggleClass('hidden')
