@@ -68,7 +68,7 @@ cumulative = {
     '2001': {'academicYear': '2000-2001', 'monthly': (0, 0, 146, 157, 153, 49, 0, 0, 0, 222, 337, 226, 71), 'springTotal': 505, 'fallTotal': 856, 'summerTotal': 0, 'yearTotal': 1361},
     '2002': {'academicYear': '2001-2002', 'monthly': (0, 36, 132, 135, 226, 121, 0, 0, 0, 225, 238, 192, 50), 'springTotal': 614, 'fallTotal': 705, 'summerTotal': 0, 'yearTotal': 1355},
     '2003': {'academicYear': '2002-2003', 'monthly': (0, 19, 187, 234, 273, 155, 0, 0, 0, 167, 274, 215, 47), 'springTotal': 849, 'fallTotal': 703, 'summerTotal': 0, 'yearTotal': 1571},
-    '2004': {'academicYear': '2003-2004', 'monthly': (None, None, None, None, None, None, None, None, None, 379, 425, 346, 76, 28), 'springTotal': None, 'fallTotal': 1226, 'summerTotal': None, 'yearTotal': None}
+    '2004': {'academicYear': '2003-2004', 'monthly': (None, 28, None, None, None, None, None, None, None, 379, 425, 346, 76, 28), 'springTotal': None, 'fallTotal': 1226, 'summerTotal': None, 'yearTotal': None}
 }
 
 day_abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']

@@ -126,3 +126,5 @@ class Session:
             .filter(Session_Table.schedule_id == Schedule_Table.id)\
             .filter(Schedule_Table.id == schedule_id)\
             .filter(Session_Table.date.between(start_date, end_date))
+
+
