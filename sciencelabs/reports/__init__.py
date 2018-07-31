@@ -56,15 +56,18 @@ class ReportView(FlaskView):
 
         return render_template('reports/term.html', **locals())
 
-    def month(self):
+    @route('/month/<int:year>/<int:month>')
+    def month(self, year, month):
         cal = calendar
+        selected_year = year
+        selected_month = month
         semester_list = self.schedule.get_semesters()
         schedule_info = self.schedule.get_schedule_tab_info()
         sessions = self.session_.get_closed_sessions()
         schedule_ = self.schedule
         session_ = self.session_
         # TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN
-        monthly_sessions = self.session_.get_monthly_sessions('2018-02-01', '2018-02-31')
+        monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
         return render_template('reports/monthly.html', **locals())
 
     def annual(self):
