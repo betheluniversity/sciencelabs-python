@@ -73,12 +73,14 @@ class ReportView(FlaskView):
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
         sess = self.session_.get_closed_sessions()
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        first_month = int(str(sess[0].date)[5:7])
+        first_year = int(str(sess[0].date)[:4])
 
         cal = calendar
-        selected_year = year
-        selected_month = month
+        selected_year = first_year
+        selected_month = first_month
+        print(month)
+        print(year)
         semester_list = self.schedule.get_semesters()
         schedule_info = self.schedule.get_schedule_tab_info()
         sessions = self.session_.get_closed_sessions()
