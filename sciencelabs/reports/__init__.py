@@ -20,7 +20,10 @@ class ReportView(FlaskView):
         self.session_ = Session()
 
     def index(self):
-        return render_template('reports/base.html')
+        sessions = self.session_.get_closed_sessions()
+        month = int(str(sessions[0].date)[5:7])
+        year = int(str(sessions[0].date)[:4])
+        return render_template('reports/base.html', **locals())
 
     def student(self):
         semester_list = self.schedule.get_semesters()
