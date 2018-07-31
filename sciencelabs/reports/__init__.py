@@ -19,18 +19,29 @@ class ReportView(FlaskView):
         self.user = User()
         self.session_ = Session()
 
+    # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
+
     def index(self):
-        sessions = self.session_.get_closed_sessions()
-        month = int(str(sessions[0].date)[5:7])
-        year = int(str(sessions[0].date)[:4])
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         return render_template('reports/base.html', **locals())
 
     def student(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         semester_list = self.schedule.get_semesters()
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
     def semester(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         term_info = self.schedule.get_term_report()
@@ -61,6 +72,10 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         cal = calendar
         selected_year = year
         selected_month = month
@@ -74,15 +89,27 @@ class ReportView(FlaskView):
         return render_template('reports/monthly.html', **locals())
 
     def annual(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         return render_template('reports/cumulative.html', **locals())
 
     def session(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         semester_list = self.schedule.get_semesters()
         sessions = self.session_.get_closed_sessions()
         session_ = self.session_
         return render_template('reports/session.html', **locals())
 
     def course(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         user_ = self.user
@@ -91,6 +118,10 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id)
         total_sessions = self.session_.get_closed_sessions()
@@ -102,6 +133,10 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
         sessions = self.session_.get_sessions(course_id)
@@ -111,6 +146,10 @@ class ReportView(FlaskView):
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
         session = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
