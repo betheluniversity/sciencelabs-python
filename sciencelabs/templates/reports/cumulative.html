@@ -47,40 +47,40 @@
         <tbody>
         {% for info in cumulative %}
             {% if loop.last %}
-                <td>{{ cumulative[info]['academicYear'] }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-08-01'), ('2004-08-31'))|length) }}</td>
+                <tr>
+                    <td>{{ cumulative[info]['academicYear'] }}</td>
+                    <td>{{ (session_.get_monthly_sessions_attendance(('2003-08-01'), ('2003-08-31'))|length) }}</td>
                     <td>{{ cumulative[info]['monthly'][9] }}</td>
                     <td>{{ cumulative[info]['monthly'][10] }}</td>
                     <td>{{ cumulative[info]['monthly'][11] }}</td>
                     <td>{{ cumulative[info]['monthly'][12] }}</td>
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
                     <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-02-01'), ('2004-02-31'))|length) }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-03-01'), ('2004-03-31'))|length) }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-04-01'), ('2004-04-31'))|length) }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-05-01'), ('2004-05-31'))|length) }}</td>
+                    <td><a href="{{ url_for('ReportView:month', year=2004, month=08) }}">{{ (session_.get_monthly_sessions_attendance(('2004-02-01'), ('2004-02-31'))|length) }}</a></td>
+                    <td><a href="{{ url_for('ReportView:month', year=2004, month=08) }}">{{ (session_.get_monthly_sessions_attendance(('2004-03-01'), ('2004-03-31'))|length) }}</a></td>
+                    <td><a href="{{ url_for('ReportView:month', year=2004, month=08) }}">{{ (session_.get_monthly_sessions_attendance(('2004-04-01'), ('2004-04-31'))|length) }}</a></td>
+                    <td><a href="{{ url_for('ReportView:month', year=2004, month=08) }}">{{ (session_.get_monthly_sessions_attendance(('2004-05-01'), ('2004-05-31'))|length) }}</a></td>
                     <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
                     <td>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) }}</td>
                     <td>{{ (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</td>
-                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td class="side-borders"><b>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) + (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</b></td>
                     <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                </tr>
             {% else %}
                 <tr>
                     <td>{{ cumulative[info]['academicYear'] }}</td>
-                    <td>{{ cumulative[info]['monthly'][8] }}</td>
-                    <td>{{ cumulative[info]['monthly'][9] }}</td>
-                    <td>{{ cumulative[info]['monthly'][10] }}</td>
-                    <td>{{ cumulative[info]['monthly'][11] }}</td>
-                    <td>{{ cumulative[info]['monthly'][12] }}</td>
+                    {% for month in range(8, 13) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
                     <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
-                    <td>{{ cumulative[info]['monthly'][2] }}</td>
-                    <td>{{ cumulative[info]['monthly'][3] }}</td>
-                    <td>{{ cumulative[info]['monthly'][4] }}</td>
-                    <td>{{ cumulative[info]['monthly'][5] }}</td>
+                    {% for month in range(2, 6) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
-                    <td>{{ cumulative[info]['monthly'][6] }}</td>
-                    <td>{{ cumulative[info]['monthly'][7] }}</td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
                     <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
                 </tr>
