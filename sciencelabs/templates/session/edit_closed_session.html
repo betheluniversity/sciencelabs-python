@@ -220,7 +220,7 @@
         {% endfor %}
     </div>
 
-    <button onclick="location.href='{{ url_for('SessionView:add_student', session_id=session.id) }}'" type="button"
+    <button onclick="location.href='{{ url_for('SessionView:add_student', session_id=session_info.id) }}'" type="button"
             class="edit btn btn-primary">Add a Student</button>
     <button onclick="location.href='{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}'" type="button"
             class="btn btn-primary">Add Anonymous Student</button>
@@ -274,7 +274,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href='{{ url_for('SessionView:add_tutor', session_id=session.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+    <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
