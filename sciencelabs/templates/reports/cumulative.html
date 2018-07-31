@@ -53,17 +53,17 @@
                             <td>{{ cumulative[info]['monthly'][10] }}</td>
                             <td>{{ cumulative[info]['monthly'][11] }}</td>
                             <td>{{ cumulative[info]['monthly'][12] }}</td>
-                            <td class="side-borders">{{ cumulative[info]['fallTotal'] }}</td>
-                            <td style="border-right: 2px solid #000000">{{ cumulative[info]['monthly'][1] }}</td>
+                            <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
+                            <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
                             <td>{{ cumulative[info]['monthly'][2] }}</td>
                             <td>{{ cumulative[info]['monthly'][3] }}</td>
                             <td>{{ cumulative[info]['monthly'][4] }}</td>
                             <td>{{ cumulative[info]['monthly'][5] }}</td>
-                            <td class="side-borders">{{ cumulative[info]['springTotal'] }}</td>
+                            <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
                             <td>{{ cumulative[info]['monthly'][6] }}</td>
                             <td>{{ cumulative[info]['monthly'][7] }}</td>
-                            <td class="side-borders">{{ cumulative[info]['summerTotal'] }}</td>
-                            <td style="border-right: 2px solid #000000;">{{ cumulative[info]['yearTotal'] }}</td>
+                            <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                            <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
                         </tr>
                 {% endfor %}
                 {% for semester in semesters %}
@@ -72,26 +72,38 @@
                         {% set fall_total = [0] %}
                         {% for i in range(8, 13) %}
                             {% set temp = (session_.get_monthly_sessions_attendance((semester.year|string + '-' + i|string + '-1'), (semester.year|string + '-' + i|string + '-31'))|length) %}
-                            <td>{{ temp }}</td>
+                            {% if temp %}
+                                <td><a href="{{ url_for('ReportView:month', year=semester.year, month=i) }}">{{ temp }}</a></td>
+                            {% else %}
+                                <td>{{ temp }}</td>
+                            {% endif %}
                             {% if fall_total.append(fall_total.pop() + temp) %}{% endif %}
                         {% endfor %}
-                    <td class="side-borders">{{ fall_total[0] }}</td>
-                    <td style="border-right: 2px solid #000000">{{ session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-01-1'), ((semester.year + 1)|string + '-01-31'))|length }}</td>
+                        <td class="side-borders"><b>{{ fall_total[0] }}</b></td>
+                        <td style="border-right: 2px solid #000000"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}"><b>{{ session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-01-1'), ((semester.year + 1)|string + '-01-31'))|length }}</b></a></td>
                     {% set spring_total = [0] %}
                     {% for i in range(2, 6) %}
                         {% set temp = (session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-' + i|string + '-1'), ((semester.year + 1)|string + '-' + i|string + '-31'))|length) %}
-                        <td>{{ temp }}</td>
+                        {% if temp %}
+                            <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=i) }}">{{ temp }}</a></td>
+                        {% else %}
+                            <td>{{ temp }}</td>
+                        {% endif %}
                         {% if spring_total.append(spring_total.pop() + temp) %}{% endif %}
                     {% endfor %}
-                    <td class="side-borders">{{ spring_total[0] }}</td>
+                    <td class="side-borders"><b>{{ spring_total[0] }}</b></td>
                     {% set summer_total = [0] %}
                     {% for i in range(6, 8) %}
                         {% set temp = (session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-' + i|string + '-1'), ((semester.year + 1)|string + '-' + i|string + '-31'))|length) %}
-                        <td>{{ temp }}</td>
+                        {% if temp %}
+                            <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=i) }}">{{ temp }}</a></td>
+                        {% else %}
+                            <td>{{ temp }}</td>
+                        {% endif %}
                         {% if summer_total.append(summer_total.pop() + temp) %}{% endif %}
                     {% endfor %}
-                    <td class="side-borders">{{ summer_total[0] }}</td>
-                    <td style="border-right: 2px solid #000000">{{ fall_total[0] + spring_total[0] + summer_total[0] + (session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-01-1'), ((semester.year + 1)|string + '-01-31'))|length) }}</td>
+                    <td class="side-borders"><b>{{ summer_total[0] }}</b></td>
+                    <td style="border-right: 2px solid #000000"><b>{{ fall_total[0] + spring_total[0] + summer_total[0] + (session_.get_monthly_sessions_attendance(((semester.year + 1)|string + '-01-1'), ((semester.year + 1)|string + '-01-31'))|length) }}</b></td>
                     </tr>
                 {% endfor %}
                 </tbody>
