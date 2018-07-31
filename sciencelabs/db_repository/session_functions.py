@@ -127,4 +127,17 @@ class Session:
             .filter(Schedule_Table.id == schedule_id)\
             .filter(Session_Table.date.between(start_date, end_date))
 
+    def get_years(self):
+        return session.query(Semester_Table.year).distinct()
 
+    def get_yearly_sessions(self, year):
+        return (session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == Session_Table.id)\
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.year == year)
+                .filter(Session_Table.startTime != None).all())
+
+    def get_monthly_sessions_attendance(self, start_date, end_date):
+        return (session.query(StudentSession_Table.id).filter(StudentSession_Table.sessionId == Session_Table.id)\
+                .filter(Session_Table.date.between(start_date, end_date))
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Session_Table.startTime != None).all())

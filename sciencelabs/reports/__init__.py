@@ -92,6 +92,8 @@ class ReportView(FlaskView):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
+        session_ = self.session_
+        semesters = self.session_.get_years()
 
         return render_template('reports/cumulative.html', **locals())
 
@@ -159,4 +161,3 @@ class ReportView(FlaskView):
         user = self.user
         session_ = self.session_
         return render_template('reports/view_session.html', **locals())
-
