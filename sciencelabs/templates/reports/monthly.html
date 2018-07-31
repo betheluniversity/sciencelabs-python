@@ -50,7 +50,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                     {# TODO PUT IN MONTH YEAR #}
-                                    <p style="padding: 0px; margin: 0px">Attendance for ***MONTH YEAR***</p>
+                                    <p style="padding: 0px; margin: 0px">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
                                 <a href="" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
                                 <a href="" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
@@ -60,7 +60,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                        <h4>Schedule Statistics for Closed Sessions during ***MONTH***</h4>
+                        <h4>Schedule Statistics for Closed Sessions during {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
@@ -110,7 +110,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                        <h4>Session Statistics for ***MONTH***</h4>
+                        <h4>Session Statistics for {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
