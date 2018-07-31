@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -22,6 +22,7 @@ class SessionView(FlaskView):
         semester = self.schedule.get_active_semester()
         return render_template('session/base.html', **locals())
 
+    @route('/closed')
     def closed(self):
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
@@ -89,3 +90,30 @@ class SessionView(FlaskView):
     def delete_session(self, session_id):
         session = self.session.get_session(session_id)
         return render_template('session/delete_session.html', **locals())
+
+    def delete_confirmed(self, session_id):
+        test = session_id
+        # TODO: Delete from DB
+        return redirect(url_for('SessionView:closed'))
+
+    @route('/save_session_edits', methods=['post'])
+    def save_session_edits(self):
+        form = request.form
+        session_id = form.get('sessionID')
+        # TODO: Save edits
+        return 'success'
+
+    @route('/save_student_edits', methods=['post'])
+    def save_student_edits(self):
+        form = request.form
+        student_id = form.get('studentID')
+        # TODO: Save edits
+        return 'success'
+
+    def delete_student_from_session(self, student_id, session_id):
+        # TODO: Delete from DB
+        return redirect(url_for('SessionView:closed'))
+
+    def delete_tutor_from_session(self, tutor_id, session_id):
+        # TODO: Delete from DB
+        return redirect(url_for('SessionView:closed'))

@@ -53,7 +53,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button id="save-student" type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -71,4 +71,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#save-student').click(function(){
+                var student = {
+                   'studentID': {{ student.id }}
+               };
+               var url = '{{ url_for('SessionView:save_student_edits') }}';
+               $.post(url, student, function(){
+                   window.location.replace('{{ url_for('SessionView:closed') }}')
+               });
+            });
+
+        });
+    </script>
 {% endblock %}
