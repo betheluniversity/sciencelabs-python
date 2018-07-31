@@ -55,14 +55,17 @@
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
                     <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    {% set spring_total = [0] %}
                     {% for month in range(2, 6) %}
-                    <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ (session_.get_monthly_sessions_attendance(('2004-' + month|string + '-01'), ('2004-' + month|string + '-31'))|length) }}</a></td>
+                        {% set temp = (session_.get_monthly_sessions_attendance(('2004-' + month|string + '-01'), ('2004-' + month|string + '-31'))|length) %}
+                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ temp }}</a></td>
+                        {% if spring_total.append(spring_total.pop() + temp) %}{% endif %}
                     {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    <td class="side-borders"><b>{{ spring_total[0] }}</b></td>
                     <td>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) }}</td>
                     <td>{{ (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</td>
                     <td class="side-borders"><b>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) + (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ (spring_total[0] + 1226 + 28) }}</b></td>
                 </tr>
             {% else %}
                 <tr>
