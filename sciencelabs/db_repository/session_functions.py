@@ -109,7 +109,6 @@ class Session:
         return (session.query(Session_Table)
                 .filter(Session_Table.date.between(start_date, end_date))
                 .filter(Session_Table.semester_id == Semester_Table.id)
-                .filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
 
     def get_avg_total_time_per_student(self):
