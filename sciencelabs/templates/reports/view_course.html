@@ -45,7 +45,7 @@
                             {{ day_abbr[schedule.dayofWeek] }}
                         </td>
                         <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
-                        {% set attendance_per_session = session_.get_session_attendees(course[0].id, session.id) %}
+                        {% set attendance_per_session = session_.get_session_attendees_with_dup(course[0].id, session.id) %}
                         <td><a href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ attendance_per_session|length }}</a></td>
                     {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
                     </tr>
