@@ -135,8 +135,8 @@
                             <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                             <td>
                                 {% set attendance = session_.get_session_attendees(session.id) %}
-                                {% if total_attendance.append(total_attendance.pop() + (attendance.count())) %}{% endif %}
-                                {{ attendance.count() }}
+                                {% if total_attendance.append(total_attendance.pop() + (attendance.count() + session.anonStudents)) %}{% endif %}
+                                {{ attendance.count() + session.anonStudents }}
                             </td>
                             <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
                         </tr>
