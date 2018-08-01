@@ -126,6 +126,14 @@ class Session:
             .filter(Schedule_Table.id == schedule_id)\
             .filter(Session_Table.date.between(start_date, end_date))
 
+    # TODO USED FOR TESTING
+    def get(self, schedule_id, start_date, end_date):
+        return session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Schedule_Table.id == schedule_id)\
+            .filter(Session_Table.date.between(start_date, end_date))
+
     def get_years(self):
         return session.query(Semester_Table.year).distinct()
 
