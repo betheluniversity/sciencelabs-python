@@ -16,6 +16,15 @@ class Session:
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()
 
+    # TODO USED FOR TESTING
+    def get_session_from_schedule(self, schedule_id):
+        return session.query(User_Table)\
+            .filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Schedule_Table.id == schedule_id)\
+            .distinct()
+
     def get_session_tutors(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
                              TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
