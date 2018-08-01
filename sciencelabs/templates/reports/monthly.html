@@ -13,8 +13,10 @@
                 {% set year = [] %}
                 {% for session in sessions %}
                     {% if ((session.date|string)[5:7]) not in dates %}
+                        {% if ((session.date|string)[5:7]) %}
                         <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
                         <p style="display: none;">{{ year.append((session.date|string)[:4]) }}</p>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             {% for date in dates|sort %}
@@ -77,7 +79,7 @@
                     <tbody>
                     {% set total_attendance = [0] %}
                     {% for schedule in schedule_info %}
-                        {# TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN #}
+                         {# TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN #}
                         {% set attendees = session_.get_schedule_monthly_attendance(schedule.id, (selected_year|string + '-' + selected_month|string + '-01'), (selected_year|string + '-' + selected_month|string + '-31')) %}
                         {% if total_attendance.append(total_attendance.pop() + attendees.count()) %}{% endif %}
                     {% endfor %}
