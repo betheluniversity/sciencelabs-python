@@ -86,7 +86,7 @@ class ReportView(FlaskView):
         elif month in (8, 9, 10, 11, 12):
             term = 'Fall'
         else:
-            term = 'Undefined'
+            term = 'Summer'
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         schedule_ = self.schedule
