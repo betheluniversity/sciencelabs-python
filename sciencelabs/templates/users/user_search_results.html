@@ -9,7 +9,7 @@
                 {% endif %}
 
                 <div class="col-md-6 user-search-result">
-                    <a href="#" class="edit btn btn-primary add-user">Add User</a>
+                    <button id="add-user" class="edit btn btn-primary add-user">Add User</button>
                     <span>
                         {{ firstName }} {{ result['lastName'] }}<br /><span id="darkblue" class="button-labels">{{ result['username'] }}</span>
                     </span>
@@ -22,3 +22,19 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    $(document).ready(function(){
+
+        $('#add-user').click(function(){
+            var user = {
+             'user': 0
+           };
+           var url = '{{ url_for('UsersView:add_user_submit') }}';
+           $.post(url, user, function(){
+               window.location.replace('{{ url_for('UsersView:add_user') }}')
+           });
+        });
+
+    });
+</script>

@@ -76,19 +76,13 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-{#                        {% for id, name in app_settings['COURSE_OPTIONS'].items() %}#}
-{#                            <div class="custom-control custom-checkbox" style="display:inline-block;">#}
-{#                                <input checked type="checkbox" class="custom-control-input" id="{{ id }}">#}
-{#                                <label class="custom-control-label" for="{{ id }}">{{ id }} ({{ name }})</label>#}
-{#                            </div>#}
-{#                        {% endfor %}#}
                         {% for course in course_list %}
-                    <div class="custom-control custom-checkbox" style="display:inline-block;">
-                        <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
-                        <label class="custom-control-label" for="{{ course.courseName }}">
-                            {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
-                    </div>
-                {% endfor %}
+                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
+                                <label class="custom-control-label" for="{{ course.courseName }}">
+                                    {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="form-row">
@@ -119,6 +113,7 @@
     </div>
     <script>
         $(document).ready(function () {
+
             $('#all-courses').click(function(){
                 if($(this).hasClass('all')){
                     $('.custom-control-input').prop('checked', false);
@@ -129,6 +124,17 @@
                 }
                 $(this).toggleClass('all')
             });
+
+            $('#save-schedule').click(function(){
+                var schedule = {
+                 'schedID': 0
+               };
+               var url = '{{ url_for('ScheduleView:save_schedule_edits') }}';
+               $.post(url, schedule, function(){
+                   window.location.replace('{{ url_for('ScheduleView:index') }}')
+               });
+            });
+
         });
     </script>
 {% endblock %}

@@ -110,6 +110,13 @@ class SessionView(FlaskView):
         # TODO: Save edits
         return 'success'
 
+    @route('/save_tutor_edits', methods=['post'])
+    def save_tutor_edits(self):
+        form = request.form
+        tutor_id = form.get('tutorID')
+        # TODO: Save edits
+        return 'success'
+
     def delete_student_from_session(self, student_id, session_id):
         # TODO: Delete from DB
         return redirect(url_for('SessionView:closed'))
@@ -117,3 +124,31 @@ class SessionView(FlaskView):
     def delete_tutor_from_session(self, tutor_id, session_id):
         # TODO: Delete from DB
         return redirect(url_for('SessionView:closed'))
+
+    @route('/add_student_submit', methods=['post'])
+    def add_student_submit(self):
+        form = request.form
+        student_id = form.get('studentID')
+        # TODO: Save edits
+        return 'success'
+
+    @route('/add_anon_submit', methods=['post'])
+    def add_anon_submit(self):
+        form = request.form
+        anon_students = form.get('anonStudents')
+        # TODO: Save edits
+        return 'success'
+
+    @route('/add_tutor_submit', methods=['post'])
+    def add_tutor_submit(self):
+        form = request.form
+        tutor_id = form.get('tutorID')
+        # TODO: Save edits
+        return 'success'
+
+    @route('/create_session_submit', methods=['post'])
+    def create_session_submit(self):
+        form = request.form
+        session_id = form.get('sessionID')
+        # TODO: Save edits
+        return 'success'

@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -35,3 +35,21 @@ class ScheduleView(FlaskView):
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/edit_schedule.html', **locals())
+
+    def delete_schedule(self, schedule_id):
+        # TODO: delete schedule
+        return redirect(url_for('ScheduleView:index'))
+
+    @route("/save_schedule_edits", methods=['post'])
+    def save_schedule_edits(self):
+        form = request.form
+        schedule_id = form.get('schedID')
+        # TODO: add users
+        return 'success'
+
+    @route('/create_schedule_submit', methods=['post'])
+    def create_schedule_submit(self):
+        form = request.form
+        schedule_id = form.get('schedID')
+        # TODO: Save edits
+        return 'success'

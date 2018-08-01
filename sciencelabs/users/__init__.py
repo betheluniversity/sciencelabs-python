@@ -45,3 +45,24 @@ class UsersView(FlaskView):
         last_name = form.get('lastName')
         results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
+
+    @route("/deactivate_user", methods=['post'])
+    def deactivate_user(self):
+        form = request.form
+        user = form.get('user')
+        # TODO: deactivate users
+        return 'success'
+
+    @route("/save_user_edits", methods=['post'])
+    def save_user_edits(self):
+        form = request.form
+        user = form.get('user')
+        # TODO: edit users
+        return 'success'
+
+    @route("/add_user_submit", methods=['post'])
+    def add_user_submit(self):
+        form = request.form
+        user = form.get('user')
+        # TODO: add users
+        return 'success'

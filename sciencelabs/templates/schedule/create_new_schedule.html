@@ -112,6 +112,7 @@
     </div>
     <script>
         $(document).ready(function () {
+
             $('#all-courses').click(function(){
                 if($(this).hasClass('all')){
                     $('.custom-control-input').prop('checked', false);
@@ -122,6 +123,17 @@
                 }
                 $(this).toggleClass('all')
             });
+
+            $('#save-schedule').click(function(){
+                var schedule = {
+                 'schedID': 0
+               };
+               var url = '{{ url_for('ScheduleView:create_schedule_submit') }}';
+               $.post(url, schedule, function(){
+                   window.location.replace('{{ url_for('ScheduleView:index') }}')
+               });
+            });
+
         });
     </script>
 {% endblock %}

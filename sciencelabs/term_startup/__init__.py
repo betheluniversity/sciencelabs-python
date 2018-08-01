@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -31,5 +31,12 @@ class TermStartupView(FlaskView):
     @route('/4')
     def step_four(self):
         return render_template('term_startup/step_four.html')
+
+    @route('/set_term', methods=['post'])
+    def set_term(self):
+        form = request.form
+        term = form.get('term')
+        # TODO: Set term
+        return 'success'
 
 

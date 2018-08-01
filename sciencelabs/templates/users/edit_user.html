@@ -9,7 +9,6 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                                 <p style="padding: 0px; margin: 0px">Edit {{ user.firstName }} {{ user.lastName }} ({{ user.username }})</p>
                             </div>
                         </div>
@@ -79,10 +78,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="delete btn btn-primary">Deactivate</button>
+                        <button id="deactivate-user" type="button" class="delete btn btn-primary">Deactivate</button>
                     </div>
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button id="save-user" type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -115,5 +114,30 @@
             </div>
         </div>
    </div>
+    <script>
 
+    $(document).ready(function(){
+
+        $('#deactivate-user').click(function(){
+           var users = {
+             'user': 0
+           };
+           var url = '{{ url_for('UsersView:deactivate_user') }}';
+           $.post(url, users, function(){
+               window.location.replace('{{ url_for('UsersView:index') }}')
+           });
+        });
+
+        $('#save-user').click(function(){
+           var user = {
+             'user': 0
+           };
+           var url = '{{ url_for('UsersView:save_user_edits') }}';
+           $.post(url, user, function(){
+               window.location.replace('{{ url_for('UsersView:index') }}')
+           });
+        });
+
+        });
+    </script>
 {% endblock %}

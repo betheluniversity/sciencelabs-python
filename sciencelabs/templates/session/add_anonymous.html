@@ -15,7 +15,24 @@
                 <label for="anon-students">Anonymous Students</label>
                 <input type="number" id="anon-students" value="{{ session.anonStudents }}">
             </div>
-            <button type="button" class="btn btn-primary">Save</button>
+            <button id="add-anon" type="button" class="btn btn-primary">Save</button>
         </form>
     </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#add-anon').click(function(){
+                // TODO: Update with anon info
+                var anon = {
+                    'anonStudents': 0
+                };
+               var url = '{{ url_for('SessionView:add_anon_submit') }}';
+               $.post(url, anon, function(){
+                   window.location.replace('{{ url_for('SessionView:closed') }}')
+               });
+            });
+
+        });
+    </script>
 {% endblock %}

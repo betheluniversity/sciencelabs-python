@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
@@ -26,3 +26,7 @@ class CourseView(FlaskView):
     def view_course(self, course_id):
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
+
+    def delete_course(self, course_id):
+        # TODO: delete course
+        return redirect(url_for('CourseView:index'))

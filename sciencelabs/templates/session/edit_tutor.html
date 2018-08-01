@@ -17,13 +17,11 @@
                         <label for="time-in">Time In</label>
                         <input type="time" class="form-control" id="time-in"
                                value="{{ tutor.timeIn|datetimeformat('%H:%M') if tutor.timeIn }}">
-
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
                         <input type="time" class="form-control" id="time-out"
                                value="{{ tutor.timeOut|datetimeformat('%H:%M') if tutor.timeOut}}">
-
                     </div>
                 </div>
                 <div class="form-row">
@@ -36,7 +34,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button id="save-tutor" type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -54,4 +52,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#save-tutor').click(function(){
+                // TODO: {{ tutor.id }} failed here
+                var tutor = {
+                    'tutorID': 0
+                };
+               var url = '{{ url_for('SessionView:save_tutor_edits') }}';
+               $.post(url, tutor, function(){
+                   window.location.replace('{{ url_for('SessionView:closed') }}')
+               });
+            });
+
+        });
+    </script>
 {% endblock %}

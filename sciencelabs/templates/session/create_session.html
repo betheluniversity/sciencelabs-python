@@ -105,7 +105,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <button type="button" class="btn btn-primary" id="save-session">Save</button>
+                        <button type="button" class="btn btn-primary" id="create-session">Save</button>
                     </div>
                 </div>
             </form>
@@ -140,6 +140,17 @@
                     $(this).text('Deselect All Courses');
                 }
                 $(this).toggleClass('all')
+            });
+
+            $('#create-session').click(function(){
+                // TODO: Update with session info
+                var session = {
+                    'sessionID': 0
+                };
+               var url = '{{ url_for('SessionView:create_session_submit') }}';
+               $.post(url, session, function(){
+                   window.location.replace('{{ url_for('SessionView:index') }}')
+               });
             });
 
         });
