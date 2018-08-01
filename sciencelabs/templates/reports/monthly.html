@@ -75,23 +75,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% set total_attendance = [0] %}
-                    {% for schedule in schedule_info %}
+{#                    {% set total_attendance = [0] %}#}
+{#                    {% for schedule in schedule_info %}#}
                         {# TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN #}
-                        {% set attendees = session_.get_schedule_monthly_attendance(schedule.id, (selected_year|string + '-' + selected_month|string + '-01'), (selected_year|string + '-' + selected_month|string + '-31')) %}
-                        {% if total_attendance.append(total_attendance.pop() + attendees.count()) %}{% endif %}
-                    {% endfor %}
-                    {% for schedule in schedule_info %}
-                        <tr>
-                            <td>{{ schedule.name }}</td>
-                            <td>{{ day_abbr[schedule.dayofWeek] }}</td>
-                            <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
+{#                        {% set attendees = session_.get_schedule_monthly_attendance(schedule.id, (selected_year|string + '-' + selected_month|string + '-01'), (selected_year|string + '-' + selected_month|string + '-31')) %}#}
+{#                        {% if total_attendance.append(total_attendance.pop() + attendees.count()) %}{% endif %}#}
+{#                    {% endfor %}#}
+{#                    {% for schedule in schedule_info %}#}
+{#                        <tr>#}
+{#                            <td>{{ schedule.name }}</td>#}
+{#                            <td>{{ day_abbr[schedule.dayofWeek] }}</td>#}
+{#                            <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>#}
                             {# TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN #}
-                            {% set attendees = session_.get_schedule_monthly_attendance(schedule.id, (selected_year|string + '-' + selected_month|string + '-01'), (selected_year|string + '-' + selected_month|string + '-31')) %}
-                            <td>{{ attendees.count() }}</td>
-                            <td>{{ ((attendees.count() / total_attendance[0])*100)|round(1) }}%</td>
-                        </tr>
-                    {% endfor %}
+{#                            {% set attendees = session_.get_schedule_monthly_attendance(schedule.id, (selected_year|string + '-' + selected_month|string + '-01'), (selected_year|string + '-' + selected_month|string + '-31')) %}#}
+{#                            <td>{{ attendees.count() }}</td>#}
+{#                            <td>{{ ((attendees.count() / total_attendance[0])*100)|round(1) }}%</td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
                     </tbody>
                     <tfoot>
                         <tr>
@@ -102,7 +102,7 @@
                         </tr>
                         <tr>
                             <th style="border-top: none;" colspan="3">Total</th>
-                            <th style="border-top: none;">{{ total_attendance[0] }}</th>
+{#                            <th style="border-top: none;">{{ total_attendance[0] }}</th>#}
                         </tr>
                     </tfoot>
                 </table>
@@ -134,9 +134,9 @@
                             <td>{{ day_abbr[(cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7] }}</td>
                             <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                             <td>
-                                {% set attendance = session_.get_session_students(session.id) %}
-                                {% if total_attendance.append(total_attendance.pop() + (attendance|length)) %}{% endif %}
-                                {{ attendance|length }}
+                                {% set attendance = session_.get_session_attendees(session.id) %}
+                                {% if total_attendance.append(total_attendance.pop() + (attendance.count())) %}{% endif %}
+                                {{ attendance.count() }}
                             </td>
                             <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
                         </tr>

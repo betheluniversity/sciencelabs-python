@@ -91,7 +91,7 @@ class ReportView(FlaskView):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
-        
+
         session_ = self.session_
         semesters = self.session_.get_years()
 

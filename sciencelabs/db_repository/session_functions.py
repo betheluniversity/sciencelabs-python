@@ -77,13 +77,10 @@ class Session:
             .filter(Course_Table.id == course_id)\
             .all()
 
-    def get_session_attendees(self, course_id, session_id):
-        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
+    def get_session_attendees(self, session_id):
+        return session.query(User_Table.id) \
             .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(Session_Table.id == StudentSession_Table.sessionId)\
-            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id)\
-            .all()
+            .filter(StudentSession_Table.studentId == User_Table.id).distinct()
 
     def get_studentsession_from_session(self, session_id):
         return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId)\
@@ -109,7 +106,6 @@ class Session:
         return (session.query(Session_Table)
                 .filter(Session_Table.date.between(start_date, end_date))
                 .filter(Session_Table.semester_id == Semester_Table.id)
-                .filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
 
     def get_avg_total_time_per_student(self):
