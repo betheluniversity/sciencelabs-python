@@ -14,6 +14,14 @@ class Schedule:
             .filter(Semester_Table.active == 1) \
             .all()
 
+    def get_yearly_schedule_tab_info(self, year, term):
+        return session.query(Schedule_Table) \
+            .filter(Schedule_Table.id == Session_Table.schedule_id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.year == year)\
+            .filter(Semester_Table.term == term)\
+            .all()
+
     def get_term_report(self):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \
             .filter(Session_Table.startTime != None) \
