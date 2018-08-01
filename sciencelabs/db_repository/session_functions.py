@@ -137,3 +137,10 @@ class Session:
                 .filter(Session_Table.date.between(start_date, end_date))
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Session_Table.startTime != None).all())
+
+    def get_semester_closed_sessions(self, year, term):
+        return (session.query(Session_Table)
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.year == year)
+                .filter(Semester_Table.term == term)
+                .filter(Session_Table.startTime != None).all())

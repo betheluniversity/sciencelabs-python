@@ -88,7 +88,7 @@ class ReportView(FlaskView):
         else:
             term = 'Undefined'
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
-        sessions = self.session_.get_closed_sessions()
+        sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         schedule_ = self.schedule
         session_ = self.session_
         # TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN
