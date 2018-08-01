@@ -19,7 +19,7 @@
                 {% endfor %}
             {% for date in dates|sort %}
                 {% if date %}
-                    <a style="text-decoration: none" class="month-nav {{ 'active' if ((year[loop.index0]|string) + '/' + (dates[loop.index0]|int)|string) in request.path else 'disabled'}}" href="{{ url_for('ReportView:month', year=year[loop.index0], month=dates[loop.index0]|int) }}">{{ months[date|int - 1][:3] }}</a>&emsp;
+                    <a style="text-decoration: none" class="month-nav {{ 'active' if ((year[loop.index0]|string) + '/' + ((dates|sort)[loop.index0]|int)|string) in request.path else 'disabled'}}" href="{{ url_for('ReportView:month', year=year[loop.index0], month=(dates|sort)[loop.index0]|int) }}">{{ months[date|int - 1][:3] }}</a>&emsp;
                 {% endif %}
             {% endfor %}
             </p>
