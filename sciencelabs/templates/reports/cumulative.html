@@ -49,23 +49,20 @@
             {% if loop.last %}
                 <tr>
                     <td>{{ cumulative[info]['academicYear'] }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2003-08-01'), ('2003-08-31'))|length) }}</td>
-                    {% for month in range(9, 13) %}
+                    {% for month in range(8, 13) %}
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
                     <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
-                    {% set spring_total = [0] %}
                     {% for month in range(2, 6) %}
-                        {% set temp = (session_.get_monthly_sessions_attendance(('2004-' + month|string + '-01'), ('2004-' + month|string + '-31'))|length) %}
-                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ temp }}</a></td>
-                        {% if spring_total.append(spring_total.pop() + temp) %}{% endif %}
+                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
                     {% endfor %}
-                    <td class="side-borders"><b>{{ spring_total[0] }}</b></td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) }}</td>
-                    <td>{{ (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</td>
-                    <td class="side-borders"><b>{{ (session_.get_monthly_sessions_attendance(('2004-06-01'), ('2004-06-31'))|length) + (session_.get_monthly_sessions_attendance(('2004-07-01'), ('2004-07-31'))|length) }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ (spring_total[0] + 1226 + 28) }}</b></td>
+                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
                 </tr>
             {% else %}
                 <tr>
