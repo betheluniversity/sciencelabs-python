@@ -41,12 +41,28 @@ class ReportView(FlaskView):
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
+    @route('/student/<int:student_id>')
+    def view_student(self, student_id):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
+        student = self.user.get_user(student_id)
+        student_info, attendance = self.user.get_student_attendance(student_id)
+        total_sessions = self.session_.get_closed_sessions()
+        courses = self.user.get_student_courses(student_id)
+        sessions = self.user.get_studentsession(student_id)
+        user = self.user
+        session_ = self.session_
+        return render_template('reports/view_student.html', **locals())
+
     def export_student_csv(self):
 
-        if app_settings['LAB_TITLE'] == 'Math Lab':
-            term = 'SP'[:2]  # SEMESTER.TERM[:2]
-            year = '2018'  # SEMESTER.YEAR
-            lab = 'ML'
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
 
         with open((term + year + '_' + lab + '_StudentReport.csv'), 'w+') as csvfile:
 
@@ -107,10 +123,11 @@ class ReportView(FlaskView):
         return render_template('reports/term.html', **locals())
 
     def export_semester_csv(self):
-        if app_settings['LAB_TITLE'] == 'Math Lab':
-            term = 'SP'[:2]  # SEMESTER.TERM[:2]
-            year = '2018'  # SEMESTER.YEAR
-            lab = 'ML'
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
 
         with open((term + year + '_' + lab + '_TermReport.csv'), 'w+') as csvfile:
 
@@ -155,7 +172,7 @@ class ReportView(FlaskView):
                 f.read(),
                 mimetype="text/csv",
                 headers={
-                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_StudentReport.csv'})
+                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_TermReport.csv'})
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
@@ -178,7 +195,6 @@ class ReportView(FlaskView):
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         schedule_ = self.schedule
         session_ = self.session_
-        # TODO CHANGE THIS TO MAKE IT DYNAMIC NOT HARD-CODED IN
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
         return render_template('reports/monthly.html', **locals())
 
@@ -201,45 +217,6 @@ class ReportView(FlaskView):
         session_ = self.session_
         return render_template('reports/session.html', **locals())
 
-    def course(self):
-        sess = self.session_.get_closed_sessions()
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
-
-        semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
-        user_ = self.user
-        course_info = self.courses.get_active_course_info()
-        return render_template('reports/course.html', **locals())
-
-    @route('/student/<int:student_id>')
-    def view_student(self, student_id):
-        sess = self.session_.get_closed_sessions()
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
-
-        student = self.user.get_user(student_id)
-        student_info, attendance = self.user.get_student_attendance(student_id)
-        total_sessions = self.session_.get_closed_sessions()
-        courses = self.user.get_student_courses(student_id)
-        sessions = self.user.get_studentsession(student_id)
-        user = self.user
-        session_ = self.session_
-        return render_template('reports/view_student.html', **locals())
-
-    @route('/course/<int:course_id>')
-    def view_course(self, course_id):
-        sess = self.session_.get_closed_sessions()
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
-
-        course = self.courses.get_course(course_id)
-        students = self.user.get_students_in_course(course_id)
-        sessions = self.session_.get_sessions(course_id)
-        user = self.user
-        session_ = self.session_
-        return render_template('reports/view_course.html', **locals())
-
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
         sess = self.session_.get_closed_sessions()
@@ -255,3 +232,58 @@ class ReportView(FlaskView):
         user = self.user
         session_ = self.session_
         return render_template('reports/view_session.html', **locals())
+
+    def export_session_csv(self):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        with open((term + year + '_' + lab + '_SessionReport.csv'), 'w+') as csvfile:
+
+            filewriter = csv.writer(csvfile)
+
+            my_list = [term + year + '_' + lab + '_SessionReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['', '', '', '', '', '', '', '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']
+
+            filewriter.writerow(my_list)
+
+        # Opens the file and signifies that we will read it
+        with open((term + year + '_' + lab + '_SessionReport.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_SessionReport.csv'})
+
+    def course(self):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
+        semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
+        user_ = self.user
+        course_info = self.courses.get_active_course_info()
+        return render_template('reports/course.html', **locals())
+
+    @route('/course/<int:course_id>')
+    def view_course(self, course_id):
+        sess = self.session_.get_closed_sessions()
+        month = int(str(sess[0].date)[5:7])
+        year = int(str(sess[0].date)[:4])
+
+        course = self.courses.get_course(course_id)
+        students = self.user.get_students_in_course(course_id)
+        sessions = self.session_.get_sessions(course_id)
+        user = self.user
+        session_ = self.session_
+        return render_template('reports/view_course.html', **locals())
