@@ -74,6 +74,9 @@ class Schedule:
     def get_schedule(self, schedule_id):
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
+    def get_schedule_from_session(self, session_id):
+        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).one()
+
     def get_schedule_tutors(self, schedule_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.lead,
                              TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
