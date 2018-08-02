@@ -37,7 +37,7 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
-        # TODO: delete schedule
+        self.schedule.delete_schedule(schedule_id)
         return redirect(url_for('ScheduleView:index'))
 
     @route("/save_schedule_edits", methods=['post'])

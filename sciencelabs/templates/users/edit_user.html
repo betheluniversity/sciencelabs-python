@@ -120,7 +120,7 @@
 
         $('#deactivate-user').click(function(){
            var users = {
-             'user': 0
+             'userID': {{ user.id }}
            };
            var url = '{{ url_for('UsersView:deactivate_user') }}';
            $.post(url, users, function(){

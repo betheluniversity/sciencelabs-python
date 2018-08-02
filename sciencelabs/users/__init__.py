@@ -49,8 +49,8 @@ class UsersView(FlaskView):
     @route("/deactivate_user", methods=['post'])
     def deactivate_user(self):
         form = request.form
-        user = form.get('user')
-        # TODO: deactivate users
+        user_id = form.get('userID')
+        self.user.delete_user(user_id)
         return 'success'
 
     @route("/save_user_edits", methods=['post'])

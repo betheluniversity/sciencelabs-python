@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
@@ -103,3 +104,8 @@ class User:
 
     def get_all_current_users(self):
         return session.query(User_Table).filter(User_Table.deletedAt == None).all()
+
+    def delete_user(self, user_id):
+        user_to_delete = self.get_user(user_id)
+        user_to_delete.deletedAt = datetime.now()
+        session.commit()

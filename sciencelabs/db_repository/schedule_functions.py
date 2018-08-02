@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import session
@@ -11,7 +12,8 @@ class Schedule:
         return session.query(Schedule_Table) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
+            .filter(Semester_Table.active == 1)\
+            .filter(Schedule_Table.deletedAt == None) \
             .all()
 
     def get_term_report(self):
@@ -83,4 +85,9 @@ class Schedule:
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
             .order_by(TutorSchedule_Table.lead.desc())\
             .all()
+
+    def delete_schedule(self, schedule_id):
+        schedule_to_delete = self.get_schedule(schedule_id)
+        schedule_to_delete.deletedAt = datetime.now()
+        session.commit()
 
