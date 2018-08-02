@@ -14,7 +14,6 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.session_functions import Session
 
-
 class ReportView(FlaskView):
     def __init__(self):
         self.base = ReportController()
@@ -23,8 +22,8 @@ class ReportView(FlaskView):
         self.user = User()
         self.session_ = Session()
 
-    # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
 
+    # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
     def index(self):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
