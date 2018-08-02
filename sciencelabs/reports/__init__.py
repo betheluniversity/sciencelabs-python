@@ -146,10 +146,6 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
-            my_list = ['', '', '', 'Total:', '#', '#', '%']
-
-            filewriter.writerow(my_list)
-
             term_attendance = self.schedule.get_session_attendance()
             total_attendance = 0
             attendance_list = []
@@ -157,11 +153,17 @@ class ReportView(FlaskView):
                 total_attendance += sessions[1]
                 attendance_list += [sessions[1]]
 
+            index = 0
+            session_count = 0
             for schedule, sessions in self.schedule.get_term_report():
-
-                my_list = []
-                # my_list = [schedule.name, schedule.dayofWeek, (schedule.startTime), schedule.endTime, sessions, attendance_list[loop.index0], (attendance_list[loop.index0] / total_attendance * 100)|round|int]
+                session_count += sessions
+                my_list = [schedule.name, schedule.dayofWeek, schedule.startTime, schedule.endTime, sessions, attendance_list[index], str(round(((attendance_list[index]/total_attendance)*100))) + '%']
+                index += 1
                 filewriter.writerow(my_list)
+
+            my_list = ['', '', '', 'Total:', session_count, total_attendance, '100%']
+
+            filewriter.writerow(my_list)
 
 
 
