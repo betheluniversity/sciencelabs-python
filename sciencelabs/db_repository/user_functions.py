@@ -48,7 +48,6 @@ class User:
     def get_user(self, user_id):
         return session.query(User_Table).filter(User_Table.id == user_id).one()
 
-    # TODO FIGURE OUT HOW TO USE THIS TO GET ATTENDANCE FOR SPECIFIC COURSE
     def get_student_attendance(self, student_id):
             return session.query(User_Table, func.count(User_Table.id)) \
                 .filter(student_id == User_Table.id)\

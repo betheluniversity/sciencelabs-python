@@ -4,19 +4,31 @@
 
 {% block header %}{% endblock %}
 
-{#TODO: This tab needs another subnav that allows the user to switch between #}
 {% block body_content %}
+    <div class="form-row">
+        <div style="text-align: right;" class="form-group col-md-12">
+            {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+            <p>
+                {% set dates = [] %}
+                {% set year = [] %}
+                {% for session in sessions %}
+                    {% if ((session.date|string)[5:7]) not in dates %}
+                        {% if ((session.date|string)[5:7]) %}
+                        <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
+                        <p style="display: none;">{{ year.append((session.date|string)[:4]) }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% for date in dates|sort %}
+                {% if date %}
+                    <a style="text-decoration: none" class="month-nav {{ 'active' if ((year[loop.index0]|string) + '/' + ((dates|sort)[loop.index0]|int)|string) in request.path else 'disabled'}}" href="{{ url_for('ReportView:month', year=year[loop.index0], month=(dates|sort)[loop.index0]|int) }}">{{ months[date|int - 1][:3] }}</a>&emsp;
+                {% endif %}
+            {% endfor %}
+            </p>
+        </div>
+    </div>
+
    <div class="custom-default row">
-       <div class="col-md-8">
-           <form>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        {# TODO PUT IN SELECTOR #}
-                        PUT IN MONTH SELECTOR
-                    </div>
-                </div>
-           </form>
-       </div>
        <div class="col-md-8">
            <form>
                <div class="form-row">
@@ -33,7 +45,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                     {# TODO PUT IN MONTH YEAR #}
-                                    <p style="padding: 0px; margin: 0px">Attendance for ***MONTH YEAR***</p>
+                                    <p style="padding: 0px; margin: 0px">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
                                 <a href="" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
                                 <a href="" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
@@ -43,7 +55,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                        <h4>Schedule Statistics for Closed Sessions during ***MONTH***</h4>
+                        <h4>Schedule Statistics for Closed Sessions during {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
@@ -58,20 +70,54 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for monthly_closed in monthly_closed_info %}
-                            <tr>
-                            {% for info in monthly_closed %}
-                                <td>{{ info }}</td>
-                            {% endfor %}
-                            </tr>
+                    {% set total_attendance = [0] %}
+                    {% for schedule in schedule_info %}
+                        {% for session in monthly_sessions %}
+                            {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
+                            {% set attendance = session_.get_session_attendees(session.id) %}
+                            {% if schedule.id == session_schedule.id %}
+                                {% if total_attendance.append(total_attendance.pop() + attendance.count() + session.anonStudents) %}{% endif %}
+                            {% endif %}
                         {% endfor %}
+                    {% endfor %}
+
+                    {% set total_attendance_per_schedule = [0] %}
+                    {% for schedule in schedule_info %}
+                        {% set total_attendance_per_schedule = [0] %}
+                        {% for session in monthly_sessions %}
+                            {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
+                            {% set attendance = session_.get_session_attendees(session.id) %}
+                            {% if schedule.id == session_schedule.id %}
+                                {% if total_attendance_per_schedule.append(total_attendance_per_schedule.pop() + attendance.count() + session.anonStudents) %}{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                            <td>{{ schedule.name }}</td>
+                            <td>{{ day_abbr[schedule.dayofWeek] }}</td>
+                            <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
+                            <td>{{ total_attendance_per_schedule[0] }}</td>
+                            <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) }}%</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th style="border-top: none;" colspan="3">Unscheduled Sessions</th>
+                            {# TODO THESE ARE JUST  #}
+                            <th style="border-top: none;">0</th>
+                            <th style="border-top: none;">???</th>
+                        </tr>
+                        <tr>
+                            <th style="border-top: none;" colspan="3">Total</th>
+                            <th style="border-top: none;">{{ total_attendance[0] }}</th>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                        <h4>Session Statistics for ***MONTH***</h4>
+                        <h4>Session Statistics for {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
                 {# TODO FILL TABLE #}
@@ -83,24 +129,30 @@
                             <th>DOW</th>
                             <th>Scheduled Time</th>
                             <th>Total Attendance</th>
-                            <th>report</th>
+                            <th>Report</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for monthly in monthly_info %}
-                            <tr>
-                            {% for info in monthly %}
-                                {% if info == 'report' %}
-                                    <td>
-                                        <button id="darkblue" class="btn btn-primary">View</button>
-                                    </td>
-                                {% else %}
-                                    <td>{{ info }}</td>
-                                {% endif %}
-                            {% endfor %}
-                            </tr>
-                        {% endfor %}
+                    {% set total_attendance = [0] %}
+                    {% for session in monthly_sessions %}
+                        <tr>
+                            <td>{{ session.name }}</td>
+                            <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                            <td>{{ day_abbr[(cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7] }}</td>
+                            <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
+                            <td>
+                                {% set attendance = session_.get_session_attendees(session.id) %}
+                                {% if total_attendance.append(total_attendance.pop() + (attendance.count() + session.anonStudents)) %}{% endif %}
+                                {{ attendance.count() + session.anonStudents }}
+                            </td>
+                            <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
+                    <tfoot>
+                        <th style="border-top: none;" colspan="4">Total</th>
+                        <th style="border-top: none;">{{ total_attendance[0] }}</th>
+                    </tfoot>
                 </table>
 
             </form>
@@ -134,21 +186,25 @@
     </div>
 
     <script>
-        $.extend($.fn.dataTableExt.oStdClasses, {
-            // give some foundation classes to our controls
-            sLength: 'large-4 columns ',
-            sFilter: 'large-12 columns ',
-        });
-
         $(document).ready( function () {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                // give some foundation classes to our controls
+                sLength: 'large-4 columns ',
+                sFilter: 'large-12 columns ',
+            });
+
             var table = $('#closed-table').DataTable( {
                 "aaSorting": [],
                 "bPaginate": false,
                 "bLengthChange": false,
             });
 
+
+        });
+
+        $(document).ready( function () {
             var table = $('#table').DataTable( {
-                "aaSorting": [],
+                "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bLengthChange": false,
             });

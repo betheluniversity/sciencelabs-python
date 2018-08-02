@@ -9,7 +9,8 @@ class Session:
 
     def get_closed_sessions(self):
         return (session.query(Session_Table)
-                .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.active == 1)
                 .filter(Session_Table.startTime != None).all())
 
     def get_session(self, session_id):
@@ -41,8 +42,9 @@ class Session:
             .filter(User_Table.id == student_id).one()
 
     def get_session_students(self, session_id):
-        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn, StudentSession_Table.timeOut,
-                             StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName) \
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
+                             StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
+                             StudentSession_Table.otherCourseName) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id).all()
 
@@ -75,13 +77,13 @@ class Session:
             .filter(Course_Table.id == course_id)\
             .all()
 
-    def get_session_attendees(self, course_id, session_id):
-        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
+    def get_session_attendees(self, session_id):
+        return session.query(User_Table.id) \
             .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(Session_Table.id == StudentSession_Table.sessionId)\
-            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id)\
-            .all()
+            .filter(StudentSession_Table.studentId == User_Table.id).distinct()
+
+    def get_session_attendees_with_dup(self, course_id, session_id):
+        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id))).filter(StudentSession_Table.sessionId == session_id).filter(Session_Table.id == StudentSession_Table.sessionId).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id).all()
 
     def get_studentsession_from_session(self, session_id):
         return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId)\
@@ -98,4 +100,44 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
 
     def get_dayofWeek_from_session(self, session_id):
-        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).one()
+        return session.query(Schedule_Table)\
+            .filter(Session_Table.id == session_id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .one()
+
+    def get_monthly_sessions(self, start_date, end_date):
+        return (session.query(Session_Table)
+                .filter(Session_Table.date.between(start_date, end_date))
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Session_Table.startTime != None).all())
+
+    def get_avg_total_time_per_student(self):
+        return session.query(StudentSession_Table) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.active == 1) \
+            .filter(Schedule_Table.id == Session_Table.schedule_id)\
+            .all()
+
+    def get_schedule_monthly_attendance(self, schedule_id, start_date, end_date):
+        return session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Schedule_Table.id == schedule_id)\
+            .filter(Session_Table.date.between(start_date, end_date))
+
+    def get_years(self):
+        return session.query(Semester_Table.year).distinct()
+
+    def get_monthly_sessions_attendance(self, start_date, end_date):
+        return (session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == Session_Table.id)\
+                .filter(Session_Table.date.between(start_date, end_date))
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Session_Table.startTime != None).all())
+
+    def get_semester_closed_sessions(self, year, term):
+        return (session.query(Session_Table)
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.year == year)
+                .filter(Semester_Table.term == term)
+                .filter(Session_Table.startTime != None).all())

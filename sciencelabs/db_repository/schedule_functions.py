@@ -14,6 +14,14 @@ class Schedule:
             .filter(Semester_Table.active == 1) \
             .all()
 
+    def get_yearly_schedule_tab_info(self, year, term):
+        return session.query(Schedule_Table) \
+            .filter(Schedule_Table.id == Session_Table.schedule_id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.year == year)\
+            .filter(Semester_Table.term == term)\
+            .all()
+
     def get_term_report(self):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \
             .filter(Session_Table.startTime != None) \
@@ -70,6 +78,9 @@ class Schedule:
     def get_schedule(self, schedule_id):
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
+    def get_schedule_from_session(self, session_id):
+        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).first()
+
     def get_schedule_tutors(self, schedule_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.lead,
                              TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
@@ -82,5 +93,5 @@ class Schedule:
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
             .order_by(TutorSchedule_Table.lead.desc())\
-            .all()
-
+            .all()     
+    

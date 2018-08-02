@@ -39,7 +39,7 @@
                             {% endfor %}
                         {% for date in dates %}
                             {% if date %}
-                                <a href="#{{ month[date|int - 1] }}">{{ month[date|int - 1] }}</a>&emsp;
+                                <a style="text-decoration: none;" href="#{{ month[date|int - 1] }}">{{ month[date|int - 1] }}</a>&emsp;
                             {% endif %}
                         {% endfor %}
                         </p>
@@ -61,6 +61,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                        {% set total_attendance = [0] %}
                         {% for session in sessions %}
                             {% if ((session.date|string)[5:7]) == date %}
                                 <tr>
@@ -74,6 +75,7 @@
                                     <td>
                                         {% set attendance = session_.get_session_students(session.id) %}
                                         {{ attendance|length }}
+                                        {% if total_attendance.append(total_attendance.pop() + (attendance|length)) %}{% endif %}
                                     </td>
                                     <td>
                                         <button type="button" class="show-tutors btn btn-primary">Show</button>
@@ -95,6 +97,16 @@
                             {% endif %}
                         {% endfor %}
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th style="border-top: none;" colspan="4" >
+                                    Total
+                                </th>
+                                <th style="border-top: none;">
+                                    {{ total_attendance[0] }}
+                                </th>
+                            </tr>
+                        </tfoot>
                     </table>
                 {% endfor %}
             </form>

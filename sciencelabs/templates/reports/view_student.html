@@ -61,11 +61,11 @@
                     <tbody>
                     <tr>
                         <td><b>Sessions Held for courses user was enrolled in</b></td>
-                        <td>SESSIONS HELD</td>
+                        <td>{{ total_sessions|length }}</td>
                     </tr>
                     <tr>
                         <td><b>Percentage Attended</b></td>
-                        <td>PERCENT</td>
+                        <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
                     </tr>
                     <tr>
                         <td><b>Average Time per Session</b></td>

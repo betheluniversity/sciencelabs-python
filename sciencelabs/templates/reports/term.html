@@ -51,13 +51,13 @@
                             <h3><br></h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <b>Average total time spent per student:</b>
+                                    <b>Average total time spent per student:</b> {{ (avg_total_time / unique_attendance)|round(2) }} hours
                                 </li>
                                 <li>
                                     <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b>
+                                    <b>Average number of visits per student:</b> {{ (total_attendance / unique_attendance)|round(2) }}
                                 </li>
                             </ul>
                         </p>
@@ -106,18 +106,10 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="4" class="text-right">
-                                Total
-                            </th>
-                            <td>
-                                <b>{{ total_sessions }}</b>
-                            </td>
-                            <td>
-                                <b>{{ total_attendance }}</b>
-                            </td>
-                            <td>
-                                <b>100%</b>
-                            </td>
+                            <th style="border-top: none;" colspan="4" class="text-right">Total</th>
+                            <th style="border-top: none;">{{ total_sessions }}</th>
+                            <th style="border-top: none;">{{ total_attendance }}</th>
+                            <th style="border-top: none;">100%</th>
                         </tr>
                     </tfoot>
                 </table>
