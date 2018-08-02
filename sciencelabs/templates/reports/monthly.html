@@ -46,8 +46,8 @@
                             <div class="card-body btn-group">
                                     {# TODO PUT IN MONTH YEAR #}
                                     <p style="padding: 0px; margin: 0px">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
-                                <a href="" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
-                                <a href="" class="csv-button btn btn-primary">CSV Detail Export</a>
+                                <a href="{{ url_for('ReportView:export_monthly_summary_csv') }}" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
+                                <a href="{{ url_for('ReportView:export_monthly_detail_csv') }}" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
                         </div>
                     </div>

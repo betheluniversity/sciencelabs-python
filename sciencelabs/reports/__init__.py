@@ -254,6 +254,8 @@ class ReportView(FlaskView):
 
             my_list = ['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']
 
+            filewriter.writerow(my_list)
+
         # Opens the file and signifies that we will read it
         with open((term + year + '_' + lab + '_' + month + '_DetailReport.csv'), 'rb') as f:
             # returns a Response (so the file can be downloaded)
