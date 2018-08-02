@@ -135,6 +135,7 @@
                     <tbody>
                     {% set total_attendance = [0] %}
                     {% for session in monthly_sessions %}
+                        {% if session.schedule_id %}
                         <tr>
                             <td>{{ session.name }}</td>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
@@ -147,6 +148,7 @@
                             </td>
                             <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
                         </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
                     <tfoot>
