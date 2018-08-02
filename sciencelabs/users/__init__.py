@@ -38,7 +38,7 @@ class UsersView(FlaskView):
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
 
-    @route("/search-users", methods=['post'])
+    @route("/search-users", methods=['POST'])
     def search_users(self):
         form = request.form
         first_name = form.get('firstName')
