@@ -3,6 +3,6 @@
 {% block subnav %}
         <a id="home" class="nav-item nav-link {{ 'active' if '/users/' == request.path else 'disabled'}}"
            href="{{ url_for('UsersView:index') }}">Users</a>
-        <a id="add" class="nav-item nav-link {{ 'active' if 'add_user' in request.path else 'disabled'}}"
+        <a id="add" class="nav-item nav-link {{ 'active' if 'search' in request.path else 'disabled'}}"
            href="{{ url_for('UsersView:add_user') }}">Add</a>
 {% endblock %}

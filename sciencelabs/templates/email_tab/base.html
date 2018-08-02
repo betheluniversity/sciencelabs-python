@@ -19,9 +19,14 @@
                         </div>
                     </div>
                     <div class="form-row">
+                        {# TODO: This looks nothing like the actual mathlab site #}
                         <div class="form-group col-md-6">
                             <label for="choose-recipients">Recipients</label>
-                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose recipients ...">
+                            <select class="form-control" id="choose-recipients" multiple>
+                                {% for role in role_list %}
+                                    <option value="{{ role.id }}">{{ role.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="subject">Subject</label>
@@ -36,12 +41,20 @@
                     </div>
                     <div class="form-group">
                         <div id="cc-div" style="display: none;" class="form-group col-md-12">
-                            <label for="choose-recipients">CC</label>
-                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose CC recipients ...">
+                            <label for="choose-cc">CC</label>
+                            <select class="form-control" id="choose-cc" multiple>
+                                {% for user in user_list %}
+                                    <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div id="bcc-div" style="display: none;"  class="form-group col-md-12">
-                            <label for="choose-recipients">BCC</label>
-                            <input type="text" class="form-control" id="choose-recipients" placeholder="Choose BCC recipients ...">
+                            <label for="choose-bcc">BCC</label>
+                            <select class="form-control" id="choose-cc" multiple>
+                                {% for user in user_list %}
+                                    <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">

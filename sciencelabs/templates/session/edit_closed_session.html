@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Edit {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }} Information</p>
+            <p class="card-text">Edit {{ session_info.name + ' (' + session_info.date.strftime('%m/%d/%Y') + ')'  }} Information</p>
         </div>
     </div>
 {% endblock %}
@@ -14,11 +14,11 @@
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
                 <input type="text" class="form-control" id="session-name"
-                       value="{{ session.name }}">
+                       value="{{ session_info.name }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
-                <input type="text" class="form-control" id="room-number" value="{{ session.room }}">
+                <input type="text" class="form-control" id="room-number" value="{{ session_info.room }}">
             </div>
             <div class="form-group col-md-3">
                 <label for="">Semester</label>
@@ -32,17 +32,17 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="session-date">Date (click to select)</label>
-                <input type="text" class="form-control" id="session-date" value="{{ session.date.strftime('%m/%d/%Y') }}">
+                <input type="text" class="form-control" id="session-date" value="{{ session_info.date.strftime('%m/%d/%Y') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
                 <input type="time" class="form-control" id="scheduled-start"
-                       value="{{ session.schedStartTime|datetimeformat('%H:%M') }}">
+                       value="{{ session_info.schedStartTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-end">Scheduled End Time</label>
                 <input type="time" class="form-control" id="scheduled-end"
-                       value="{{ session.schedEndTime|datetimeformat('%H:%M') }}">
+                       value="{{ session_info.schedEndTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         {# TODO: This looks nothing like the actual mathlab site #}
@@ -70,12 +70,12 @@
             <div class="form-group col-md-6">
                 <label for="actual-start">Actual Start Time</label>
                 <input type="time" class="form-control" id="actual-start"
-                       value="{{ session.startTime|datetimeformat('%H:%M') }}">
+                       value="{{ session_info.startTime|datetimeformat('%H:%M') }}">
             </div>
             <div class="form-group col-md-6">
                 <label for="actual-end">Actual End Time</label>
                 <input type="time" class="form-control" id="actual-end"
-                       value="{{ session.endTime|datetimeformat('%H:%M') }}">
+                       value="{{ session_info.endTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
         <div class="form-row">
@@ -97,13 +97,13 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="comments">Comments</label>
-                <textarea class="form-control" id="comments">{{ session.comments }}</textarea>
+                <textarea class="form-control" id="comments">{{ session_info.comments }}</textarea>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="anon-students">Anonymous Students</label>
-                <input type="text" class="form-control" id="anon-students" value="{{ session.anonStudents }}">
+                <input type="text" class="form-control" id="anon-students" value="{{ session_info.anonStudents }}">
             </div>
         </div>
         <div class="form-row">
@@ -149,7 +149,7 @@
                         </td>
                         <td>
                             <ul>
-                                {% set courses = student_courses.get_student_session_courses(session.id, student.id) %}
+                                {% set courses = student_courses.get_student_session_courses(session_info.id, student.id) %}
                                 {% for course in courses %}
                                     <li>{{ course.dept }}{{ course.course_num }}</li>
                                 {% endfor %}
@@ -160,7 +160,7 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session.id) }}'"
+                                <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}'"
                                         type="button" class="edit btn btn-primary">Edit</button>
                                 <button type="button" class="delete btn btn-primary">Delete</button>
                             </div>
@@ -170,7 +170,7 @@
             </tbody>
             <tr>
                 <th colspan="4">Anonymous Students</th>
-                <td style="text-align:right;">{{ session.anonStudents }}</td>
+                <td style="text-align:right;">{{ session_info.anonStudents }}</td>
             </tr>
         </table>
     </div>
@@ -187,7 +187,7 @@
                 </thead>
                 <tbody>
                     {% for student in session_students %}
-                        {% if course in student_courses.get_student_session_courses(session.id, student.id) %}
+                        {% if course in student_courses.get_student_session_courses(session_info.id, student.id) %}
                             <tr>
                                 <td><a href="{{ url_for('ReportView:view_student', student_id=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></td>
                                 <td>
@@ -206,7 +206,7 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session.id) }}'"
+                                        <button onclick="location.href='{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}'"
                                                 type="button" class="edit btn btn-primary">Edit</button>
                                         <button type="button" class="delete btn btn-primary">Delete</button>
                                     </div>
@@ -220,9 +220,9 @@
         {% endfor %}
     </div>
 
-    <button onclick="location.href='{{ url_for('SessionView:add_student', session_id=session.id) }}'" type="button"
+    <button onclick="location.href='{{ url_for('SessionView:add_student', session_id=session_info.id) }}'" type="button"
             class="edit btn btn-primary">Add a Student</button>
-    <button onclick="location.href='{{ url_for('SessionView:add_anonymous', session_id=session.id) }}'" type="button"
+    <button onclick="location.href='{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}'" type="button"
             class="btn btn-primary">Add Anonymous Student</button>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">
@@ -238,7 +238,7 @@
             <th></th>
         </thead>
         <tbody>
-            {% for tutor in tutors %}
+            {% for tutor in session_tutors %}
                 <tr>
                     <td>
                         {{ tutor.firstName }} {{ tutor.lastName }}
@@ -266,7 +266,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
+                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}' class="edit btn btn-primary">Edit</a>
                             <button type="button" class="delete btn btn-primary">Delete</button>
                         </div>
                     </td>
@@ -274,7 +274,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href='{{ url_for('SessionView:add_tutor', session_id=session.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+    <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>

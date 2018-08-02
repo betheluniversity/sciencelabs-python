@@ -44,3 +44,21 @@ class Course:
             .filter(CourseProfessors_Table.professor_id == User_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .one()
+
+    def get_courses_for_session(self, session_id):
+        return session.query(Course_Table)\
+            .filter(Course_Table.id == SessionCourses_Table.course_id)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .all()
+
+    def get_professor_courses(self, prof_id):
+        return session.query(Course_Table)\
+            .filter(CourseProfessors_Table.course_id == Course_Table.id)\
+            .filter(CourseProfessors_Table.professor_id == prof_id) \
+            .filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1)\
+            .all()
+
+    def get_semester_courses_with_section(self, semester_id):
+        return session.query(Course_Table).filter(Course_Table.semester_id == semester_id).all()
