@@ -92,8 +92,8 @@ class SessionView(FlaskView):
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
-        test = session_id
         # TODO: Delete from DB
+        self.session.delete_session(session_id)
         return redirect(url_for('SessionView:closed'))
 
     @route('/save_session_edits', methods=['post'])

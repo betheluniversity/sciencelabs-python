@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
@@ -10,7 +11,7 @@ class Session:
     def get_closed_sessions(self):
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).all())
+                .filter(Session_Table.startTime != None).filter(Session_Table.deletedAt == None).all())
 
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()
@@ -98,4 +99,10 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
 
     def get_dayofWeek_from_session(self, session_id):
-        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).one()
+        return session.query(Schedule_Table).filter(Session_Table.id == session_id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id).one()
+
+    def delete_session(self, session_id):
+        session_to_delete = self.get_session(session_id)
+        session_to_delete.deletedAt = datetime.now()
+        session.commit()
