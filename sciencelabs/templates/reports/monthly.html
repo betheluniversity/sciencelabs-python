@@ -77,13 +77,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {# TODO FIX WHEN 2004/02 #}
                     {% set total_attendance = [0] %}
                     {% for schedule in schedule_info %}
                         {% for session in monthly_sessions %}
                             {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
                             {% set attendance = session_.get_session_attendees(session.id) %}
-                            {% if schedule.name == session_schedule.name %}
+                            {% if schedule.id == session_schedule.id %}
                                 {% if total_attendance.append(total_attendance.pop() + attendance.count() + session.anonStudents) %}{% endif %}
                             {% endif %}
                         {% endfor %}
@@ -95,7 +94,7 @@
                         {% for session in monthly_sessions %}
                             {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
                             {% set attendance = session_.get_session_attendees(session.id) %}
-                            {% if schedule.name == session_schedule.name %}
+                            {% if schedule.id == session_schedule.id %}
                                 {% if total_attendance_per_schedule.append(total_attendance_per_schedule.pop() + attendance.count() + session.anonStudents) %}{% endif %}
                             {% endif %}
                         {% endfor %}
