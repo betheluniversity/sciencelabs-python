@@ -1,9 +1,13 @@
 # Packages
-from flask import render_template
+from flask import render_template, Response
 from flask_classy import FlaskView, route
 import calendar
+import csv
+from datetime import datetime
 
 # Local
+from sciencelabs import app_settings
+from sciencelabs import app
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
@@ -37,6 +41,38 @@ class ReportView(FlaskView):
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
+    def export_student_csv(self):
+
+        if app_settings['LAB_TITLE'] == 'Math Lab':
+            term = 'SP'[:2]  # SEMESTER.TERM[:2]
+            year = '2018'  # SEMESTER.YEAR
+            lab = 'ML'
+
+        with open((term + year + '_' + lab + '_StudentReport.csv'), 'w+') as csvfile:
+
+            filewriter = csv.writer(csvfile)
+
+            my_list = [term + year + '_' + lab + '_StudentReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Last', 'First', 'Email', 'Attendance']
+
+            filewriter.writerow(my_list)
+
+            for student, attendance in self.user.get_student_info():
+
+                my_list = [student.lastName, student.firstName, student.email, attendance]
+                filewriter.writerow(my_list)
+
+        # Opens the file and signifies that we will read it
+        with open((term + year + '_' + lab + '_StudentReport.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_StudentReport.csv'})
+
     def semester(self):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
@@ -69,6 +105,57 @@ class ReportView(FlaskView):
             unique_attendance += attendance_data[1]
 
         return render_template('reports/term.html', **locals())
+
+    def export_semester_csv(self):
+        if app_settings['LAB_TITLE'] == 'Math Lab':
+            term = 'SP'[:2]  # SEMESTER.TERM[:2]
+            year = '2018'  # SEMESTER.YEAR
+            lab = 'ML'
+
+        with open((term + year + '_' + lab + '_TermReport.csv'), 'w+') as csvfile:
+
+            filewriter = csv.writer(csvfile)
+
+            my_list = [term + year + '_' + lab + '_TermReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'),
+                       '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Schedule Statistics for Closed Sessions']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['', '', '', 'Total:', '#', '#', '%']
+
+            filewriter.writerow(my_list)
+
+            term_attendance = self.schedule.get_session_attendance()
+            total_attendance = 0
+            attendance_list = []
+            for sessions in term_attendance:
+                total_attendance += sessions[1]
+                attendance_list += [sessions[1]]
+
+            for schedule, sessions in self.schedule.get_term_report():
+
+                my_list = []
+                # my_list = [schedule.name, schedule.dayofWeek, (schedule.startTime), schedule.endTime, sessions, attendance_list[loop.index0], (attendance_list[loop.index0] / total_attendance * 100)|round|int]
+                filewriter.writerow(my_list)
+
+
+
+            # Opens the file and signifies that we will read it
+        with open((term + year + '_' + lab + '_TermReport.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={
+                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_StudentReport.csv'})
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
