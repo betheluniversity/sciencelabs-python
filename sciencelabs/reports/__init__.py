@@ -102,7 +102,6 @@ class ReportView(FlaskView):
 
         session_ = self.session_
         semesters = self.session_.get_years()
-
         return render_template('reports/cumulative.html', **locals())
 
     def session(self):
