@@ -215,6 +215,14 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
+            my_list = ['', '', '', '', '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']
+
+            filewriter.writerow(my_list)
+
         # Opens the file and signifies that we will read it
         with open((term + year + '_' + lab + '_' + month + '_SummaryReport.csv'), 'rb') as f:
             # returns a Response (so the file can be downloaded)
@@ -239,6 +247,12 @@ class ReportView(FlaskView):
                        datetime.now().strftime('%m/%d/%Y'), '']
 
             filewriter.writerow(my_list)
+
+            my_list = ['', '', '', '', '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']
 
         # Opens the file and signifies that we will read it
         with open((term + year + '_' + lab + '_' + month + '_DetailReport.csv'), 'rb') as f:
