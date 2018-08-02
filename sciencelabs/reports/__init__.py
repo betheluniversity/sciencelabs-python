@@ -199,6 +199,56 @@ class ReportView(FlaskView):
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
         return render_template('reports/monthly.html', **locals())
 
+    def export_monthly_summary_csv(self):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+        month = 'February'  # SOMEHOW GET MONTH
+
+        with open((term + year + '_' + lab + '_' + month + '_SummaryReport.csv'), 'w+') as csvfile:
+            filewriter = csv.writer(csvfile)
+
+            my_list = [term + year + '_' + lab + '_' + month + '_SummaryReport.csv', 'Exported on:',
+                       datetime.now().strftime('%m/%d/%Y'), '']
+
+            filewriter.writerow(my_list)
+
+        # Opens the file and signifies that we will read it
+        with open((term + year + '_' + lab + '_' + month + '_SummaryReport.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={
+                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_' + month + '_SummaryReport.csv'})
+
+    def export_monthly_detail_csv(self):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+        month = 'February'  # SOMEHOW GET MONTH
+
+        with open((term + year + '_' + lab + '_' + month + '_DetailReport.csv'), 'w+') as csvfile:
+            filewriter = csv.writer(csvfile)
+
+            my_list = [term + year + '_' + lab + '_' + month + '_DetailReport.csv', 'Exported on:',
+                       datetime.now().strftime('%m/%d/%Y'), '']
+
+            filewriter.writerow(my_list)
+
+        # Opens the file and signifies that we will read it
+        with open((term + year + '_' + lab + '_' + month + '_DetailReport.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={
+                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_' + month + '_DetailReport.csv'})
+
     def annual(self):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
