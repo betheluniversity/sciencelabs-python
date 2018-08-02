@@ -274,6 +274,31 @@ class ReportView(FlaskView):
         semesters = self.session_.get_years()
         return render_template('reports/cumulative.html', **locals())
 
+    def export_cumulative_csv(self):
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        with open((lab + '_CumulativeAttendance.csv'), 'w+') as csvfile:
+            filewriter = csv.writer(csvfile)
+
+            my_list = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']
+
+            filewriter.writerow(my_list)
+
+        with open((lab + '_CumulativeAttendance.csv'), 'rb') as f:
+            # returns a Response (so the file can be downloaded)
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={
+                    "Content-disposition": "attachment; filename=" + lab + '_CumulativeAttendance.csv'})
+
+
     def session(self):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
