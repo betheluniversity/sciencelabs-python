@@ -122,7 +122,7 @@
            var users = {
              'userID': {{ user.id }}
            };
-           var url = '{{ url_for('UsersView:deactivate_user') }}';
+           var url = '{{ url_for('UsersView:deactivate_single_user') }}';
            $.post(url, users, function(){
                window.location.replace('{{ url_for('UsersView:index') }}')
            });

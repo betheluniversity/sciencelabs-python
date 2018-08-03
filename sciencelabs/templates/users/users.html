@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                             <th colspan="4"></th>
-                            <th colspan="2"><button id="deactivate-user" type="button" class="delete btn btn-primary">Deactivate</button></th>
+                            <th colspan="2"><button id="deactivate-users" type="button" class="delete btn btn-primary">Deactivate</button></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +46,7 @@
                                     <a href='{{ url_for('UsersView:edit_user', user_id=user.id) }}' id="darkblue" class="btn btn-primary">Edit</a>
                                 </td>
                                 <td class="text-center">
-                                    <input type="checkbox" value="{{ info }}">
+                                    <input type="checkbox" value="{{ user.id }}" class="deactivate-checkbox">
                                 </td>
                             </tr>
                         {% endfor %}
@@ -111,14 +111,19 @@
                 "bLengthChange": false,
             });
 
-            $('#deactivate-user').click(function(){
-               var users = {
-                 'user': 0
-               };
-               var url = '{{ url_for('UsersView:deactivate_user') }}';
-               $.post(url, users, function(){
-                   window.location.replace('{{ url_for('UsersView:index') }}')
-               });
+            $('#deactivate-users').click(function(){
+                var userIds = [];
+                $(".deactivate-checkbox:checked").each(function(){
+                    userIds.push($(this).val());
+                });
+                var jsonUserIds = JSON.stringify(userIds);
+                var users = {
+                    'jsonUserIds': jsonUserIds
+                };
+                var url = '{{ url_for('UsersView:deactivate_users') }}';
+                $.post(url, users, function(){
+                    window.location.replace('{{ url_for('UsersView:index') }}')
+                });
             });
 
         });

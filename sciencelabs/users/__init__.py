@@ -1,3 +1,5 @@
+import json
+
 # Packages
 from flask import render_template, request
 from flask_classy import FlaskView, route
@@ -46,11 +48,20 @@ class UsersView(FlaskView):
         results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
-    @route("/deactivate_user", methods=['post'])
-    def deactivate_user(self):
+    @route("/deactivate_single_user", methods=['post'])
+    def deactivate_single_user(self):
         form = request.form
         user_id = form.get('userID')
         self.user.delete_user(user_id)
+        return 'success'
+
+    @route("/deactivate_users", methods=['post'])
+    def deactivate_users(self):
+        form = request.form
+        json_user_ids = form.get('jsonUserIds')
+        user_ids = json.loads(json_user_ids)
+        for user in user_ids:
+            self.user.delete_user(user)
         return 'success'
 
     @route("/save_user_edits", methods=['post'])
