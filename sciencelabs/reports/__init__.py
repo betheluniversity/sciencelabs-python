@@ -389,7 +389,7 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
-            my_list = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']
+            my_list = ['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']
 
             filewriter.writerow(my_list)
 
