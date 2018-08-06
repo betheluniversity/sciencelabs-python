@@ -229,18 +229,26 @@ class ReportView(FlaskView):
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
         return render_template('reports/monthly.html', **locals())
 
-    def export_monthly_summary_csv(self):
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+    def export_monthly_summary_csv(self, year, month):
+        month = int(month)
+        if month == 1:
+            term = 'Interim'
+        elif month in [2, 3, 4, 5]:
+            term = 'Spring'
+        elif month in [8, 9, 10, 11, 12]:
+            term = 'Fall'
+        else:
+            term = 'Summer'
+        term_abbr = term[:2].upper()
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
-        month = 'February'  # SOMEHOW GET MONTH
+        selected_month = 'February'  # TODO SOMEHOW GET MONTH
 
-        with open((term + year + '_' + lab + '_' + month + '_SummaryReport.csv'), 'w+') as csvfile:
+        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'), 'w+') as csvfile:
             filewriter = csv.writer(csvfile)
 
-            my_list = [term + year + '_' + lab + '_' + month + '_SummaryReport.csv', 'Exported on:',
+            my_list = [term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv', 'Exported on:',
                        datetime.now().strftime('%m/%d/%Y'), '']
 
             filewriter.writerow(my_list)
@@ -253,14 +261,53 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
+
+            schedule_info = self.schedule.get_yearly_schedule_tab_info(year, term)
+            monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
+
+            total_attendance = 0
+            for schedule in schedule_info:
+                for session in monthly_sessions:
+                    session_schedule = self.schedule.get_schedule_from_session(session.id)
+                    attendance = self.session_.get_session_attendees(session.id)
+                    if schedule.id == session_schedule.id:
+                        total_attendance += attendance.count() + session.anonStudents
+
+            for schedule in schedule_info:
+                total_attendance_per_schedule = 0
+                for session in monthly_sessions:
+                    session_schedule = self.schedule.get_schedule_from_session(session.id)
+                    attendance = self.session_.get_session_attendees(session.id)
+                    if schedule.id == session_schedule.id:
+                        total_attendance_per_schedule += attendance.count() + session.anonStudents
+
+                my_list = [schedule.name, schedule.dayofWeek, str(schedule.startTime) + ' - ' + str(schedule.endTime), total_attendance_per_schedule, str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%']
+                filewriter.writerow(my_list)
+
+            unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
+            total_unscheduled = 0
+            if unscheduled_sessions:
+                for session in unscheduled_sessions:
+                    total_unscheduled += (len(self.user.get_session_students(session.id))) + session.anonStudents
+                total_attendance += total_unscheduled
+
+            my_list = ['Unscheduled Sessions', '', '', total_unscheduled, str(round((total_unscheduled / total_attendance) * 100, 1)) + '%']
+
+            filewriter.writerow(my_list)
+
+            my_list = ['', '', 'Total', total_attendance]
+
+            filewriter.writerow(my_list)
+
+
         # Opens the file and signifies that we will read it
-        with open((term + year + '_' + lab + '_' + month + '_SummaryReport.csv'), 'rb') as f:
+        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'), 'rb') as f:
             # returns a Response (so the file can be downloaded)
             return Response(
                 f.read(),
                 mimetype="text/csv",
                 headers={
-                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_' + month + '_SummaryReport.csv'})
+                    "Content-disposition": "attachment; filename=" + term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'})
 
     def export_monthly_detail_csv(self):
         term = 'SP'[:2]  # SEMESTER.TERM[:2]
