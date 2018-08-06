@@ -47,7 +47,7 @@
                                     {# TODO PUT IN MONTH YEAR #}
                                     <p style="padding: 0px; margin: 0px">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
                                 <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
-                                <a href="{{ url_for('ReportView:export_monthly_detail_csv') }}" class="csv-button btn btn-primary">CSV Detail Export</a>
+                                <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,6 @@
                     <tbody>
                     {% set total_attendance = [0] %}
                     {% for session in monthly_sessions %}
-                        {% if session.schedule_id %}
                         <tr>
                             <td>{{ session.name }}</td>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
@@ -162,18 +161,6 @@
                                 {{ attendance.count() + session.anonStudents }}
                             </td>
                             <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                    {% for unscheduled in unscheduled_sessions %}
-                        <tr>
-                            <td>{{ unscheduled.name }}</td>
-                            <td>{{ unscheduled.date.strftime('%m/%d/%Y') }}</td>
-                            <td>{{ day_abbr[(cal.weekday(((unscheduled.date|string)[:4])|int, ((unscheduled.date|string)[5:7])|int, ((unscheduled.date|string)[8:])|int) + 1) % 7] }}</td>
-                            <td>{{ unscheduled.schedStartTime }} - {{ unscheduled.schedEndTime  }}</td>
-                            <td>{{ user_.get_session_students(unscheduled.id)|length + unscheduled.anonStudents }}</td>
-                            {% if total_attendance.append(total_attendance.pop() + (user_.get_session_students(unscheduled.id)|length + unscheduled.anonStudents)) %}{% endif %}
-                            <td><a href='{{ url_for('ReportView:view_session', session_id=unscheduled.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
