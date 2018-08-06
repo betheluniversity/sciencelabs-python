@@ -40,7 +40,7 @@
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
                                 <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
-                                        {{ 'checked' if role in user_roles }}>
+                                        {{ 'checked' if role in user_roles }} value="{{ role.id }}">
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                             </div>
                         {% endfor %}
@@ -124,17 +124,27 @@
            };
            var url = '{{ url_for('UsersView:deactivate_single_user') }}';
            $.post(url, users, function(){
-               window.location.replace('{{ url_for('UsersView:index') }}')
+               window.location.replace('{{ url_for('UsersView:index') }}');
            });
         });
 
         $('#save-user').click(function(){
+            var userRoles = [];
+            $(".role-checkbox:checked").each(function(){
+                userRoles.push($(this).val());
+            });
+            var jsonUserRoles = JSON.stringify(userRoles);
            var user = {
-             'user': 0
+               'userId': {{ user.id }},
+               'firstName': $('#user-first-name').val(),
+               'lastName': $('#user-last-name').val(),
+               'email': $('#user-email').val(),
+               'username': $('#user-username').val(),
+               'roles': jsonUserRoles
            };
            var url = '{{ url_for('UsersView:save_user_edits') }}';
            $.post(url, user, function(){
-               window.location.replace('{{ url_for('UsersView:index') }}')
+               window.location.replace('{{ url_for('UsersView:index') }}');
            });
         });
 

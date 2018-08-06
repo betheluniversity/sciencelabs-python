@@ -23,7 +23,7 @@
                             <label for="roles">Roles</label>
                             {% for role in roles %}
                                 <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                    <input type="checkbox" class="custom-control-input" id="{{ role.id }}">
+                                    <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}" value="{{ role.id }}">
                                     <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                                 </div>
                             {% endfor %}
@@ -31,7 +31,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <button id="create-user" class="btn btn-primary">Create</button>
+                            <button id="create-user" type="button" class="btn btn-primary">Create</button>
                         </div>
                     </div>
                 </form>
@@ -62,4 +62,27 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function(){
+
+           $('#create-user').click(function(){
+                var userRoles = [];
+                $(".role-checkbox:checked").each(function(){
+                    userRoles.push($(this).val());
+                });
+                var jsonUserRoles = JSON.stringify(userRoles);
+               var user = {
+                   'firstName': '{{ first_name }}',
+                   'lastName': '{{ last_name }}',
+                   'username': '{{ username }}',
+                   'roles': jsonUserRoles
+               };
+               var url = '{{ url_for('UsersView:create_user') }}';
+                $.post(url, user, function(){
+                    window.location.replace('{{ url_for('UsersView:index') }}');
+                });
+           });
+
+        });
+    </script>
 {% endblock %}

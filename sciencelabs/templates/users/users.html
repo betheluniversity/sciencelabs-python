@@ -122,7 +122,7 @@
                 };
                 var url = '{{ url_for('UsersView:deactivate_users') }}';
                 $.post(url, users, function(){
-                    window.location.replace('{{ url_for('UsersView:index') }}')
+                    window.location.replace('{{ url_for('UsersView:index') }}');
                 });
             });
 
