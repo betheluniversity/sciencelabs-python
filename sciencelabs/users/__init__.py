@@ -40,6 +40,12 @@ class UsersView(FlaskView):
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
 
+    @route('/create/<username>/<first_name>/<last_name>')
+    def select_user_roles(self, username, first_name, last_name):
+        roles = self.user.get_all_roles()
+        existing_user = self.user.check_for_existing_user(username)
+        return render_template('users/select_user_roles.html', **locals())
+
     @route("/search-users", methods=['post'])
     def search_users(self):
         form = request.form
@@ -69,11 +75,4 @@ class UsersView(FlaskView):
         form = request.form
         user = form.get('user')
         # TODO: edit users
-        return 'success'
-
-    @route("/add_user_submit", methods=['post'])
-    def add_user_submit(self):
-        form = request.form
-        user = form.get('user')
-        # TODO: add users
         return 'success'

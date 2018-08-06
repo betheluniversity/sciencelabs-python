@@ -109,3 +109,11 @@ class User:
         user_to_delete = self.get_user(user_id)
         user_to_delete.deletedAt = datetime.now()
         session.commit()
+
+    def check_for_existing_user(self, username):
+        try:  # return true if there is an existing user
+            user = session.query(User_Table).filter(User_Table.username == username).one()
+            return True
+        except:  # otherwise return false
+            return False
+
