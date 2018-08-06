@@ -141,3 +141,12 @@ class Session:
                 .filter(Semester_Table.year == year)
                 .filter(Semester_Table.term == term)
                 .filter(Session_Table.startTime != None).all())
+
+    def get_unscheduled_sessions(self, year, term):
+        return (session.query(Session_Table)
+                .filter(Session_Table.deletedAt == None)
+                .filter(Session_Table.schedule_id == None)
+                .filter(Session_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.term == term)
+                .filter(Semester_Table.year == year)
+                .filter(Session_Table.startTime != None).all())

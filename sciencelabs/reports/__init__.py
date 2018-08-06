@@ -14,6 +14,7 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.session_functions import Session
 
+
 class ReportView(FlaskView):
     def __init__(self):
         self.base = ReportController()
@@ -64,7 +65,6 @@ class ReportView(FlaskView):
             lab += letter[0]
 
         with open((term + year + '_' + lab + '_StudentReport.csv'), 'w+') as csvfile:
-
             filewriter = csv.writer(csvfile)
 
             my_list = [term + year + '_' + lab + '_StudentReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']
@@ -98,6 +98,9 @@ class ReportView(FlaskView):
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
         unique_attendance_info = self.user.get_unique_session_attendance()
+        session_ = self.session_
+        user_ = self.user
+
         total_sessions = 0
         for sessions in term_info:
             total_sessions += sessions[1]
@@ -119,6 +122,9 @@ class ReportView(FlaskView):
         for attendance_data in unique_attendance_info:
             unique_attendance += attendance_data[1]
 
+        # TODO MAKE SURE SO NOT HARD-CODED
+        unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
+
         return render_template('reports/term.html', **locals())
 
     def export_semester_csv(self):
@@ -134,6 +140,10 @@ class ReportView(FlaskView):
 
             my_list = [term + year + '_' + lab + '_TermReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'),
                        '']
+
+            filewriter.writerow(my_list)
+
+            my_list = []
 
             filewriter.writerow(my_list)
 
@@ -164,7 +174,25 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
+            my_list = []
 
+            filewriter.writerow(my_list)
+
+            my_list = ['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance']
+
+            filewriter.writerow(my_list)
+
+            # TODO MAKE SURE SO NOT HARD-CODED
+            unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
+            for sessions in unscheduled_sessions:
+
+                my_list = ['', sessions.date.strftime('%m/%d/%Y'), sessions.startTime, sessions.endTime, 'Attendance']
+
+                filewriter.writerow(my_list)
+
+            my_list = ['', '', 'Total', '0']
+
+            filewriter.writerow(my_list)
 
             # Opens the file and signifies that we will read it
         with open((term + year + '_' + lab + '_TermReport.csv'), 'rb') as f:
@@ -194,8 +222,10 @@ class ReportView(FlaskView):
             term = 'Summer'
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(selected_year, term)
         schedule_ = self.schedule
         session_ = self.session_
+        user_ = self.user
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
         return render_template('reports/monthly.html', **locals())
 
@@ -215,7 +245,7 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
-            my_list = ['', '', '', '', '']
+            my_list = []
 
             filewriter.writerow(my_list)
 
@@ -248,7 +278,7 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
-            my_list = ['', '', '', '', '']
+            my_list = []
 
             filewriter.writerow(my_list)
 
@@ -282,7 +312,7 @@ class ReportView(FlaskView):
         with open((lab + '_CumulativeAttendance.csv'), 'w+') as csvfile:
             filewriter = csv.writer(csvfile)
 
-            my_list = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+            my_list = []
 
             filewriter.writerow(my_list)
 
@@ -340,7 +370,7 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
-            my_list = ['', '', '', '', '', '', '', '']
+            my_list = []
 
             filewriter.writerow(my_list)
 
