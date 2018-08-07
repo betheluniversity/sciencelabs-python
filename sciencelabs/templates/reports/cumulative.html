@@ -4,7 +4,7 @@
         <div class="header card">
             <div class="card-body btn-group">
                 <p class="col-sm-12" style="padding: 0px; margin: 0px">Attendance for {{ app_settings['LAB_TITLE'] }}</p>
-                <a href="" class="csv-button btn btn-primary">CSV Export</a>
+                <a href="{{ url_for('ReportView:export_cumulative_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
             </div>
             <div class="card-body">
                 <p style="padding: 0px; margin: 0px;"><strong>Fall 2014 - Present:</strong> Records in this current
@@ -45,45 +45,6 @@
             </tr>
         </thead>
         <tbody>
-        {% for info in cumulative %}
-            {% if loop.last %}
-                <tr>
-                    <td>{{ cumulative[info]['academicYear'] }}</td>
-                    {% for month in range(8, 13) %}
-                        <td>{{ cumulative[info]['monthly'][month] }}</td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
-                    {% for month in range(2, 6) %}
-                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
-                    {% for month in range(6, 8) %}
-                        <td>{{ cumulative[info]['monthly'][month] }}</td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td>{{ cumulative[info]['academicYear'] }}</td>
-                    {% for month in range(8, 13) %}
-                        <td>{{ cumulative[info]['monthly'][month] }}</td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
-                    {% for month in range(2, 6) %}
-                        <td>{{ cumulative[info]['monthly'][month] }}</td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
-                    {% for month in range(6, 8) %}
-                        <td>{{ cumulative[info]['monthly'][month] }}</td>
-                    {% endfor %}
-                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
-                </tr>
-            {% endif %}
-        {% endfor %}
         {% for semester in semesters %}
             <tr>
                 <td>{{ semester.year }}-{{ semester.year + 1 }}</td>
@@ -103,19 +64,18 @@
                     {% if fall_total.append(fall_total.pop() + total_attendance[0]) %}{% endif %}
                 {% endfor %}
                 <td class="side-borders"><b>{{ fall_total[0] }}</b></td>
-
-            {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + 1|string + '-1'), ((semester.year + 1)|string + '-' + 1|string + '-31')) %}
-            {% set total_attendance = [0] %}
-            {% for sessions in monthly_sessions %}
-                {% set attendance = session_.get_session_attendees(sessions.id) %}
-                {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
-            {% endfor %}
-            {% if total_attendance[0] %}
-                <td style="border-right: 2px solid #000000"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
-            {% else %}
-                <td style="border-right: 2px solid #000000">{{ total_attendance[0] }}</td>
-            {% endif %}
-            {% set interimTotal = total_attendance[0] %}
+                {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + 1|string + '-1'), ((semester.year + 1)|string + '-' + 1|string + '-31')) %}
+                {% set total_attendance = [0] %}
+                {% for sessions in monthly_sessions %}
+                    {% set attendance = session_.get_session_attendees(sessions.id) %}
+                    {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
+                {% endfor %}
+                {% if total_attendance[0] %}
+                    <td style="border-right: 2px solid #000000"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
+                {% else %}
+                    <td style="border-right: 2px solid #000000">{{ total_attendance[0] }}</td>
+                {% endif %}
+                {% set interimTotal = total_attendance[0] %}
 
                 {% set spring_total = [0] %}
                 {% for month in range(2, 6) %}
@@ -154,15 +114,51 @@
                 <td style="border-right: 2px solid #000000"><b>{{ fall_total[0] + spring_total[0] + summer_total[0] + interimTotal }}</b></td>
             </tr>
         {% endfor %}
+        {% for info in cumulative %}
+            {% if loop.first %}
+                <tr>
+                    <td>{{ cumulative[info]['academicYear'] }}</td>
+                    {% for month in range(8, 13) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    {% for month in range(2, 6) %}
+                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>{{ cumulative[info]['academicYear'] }}</td>
+                    {% for month in range(8, 13) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    {% for month in range(2, 6) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
         </tbody>
     </table>
     <script>
         $(document).ready( function () {
             var table = $('#table').DataTable({
-                columnDefs: [
-                    { orderable: false, targets: '_all' }
-                    ],
-                "aaSortingFixed": [0, 'desc'],
+                "ordering": false,
                 "bPaginate": false,
                 "bLengthChange": false,
                 "bFilter": false,

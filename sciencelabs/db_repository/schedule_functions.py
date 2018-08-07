@@ -17,6 +17,7 @@ class Schedule:
     def get_yearly_schedule_tab_info(self, year, term):
         return session.query(Schedule_Table) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
+            .filter(Session_Table.deletedAt == None)\
             .filter(Session_Table.semester_id == Semester_Table.id) \
             .filter(Semester_Table.year == year)\
             .filter(Semester_Table.term == term)\
