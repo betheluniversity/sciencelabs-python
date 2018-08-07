@@ -11,7 +11,7 @@ class Session:
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).all())
+                .filter(Session_Table.startTime != None).order_by(Session_Table.date.asc()).all())
 
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()

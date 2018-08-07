@@ -451,6 +451,26 @@ class ReportView(FlaskView):
 
             filewriter.writerow(my_list)
 
+            sessions = self.session_.get_closed_sessions()
+            dates = []
+            for session in sessions:
+                if (str(session.date)[5:7]) not in dates:
+                    dates.append(str(session.date)[5:7])
+            print(dates)
+
+            total_attendance = 0
+            for date in dates:
+                for session in sessions:
+                    if (str(session.date)[5:7]) == date:
+                        attendance = len(self.session_.get_session_students(session.id))
+                        my_list = [session.date.strftime('%m/%d/%Y'), session.name, self.session_.get_dayofWeek_from_session(session.id).dayofWeek, session.startTime, session.endTime, session.room, attendance, session.comments]
+                        total_attendance += attendance
+                        filewriter.writerow(my_list)
+
+            my_list = ['', '', '', '', '', 'Total:', total_attendance]
+
+            filewriter.writerow(my_list)
+
         # Opens the file and signifies that we will read it
         with open((term + year + '_' + lab + '_SessionReport.csv'), 'rb') as f:
             # returns a Response (so the file can be downloaded)
