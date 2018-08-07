@@ -372,6 +372,7 @@ class ReportView(FlaskView):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
+        cumulative = self.base.cumulative
 
         session_ = self.session_
         semesters = self.session_.get_years()
@@ -391,7 +392,115 @@ class ReportView(FlaskView):
 
             my_list = ['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']
 
+            total_dict = {'8': 0, '9': 0, '10': 0, '11': 0, '12': 0, 'fall': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0,
+                          'spring': 0, '6': 0, '7': 0, 'summer': 0, 'total': 0}
+
             filewriter.writerow(my_list)
+
+            semesters = self.session_.get_years()
+            for semester in semesters:
+                my_list = [str(semester.year) + '-' + str(semester.year + 1)]
+                fall_total = 0
+                for month in range(8, 13):
+                    monthly_sessions = self.session_.get_monthly_sessions((str(semester.year)+ '-' + str(month) + '-1'), (str(semester.year) + '-' + str(month) + '-31'))
+                    total_attendance = 0
+                    for sessions in monthly_sessions:
+                        attendance = self.session_.get_session_attendees(sessions.id).count()
+                        total_attendance += attendance + sessions.anonStudents
+                        total_dict[str(month)] += attendance + sessions.anonStudents
+                    my_list.append(total_attendance)
+                    fall_total += total_attendance
+                total_dict['fall'] += fall_total
+                my_list.append(fall_total)
+                monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(1) + '-1'), (str((semester.year + 1)) + '-' + str(1) + '-31'))
+                total_attendance = 0
+                for sessions in monthly_sessions:
+                    attendance = self.session_.get_session_attendees(sessions.id).count()
+                    total_attendance += attendance + sessions.anonStudents
+                    total_dict[str(1)] += attendance + sessions.anonStudents
+                my_list.append(total_attendance)
+                interim_total = total_attendance
+                spring_total = 0
+                for month in range(2, 6):
+                    monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
+                    total_attendance = 0
+                    for sessions in monthly_sessions:
+                        attendance = self.session_.get_session_attendees(sessions.id).count()
+                        total_attendance += attendance + sessions.anonStudents
+                        total_dict[str(month)] += attendance + sessions.anonStudents
+                    my_list.append(total_attendance)
+                    spring_total += total_attendance
+                total_dict['spring'] += spring_total
+                my_list.append(spring_total)
+                summer_total = 0
+                for month in range(6, 8):
+                    monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
+                    total_attendance = 0
+                    for sessions in monthly_sessions:
+                        attendance = self.session_.get_session_attendees(sessions.id).count()
+                        total_attendance += attendance + sessions.anonStudents
+                        total_dict[str(month)] += attendance + sessions.anonStudents
+                    my_list.append(total_attendance)
+                    summer_total += total_attendance
+                total_dict['summer'] += summer_total
+                my_list.append(summer_total)
+                total_dict['total'] += fall_total + spring_total + summer_total + interim_total
+                my_list.append(fall_total + spring_total + summer_total + interim_total)
+                filewriter.writerow(my_list)
+
+            my_list = ['']
+
+            cumulative = self.base.cumulative
+            first = True
+            for info in cumulative:
+                if first:
+                    my_list = [cumulative[info]['academicYear']]
+                    for month in range(8, 13):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['fall'] += cumulative[info]['fallTotal']
+                    my_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
+                    total_dict[str(1)] += cumulative[info]['monthly'][1]
+                    for month in range(2, 6):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['spring'] += cumulative[info]['springTotal']
+                    my_list.append(cumulative[info]['springTotal'])
+                    for month in range(6, 8):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['summer'] += cumulative[info]['summerTotal']
+                    my_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
+                    total_dict['total'] += cumulative[info]['yearTotal']
+                    first = False
+                else:
+                    my_list = [cumulative[info]['academicYear']]
+                    for month in range(8, 13):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['fall'] += cumulative[info]['fallTotal']
+                    my_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
+                    total_dict[str(1)] += cumulative[info]['monthly'][1]
+                    for month in range(2, 6):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['spring'] += cumulative[info]['springTotal']
+                    my_list.append(cumulative[info]['springTotal'])
+                    for month in range(6, 8):
+                        my_list.append(cumulative[info]['monthly'][month])
+                        total_dict[str(month)] += cumulative[info]['monthly'][month]
+                    total_dict['summer'] += cumulative[info]['summerTotal']
+                    my_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
+                    total_dict['total'] += cumulative[info]['yearTotal']
+                filewriter.writerow(my_list)
+
+            my_list = ['Total:']
+
+            for keys in total_dict:
+                my_list.append(total_dict[keys])
+
+            filewriter.writerow(my_list)
+
 
         with open((lab + '_CumulativeAttendance.csv'), 'rb') as f:
             # returns a Response (so the file can be downloaded)
