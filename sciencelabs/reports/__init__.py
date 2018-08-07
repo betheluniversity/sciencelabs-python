@@ -64,9 +64,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        my_list = [[term + year + '_' + lab + '_StudentReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']]
-        my_list.append([])
-        my_list.append(['Last', 'First', 'Email', 'Attendance'])
+        my_list = [['Last', 'First', 'Email', 'Attendance']]
 
         for student, attendance in self.user.get_student_info():
             my_list.append([student.lastName, student.firstName, student.email, attendance])
@@ -75,14 +73,19 @@ class ReportView(FlaskView):
 
     def export_csv(self, data, type, term, year, lab, month):
         if type == 'DetailReport' or type == 'SummaryReport':
-            csv_name = (term + year + '_' + lab + '_' + month + '_' + type + '.csv')
+            csv_name = (term + year + '_' + lab + '_' + month + '_' + type)
         elif type == 'CumulativeAttendance':
             csv_name = (lab + '_' + type)
         else:
-            csv_name = (term + year + '_' + lab + '_' + type + '.csv')
+            csv_name = (term + year + '_' + lab + '_' + type)
 
         with open(csv_name + '.csv', 'w+') as csvfile:
             filewriter = csv.writer(csvfile)
+
+            my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
+            filewriter.writerow(my_list)
+            my_list = []
+            filewriter.writerow(my_list)
 
             for row in data:
                 filewriter.writerow(row)
@@ -139,9 +142,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        my_list = [[term + year + '_' + lab + '_TermReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']]
-        my_list.append([])
-        my_list.append(['Schedule Statistics for Closed Sessions'])
+        my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage'])
 
         term_attendance = self.schedule.get_session_attendance()
@@ -218,14 +219,9 @@ class ReportView(FlaskView):
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
-        selected_month = self.base.months[month - 1]  # TODO SOMEHOW GET MONTH
+        selected_month = self.base.months[month - 1]
 
-
-        my_list = [[term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']]
-
-        my_list.append([])
-
-        my_list.append(['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total'])
+        my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
         schedule_info = self.schedule.get_yearly_schedule_tab_info(year, term)
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
@@ -279,11 +275,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        my_list = [[term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport.csv', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']]
-
-        my_list.append([])
-
-        my_list.append(['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance'])
+        my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
         cal = calendar
 
@@ -476,11 +468,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        my_list = [[term + year + '_' + lab + '_SessionReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']]
-
-        my_list.append([])
-
-        my_list.append(['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments'])
+        my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
         sessions = self.session_.get_closed_sessions()
         dates = []
@@ -499,7 +487,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', '', '', '', 'Total:', total_attendance])
 
-        return self.export_csv(my_list, 'DetailReport', term, year, lab, '')
+        return self.export_csv(my_list, 'SessionReport', term, year, lab, '')
 
     def course(self):
         sess = self.session_.get_closed_sessions()
