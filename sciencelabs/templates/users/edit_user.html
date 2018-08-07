@@ -39,7 +39,7 @@
                         <label for="roles">Roles</label>
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
+                                <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}"
                                         {{ 'checked' if role in user_roles }} value="{{ role.id }}">
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                             </div>
