@@ -71,31 +71,6 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, 'StudentReport', term, year, lab, '')
 
-    def export_csv(self, data, type, term, year, lab, month):
-        if type == 'DetailReport' or type == 'SummaryReport':
-            csv_name = (term + year + '_' + lab + '_' + month + '_' + type)
-        elif type == 'CumulativeAttendance':
-            csv_name = (lab + '_' + type)
-        else:
-            csv_name = (term + year + '_' + lab + '_' + type)
-
-        with open(csv_name + '.csv', 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
-
-            my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
-            filewriter.writerow(my_list)
-            my_list = []
-            filewriter.writerow(my_list)
-
-            for row in data:
-                filewriter.writerow(row)
-
-        with open(csv_name + '.csv', 'rb') as f:
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
-
     def semester(self):
         sess = self.session_.get_closed_sessions()
         month = int(str(sess[0].date)[5:7])
@@ -371,8 +346,6 @@ class ReportView(FlaskView):
                 my_list.append(fall_total + spring_total + summer_total + interim_total)
                 filewriter.writerow(my_list)
 
-            my_list = ['']
-
             cumulative = self.base.cumulative
             first = True
             for info in cumulative:
@@ -432,7 +405,6 @@ class ReportView(FlaskView):
                 mimetype="text/csv",
                 headers={
                     "Content-disposition": "attachment; filename=" + lab + '_CumulativeAttendance.csv'})
-
 
     def session(self):
         sess = self.session_.get_closed_sessions()
@@ -512,3 +484,28 @@ class ReportView(FlaskView):
         user = self.user
         session_ = self.session_
         return render_template('reports/view_course.html', **locals())
+
+    def export_csv(self, data, type, term, year, lab, month):
+        if type == 'DetailReport' or type == 'SummaryReport':
+            csv_name = (term + year + '_' + lab + '_' + month + '_' + type)
+        elif type == 'CumulativeAttendance':
+            csv_name = (lab + '_' + type)
+        else:
+            csv_name = (term + year + '_' + lab + '_' + type)
+
+        with open(csv_name + '.csv', 'w+') as csvfile:
+            filewriter = csv.writer(csvfile)
+
+            my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
+            filewriter.writerow(my_list)
+            my_list = []
+            filewriter.writerow(my_list)
+
+            for row in data:
+                filewriter.writerow(row)
+
+        with open(csv_name + '.csv', 'rb') as f:
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
