@@ -28,3 +28,6 @@ class ReportController:
         '1993': {'academicYear': '1992-1993', 'monthly': (0, 0, 90, 58, 80, 32, 0, 0, 0, 98, 99, 69, 14),
                  'springTotal': 260, 'fallTotal': 280, 'summerTotal': 0, 'yearTotal': 540}
     }
+
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
+              'November', 'December']

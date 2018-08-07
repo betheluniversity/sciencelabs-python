@@ -56,11 +56,9 @@ def datetimeformat(value, custom_format='%l:%M%p'):
         return '???'
 
 day_abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.globals.update(app_settings=app_settings)
 app.jinja_env.globals.update(day_abbr=day_abbr)
-app.jinja_env.globals.update(months=months)
 
 if __name__ == "__main__":
     app.run()

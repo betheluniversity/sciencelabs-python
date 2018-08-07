@@ -210,6 +210,7 @@ class ReportView(FlaskView):
         first_month = int(str(sess[0].date)[5:7])
         first_year = int(str(sess[0].date)[:4])
         cal = calendar
+        months = self.base.months
         selected_year = year
         selected_month = month
         semester_list = self.schedule.get_semesters()
@@ -516,6 +517,7 @@ class ReportView(FlaskView):
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
+        months = self.base.months
         semester_list = self.schedule.get_semesters()
         sessions = self.session_.get_closed_sessions()
         session_ = self.session_
@@ -572,6 +574,7 @@ class ReportView(FlaskView):
                 for session in sessions:
                     if (str(session.date)[5:7]) == date:
                         attendance = len(self.session_.get_session_students(session.id))
+                        # TODO FIX SESSION.GET_DAYOFWEEK_FROM_SESSION
                         my_list = [session.date.strftime('%m/%d/%Y'), session.name, self.session_.get_dayofWeek_from_session(session.id).dayofWeek, session.startTime, session.endTime, session.room, attendance, session.comments]
                         total_attendance += attendance
                         filewriter.writerow(my_list)
