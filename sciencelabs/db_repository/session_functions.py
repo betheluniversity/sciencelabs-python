@@ -128,7 +128,7 @@ class Session:
             .filter(Session_Table.date.between(start_date, end_date))
 
     def get_years(self):
-        return session.query(Semester_Table.year).distinct()
+        return session.query(Semester_Table.year).order_by(Semester_Table.year.desc()).distinct()
 
     def get_monthly_sessions_attendance(self, start_date, end_date):
         return (session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == Session_Table.id)\
