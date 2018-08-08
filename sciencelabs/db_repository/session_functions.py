@@ -106,3 +106,31 @@ class Session:
         session_to_delete = self.get_session(session_id)
         session_to_delete.deletedAt = datetime.now()
         session.commit()
+
+    def add_anonymous_to_session(self, session_id, anon_students):
+        session_to_edit = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_edit.anonStudents = anon_students
+        session.commit()
+
+    def add_tutor_to_session(self, session_id, tutor_id, time_in, time_out, lead):
+        # TODO: HELP
+        db_time_in = datetime.strptime(time_in, '%H:%M')
+        db_time_out = datetime.strptime(time_out, '%H:%M')
+        new_tutor_session = TutorSession_Table(timeIn=db_time_in, timeOut=db_time_out, lead=lead, tutorId=tutor_id,
+                                               sessionId=session_id)
+        session.add(new_tutor_session)
+        session.commit()
+
+    def delete_student_from_session(self, student_id, session_id):
+        student_session_to_delete = session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == session_id).one()
+        session.delete(student_session_to_delete)
+        session.commit()
+
+    def delete_tutor_from_session(self, tutor_id, session_id):
+        tutor_session_to_delete = session.query(TutorSession_Table)\
+            .filter(TutorSession_Table.tutorId == tutor_id)\
+            .filter(TutorSession_Table.sessionId == session_id).one()
+        session.delete(tutor_session_to_delete)
+        session.commit()

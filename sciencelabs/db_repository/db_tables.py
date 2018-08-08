@@ -137,10 +137,10 @@ class TutorSchedule_Table(Base):
 class TutorSession_Table(Base):
     __tablename__ = 'TutorSession'
     id = Column(Integer, primary_key=True)
-    schedTimeIn = Column(String)
-    schedTimeOut = Column(String)
-    timeIn = Column(String)
-    timeOut = Column(String)
+    schedTimeIn = Column(DateTime)
+    schedTimeOut = Column(DateTime)
+    timeIn = Column(DateTime)
+    timeOut = Column(DateTime)
     lead = Column(Integer)
     tutorId = Column(Integer)
     sessionId = Column(Integer)

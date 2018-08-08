@@ -23,13 +23,13 @@
         $(document).ready(function(){
 
             $('#add-anon').click(function(){
-                // TODO: Update with anon info
                 var anon = {
-                    'anonStudents': 0
+                    'sessionId': {{ session.id }},
+                    'anonStudents': $('#anon-students').val()
                 };
                var url = '{{ url_for('SessionView:add_anon_submit') }}';
                $.post(url, anon, function(){
-                   window.location.replace('{{ url_for('SessionView:closed') }}')
+                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session.id) }}')
                });
             });
 
