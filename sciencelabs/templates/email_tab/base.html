@@ -22,7 +22,7 @@
                         {# TODO: This looks nothing like the actual mathlab site #}
                         <div class="form-group col-md-6">
                             <label for="choose-recipients">Recipients</label>
-                            <select class="form-control" id="choose-recipients" multiple>
+                            <select class="chosen form-control" id="choose-recipients" multiple="true" data-placeholder="Choose recipients ...">
                                 {% for role in role_list %}
                                     <option value="{{ role.id }}">{{ role.name }}</option>
                                 {% endfor %}
@@ -39,10 +39,11 @@
                             <button style="left: 10px;" type="button" class="button-curved btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
                         </div>
                     </div>
+                    {# TODO NEED TO FIX THIS SO THE DIVS ARE PROPERLY SIZED #}
                     <div class="form-group">
                         <div id="cc-div" style="display: none;" class="form-group col-md-12">
                             <label for="choose-cc">CC</label>
-                            <select class="form-control" id="choose-cc" multiple>
+                            <select class="chosen form-control" id="choose-cc" multiple="true" data-placeholder="Choose CC recipients ...">
                                 {% for user in user_list %}
                                     <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
                                 {% endfor %}
@@ -50,7 +51,7 @@
                         </div>
                         <div id="bcc-div" style="display: none;"  class="form-group col-md-12">
                             <label for="choose-bcc">BCC</label>
-                            <select class="form-control" id="choose-cc" multiple>
+                            <select class="chosen form-control" id="choose-cc" multiple="true" data-placeholder="Choose BBC recipients ...">
                                 {% for user in user_list %}
                                     <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
                                 {% endfor %}
@@ -91,5 +92,10 @@
             function bccFunction() {
                 document.getElementById('bcc-div').style.display = 'block';
             }
+            $(document).ready(function () {
+                $(".chosen").chosen({
+                    display_disabled_options: true
+                });
+            });
         </script>
     {% endblock %}
