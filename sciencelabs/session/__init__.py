@@ -118,20 +118,19 @@ class SessionView(FlaskView):
         return 'success'
 
     def delete_student_from_session(self, student_id, session_id):
-        # TODO: Delete from DB
         self.session.delete_student_from_session(student_id, session_id)
         return redirect(url_for('SessionView:closed'))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
-        # TODO: Delete from DB
         self.session.delete_tutor_from_session(tutor_id, session_id)
         return redirect(url_for('SessionView:closed'))
 
     @route('/add_student_submit', methods=['post'])
     def add_student_submit(self):
         form = request.form
-        student_id = form.get('studentID')
-        # TODO: Save edits
+        session_id = form.get('sessionId')
+        student_id = form.get('studentId')
+        self.session.add_student_to_session(session_id, student_id)
         return 'success'
 
     @route('/add_anon_submit', methods=['post'])

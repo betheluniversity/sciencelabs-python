@@ -14,10 +14,10 @@
             <form>
                 <div class="form-group">
                    <label for="choose-student">Registered Students</label>
-                   <select class="custom-select">
+                   <select id="choose-student" class="custom-select">
                        <option>Choose student...</option>
                        {% for student in student_list %}
-                            <option>{{ student.firstName }} {{ student.lastName }}</option>
+                            <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
                        {% endfor %}
                     </select>
                 </div>
@@ -42,14 +42,14 @@
         $(document).ready(function(){
 
             $('#add-student').click(function(){
-                // TODO: Update with student info
                 var student = {
-                   'studentID': 0
-               };
-               var url = '{{ url_for('SessionView:add_student_submit') }}';
-               $.post(url, student, function(){
-                   window.location.replace('{{ url_for('SessionView:closed') }}')
-               });
+                    'sessionId': {{ session_id }},
+                    'studentId': $('#choose-student :selected').val()
+                };
+                var url = '{{ url_for('SessionView:add_student_submit') }}';
+                $.post(url, student, function(){
+                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}')
+                });
             });
 
         });

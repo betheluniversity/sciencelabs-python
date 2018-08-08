@@ -56,6 +56,7 @@ class Session:
             .filter(SessionCourses_Table.course_id == Course_Table.id)\
             .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
 
+    # This method must return the same data as above
     def get_session_courses(self, session_id):
         return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(session_id == StudentSession_Table.sessionId)\
@@ -119,6 +120,11 @@ class Session:
         new_tutor_session = TutorSession_Table(timeIn=db_time_in, timeOut=db_time_out, lead=lead, tutorId=tutor_id,
                                                sessionId=session_id)
         session.add(new_tutor_session)
+        session.commit()
+
+    def add_student_to_session(self, session_id, student_id):
+        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id)
+        session.add(new_student_session)
         session.commit()
 
     def delete_student_from_session(self, student_id, session_id):
