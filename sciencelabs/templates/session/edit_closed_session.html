@@ -279,7 +279,9 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+    <div style="text-align: right;">
+        <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+    </div>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
