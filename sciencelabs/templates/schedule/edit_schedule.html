@@ -52,8 +52,10 @@
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
                         <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                            {% set leads = [] %}
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
+                                <p style="display: none;">{{ leads.append(lead) }}</p>
                             {% endfor %}
                         </select>
                     </div>
@@ -63,7 +65,9 @@
                         <label for="choose-tutors">Tutors</label>
                         <select class="chosen form-control" id="choose-tutors" multiple data-placeholder="Choose tutors ...">
                             {% for tutor in tutor_list %}
+                                {% if tutor not in leads %}
                                 <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>

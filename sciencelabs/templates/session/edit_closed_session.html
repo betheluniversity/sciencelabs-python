@@ -49,9 +49,11 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="choose-leads">Lead Tutors</label>
-                <select class="form-control" id="choose-leads" multiple>
+                <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                    {% set leads = [] %}
                     {% for lead in lead_list %}
                         <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
+                        <p style="display: none;">{{ leads.append(lead) }}</p>
                     {% endfor %}
                 </select>
             </div>
@@ -59,9 +61,11 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="choose-tutors">Tutors</label>
-                <select class="form-control" id="choose-tutors" multiple>
+                <select class="chosen form-control" id="choose-tutors" multiple="true" data-placeholder="Choose tutors ...">
                     {% for tutor in tutor_list %}
+                        {% if tutor not in leads %}
                         <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
@@ -219,11 +223,12 @@
             <br>
         {% endfor %}
     </div>
-
+    <div style="display: block; text-align: right;" class="btn-group">
     <button onclick="location.href='{{ url_for('SessionView:add_student', session_id=session_info.id) }}'" type="button"
             class="edit btn btn-primary">Add a Student</button>
     <button onclick="location.href='{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}'" type="button"
             class="btn btn-primary">Add Anonymous Student</button>
+    </div>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">
             <p class="card-text">Edit Tutor Attendance</p>
@@ -274,7 +279,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+    <a style="display: block; text-align: right;" href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
@@ -345,7 +350,10 @@
                     $('#view-by-name').show();
                 }
             });
-          
+
+            $(".chosen").chosen({
+                display_disabled_options: true
+            });
         });
     </script>
 {% endblock %}
