@@ -17,7 +17,7 @@ class User:
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
             .filter(Semester_Table.active == 1) \
-            .group_by(User_Table.id) \
+            .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
             .all()
 
     def get_user_info(self):

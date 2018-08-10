@@ -64,29 +64,12 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        with open((term + year + '_' + lab + '_StudentReport.csv'), 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+        my_list = [['Last', 'First', 'Email', 'Attendance']]
 
-            my_list = [term + year + '_' + lab + '_StudentReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']
+        for student, attendance in self.user.get_student_info():
+            my_list.append([student.lastName, student.firstName, student.email, attendance])
 
-            filewriter.writerow(my_list)
-
-            my_list = ['Last', 'First', 'Email', 'Attendance']
-
-            filewriter.writerow(my_list)
-
-            for student, attendance in self.user.get_student_info():
-
-                my_list = [student.lastName, student.firstName, student.email, attendance]
-                filewriter.writerow(my_list)
-
-        # Opens the file and signifies that we will read it
-        with open((term + year + '_' + lab + '_StudentReport.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_StudentReport.csv'})
+        return self.export_csv(my_list, 'StudentReport', term, year, lab, '')
 
     def semester(self):
         sess = self.session_.get_closed_sessions()
@@ -134,75 +117,41 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        with open((term + year + '_' + lab + '_TermReport.csv'), 'w+') as csvfile:
+        my_list = [['Schedule Statistics for Closed Sessions']]
+        my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage'])
 
-            filewriter = csv.writer(csvfile)
+        term_attendance = self.schedule.get_session_attendance()
+        total_attendance = 0
+        attendance_list = []
+        for sessions in term_attendance:
+            total_attendance += sessions[1]
+            attendance_list += [sessions[1]]
 
-            my_list = [term + year + '_' + lab + '_TermReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'),
-                       '']
+        index = 0
+        session_count = 0
+        for schedule, sessions in self.schedule.get_term_report():
+            session_count += sessions
+            # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE/ENDTIME
+            my_list.append([schedule.name, schedule.dayofWeek, schedule.startTime, schedule.endTime, sessions,
+                       attendance_list[index],
+                       str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
+            index += 1
 
-            filewriter.writerow(my_list)
+        my_list.append(['', '', '', 'Total:', session_count, total_attendance, '100%'])
+        my_list.append([])
+        my_list.append(['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance'])
 
-            my_list = []
+        # TODO MAKE SURE SO NOT HARD-CODED
+        unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
+        total_unscheduled = 0
+        for sessions in unscheduled_sessions:
+            # TODO FIX SESSIONS.STARTTIME AND SESSIONS.ENDTIME
+            my_list.append(['', sessions.date.strftime('%m/%d/%Y'), sessions.startTime, sessions.endTime, len(self.user.get_session_students(sessions.id)) + sessions.anonStudents])
+            total_unscheduled += len(self.user.get_session_students(sessions.id)) + sessions.anonStudents
 
-            filewriter.writerow(my_list)
+        my_list.append(['', '', 'Total', total_unscheduled])
 
-            my_list = ['Schedule Statistics for Closed Sessions']
-
-            filewriter.writerow(my_list)
-
-            my_list = ['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage']
-
-            filewriter.writerow(my_list)
-
-            term_attendance = self.schedule.get_session_attendance()
-            total_attendance = 0
-            attendance_list = []
-            for sessions in term_attendance:
-                total_attendance += sessions[1]
-                attendance_list += [sessions[1]]
-
-            index = 0
-            session_count = 0
-            for schedule, sessions in self.schedule.get_term_report():
-                session_count += sessions
-                # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE/ENDTIME
-                my_list = [schedule.name, schedule.dayofWeek, schedule.startTime, schedule.endTime, sessions, attendance_list[index], str(round(((attendance_list[index]/total_attendance)*100))) + '%']
-                index += 1
-                filewriter.writerow(my_list)
-
-            my_list = ['', '', '', 'Total:', session_count, total_attendance, '100%']
-
-            filewriter.writerow(my_list)
-
-            my_list = []
-
-            filewriter.writerow(my_list)
-
-            my_list = ['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance']
-
-            filewriter.writerow(my_list)
-
-            # TODO MAKE SURE SO NOT HARD-CODED
-            unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
-            for sessions in unscheduled_sessions:
-                # TODO FIX SESSIONS.STARTTIME AND SESSIONS.ENDTIME
-                my_list = ['', sessions.date.strftime('%m/%d/%Y'), sessions.startTime, sessions.endTime, 'Attendance']
-
-                filewriter.writerow(my_list)
-
-            my_list = ['', '', 'Total', '0']
-
-            filewriter.writerow(my_list)
-
-            # Opens the file and signifies that we will read it
-        with open((term + year + '_' + lab + '_TermReport.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={
-                    "Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_TermReport.csv'})
+        return self.export_csv(my_list, 'TermReport', term, year, lab, '')
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
@@ -245,73 +194,45 @@ class ReportView(FlaskView):
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
-        selected_month = 'February'  # TODO SOMEHOW GET MONTH
+        selected_month = self.base.months[month - 1]
 
-        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'), 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+        my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
-            my_list = [term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv', 'Exported on:',
-                       datetime.now().strftime('%m/%d/%Y'), '']
+        schedule_info = self.schedule.get_yearly_schedule_tab_info(year, term)
+        monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
 
-            filewriter.writerow(my_list)
+        total_attendance = 0
+        for schedule in schedule_info:
+            for session in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session.id)
+                attendance = self.session_.get_session_attendees(session.id)
+                if schedule and session_schedule:
+                    if schedule.id == session_schedule.id:
+                        total_attendance += attendance.count() + session.anonStudents
 
-            my_list = []
+        for schedule in schedule_info:
+            total_attendance_per_schedule = 0
+            for session in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session.id)
+                attendance = self.session_.get_session_attendees(session.id)
+                if schedule and session_schedule:
+                    if schedule.id == session_schedule.id:
+                        total_attendance_per_schedule += attendance.count() + session.anonStudents
+            # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE.ENDTIME
+            my_list.append([schedule.name, schedule.dayofWeek, str(schedule.startTime) + ' - ' + str(schedule.endTime), total_attendance_per_schedule, str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%'])
 
-            filewriter.writerow(my_list)
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
+        total_unscheduled = 0
+        if unscheduled_sessions:
+            for session in unscheduled_sessions:
+                total_unscheduled += (len(self.user.get_session_students(session.id))) + session.anonStudents
+            total_attendance += total_unscheduled
 
-            my_list = ['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']
+        my_list.append(['Unscheduled Sessions', '', '', total_unscheduled, str(round((total_unscheduled / total_attendance) * 100, 1)) + '%'])
 
-            filewriter.writerow(my_list)
+        my_list.append(['', '', 'Total', total_attendance])
 
-
-            schedule_info = self.schedule.get_yearly_schedule_tab_info(year, term)
-            monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
-
-            total_attendance = 0
-            for schedule in schedule_info:
-                for session in monthly_sessions:
-                    session_schedule = self.schedule.get_schedule_from_session(session.id)
-                    attendance = self.session_.get_session_attendees(session.id)
-                    if schedule and session_schedule:
-                        if schedule.id == session_schedule.id:
-                            total_attendance += attendance.count() + session.anonStudents
-
-            for schedule in schedule_info:
-                total_attendance_per_schedule = 0
-                for session in monthly_sessions:
-                    session_schedule = self.schedule.get_schedule_from_session(session.id)
-                    attendance = self.session_.get_session_attendees(session.id)
-                    if schedule and session_schedule:
-                        if schedule.id == session_schedule.id:
-                            total_attendance_per_schedule += attendance.count() + session.anonStudents
-                # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE.ENDTIME
-                my_list = [schedule.name, schedule.dayofWeek, str(schedule.startTime) + ' - ' + str(schedule.endTime), total_attendance_per_schedule, str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%']
-                filewriter.writerow(my_list)
-
-            unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
-            total_unscheduled = 0
-            if unscheduled_sessions:
-                for session in unscheduled_sessions:
-                    total_unscheduled += (len(self.user.get_session_students(session.id))) + session.anonStudents
-                total_attendance += total_unscheduled
-
-            my_list = ['Unscheduled Sessions', '', '', total_unscheduled, str(round((total_unscheduled / total_attendance) * 100, 1)) + '%']
-
-            filewriter.writerow(my_list)
-
-            my_list = ['', '', 'Total', total_attendance]
-
-            filewriter.writerow(my_list)
-
-
-        # Opens the file and signifies that we will read it
-        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={
-                    "Content-disposition": "attachment; filename=" + term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport.csv'})
+        return self.export_csv(my_list, 'SummaryReport', term_abbr, year, lab, selected_month)
 
     def export_monthly_detail_csv(self, year, month):
         month = int(month)
@@ -327,47 +248,23 @@ class ReportView(FlaskView):
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
-        selected_month = 'February'  # TODO SOMEHOW GET MONTH
+        selected_month = self.base.months[month - 1]
 
-        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport.csv'), 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+        my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
-            my_list = [term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport.csv', 'Exported on:',
-                       datetime.now().strftime('%m/%d/%Y'), '']
+        cal = calendar
 
-            filewriter.writerow(my_list)
+        monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
+        total_attendance = 0
+        for session in monthly_sessions:
+            attendance = self.session_.get_session_attendees(session.id)
+            total_attendance += attendance.count() + session.anonStudents
+            # TODO FIX CAL.WEEKDAY AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDENDTIME
+            my_list.append([session.name, session.date.strftime('%m/%d/%Y'), (cal.weekday(((int(str(session.date)[:4]))), ((int(str(session.date)[5:7]))), (((int(str(session.date)[8:]))))) + 1) % 7, str(session.schedStartTime) + ' - ' + str(session.schedEndTime), attendance.count() + session.anonStudents])
 
-            my_list = []
+        my_list.append(['', '', 'Total:', total_attendance])
 
-            filewriter.writerow(my_list)
-
-            my_list = ['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']
-
-            filewriter.writerow(my_list)
-
-            cal = calendar
-
-            monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' + str(month) + '-31'))
-            total_attendance = 0
-            for session in monthly_sessions:
-                attendance = self.session_.get_session_attendees(session.id)
-                total_attendance += attendance.count() + session.anonStudents
-                # TODO FIX CAL.WEEKDAY AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDENDTIME
-                my_list = [session.name, session.date.strftime('%m/%d/%Y'), (cal.weekday(((int(str(session.date)[:4]))), ((int(str(session.date)[5:7]))), (((int(str(session.date)[8:]))))) + 1) % 7, str(session.schedStartTime) + ' - ' + str(session.schedEndTime), attendance.count() + session.anonStudents]
-                filewriter.writerow(my_list)
-
-            my_list = ['', '', 'Total:', total_attendance]
-
-            filewriter.writerow(my_list)
-
-        # Opens the file and signifies that we will read it
-        with open((term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={
-                    "Content-disposition": "attachment; filename=" + term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport.csv'})
+        return self.export_csv(my_list, 'DetailReport', term_abbr, year, lab, selected_month)
 
     def annual(self):
         sess = self.session_.get_closed_sessions()
@@ -384,133 +281,114 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        with open((lab + '_CumulativeAttendance.csv'), 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+        my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']]
 
-            my_list = []
+        total_dict = {'8': 0, '9': 0, '10': 0, '11': 0, '12': 0, 'fall': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0,
+                      'spring': 0, '6': 0, '7': 0, 'summer': 0, 'total': 0}
 
-            filewriter.writerow(my_list)
-
-            my_list = ['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']
-
-            total_dict = {'8': 0, '9': 0, '10': 0, '11': 0, '12': 0, 'fall': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0,
-                          'spring': 0, '6': 0, '7': 0, 'summer': 0, 'total': 0}
-
-            filewriter.writerow(my_list)
-
-            semesters = self.session_.get_years()
-            for semester in semesters:
-                my_list = [str(semester.year) + '-' + str(semester.year + 1)]
-                fall_total = 0
-                for month in range(8, 13):
-                    monthly_sessions = self.session_.get_monthly_sessions((str(semester.year)+ '-' + str(month) + '-1'), (str(semester.year) + '-' + str(month) + '-31'))
-                    total_attendance = 0
-                    for sessions in monthly_sessions:
-                        attendance = self.session_.get_session_attendees(sessions.id).count()
-                        total_attendance += attendance + sessions.anonStudents
-                        total_dict[str(month)] += attendance + sessions.anonStudents
-                    my_list.append(total_attendance)
-                    fall_total += total_attendance
-                total_dict['fall'] += fall_total
-                my_list.append(fall_total)
-                monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(1) + '-1'), (str((semester.year + 1)) + '-' + str(1) + '-31'))
+        semesters = self.session_.get_years()
+        for semester in semesters:
+            sub_list = [str(semester.year) + '-' + str(semester.year + 1)]
+            fall_total = 0
+            for month in range(8, 13):
+                monthly_sessions = self.session_.get_monthly_sessions((str(semester.year)+ '-' + str(month) + '-1'), (str(semester.year) + '-' + str(month) + '-31'))
                 total_attendance = 0
                 for sessions in monthly_sessions:
                     attendance = self.session_.get_session_attendees(sessions.id).count()
                     total_attendance += attendance + sessions.anonStudents
-                    total_dict[str(1)] += attendance + sessions.anonStudents
-                my_list.append(total_attendance)
-                interim_total = total_attendance
-                spring_total = 0
+                    total_dict[str(month)] += attendance + sessions.anonStudents
+                sub_list.append(total_attendance)
+                fall_total += total_attendance
+            total_dict['fall'] += fall_total
+            sub_list.append(fall_total)
+            monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(1) + '-1'), (str((semester.year + 1)) + '-' + str(1) + '-31'))
+            total_attendance = 0
+            for sessions in monthly_sessions:
+                attendance = self.session_.get_session_attendees(sessions.id).count()
+                total_attendance += attendance + sessions.anonStudents
+                total_dict[str(1)] += attendance + sessions.anonStudents
+            sub_list.append(total_attendance)
+            interim_total = total_attendance
+            spring_total = 0
+            for month in range(2, 6):
+                monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
+                total_attendance = 0
+                for sessions in monthly_sessions:
+                    attendance = self.session_.get_session_attendees(sessions.id).count()
+                    total_attendance += attendance + sessions.anonStudents
+                    total_dict[str(month)] += attendance + sessions.anonStudents
+                sub_list.append(total_attendance)
+                spring_total += total_attendance
+            total_dict['spring'] += spring_total
+            sub_list.append(spring_total)
+            summer_total = 0
+            for month in range(6, 8):
+                monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
+                total_attendance = 0
+                for sessions in monthly_sessions:
+                    attendance = self.session_.get_session_attendees(sessions.id).count()
+                    total_attendance += attendance + sessions.anonStudents
+                    total_dict[str(month)] += attendance + sessions.anonStudents
+                sub_list.append(total_attendance)
+                summer_total += total_attendance
+            total_dict['summer'] += summer_total
+            sub_list.append(summer_total)
+            total_dict['total'] += fall_total + spring_total + summer_total + interim_total
+            sub_list.append(fall_total + spring_total + summer_total + interim_total)
+            my_list.append(sub_list)
+
+        cumulative = self.base.cumulative
+        first = True
+        for info in cumulative:
+            if first:
+                sub_list = [cumulative[info]['academicYear']]
+                for month in range(8, 13):
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['fall'] += cumulative[info]['fallTotal']
+                sub_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
+                total_dict[str(1)] += cumulative[info]['monthly'][1]
                 for month in range(2, 6):
-                    monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
-                    total_attendance = 0
-                    for sessions in monthly_sessions:
-                        attendance = self.session_.get_session_attendees(sessions.id).count()
-                        total_attendance += attendance + sessions.anonStudents
-                        total_dict[str(month)] += attendance + sessions.anonStudents
-                    my_list.append(total_attendance)
-                    spring_total += total_attendance
-                total_dict['spring'] += spring_total
-                my_list.append(spring_total)
-                summer_total = 0
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['spring'] += cumulative[info]['springTotal']
+                sub_list.append(cumulative[info]['springTotal'])
                 for month in range(6, 8):
-                    monthly_sessions = self.session_.get_monthly_sessions((str((semester.year + 1)) + '-' + str(month) + '-1'), (str((semester.year + 1)) + '-' + str(month) + '-31'))
-                    total_attendance = 0
-                    for sessions in monthly_sessions:
-                        attendance = self.session_.get_session_attendees(sessions.id).count()
-                        total_attendance += attendance + sessions.anonStudents
-                        total_dict[str(month)] += attendance + sessions.anonStudents
-                    my_list.append(total_attendance)
-                    summer_total += total_attendance
-                total_dict['summer'] += summer_total
-                my_list.append(summer_total)
-                total_dict['total'] += fall_total + spring_total + summer_total + interim_total
-                my_list.append(fall_total + spring_total + summer_total + interim_total)
-                filewriter.writerow(my_list)
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['summer'] += cumulative[info]['summerTotal']
+                sub_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
+                total_dict['total'] += cumulative[info]['yearTotal']
+                first = False
+            else:
+                sub_list = [cumulative[info]['academicYear']]
+                for month in range(8, 13):
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['fall'] += cumulative[info]['fallTotal']
+                sub_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
+                total_dict[str(1)] += cumulative[info]['monthly'][1]
+                for month in range(2, 6):
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['spring'] += cumulative[info]['springTotal']
+                sub_list.append(cumulative[info]['springTotal'])
+                for month in range(6, 8):
+                    sub_list.append(cumulative[info]['monthly'][month])
+                    total_dict[str(month)] += cumulative[info]['monthly'][month]
+                total_dict['summer'] += cumulative[info]['summerTotal']
+                sub_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
+                total_dict['total'] += cumulative[info]['yearTotal']
+            my_list.append(sub_list)
 
-            my_list = ['']
+        sub_list = ['Total:']
 
-            cumulative = self.base.cumulative
-            first = True
-            for info in cumulative:
-                if first:
-                    my_list = [cumulative[info]['academicYear']]
-                    for month in range(8, 13):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['fall'] += cumulative[info]['fallTotal']
-                    my_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
-                    total_dict[str(1)] += cumulative[info]['monthly'][1]
-                    for month in range(2, 6):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['spring'] += cumulative[info]['springTotal']
-                    my_list.append(cumulative[info]['springTotal'])
-                    for month in range(6, 8):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['summer'] += cumulative[info]['summerTotal']
-                    my_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
-                    total_dict['total'] += cumulative[info]['yearTotal']
-                    first = False
-                else:
-                    my_list = [cumulative[info]['academicYear']]
-                    for month in range(8, 13):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['fall'] += cumulative[info]['fallTotal']
-                    my_list.extend([cumulative[info]['fallTotal'], cumulative[info]['monthly'][1]])
-                    total_dict[str(1)] += cumulative[info]['monthly'][1]
-                    for month in range(2, 6):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['spring'] += cumulative[info]['springTotal']
-                    my_list.append(cumulative[info]['springTotal'])
-                    for month in range(6, 8):
-                        my_list.append(cumulative[info]['monthly'][month])
-                        total_dict[str(month)] += cumulative[info]['monthly'][month]
-                    total_dict['summer'] += cumulative[info]['summerTotal']
-                    my_list.extend([cumulative[info]['summerTotal'], cumulative[info]['yearTotal']])
-                    total_dict['total'] += cumulative[info]['yearTotal']
-                filewriter.writerow(my_list)
+        for keys in total_dict:
+            sub_list.append(total_dict[keys])
 
-            my_list = ['Total:']
+        my_list.append(sub_list)
 
-            for keys in total_dict:
-                my_list.append(total_dict[keys])
-
-            filewriter.writerow(my_list)
-
-
-        with open((lab + '_CumulativeAttendance.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={
-                    "Content-disposition": "attachment; filename=" + lab + '_CumulativeAttendance.csv'})
-
+        return self.export_csv(my_list, 'CumulativeAttendance', '', '', lab, '')
 
     def session(self):
         sess = self.session_.get_closed_sessions()
@@ -546,50 +424,26 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        with open((term + year + '_' + lab + '_SessionReport.csv'), 'w+') as csvfile:
+        my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
-            filewriter = csv.writer(csvfile)
+        sessions = self.session_.get_closed_sessions()
+        dates = []
+        for session in sessions:
+            if (str(session.date)[5:7]) not in dates:
+                dates.append(str(session.date)[5:7])
 
-            my_list = [term + year + '_' + lab + '_SessionReport', 'Exported on:', datetime.now().strftime('%m/%d/%Y'), '']
-
-            filewriter.writerow(my_list)
-
-            my_list = []
-
-            filewriter.writerow(my_list)
-
-            my_list = ['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']
-
-            filewriter.writerow(my_list)
-
-            sessions = self.session_.get_closed_sessions()
-            dates = []
+        total_attendance = 0
+        for date in dates:
             for session in sessions:
-                if (str(session.date)[5:7]) not in dates:
-                    dates.append(str(session.date)[5:7])
-            print(dates)
+                if (str(session.date)[5:7]) == date:
+                    attendance = len(self.session_.get_session_students(session.id))
+                    # TODO FIX SESSION.GET_DAYOFWEEK_FROM_SESSION
+                    my_list.append([session.date.strftime('%m/%d/%Y'), session.name, self.session_.get_dayofWeek_from_session(session.id).dayofWeek, session.startTime, session.endTime, session.room, attendance, session.comments])
+                    total_attendance += attendance
 
-            total_attendance = 0
-            for date in dates:
-                for session in sessions:
-                    if (str(session.date)[5:7]) == date:
-                        attendance = len(self.session_.get_session_students(session.id))
-                        # TODO FIX SESSION.GET_DAYOFWEEK_FROM_SESSION
-                        my_list = [session.date.strftime('%m/%d/%Y'), session.name, self.session_.get_dayofWeek_from_session(session.id).dayofWeek, session.startTime, session.endTime, session.room, attendance, session.comments]
-                        total_attendance += attendance
-                        filewriter.writerow(my_list)
+        my_list.append(['', '', '', '', '', 'Total:', total_attendance])
 
-            my_list = ['', '', '', '', '', 'Total:', total_attendance]
-
-            filewriter.writerow(my_list)
-
-        # Opens the file and signifies that we will read it
-        with open((term + year + '_' + lab + '_SessionReport.csv'), 'rb') as f:
-            # returns a Response (so the file can be downloaded)
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=" + term + year + '_' + lab + '_SessionReport.csv'})
+        return self.export_csv(my_list, 'SessionReport', term, year, lab, '')
 
     def course(self):
         sess = self.session_.get_closed_sessions()
@@ -614,3 +468,88 @@ class ReportView(FlaskView):
         user = self.user
         session_ = self.session_
         return render_template('reports/view_course.html', **locals())
+
+    def export_course_session_csv(self, course_id):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        my_list = [['Date', 'DOW', 'Time', 'Attendees']]
+
+        sessions = self.session_.get_sessions(course_id)
+
+        total_attendance = 0
+        for session, schedule in sessions:
+            # TODO FIX SCHEDULE.DAYOFWEEK AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDSTARTTIME
+            sub_list = [session.date.strftime('%m/%d/%Y'), schedule.dayofWeek, str(session.schedStartTime) + ' - ' + str(session.schedEndTime)]
+            attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, session.id)
+            sub_list.append(len(attendance_per_session))
+            total_attendance += len(attendance_per_session)
+            my_list.append(sub_list)
+
+        my_list.append(['', '', 'Total', total_attendance])
+
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '_COS105', ' (Computer Science 1)')
+
+    def export_course_session_attendance_csv(self, course_id):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
+
+        students = self.user.get_students_in_course(course_id)
+
+        sub_list = []
+        total_attendance = 0
+        total_time = 0
+        index = 0
+        for student, attendance in students:
+            index += 1
+            sub_list = [student.firstName, student.lastName, attendance]
+            total_attendance += attendance
+            time = self.user.get_average_time_in_course(student.id, course_id)
+            avg_time = 0
+            for times, user in time:
+                if times.timeOut and times.timeIn:
+                    print(((times.timeOut - times.timeIn).total_seconds())/60)
+                    avg_time += (((times.timeOut - times.timeIn).total_seconds())/60)
+
+            total_time += avg_time/len(time)
+            sub_list.append(str(round(avg_time/len(time))) + ' min')
+            my_list.append(sub_list)
+
+        my_list.append(['', 'Total:', total_attendance, total_time/index])
+
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '', '')
+
+    def export_csv(self, data, type, term, year, lab, extra, class_name):
+        if type == 'DetailReport' or type == 'SummaryReport':
+            csv_name = (term + year + '_' + lab + '_' + extra + '_' + type)
+        elif type == 'CumulativeAttendance':
+            csv_name = (lab + '_' + type)
+        elif type == 'SessionAttendance':
+            csv_name = (term + year + '_' + lab + '_' + type + extra + class_name)
+        else:
+            csv_name = (term + year + '_' + lab + '_' + type)
+
+        with open(csv_name + '.csv', 'w+') as csvfile:
+            filewriter = csv.writer(csvfile)
+
+            my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
+            filewriter.writerow(my_list)
+            my_list = []
+            filewriter.writerow(my_list)
+
+            for row in data:
+                filewriter.writerow(row)
+
+        with open(csv_name + '.csv', 'rb') as f:
+            return Response(
+                f.read(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
