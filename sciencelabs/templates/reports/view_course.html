@@ -6,8 +6,8 @@
     <div class="header card">
         <div class="card-body btn-group">
             <p style="margin: 0px" class="card-text">Attendance for ***SEMESTER YEAR***</p>
-            <a href="" style="right: 200px;" class="csv-button  btn btn-primary">CSV Session Export</a>
-            <a href="" class="csv-button btn btn-primary">CSV Student Export</a>
+            <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course[0].id) }}" style="right: 200px;" class="csv-button  btn btn-primary">CSV Session Export</a>
+            <a href="{{ url_for('ReportView:export_course_session_attendance_csv', course_id=course[0].id) }}" class="csv-button btn btn-primary">CSV Student Export</a>
         </div>
     </div>
 {% endblock %}

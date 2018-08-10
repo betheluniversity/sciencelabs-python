@@ -469,11 +469,71 @@ class ReportView(FlaskView):
         session_ = self.session_
         return render_template('reports/view_course.html', **locals())
 
-    def export_csv(self, data, type, term, year, lab, month):
+    def export_course_session_csv(self, course_id):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        my_list = [['Date', 'DOW', 'Time', 'Attendees']]
+
+        sessions = self.session_.get_sessions(course_id)
+
+        total_attendance = 0
+        for session, schedule in sessions:
+            # TODO FIX SCHEDULE.DAYOFWEEK AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDSTARTTIME
+            sub_list = [session.date.strftime('%m/%d/%Y'), schedule.dayofWeek, str(session.schedStartTime) + ' - ' + str(session.schedEndTime)]
+            attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, session.id)
+            sub_list.append(len(attendance_per_session))
+            total_attendance += len(attendance_per_session)
+            my_list.append(sub_list)
+
+        my_list.append(['', '', 'Total', total_attendance])
+
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '_COS105', ' (Computer Science 1)')
+
+    def export_course_session_attendance_csv(self, course_id):
+        term = 'SP'[:2]  # SEMESTER.TERM[:2]
+        year = '2018'  # SEMESTER.YEAR
+        lab = ''
+        for letter in app_settings['LAB_TITLE'].split():
+            lab += letter[0]
+
+        my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
+
+        students = self.user.get_students_in_course(course_id)
+
+        sub_list = []
+        total_attendance = 0
+        total_time = 0
+        index = 0
+        for student, attendance in students:
+            index += 1
+            sub_list = [student.firstName, student.lastName, attendance]
+            total_attendance += attendance
+            time = self.user.get_average_time_in_course(student.id, course_id)
+            avg_time = 0
+            for times, user in time:
+                if times.timeOut and times.timeIn:
+                    print(((times.timeOut - times.timeIn).total_seconds())/60)
+                    avg_time += (((times.timeOut - times.timeIn).total_seconds())/60)
+
+            total_time += avg_time/len(time)
+            sub_list.append(str(round(avg_time/len(time))) + ' min')
+            my_list.append(sub_list)
+
+        my_list.append(['', 'Total:', total_attendance, total_time/index])
+
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '', '')
+
+    def export_csv(self, data, type, term, year, lab, extra, class_name):
         if type == 'DetailReport' or type == 'SummaryReport':
-            csv_name = (term + year + '_' + lab + '_' + month + '_' + type)
+            csv_name = (term + year + '_' + lab + '_' + extra + '_' + type)
         elif type == 'CumulativeAttendance':
             csv_name = (lab + '_' + type)
+        elif type == 'SessionAttendance':
+            csv_name = (term + year + '_' + lab + '_' + type + extra + class_name)
         else:
             csv_name = (term + year + '_' + lab + '_' + type)
 
