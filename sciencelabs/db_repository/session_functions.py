@@ -140,3 +140,27 @@ class Session:
             .filter(TutorSession_Table.sessionId == session_id).one()
         session.delete(tutor_session_to_delete)
         session.commit()
+
+    def edit_student_session(self, session_id, student_id, time_in, time_out, other_course):
+        student_session_to_edit = session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).one()
+        student_session_to_edit.timeIn = time_in
+        student_session_to_edit.timeOut = time_out
+        if other_course:
+            student_session_to_edit.otherCourse = 1
+            student_session_to_edit.otherCourseName = other_course
+        else:
+            student_session_to_edit.otherCourse = 0
+            student_session_to_edit.otherCourseName = None
+        session.commit()
+
+    def edit_student_courses(self, session_id, student_id, student_courses):
+        student_session = session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == session_id).one()
+        session.query(SessionCourses_Table).filter(SessionCourses_Table.studentsession_id == student_session.studentsession_id).delete()
+        for course in student_courses:
+            new_student_course = SessionCourses_Table(studentsession_id=student_session.studentsession_id, course_id=course)
+            session.add(new_student_course)
+        session.commit()
+

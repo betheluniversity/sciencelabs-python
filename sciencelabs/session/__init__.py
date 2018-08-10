@@ -1,3 +1,5 @@
+import json
+
 # Packages
 from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
@@ -106,8 +108,15 @@ class SessionView(FlaskView):
     @route('/save_student_edits', methods=['post'])
     def save_student_edits(self):
         form = request.form
-        student_id = form.get('studentID')
-        # TODO: Save edits
+        session_id = form.get('sessionId')
+        student_id = form.get('studentId')
+        time_in = form.get('timeIn')
+        time_out = form.get('timeOut')
+        json_courses = form.get('jsonStudentCourses')
+        student_courses = json.loads(json_courses)
+        other_course = form.get()
+        self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
+        self.session.edit_student_courses(session_id, student_id, student_courses)
         return 'success'
 
     @route('/save_tutor_edits', methods=['post'])

@@ -30,7 +30,7 @@
                     <div class="form-group col-md-12">
                         {% for course in student_courses %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                <input type="checkbox" class="custom-control-input" id="course"
+                                <input type="checkbox" class="course-checkbox custom-control-input" id="course"
                                         {{ 'checked' if course in session_courses }}>
                                 <label class="custom-control-label" for="course">{{ course.courseName }}</label>
                             </div>
@@ -76,13 +76,27 @@
         $(document).ready(function(){
 
             $('#save-student').click(function(){
+                var studentCourses = [];
+                $(".course-checkbox:checked").each(function(){
+                    studentCourses.push($(this).val());
+                });
+                var jsonStudentCourses = JSON.stringify(studentCourses);
+                var otherCourse = null;
+                if($('#other').prop('checked')){
+                    otherCourse = $('#course-name').val();
+                }
                 var student = {
-                   'studentID': {{ student.id }}
-               };
-               var url = '{{ url_for('SessionView:save_student_edits') }}';
-               $.post(url, student, function(){
-                   window.location.replace('{{ url_for('SessionView:closed') }}')
-               });
+                    'sessionId': {{ session_id }},
+                    'studentId': {{ student.id }},
+                    'timeIn': $('#time-in').val(),
+                    'timeOut': $('#time-out').val(),
+                    'courses': jsonStudentCourses,
+                    'otherCourse': otherCourse
+                };
+                var url = '{{ url_for('SessionView:save_student_edits') }}';
+                $.post(url, student, function(){
+                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}')
+                });
             });
 
         });
