@@ -1,86 +1,94 @@
 {% extends 'schedule/schedules.html' %}
 
-    {% block body_content %}
-        <div class="custom-default row">
-            <div class="col-md-8">
-                <form>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <div class="header card">
-                                <div class="card-body btn-group">
-                                    {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
-                                    <p style="padding: 0px; margin: 0px">Create New Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
-                                </div>
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-8">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
+                                <p style="padding: 0px; margin: 0px">Create New Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="schedule-name">Schedule Name</label>
-                            <input type="text" class="form-control" id="schedule-name">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="room">Room</label>
-                            <input type="text" class="form-control" id="room">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="schedule-name">Schedule Name</label>
+                        <input type="text" class="form-control" id="schedule-name">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="start-time">Start Time</label>
-                            <input type="time" class="form-control" id="start-time">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="end-time">End Time</label>
-                            <input type="time" class="form-control" id="end-time">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="day-of-week">Day of week</label>
-                            <select class="custom-select">
-                                <option value="Sunday">Sunday</option>
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option>
-                            </select>
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label for="room">Room</label>
+                        <input type="text" class="form-control" id="room">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="choose-leads">Lead Tutors</label>
-                            <input type="text" class="form-control" id="choose-leads" placeholder="Choose lead tutors...">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="start-time">Start Time</label>
+                        <input type="time" class="form-control" id="start-time">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="choose-tutors">Tutors</label>
-                            <input type="text" class="form-control" id="choose-tutors" placeholder="Choose tutors...">
-                        </div>
+                    <div class="form-group col-md-4">
+                        <label for="end-time">End Time</label>
+                        <input type="time" class="form-control" id="end-time">
                     </div>
+                    <div class="form-group col-md-4">
+                        <label for="day-of-week">Day of week</label>
+                        <select class="custom-select">
+                            <option value="Sunday">Sunday</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-leads">Lead Tutors</label>
+                         <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                             {% for tutor in tutor_list %}
+                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                             {% endfor %}
+                         </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="choose-tutors">Tutors</label>
+                        <select class="chosen form-control" id="choose-tutors" multiple="true" data-placeholder="Choose tutors ...">
+                            {% for tutor in tutor_list %}
+                                <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
-                    <div class="form-row">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                    </div>
+                </div>
+                <div class="form-row">
                         <div class="form-group col-md-12">
-                            <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
+                            {% for course in course_list %}
+                                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
+                                    <label class="custom-control-label" for="{{ course.courseName }}">
+                                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                                </div>
+                            {% endfor %}
                         </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="save-schedule">Save</button>
                     </div>
-                    <div class="form-row">
-                            <div class="form-group col-md-12">
-                                {% for course in course_list %}
-                                    <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                        <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
-                                        <label class="custom-control-label" for="{{ course.courseName }}">
-                                            {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" id="save-schedule">Save</button>
-                        </div>
-                    </div>
-                </form>
+                </div>
+            </form>
         </div>
         <div class="col-md-4">
             <div class="sub-info card info">
@@ -132,6 +140,10 @@
                $.post(url, schedule, function(){
                    window.location.replace('{{ url_for('ScheduleView:index') }}')
                });
+            });
+
+            $(".chosen").chosen({
+                display_disabled_options: true
             });
 
         });

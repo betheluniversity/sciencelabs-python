@@ -25,6 +25,7 @@ class ScheduleView(FlaskView):
     def create_new_schedule(self):
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses(active_semester.id)
+        tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):

@@ -33,6 +33,7 @@ config/.DS_Store
 flask_profiler.sql
 
 */placeholder.html
+*.csv
 
 programs.csv
 test_images/calendar.svg

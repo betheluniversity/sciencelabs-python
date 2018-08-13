@@ -22,7 +22,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                 <p style="padding: 0px; margin: 0px">Report for {{ semester.term }} {{ semester.year }}</p>
-                                <a href="" class="csv-button btn btn-primary">CSV Export</a>
+                                <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
                             </div>
                         </div>
                     </div>
@@ -51,13 +51,13 @@
                             <h3><br></h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <b>Average total time spent per student:</b>
+                                    <b>Average total time spent per student:</b> {{ (avg_total_time / unique_attendance)|round(2) }} hours
                                 </li>
                                 <li>
                                     <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b>
+                                    <b>Average number of visits per student:</b> {{ (total_attendance / unique_attendance)|round(2) }}
                                 </li>
                             </ul>
                         </p>
@@ -106,21 +106,46 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="4" class="text-right">
-                                Total
-                            </th>
-                            <td>
-                                <b>{{ total_sessions }}</b>
-                            </td>
-                            <td>
-                                <b>{{ total_attendance }}</b>
-                            </td>
-                            <td>
-                                <b>100%</b>
-                            </td>
+                            <th style="border-top: none;" colspan="4" class="text-right">Total</th>
+                            <th style="border-top: none;">{{ total_sessions }}</th>
+                            <th style="border-top: none;">{{ total_attendance }}</th>
+                            <th style="border-top: none;">100%</th>
                         </tr>
                     </tfoot>
                 </table>
+            {% if unscheduled_sessions %}
+                <h3>Unscheduled Sessions</h3>
+                {# TODO FILL TABLE #}
+                <table id="table"  class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>Stop Time</th>
+                        <th>Attendance</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set total_unscheduled = [0] %}
+                    {% for sessions in unscheduled_sessions %}
+                    <tr>
+                        <td>{{ sessions.date.strftime('%m/%d/%Y') }}</td>
+                        <td>{{ sessions.startTime|datetimeformat }}</td>
+                        <td>{{ sessions.endTime|datetimeformat }}</td>
+                        <td>{{ user_.get_session_students(sessions.id)|length + sessions.anonStudents }}</td>
+                        {% if total_unscheduled.append(total_unscheduled.pop() + (user_.get_session_students(sessions.id)|length) + sessions.anonStudents) %}{% endif %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th style="border-top: none;" colspan="3" class="text-right">Total</th>
+                            <th style="border-top: none;">{{ total_unscheduled[0] }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            {% endif %}
 
             </form>
         </div>

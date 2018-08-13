@@ -4,7 +4,7 @@
         <div class="header card">
             <div class="card-body btn-group">
                 <p class="col-sm-12" style="padding: 0px; margin: 0px">Attendance for {{ app_settings['LAB_TITLE'] }}</p>
-                <a href="" class="csv-button btn btn-primary">CSV Export</a>
+                <a href="{{ url_for('ReportView:export_cumulative_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
             </div>
             <div class="card-body">
                 <p style="padding: 0px; margin: 0px;"><strong>Fall 2014 - Present:</strong> Records in this current
@@ -21,37 +21,149 @@
 {% block semester_switch %}{% endblock %}
 
 {% block body_content %}
-            {# TODO FILL TABLE #}
-            <table id="table"  class="table table-striped table-bordered" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Aug</th>
-                        <th>Sep</th>
-                        <th>Oct</th>
-                        <th>Nov</th>
-                        <th>Dec</th>
-                        <th>Fall</th>
-                        <th>Jan</th>
-                        <th>Feb</th>
-                        <th>Mar</th>
-                        <th>Apr</th>
-                        <th>May</th>
-                        <th>Spring</th>
-                        <th>Jun</th>
-                        <th>Jul</th>
-                        <th>Summer</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cumulative in cumulative_info %}
-                        <tr>
-                        {% for info in cumulative %}
-                            <td>{{ info }}</td>
-                        {% endfor %}
-                        </tr>
+    {# TODO FILL TABLE #}
+    <table id="table"  class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Aug</th>
+                <th>Sep</th>
+                <th>Oct</th>
+                <th>Nov</th>
+                <th>Dec</th>
+                <th>Fall</th>
+                <th>Jan</th>
+                <th>Feb</th>
+                <th>Mar</th>
+                <th>Apr</th>
+                <th>May</th>
+                <th>Spring</th>
+                <th>Jun</th>
+                <th>Jul</th>
+                <th>Summer</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for semester in semesters %}
+            <tr>
+                <td>{{ semester.year }}-{{ semester.year + 1 }}</td>
+                {% set fall_total = [0] %}
+                {% for month in range(8, 13) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions((semester.year|string + '-' + month|string + '-1'), (semester.year|string + '-' + month|string + '-31')) %}
+                    {% set total_attendance = [0] %}
+                    {% for sessions in monthly_sessions %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
-                </tbody>
-            </table>
+                    {% if total_attendance[0] %}
+                        <td><a href="{{ url_for('ReportView:month', year=semester.year, month=month) }}">{{ total_attendance[0] }}</a></td>
+                    {% else %}
+                        <td>{{ total_attendance[0] }}</td>
+                    {% endif %}
+                    {% if fall_total.append(fall_total.pop() + total_attendance[0]) %}{% endif %}
+                {% endfor %}
+                <td class="side-borders"><b>{{ fall_total[0] }}</b></td>
+                {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + 1|string + '-1'), ((semester.year + 1)|string + '-' + 1|string + '-31')) %}
+                {% set total_attendance = [0] %}
+                {% for sessions in monthly_sessions %}
+                    {% set attendance = session_.get_session_attendees(sessions.id) %}
+                    {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
+                {% endfor %}
+                {% if total_attendance[0] %}
+                    <td style="border-right: 2px solid #000000"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
+                {% else %}
+                    <td style="border-right: 2px solid #000000">{{ total_attendance[0] }}</td>
+                {% endif %}
+                {% set interimTotal = total_attendance[0] %}
+
+                {% set spring_total = [0] %}
+                {% for month in range(2, 6) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %}
+                    {% set total_attendance = [0] %}
+                    {% for sessions in monthly_sessions %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
+                    {% endfor %}
+                    {% if total_attendance[0] %}
+                        <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
+                    {% else %}
+                        <td>{{ total_attendance[0] }}</td>
+                    {% endif %}
+                    {% if spring_total.append(spring_total.pop() + total_attendance[0]) %}{% endif %}
+                {% endfor %}
+                <td class="side-borders"><b>{{ spring_total[0] }}</b></td>
+
+                {% set summer_total = [0] %}
+                {% for month in range(6, 8) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %}
+                    {% set total_attendance = [0] %}
+                    {% for sessions in monthly_sessions %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
+                    {% endfor %}
+                    {% if total_attendance[0] %}
+                        <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
+                    {% else %}
+                        <td>{{ total_attendance[0] }}</td>
+                    {% endif %}
+                    {% if summer_total.append(summer_total.pop() + total_attendance[0]) %}{% endif %}
+                {% endfor %}
+                <td class="side-borders"><b>{{ summer_total[0] }}</b></td>
+
+                <td style="border-right: 2px solid #000000"><b>{{ fall_total[0] + spring_total[0] + summer_total[0] + interimTotal }}</b></td>
+            </tr>
+        {% endfor %}
+        {% for info in cumulative %}
+            {% if loop.first %}
+                <tr>
+                    <td>{{ cumulative[info]['academicYear'] }}</td>
+                    {% for month in range(8, 13) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    {% for month in range(2, 6) %}
+                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>{{ cumulative[info]['academicYear'] }}</td>
+                    {% for month in range(8, 13) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    {% for month in range(2, 6) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
+                    {% for month in range(6, 8) %}
+                        <td>{{ cumulative[info]['monthly'][month] }}</td>
+                    {% endfor %}
+                    <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
+                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        $(document).ready( function () {
+            var table = $('#table').DataTable({
+                "ordering": false,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false
+            });
+        });
+    </script>
 {% endblock %}
