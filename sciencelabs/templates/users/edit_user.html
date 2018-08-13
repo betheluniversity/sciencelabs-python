@@ -123,8 +123,9 @@
              'userID': {{ user.id }}
            };
            var url = '{{ url_for('UsersView:deactivate_single_user') }}';
-           $.post(url, users, function(){
+           $.post(url, users, function(message){
                window.location.replace('{{ url_for('UsersView:index') }}');
+               alert(message);
            });
         });
 
@@ -143,8 +144,9 @@
                'roles': jsonUserRoles
            };
            var url = '{{ url_for('UsersView:save_user_edits') }}';
-           $.post(url, user, function(){
+           $.post(url, user, function(message){
                window.location.replace('{{ url_for('UsersView:index') }}');
+               alert(message);
            });
         });
 

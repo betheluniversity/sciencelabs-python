@@ -109,8 +109,9 @@
                         'endDate': $('#end-date').val()
                    };
                    var url = '{{ url_for('TermStartupView:set_term') }}';
-                   $.post(url, term, function(){
-                       window.location.replace('{{ url_for('TermStartupView:step_two') }}')
+                   $.post(url, term, function(message){
+                       window.location.replace('{{ url_for('TermStartupView:step_two') }}');
+                       alert(message);
                    });
                 });
 

@@ -94,7 +94,6 @@ class SessionView(FlaskView):
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
-        # TODO: Delete from DB
         self.session.delete_session(session_id)
         return redirect(url_for('SessionView:closed'))
 
@@ -107,28 +106,34 @@ class SessionView(FlaskView):
 
     @route('/save_student_edits', methods=['post'])
     def save_student_edits(self):
-        form = request.form
-        session_id = form.get('sessionId')
-        student_id = form.get('studentId')
-        time_in = form.get('timeIn')
-        time_out = form.get('timeOut')
-        json_courses = form.get('courses')
-        student_courses = json.loads(json_courses)
-        other_course = form.get('otherCourse')
-        self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
-        self.session.edit_student_courses(session_id, student_id, student_courses)
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('sessionId')
+            student_id = form.get('studentId')
+            time_in = form.get('timeIn')
+            time_out = form.get('timeOut')
+            json_courses = form.get('courses')
+            student_courses = json.loads(json_courses)
+            other_course = form.get('otherCourse')
+            self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
+            self.session.edit_student_courses(session_id, student_id, student_courses)
+            return 'Student edited successfully'
+        except:
+            return 'Failed to edit students'
 
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
-        form = request.form
-        session_id = form.get('sessionId')
-        tutor_id = form.get('tutorId')
-        time_in = form.get('timeIn')
-        time_out = form.get('timeOut')
-        lead = form.get('lead')
-        self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('sessionId')
+            tutor_id = form.get('tutorId')
+            time_in = form.get('timeIn')
+            time_out = form.get('timeOut')
+            lead = form.get('lead')
+            self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
+            return 'Tutor edited successfully'
+        except:
+            return 'Failed to edit tutor'
 
     def delete_student_from_session(self, student_id, session_id):
         self.session.delete_student_from_session(student_id, session_id)
@@ -140,30 +145,39 @@ class SessionView(FlaskView):
 
     @route('/add_student_submit', methods=['post'])
     def add_student_submit(self):
-        form = request.form
-        session_id = form.get('sessionId')
-        student_id = form.get('studentId')
-        self.session.add_student_to_session(session_id, student_id)
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('sessionId')
+            student_id = form.get('studentId')
+            self.session.add_student_to_session(session_id, student_id)
+            return 'Student Added Successfully'
+        except:
+            return 'Failed to add student'
 
     @route('/add_anon_submit', methods=['post'])
     def add_anon_submit(self):
-        form = request.form
-        session_id = form.get('sessionId')
-        anon_students = form.get('anonStudents')
-        self.session.add_anonymous_to_session(session_id, anon_students)
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('sessionId')
+            anon_students = form.get('anonStudents')
+            self.session.add_anonymous_to_session(session_id, anon_students)
+            return 'Anonymous students edited successfully'
+        except:
+            return 'Failed to edit anonymous students'
 
     @route('/add_tutor_submit', methods=['post'])
     def add_tutor_submit(self):
-        form = request.form
-        session_id = form.get('sessionId')
-        tutor_id = form.get('tutorId')
-        time_in = form.get('timeIn')
-        time_out = form.get('timeOut')
-        lead = form.get('lead')
-        self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('sessionId')
+            tutor_id = form.get('tutorId')
+            time_in = form.get('timeIn')
+            time_out = form.get('timeOut')
+            lead = form.get('lead')
+            self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
+            return 'Tutor added successfully'
+        except:
+            return 'Failed to add tutor'
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):

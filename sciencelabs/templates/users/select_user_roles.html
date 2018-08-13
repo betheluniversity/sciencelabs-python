@@ -78,8 +78,9 @@
                    'roles': jsonUserRoles
                };
                var url = '{{ url_for('UsersView:create_user') }}';
-                $.post(url, user, function(){
+                $.post(url, user, function(message){
                     window.location.replace('{{ url_for('UsersView:index') }}');
+                    alert(message);
                 });
            });
 

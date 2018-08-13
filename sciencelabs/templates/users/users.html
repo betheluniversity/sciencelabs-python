@@ -121,8 +121,9 @@
                     'jsonUserIds': jsonUserIds
                 };
                 var url = '{{ url_for('UsersView:deactivate_users') }}';
-                $.post(url, users, function(){
+                $.post(url, users, function(message){
                     window.location.replace('{{ url_for('UsersView:index') }}');
+                    alert(message);
                 });
             });
 

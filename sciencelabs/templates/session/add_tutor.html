@@ -83,8 +83,9 @@
                     'lead': lead
                 };
                var url = '{{ url_for('SessionView:add_tutor_submit') }}';
-               $.post(url, tutor, function(){
-                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}')
+               $.post(url, tutor, function(message){
+                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
+                   alert(message);
                });
             });
 

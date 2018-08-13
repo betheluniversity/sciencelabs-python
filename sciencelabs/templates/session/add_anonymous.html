@@ -28,8 +28,9 @@
                     'anonStudents': $('#anon-students').val()
                 };
                var url = '{{ url_for('SessionView:add_anon_submit') }}';
-               $.post(url, anon, function(){
+               $.post(url, anon, function(message){
                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session.id) }}')
+                   alert(message);
                });
             });
 
