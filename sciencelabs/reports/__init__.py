@@ -479,6 +479,8 @@ class ReportView(FlaskView):
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
 
         sessions = self.session_.get_sessions(course_id)
+        course = self.courses.get_course(course_id)
+        csv_course_info = '_' + course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
 
         total_attendance = 0
         for session, schedule in sessions:
@@ -491,7 +493,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '_COS105', ' (Computer Science 1)')
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, csv_course_info)
 
     def export_course_session_attendance_csv(self, course_id):
         term = 'SP'[:2]  # SEMESTER.TERM[:2]
@@ -516,7 +518,6 @@ class ReportView(FlaskView):
             avg_time = 0
             for times, user in time:
                 if times.timeOut and times.timeIn:
-                    print(((times.timeOut - times.timeIn).total_seconds())/60)
                     avg_time += (((times.timeOut - times.timeIn).total_seconds())/60)
 
             total_time += avg_time/len(time)
@@ -525,15 +526,15 @@ class ReportView(FlaskView):
 
         my_list.append(['', 'Total:', total_attendance, total_time/index])
 
-        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '', '')
+        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '')
 
-    def export_csv(self, data, type, term, year, lab, extra, class_name):
+    def export_csv(self, data, type, term, year, lab, extra):
         if type == 'DetailReport' or type == 'SummaryReport':
             csv_name = (term + year + '_' + lab + '_' + extra + '_' + type)
         elif type == 'CumulativeAttendance':
             csv_name = (lab + '_' + type)
         elif type == 'SessionAttendance':
-            csv_name = (term + year + '_' + lab + '_' + type + extra + class_name)
+            csv_name = (term + year + '_' + lab + '_' + type + extra)
         else:
             csv_name = (term + year + '_' + lab + '_' + type)
 
