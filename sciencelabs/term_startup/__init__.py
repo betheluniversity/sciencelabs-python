@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template
+from flask import render_template, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -31,5 +31,18 @@ class TermStartupView(FlaskView):
     @route('/4')
     def step_four(self):
         return render_template('term_startup/step_four.html')
+
+    @route('/set_term', methods=['post'])
+    def set_term(self):
+        try:
+            form = request.form
+            term = form.get('term')
+            year = form.get('year')
+            start_date = form.get('startDate')
+            end_date = form.get('endDate')
+            self.schedule.set_current_term(term, year, start_date, end_date)
+            return 'Term set successfully'
+        except:
+            return 'Failed to set term'
 
 

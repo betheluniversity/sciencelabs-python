@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
@@ -102,3 +103,49 @@ class User:
 
     def get_all_current_users(self):
         return session.query(User_Table).filter(User_Table.deletedAt == None).all()
+
+    def delete_user(self, user_id):
+        user_to_delete = self.get_user(user_id)
+        user_to_delete.deletedAt = datetime.now()
+        session.commit()
+
+    def check_for_existing_user(self, username):
+        try:  # return true if there is an existing user
+            user = session.query(User_Table).filter(User_Table.username == username).one()
+            return True
+        except:  # otherwise return false
+            return False
+
+    def activate_existing_user(self, username):
+        user = session.query(User_Table).filter(User_Table.username == username).one()
+        user.deletedAt = None
+        session.commit()
+
+    def create_user(self, first_name, last_name, username):
+        new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
+                              email=username+'@bethel.edu', send_email=0, deletedAt=None)
+        session.add(new_user)
+        session.commit()
+
+    def set_user_roles(self, username, roles):
+        user = session.query(User_Table).filter(User_Table.username == username).one()
+        user_id = user.id
+        for role in roles:
+            user_role = user_role_Table(user_id=user_id, role_id=role)
+            session.add(user_role)
+        session.commit()
+
+    def update_user_info(self, user_id, first_name, last_name, email):
+        user = session.query(User_Table).filter(User_Table.id == user_id).one()
+        user.firstName = first_name
+        user.lastName = last_name
+        user.email = email
+        session.commit()
+
+    def clear_current_roles(self, user_id):
+        roles = session.query(user_role_Table).filter(user_role_Table.user_id == user_id).all()
+        for role in roles:
+            session.delete(role)
+        session.commit()
+
+

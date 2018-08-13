@@ -9,7 +9,8 @@
                 {% endif %}
 
                 <div class="col-md-6 user-search-result">
-                    <a href="#" class="edit btn btn-primary add-user">Add User</a>
+                    <a href="{{ url_for('UsersView:select_user_roles', username=result['username'], first_name=result['firstName'], last_name=result['lastName']) }}"
+                       id="add-user" class="edit btn btn-primary add-user">Add User</a>
                     <span>
                         {{ firstName }} {{ result['lastName'] }}<br /><span id="darkblue" class="button-labels">{{ result['username'] }}</span>
                     </span>
