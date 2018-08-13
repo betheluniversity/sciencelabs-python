@@ -30,9 +30,9 @@
                     <div class="form-group col-md-12">
                         {% for course in student_courses %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                <input type="checkbox" class="course-checkbox custom-control-input" id="course"
-                                        {{ 'checked' if course in session_courses }}>
-                                <label class="custom-control-label" for="course">{{ course.courseName }}</label>
+                                <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
+                                        {{ 'checked' if course in session_courses }} value="{{ course.id }}">
+                                <label class="custom-control-label" for="{{ course.id }}">{{ course.courseName }}</label>
                             </div>
                         {% endfor %}
                     </div>

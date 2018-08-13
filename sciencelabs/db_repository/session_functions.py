@@ -49,7 +49,7 @@ class Session:
 
     # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
-        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
@@ -158,9 +158,9 @@ class Session:
     def edit_student_courses(self, session_id, student_id, student_courses):
         student_session = session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.sessionId == session_id).one()
-        session.query(SessionCourses_Table).filter(SessionCourses_Table.studentsession_id == student_session.studentsession_id).delete()
+        session.query(SessionCourses_Table).filter(SessionCourses_Table.studentsession_id == student_session.id).delete()
         for course in student_courses:
-            new_student_course = SessionCourses_Table(studentsession_id=student_session.studentsession_id, course_id=course)
+            new_student_course = SessionCourses_Table(studentsession_id=student_session.id, course_id=course)
             session.add(new_student_course)
         session.commit()
 

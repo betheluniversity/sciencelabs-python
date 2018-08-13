@@ -112,9 +112,9 @@ class SessionView(FlaskView):
         student_id = form.get('studentId')
         time_in = form.get('timeIn')
         time_out = form.get('timeOut')
-        json_courses = form.get('jsonStudentCourses')
+        json_courses = form.get('courses')
         student_courses = json.loads(json_courses)
-        other_course = form.get()
+        other_course = form.get('otherCourse')
         self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
         self.session.edit_student_courses(session_id, student_id, student_courses)
         return 'success'
