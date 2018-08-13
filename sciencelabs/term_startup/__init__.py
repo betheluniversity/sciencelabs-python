@@ -36,7 +36,10 @@ class TermStartupView(FlaskView):
     def set_term(self):
         form = request.form
         term = form.get('term')
-        # TODO: Set term
+        year = form.get('year')
+        start_date = form.get('startDate')
+        end_date = form.get('endDate')
+        self.schedule.set_current_term(term, year, start_date, end_date)
         return 'success'
 
 

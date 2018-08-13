@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import func, distinct
+from sqlalchemy.sql import text
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
@@ -17,19 +18,19 @@ class Session:
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()
 
     def get_session_tutors(self, session_id):
-        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
                              TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
                              TutorSession_Table.schedTimeOut)\
             .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)\
-            .order_by(TutorSession_Table.lead.desc())
+            .order_by(TutorSession_Table.isLead.desc())
 
     def get_session_tutor_names(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
             .filter(TutorSession_Table.sessionId == session_id).filter(User_Table.id == TutorSession_Table.tutorId)\
-            .order_by(TutorSession_Table.lead.desc())
+            .order_by(TutorSession_Table.isLead.desc())
 
     def get_tutor_session_info(self, tutor_id, session_id):
-        return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.lead,
+        return session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
                              TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
             .filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id)\
@@ -114,11 +115,8 @@ class Session:
         session.commit()
 
     def add_tutor_to_session(self, session_id, tutor_id, time_in, time_out, lead):
-        # TODO: HELP
-        db_time_in = datetime.strptime(time_in, '%H:%M')
-        db_time_out = datetime.strptime(time_out, '%H:%M')
-        new_tutor_session = TutorSession_Table(timeIn=db_time_in, timeOut=db_time_out, lead=lead, tutorId=tutor_id,
-                                               sessionId=session_id)
+        new_tutor_session = TutorSession_Table(timeIn=time_in, timeOut=time_out, isLead=lead, tutorId=tutor_id,
+                                               sessionId=session_id, substitutable=0)
         session.add(new_tutor_session)
         session.commit()
 
@@ -162,5 +160,13 @@ class Session:
         for course in student_courses:
             new_student_course = SessionCourses_Table(studentsession_id=student_session.id, course_id=course)
             session.add(new_student_course)
+        session.commit()
+
+    def edit_tutor_session(self, session_id, tutor_id, time_in, time_out, lead):
+        tutor_session_to_edit = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).one()
+        tutor_session_to_edit.timeIn = time_in
+        tutor_session_to_edit.timeOut = time_out
+        tutor_session_to_edit.isLead = lead
         session.commit()
 

@@ -73,21 +73,30 @@ class Schedule:
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
     def get_schedule_tutors(self, schedule_id):
-        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.lead,
+        return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.isLead,
                              TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
-            .order_by(TutorSchedule_Table.lead.desc())
+            .order_by(TutorSchedule_Table.isLead.desc())
 
     def get_schedule_tutor_names(self, schedule_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
-            .order_by(TutorSchedule_Table.lead.desc())\
+            .order_by(TutorSchedule_Table.isLead.desc())\
             .all()
 
     def delete_schedule(self, schedule_id):
         schedule_to_delete = self.get_schedule(schedule_id)
         schedule_to_delete.deletedAt = datetime.now()
+        session.commit()
+
+    def set_current_term(self, term, year, start_date, end_date):
+        current_term = session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+        current_term.active = 0
+        db_start_date = datetime.strptime(start_date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_end_date = datetime.strptime(end_date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        new_term = Semester_Table(term=term, year=year, startDate=db_start_date, endDate=db_end_date, active=1)
+        session.add(new_term)
         session.commit()
 

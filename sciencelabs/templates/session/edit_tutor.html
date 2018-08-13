@@ -27,7 +27,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="lead" {{ 'checked' if tutor.lead}}>
+                            <input type="checkbox" class="custom-control-input" id="lead" {{ 'checked' if tutor.isLead}}>
                             <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
                         </div>
                     </div>
@@ -57,13 +57,20 @@
         $(document).ready(function(){
 
             $('#save-tutor').click(function(){
-                // TODO: {{ tutor.id }} failed here
+                var lead = 0;
+                if($('#lead').prop('checked')){
+                    lead = 1;
+                }
                 var tutor = {
-                    'tutorID': 0
+                    'sessionId': {{ session_id }},
+                    'tutorId': {{ tutor_id }},
+                    'timeIn': $('#time-in').val(),
+                    'timeOut': $('#time-out').val(),
+                    'lead': lead
                 };
                var url = '{{ url_for('SessionView:save_tutor_edits') }}';
                $.post(url, tutor, function(){
-                   window.location.replace('{{ url_for('SessionView:closed') }}')
+                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}')
                });
             });
 

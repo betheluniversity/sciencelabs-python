@@ -122,8 +122,12 @@ class SessionView(FlaskView):
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
         form = request.form
-        tutor_id = form.get('tutorID')
-        # TODO: Save edits
+        session_id = form.get('sessionId')
+        tutor_id = form.get('tutorId')
+        time_in = form.get('timeIn')
+        time_out = form.get('timeOut')
+        lead = form.get('lead')
+        self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
         return 'success'
 
     def delete_student_from_session(self, student_id, session_id):

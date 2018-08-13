@@ -64,7 +64,7 @@
                                     <div style="display:none;margin-top:10px" class="text-left">
                                         {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
-                                        {% if tutor.lead %}
+                                        {% if tutor.isLead %}
                                             {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
                                         {% else %}
                                             {{ tutor.firstName }} {{ tutor.lastName }}<br>
