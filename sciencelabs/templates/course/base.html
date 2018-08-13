@@ -50,7 +50,9 @@
                         </table>
                         <div style="margin-top: 20px;" class="form-group md-col-12">
                             <h3>{{ app_settings['LAB_TITLE'] }} Courses Across all Terms</h3>
+                            <input id="tags" type="text" class="tags" value="" />
                         </div>
+
                     </div>
                 </form>
 
@@ -105,6 +107,21 @@
                 </div>
             </div>
         </div>
+
+    <script type="text/javascript">
+        $(function() {
+            $('#tags').tagsInput({
+                'height':'150px',
+                'width':'100%',
+                'interactive':true,
+                'defaultText':'add a course',
+                'removeWithBackspace' : true,
+                'minChars' : 6,
+                'maxChars' : 0, //if not provided there is no limit,
+                'placeholderColor' : '#666666'
+            });
+        });
+    </script>
 
     <script>
         $(document).ready( function () {
