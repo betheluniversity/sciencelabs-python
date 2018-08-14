@@ -48,9 +48,10 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <div style="margin-top: 20px;" class="form-group md-col-12">
-                            <h3>{{ app_settings['LAB_TITLE'] }} Courses Across all Terms</h3>
+                        <div style="text-align: right; margin-top: 20px;" class="form-group col-md-12">
+                            <h3 style="text-align: left;">{{ app_settings['LAB_TITLE'] }} Courses Across all Terms</h3>
                             <input id="tags" type="text" class="tags" value=""/>
+                            <button style="margin-top: 10px;" type="button" class="btn btn-primary" id="submit-courses">Submit Courses</button>
                         </div>
 
                     </div>
@@ -125,9 +126,15 @@
         });
 
         function onAddTag(input, tag) {
-            alert(input)
+            var info = {
+                'sbj_num': input
+            }
+            var url = '{{ url_for('CourseView:add_potential_course') }}'
+            $.post(url, info)
         }
+
     </script>
+
 
     <script>
         $(document).ready( function () {
@@ -135,6 +142,21 @@
                 "aoColumns": []
             });
         });
+
+        $("#submit-courses").click(function() {
+            var url = '{{ url_for('CourseView:submit') }}'
+        });
     </script>
+
+
+{#    $(".courseleaf-user-click").click(function () {#}
+{#            $('#spinner').show();#}
+{#            var current_element = $(this);#}
+{#            var id = current_element.data('faculty-bio-id');#}
+{#            var inputs = {#}
+{#                "id": id,#}
+{#                "added": current_element.attr('data-method')#}
+{#            };#}
+{#            var url = '/faculty-bios/toggle-courseleaf-user';#}
 
 {% endblock %}
