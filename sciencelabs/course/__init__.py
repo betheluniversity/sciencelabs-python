@@ -39,7 +39,7 @@ class CourseView(FlaskView):
     @route("/submit", methods=['POST'])
     def submit(self):
         results = []
-        for coursef in self.potential_courses:
+        for course in self.potential_courses:
             result = get_course_is_valid(course[:3], course[3:])
             if result:
                 results.append(result)
