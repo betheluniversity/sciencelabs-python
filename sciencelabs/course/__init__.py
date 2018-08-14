@@ -22,11 +22,6 @@ class CourseView(FlaskView):
     def index(self):
         course_info = self.course.get_course_info()
         semester = self.schedule.get_active_semester()
-
-        results = get_course_is_valid('COS', 105)
-
-        print(results)
-
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
@@ -44,8 +39,8 @@ class CourseView(FlaskView):
     @route("/submit", methods=['POST'])
     def submit(self):
         results = []
-        for data in self.potential_courses:
-            result = get_course_is_valid(data[:3], data[3:])
+        for coursef in self.potential_courses:
+            result = get_course_is_valid(course[:3], course[3:])
             if result:
                 results.append(result)
         self.potential_courses = []
