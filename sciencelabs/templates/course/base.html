@@ -111,17 +111,22 @@
     <script type="text/javascript">
         $(function() {
             $('#tags').tagsInput({
-                'height':'150px',
-                'width':'100%',
-                'interactive':true,
-                'defaultText':'add a course',
-                'minInputWidth': '90px',
-                'removeWithBackspace' : true,
-                'minChars' : 6,
-                'maxChars' : 0, //if not provided there is no limit,
-                'placeholderColor' : '#666666'
+                onAddTag: onAddTag,
+                height:'150px',
+                width:'100%',
+                interactive:true,
+                defaultText:'add a course',
+                minInputWidth: '90px',
+                removeWithBackspace : true,
+                minChars : 6,
+                maxChars : 0, //if not provided there is no limit,
+                placeholderColor : '#666666'
             });
         });
+
+        function onAddTag(input, tag) {
+            alert(input)
+        }
     </script>
 
     <script>

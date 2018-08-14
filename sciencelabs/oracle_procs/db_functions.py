@@ -73,5 +73,16 @@ def get_username_from_name(fname, lname):
 
     return get_results(result)
 
+
 def encode_percent(str):
     return '%' + str + '%'
+
+
+def get_course_is_valid(sbj, code):
+    call_cursor = conn_bw.cursor()
+    result_cursor = conn_bw.cursor()
+
+    call_cursor.callproc("bth_websrv_api.course_num_is_valid", (sbj, code, result_cursor))
+    result = result_cursor.fetchall()
+
+    return get_results(result)
