@@ -21,6 +21,10 @@ class CourseView(FlaskView):
     @route('/admin/')
     def index(self):
         course_info = self.course.get_course_info()
+        active_coursecodes = self.course.get_active_coursecode()
+        cc_str = ''
+        for coursecodes in active_coursecodes:
+            cc_str += coursecodes.dept + str(coursecodes.courseNum) + ' (' + coursecodes.courseName + ')' + ', '
         semester = self.schedule.get_active_semester()
         return render_template('course/base.html', **locals())
 

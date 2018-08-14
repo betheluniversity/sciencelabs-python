@@ -62,3 +62,6 @@ class Course:
 
     def get_semester_courses_with_section(self, semester_id):
         return session.query(Course_Table).filter(Course_Table.semester_id == semester_id).all()
+
+    def get_active_coursecode(self):
+        return session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
