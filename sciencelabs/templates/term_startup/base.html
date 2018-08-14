@@ -4,9 +4,9 @@
         <a id="1" class="test nav-link {{ 'active' if 'transition/1' in request.path else 'disabled'}}"
            href="{{ url_for('TermStartupView:index') }}">Step 1: Set Term</a>
         <a id="2" class="test nav-link {{ 'active' if 'transition/2' in request.path else 'disabled'}}"
-           href="{{ url_for('TermStartupView:step_two') }}">Step 2: Review Courses</a>
+           href="{{ url_for('TermStartupView:step_two') }}">Step 2: Edit Users</a>
         <a id="3" class="test nav-link {{ 'active' if 'transition/3' in request.path else 'disabled'}}"
-           href="{{ url_for('TermStartupView:step_three') }}">Step 3: Edit Users</a>
+           href="{{ url_for('TermStartupView:step_three') }}">Step 3: Review Courses</a>
         <a id="4" class="test nav-link {{ 'active' if 'transition/4' in request.path else 'disabled'}}"
            href="{{ url_for('TermStartupView:step_four') }}">Step 4: Review Schedules</a>
 
