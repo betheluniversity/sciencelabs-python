@@ -42,7 +42,7 @@ class TermStartupView(FlaskView):
             end_date = form.get('endDate')
             self.schedule.set_current_term(term, year, start_date, end_date)
             return 'Term set successfully'
-        except:
-            return 'Failed to set term'
+        except Exception as error:
+            return 'Failed to set term: ' + error
 
 

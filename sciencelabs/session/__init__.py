@@ -118,8 +118,8 @@ class SessionView(FlaskView):
             self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
             self.session.edit_student_courses(session_id, student_id, student_courses)
             return 'Student edited successfully'
-        except:
-            return 'Failed to edit students'
+        except Exception as error:
+            return 'Failed to edit students: ' + error
 
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
@@ -132,8 +132,8 @@ class SessionView(FlaskView):
             lead = form.get('lead')
             self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
             return 'Tutor edited successfully'
-        except:
-            return 'Failed to edit tutor'
+        except Exception as error:
+            return 'Failed to edit tutor: ' + error
 
     def delete_student_from_session(self, student_id, session_id):
         self.session.delete_student_from_session(student_id, session_id)
@@ -151,8 +151,8 @@ class SessionView(FlaskView):
             student_id = form.get('studentId')
             self.session.add_student_to_session(session_id, student_id)
             return 'Student Added Successfully'
-        except:
-            return 'Failed to add student'
+        except Exception as error:
+            return 'Failed to add student: ' + error
 
     @route('/add_anon_submit', methods=['post'])
     def add_anon_submit(self):
@@ -162,8 +162,8 @@ class SessionView(FlaskView):
             anon_students = form.get('anonStudents')
             self.session.add_anonymous_to_session(session_id, anon_students)
             return 'Anonymous students edited successfully'
-        except:
-            return 'Failed to edit anonymous students'
+        except Exception as error:
+            return 'Failed to edit anonymous students: ' + error
 
     @route('/add_tutor_submit', methods=['post'])
     def add_tutor_submit(self):
@@ -176,8 +176,8 @@ class SessionView(FlaskView):
             lead = form.get('lead')
             self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
             return 'Tutor added successfully'
-        except:
-            return 'Failed to add tutor'
+        except Exception as error:
+            return 'Failed to add tutor: ' + error
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):

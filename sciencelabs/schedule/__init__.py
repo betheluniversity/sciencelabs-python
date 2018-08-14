@@ -1,3 +1,5 @@
+import json
+
 # Packages
 from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
@@ -43,14 +45,50 @@ class ScheduleView(FlaskView):
 
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
-        form = request.form
-        schedule_id = form.get('schedID')
-        # TODO: add users
-        return 'success'
+        try:
+            form = request.form
+            schedule_id = form.get('scheduleId')
+            name = form.get('scheduleName')
+            room = form.get('room')
+            start_time = form.get('startTime')
+            end_time = form.get('endTime')
+            day_of_week = int(form.get('dayOfWeek'))
+            json_leads = form.get('leads')
+            leads = json.loads(json_leads)
+            json_tutors = form.get('tutors')
+            tutors = json.loads(json_tutors)
+            json_courses = form.get('courses')
+            courses = json.loads(json_courses)
+            self.schedule.edit_schedule(schedule_id, name, room, start_time, end_time, day_of_week)
+            self.schedule.edit_lead_schedules(schedule_id, start_time, end_time, leads)
+            self.schedule.edit_tutor_schedules(schedule_id, start_time, end_time, tutors)
+            self.schedule.edit_schedule_courses(schedule_id, courses)
+            return 'Schedule edited successfully'
+        except Exception as error:
+            return 'Failed to edit schedule: ' + error
 
     @route('/create_schedule_submit', methods=['post'])
     def create_schedule_submit(self):
-        form = request.form
-        schedule_id = form.get('schedID')
-        # TODO: Save edits
-        return 'success'
+        try:
+            active_semester = self.schedule.get_active_semester()
+            term = active_semester.term
+            form = request.form
+            name = form.get('scheduleName')
+            room = form.get('room')
+            start_time = form.get('startTime')
+            end_time = form.get('endTime')
+            day_of_week = form.get('dayOfWeek')
+            json_leads = form.get('leads')
+            leads = json.loads(json_leads)
+            json_tutors = form.get('tutors')
+            tutors = json.loads(json_tutors)
+            json_courses = form.get('courses')
+            courses = json.loads(json_courses)
+            self.schedule.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
+            schedule_id = self.schedule.get_new_schedule_id(name, room, start_time, end_time, day_of_week, term)
+            self.schedule.create_new_lead_schedules(schedule_id, start_time, end_time, leads)
+            self.schedule.create_new_tutor_schedules(schedule_id, start_time, end_time, tutors)
+            self.schedule.create_new_schedule_courses(schedule_id, courses)
+            return 'Schedule created successfully'
+        except Exception as error:
+            return 'Failed to create schedule: ' + error

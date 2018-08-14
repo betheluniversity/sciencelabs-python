@@ -63,8 +63,8 @@ class UsersView(FlaskView):
             user_id = form.get('userID')
             self.user.delete_user(user_id)
             return 'User deactivated successfully'
-        except:
-            return 'Failed to deactivate user'
+        except Exception as error:
+            return 'Failed to deactivate user: ' + error
 
     @route("/deactivate_users", methods=['post'])
     def deactivate_users(self):
@@ -75,8 +75,8 @@ class UsersView(FlaskView):
             for user in user_ids:
                 self.user.delete_user(user)
             return 'User(s) deactivated successfully'
-        except:
-            return 'Failed to deactivate user(s)'
+        except Exception as error:
+            return 'Failed to deactivate user(s): ' + error
 
     @route("/save_user_edits", methods=['post'])
     def save_user_edits(self):
@@ -93,8 +93,8 @@ class UsersView(FlaskView):
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
             return 'Edited user successfully'
-        except:
-            return 'Failed to edit user'
+        except Exception as error:
+            return 'Failed to edit user: ' + error
 
     @route('/create_user', methods=['post'])
     def create_user(self):
@@ -108,5 +108,5 @@ class UsersView(FlaskView):
             self.user.create_user(first_name, last_name, username)
             self.user.set_user_roles(username, roles)
             return 'Added user successfully'
-        except:
-            return 'Failed to add user'
+        except Exception as error:
+            return 'Failed to add user: ' + error

@@ -36,18 +36,17 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select class="custom-select">
-                            <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="Sunday">Sunday</option>
-                            <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="Monday">Monday</option>
-                            <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="Tuesday">Tuesday</option>
-                            <option {% if schedule.dayofWeek == 3 %} selected="selected"{% endif %} value="Wednesday">Wednesday</option>
-                            <option {% if schedule.dayofWeek == 4 %} selected="selected"{% endif %} value="Thursday">Thursday</option>
-                            <option {% if schedule.dayofWeek == 5 %} selected="selected"{% endif %} value="Friday">Friday</option>
-                            <option {% if schedule.dayofWeek == 6 %} selected="selected"{% endif %} value="Saturday">Saturday</option>
+                        <select id="day-of-week" class="custom-select">
+                            <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="0">Sunday</option>
+                            <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="1">Monday</option>
+                            <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="2">Tuesday</option>
+                            <option {% if schedule.dayofWeek == 3 %} selected="selected"{% endif %} value="3">Wednesday</option>
+                            <option {% if schedule.dayofWeek == 4 %} selected="selected"{% endif %} value="4">Thursday</option>
+                            <option {% if schedule.dayofWeek == 5 %} selected="selected"{% endif %} value="5">Friday</option>
+                            <option {% if schedule.dayofWeek == 6 %} selected="selected"{% endif %} value="6">Saturday</option>
                         </select>
                     </div>
                 </div>
-                {# TODO: Figure out how to not show the lead twice #}
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
@@ -82,8 +81,9 @@
                     <div class="form-group col-md-12">
                         {% for course in course_list %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
-                                <label class="custom-control-label" for="{{ course.courseName }}">
+                                <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
+                                       value="{{ course.id }}" checked>
+                                <label class="custom-control-label" for="{{ course.id }}">
                                     {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                             </div>
                         {% endfor %}
@@ -130,12 +130,37 @@
             });
 
             $('#save-schedule').click(function(){
+
+                // Getting leads
+                var leads = $('#choose-leads').val();
+                var jsonLeads = JSON.stringify(leads);
+
+                // Getting tutors
+                var tutors = $('#choose-tutors').val();
+                var jsonTutors = JSON.stringify(tutors);
+
+                // Getting courses
+                var courses = [];
+                $('.course-checkbox:checked').each(function(){
+                    courses.push($(this).val());
+                });
+                var jsonCourses = JSON.stringify(courses);
+
                 var schedule = {
-                 'schedID': 0
-               };
+                    'scheduleId': {{ schedule_id }},
+                    'scheduleName': $('#schedule-name').val(),
+                    'room': $('#room').val(),
+                    'startTime': $('#start-time').val(),
+                    'endTime': $('#end-time').val(),
+                    'dayOfWeek': $('#day-of-week :selected').val(),
+                    'leads': jsonLeads,
+                    'tutors': jsonTutors,
+                    'courses': jsonCourses
+                };
                var url = '{{ url_for('ScheduleView:save_schedule_edits') }}';
-               $.post(url, schedule, function(){
-                   window.location.replace('{{ url_for('ScheduleView:index') }}')
+               $.post(url, schedule, function(message){
+                   window.location.replace('{{ url_for('ScheduleView:index') }}');
+                   alert(message);
                });
             });
 

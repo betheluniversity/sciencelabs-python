@@ -25,7 +25,7 @@ class Course:
                 .all())
 
     def get_semester_courses(self, semester_id):
-        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName, CourseCode_Table.id)\
             .filter(Course_Table.semester_id == semester_id)\
             .filter(Course_Table.course_code_id == CourseCode_Table.id).distinct()
 

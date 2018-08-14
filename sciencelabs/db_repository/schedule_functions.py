@@ -3,7 +3,7 @@ from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
-    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table
+    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table, Course_Table
 
 
 class Schedule:
@@ -112,4 +112,71 @@ class Schedule:
         session.add(new_term)
         session.commit()
 
+    def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
+        new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time, dayofWeek=day_of_week, term=term)
+        session.add(new_schedule)
+        session.commit()
 
+    def get_new_schedule_id(self, name, room, start_time, end_time, day_of_week, term):
+        return session.query(Schedule_Table.id)\
+            .filter(Schedule_Table.name == name)\
+            .filter(Schedule_Table.room == room)\
+            .filter(Schedule_Table.startTime == start_time)\
+            .filter(Schedule_Table.endTime == end_time)\
+            .filter(Schedule_Table.dayofWeek == day_of_week)\
+            .filter(Schedule_Table.term == term)\
+            .one()
+
+    def create_new_lead_schedules(self, schedule_id, time_in, time_out, leads):
+        for lead in leads:
+            new_lead_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=1,
+                                                    tutorId=lead, scheduleId=schedule_id)
+            session.add(new_lead_schedule)
+        session.commit()
+
+    def create_new_tutor_schedules(self, schedule_id, time_in, time_out, tutors):
+        for tutor in tutors:
+            new_tutor_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=0,
+                                                     tutorId=tutor, scheduleId=schedule_id)
+            session.add(new_tutor_schedule)
+        session.commit()
+
+    def create_new_schedule_courses(self, schedule_id, courses):
+        for course in courses:
+            new_schedule_course = ScheduleCourseCodes_Table(schedule_id=schedule_id, coursecode_id=course)
+            session.add(new_schedule_course)
+        session.commit()
+
+    def edit_schedule(self, schedule_id, name, room, start_time, end_time, day_of_week):
+        schedule_to_edit = session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
+        schedule_to_edit.name = name
+        schedule_to_edit.room = room
+        schedule_to_edit.startTime = start_time
+        schedule_to_edit.endTime = end_time
+        schedule_to_edit.dayofWeek = day_of_week
+        session.commit()
+
+    def edit_lead_schedules(self, schedule_id, time_in, time_out, leads):
+        session.query(TutorSchedule_Table).filter(TutorSchedule_Table.scheduleId == schedule_id)\
+            .filter(TutorSchedule_Table.isLead == 1).delete()
+        for lead in leads:
+            new_lead_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=1,
+                                                    tutorId=lead, scheduleId=schedule_id)
+            session.add(new_lead_schedule)
+        session.commit()
+
+    def edit_tutor_schedules(self, schedule_id, time_in, time_out, tutors):
+        session.query(TutorSchedule_Table).filter(TutorSchedule_Table.scheduleId == schedule_id) \
+            .filter(TutorSchedule_Table.isLead == 0).delete()
+        for tutor in tutors:
+            new_tutor_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=0,
+                                                     tutorId=tutor, scheduleId=schedule_id)
+            session.add(new_tutor_schedule)
+        session.commit()
+
+    def edit_schedule_courses(self, schedule_id, courses):
+        session.query(ScheduleCourseCodes_Table).filter(ScheduleCourseCodes_Table.schedule_id == schedule_id).delete()
+        for course in courses:
+            new_schedule_course = ScheduleCourseCodes_Table(schedule_id=schedule_id, coursecode_id=course)
+            session.add(new_schedule_course)
+        session.commit()
