@@ -9,7 +9,7 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.oracle_procs.db_functions import get_username_from_name
+#from sciencelabs.oracle_procs.db_functions import get_username_from_name
 
 #######################################################################################################################
 # Alert stuff helps give user info on changes they make
@@ -78,7 +78,7 @@ class UsersView(FlaskView):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
-        results = get_username_from_name(first_name, last_name)
+        #results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate_single_user/<int:user_id>")
@@ -107,19 +107,20 @@ class UsersView(FlaskView):
     def save_user_edits(self):
         try:
             form = request.form
-            user_id = form.get('userId')
-            first_name = form.get('firstName')
-            last_name = form.get('lastName')
+            user_id = form.get('user-id')
+            first_name = form.get('first-name')
+            last_name = form.get('last-name')
             email = form.get('email')
             username = form.get('username')
-            json_roles = form.get('roles')
-            roles = json.loads(json_roles)
+            roles = form.getlist('roles')
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
-            return 'Edited user successfully'
+            set_alert('success', 'Edited user successfully!')
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
-            return 'Failed to edit user: ' + error
+            set_alert('danger', 'Failed to edit user: ' + str(error))
+            return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route('/create_user', methods=['post'])
     def create_user(self):

@@ -9,6 +9,29 @@ from sciencelabs.schedule.schedule_controller import ScheduleController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 
+#######################################################################################################################
+# Alert stuff helps give user info on changes they make
+
+alert = None  # Default alert to nothing
+
+
+# This method get's the current alert (if there is one) and then resets alert to nothing
+def get_alert():
+    global alert
+    alert_return = alert
+    alert = None
+    return alert_return
+
+
+# This method sets the alert for when one is needed next
+def set_alert(message_type, message):
+    global alert
+    alert = {
+        'type': message_type,
+        'message': message
+    }
+#######################################################################################################################
+
 
 class ScheduleView(FlaskView):
     def __init__(self):

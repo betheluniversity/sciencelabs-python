@@ -1,5 +1,3 @@
-import json
-
 # Packages
 from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route

@@ -7,7 +7,8 @@
 {% block body_content %}
    <div class="custom-default row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('UsersView:save_user_edits') }}" method="post">
+                <input type="hidden" name="user-id" value="{{ user.id }}">
                  <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
@@ -20,21 +21,23 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="user-first-name">First Name</label>
-                        <input type="text" class="form-control" id="user-first-name" value="{{ user.firstName }}">
+                        <input type="text" class="form-control" id="user-first-name" name="first-name"
+                               value="{{ user.firstName }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="user-last-name">Last Name</label>
-                        <input type="text" class="form-control" id="user-last-name" value="{{ user.lastName }}">
+                        <input type="text" class="form-control" id="user-last-name" name="last-name" value="{{ user.lastName }}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="user-email">Email</label>
-                        <input type="text" class="form-control" id="user-email" value="{{ user.email }}">
+                        <input type="text" class="form-control" id="user-email" name="email" value="{{ user.email }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="user-username">Username</label>
-                        <input readonly type="text" class="form-control" id="user-username" value="{{ user.username }}">
+                        <input readonly type="text" class="form-control" id="user-username" name="username"
+                               value="{{ user.username }}">
                     </div>
                 </div>
                 <div class="form-row">
@@ -43,7 +46,7 @@
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
                                 <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}"
-                                        {{ 'checked' if role in user_roles }} value="{{ role.id }}">
+                                        {{ 'checked' if role in user_roles }} value="{{ role.id }}" name="roles">
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                             </div>
                         {% endfor %}
@@ -85,7 +88,7 @@
                            class="delete btn btn-primary">Deactivate</a>
                     </div>
                     <div class="form-group">
-                        <button id="save-user" type="button" class="btn btn-primary">Save</button>
+                        <button id="save-user" type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -118,30 +121,30 @@
             </div>
         </div>
    </div>
-    <script>
-        $(document).ready(function(){
-
-            $('#save-user').click(function(){
-                var userRoles = [];
-                $(".role-checkbox:checked").each(function(){
-                    userRoles.push($(this).val());
-                });
-                var jsonUserRoles = JSON.stringify(userRoles);
-               var user = {
-                   'userId': {{ user.id }},
-                   'firstName': $('#user-first-name').val(),
-                   'lastName': $('#user-last-name').val(),
-                   'email': $('#user-email').val(),
-                   'username': $('#user-username').val(),
-                   'roles': jsonUserRoles
-               };
-               var url = '{{ url_for('UsersView:save_user_edits') }}';
-               $.post(url, user, function(message){
-                   window.location.replace('{{ url_for('UsersView:index') }}');
-                   alert(message);
-               });
-            });
-
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{##}
+{#            $('#save-user').click(function(){#}
+{#                var userRoles = [];#}
+{#                $(".role-checkbox:checked").each(function(){#}
+{#                    userRoles.push($(this).val());#}
+{#                });#}
+{#                var jsonUserRoles = JSON.stringify(userRoles);#}
+{#               var user = {#}
+{#                   'userId': {{ user.id }},#}
+{#                   'firstName': $('#user-first-name').val(),#}
+{#                   'lastName': $('#user-last-name').val(),#}
+{#                   'email': $('#user-email').val(),#}
+{#                   'username': $('#user-username').val(),#}
+{#                   'roles': jsonUserRoles#}
+{#               };#}
+{#               var url = '{{ url_for('UsersView:save_user_edits') }}';#}
+{#               $.post(url, user, function(message){#}
+{#                   window.location.replace('{{ url_for('UsersView:index') }}');#}
+{#                   alert(message);#}
+{#               });#}
+{#            });#}
+{##}
+{#        });#}
+{#    </script>#}
 {% endblock %}
