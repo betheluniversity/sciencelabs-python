@@ -11,6 +11,29 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 
+#######################################################################################################################
+# Alert stuff helps give user info on changes they make
+
+alert = None  # Default alert to nothing
+
+
+# This method get's the current alert (if there is one) and then resets alert to nothing
+def get_alert():
+    global alert
+    alert_return = alert
+    alert = None
+    return alert_return
+
+
+# This method sets the alert for when one is needed next
+def set_alert(message_type, message):
+    global alert
+    alert = {
+        'type': message_type,
+        'message': message
+    }
+#######################################################################################################################
+
 
 class SessionView(FlaskView):
     def __init__(self):
@@ -47,6 +70,7 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
+        alert = get_alert()
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
         tutor_names = self.session.get_session_tutor_names(session_id)  # used for a logic check in template
@@ -66,6 +90,7 @@ class SessionView(FlaskView):
         student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
+        alert = get_alert()
         return render_template('session/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
@@ -104,22 +129,22 @@ class SessionView(FlaskView):
         # TODO: Save edits
         return 'success'
 
-    @route('/save_student_edits', methods=['post'])
-    def save_student_edits(self):
+    @route('/save_student_edits/<int:session_id>', methods=['post'])
+    def save_student_edits(self, session_id):
         try:
             form = request.form
-            session_id = form.get('sessionId')
-            student_id = form.get('studentId')
-            time_in = form.get('timeIn')
-            time_out = form.get('timeOut')
-            json_courses = form.get('courses')
-            student_courses = json.loads(json_courses)
-            other_course = form.get('otherCourse')
+            student_id = form.get('student-id')
+            time_in = form.get('time-in')
+            time_out = form.get('time-out')
+            student_courses = form.getlist('course')
+            other_course = form.get('other-name')
             self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
             self.session.edit_student_courses(session_id, student_id, student_courses)
-            return 'Student edited successfully'
+            set_alert('success', 'Edited student successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            return 'Failed to edit students: ' + error
+            set_alert('danger', 'Failed to edit student: ' + str(error))
+            return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
 
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
@@ -181,7 +206,30 @@ class SessionView(FlaskView):
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):
-        form = request.form
-        session_id = form.get('sessionID')
-        # TODO: Save edits
-        return 'success'
+        try:
+            form = request.form
+            name = form.get('name')
+            room = form.get('room')
+            semester_id = form.get('semester')
+            date = form.get('date')
+            scheduled_start = form.get('startTime')
+            scheduled_end = form.get('endTime')
+            json_leads = form.get('leads')
+            leads = json.loads(json_leads)
+            json_tutors = form.get('tutors')
+            tutors = json.loads(json_tutors)
+            actual_start = form.get('actualStart')
+            actual_end = form.get('actualEnd')
+            json_courses = form.get('courses')
+            courses = json.loads(json_courses)
+            comments = form.get('comments')
+            anon_students = form.get('anonStudents')
+            self.session.create_new_session(semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
+                                            room, comments, anon_students, name)
+            session_id = self.session.get_new_session_id(semester_id, date, room, name)
+            self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
+            self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
+            self.session.create_session_courses(session_id, courses)
+            return 'Session created successfully'
+        except Exception as error:
+            return 'Failed to create session: ' + error

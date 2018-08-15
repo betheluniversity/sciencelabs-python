@@ -1,5 +1,9 @@
 {% extends 'session/base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(alert) }}
+{% endblock %}
+
 {% block header %}
     <div class="header card">
         <div class="card-body">
@@ -8,20 +12,20 @@
     </div>
 {% endblock %}
 
-
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('SessionView:save_student_edits', session_id=session_id) }}" method="post">
+                <input type="hidden" class="form-control" name="student-id" value="{{ student_id }}">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
-                        <input type="time" class="form-control" id="time-in"
+                        <input type="time" class="form-control" id="time-in" name="time-in"
                                value="{{ student.timeIn|datetimeformat('%H:%M') if student.timeIn }}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
-                        <input type="time" class="form-control" id="time-out"
+                        <input type="time" class="form-control" id="time-out" name="time-out"
                                value="{{ student.timeOut|datetimeformat('%H:%M') if student.timeOut }}">
                     </div>
                 </div>
@@ -31,7 +35,7 @@
                         {% for course in student_courses %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
-                                        {{ 'checked' if course in session_courses }} value="{{ course.id }}">
+                                        {{ 'checked' if course in session_courses }} value="{{ course.id }}" name="course">
                                 <label class="custom-control-label" for="{{ course.id }}">{{ course.courseName }}</label>
                             </div>
                         {% endfor %}
@@ -41,19 +45,19 @@
                     <div class="form-group col-md-2">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
                             <input type="checkbox" class="custom-control-input" id="other"
-                                    {{ 'checked' if other_course.otherCourse == 1 }}>
+                                    {{ 'checked' if other_course.otherCourse == 1 }} name="other-check">
                             <label class="custom-control-label" for="other">Other</label>
                         </div>
                     </div>
                     <div class="form-group col-md-10">
                         <label for="course-name">Course Name or Reason</label>
-                        <input type="text" class="form-control" id="course-name"
+                        <input type="text" class="form-control" id="course-name" name="other-name"
                                value="{{ other_course.otherCourseName if other_course.otherCourse == 1 else ''}}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button id="save-student" type="button" class="btn btn-primary">Save</button>
+                        <button id="save-student" type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -72,34 +76,37 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function(){
-
-            $('#save-student').click(function(){
-                var studentCourses = [];
-                $(".course-checkbox:checked").each(function(){
-                    studentCourses.push($(this).val());
-                });
-                var jsonStudentCourses = JSON.stringify(studentCourses);
-                var otherCourse = null;
-                if($('#other').prop('checked')){
-                    otherCourse = $('#course-name').val();
-                }
-                var student = {
-                    'sessionId': {{ session_id }},
-                    'studentId': {{ student.id }},
-                    'timeIn': $('#time-in').val(),
-                    'timeOut': $('#time-out').val(),
-                    'courses': jsonStudentCourses,
-                    'otherCourse': otherCourse
-                };
-                var url = '{{ url_for('SessionView:save_student_edits') }}';
-                $.post(url, student, function(message){
-                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
-                    alert(message);
-                });
-            });
-
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{##}
+            {#$('#save-student').click(function(){#}
+            {#    var studentCourses = [];#}
+            {#    $(".course-checkbox:checked").each(function(){#}
+            {#        studentCourses.push($(this).val());#}
+            {#    });#}
+            {#    var jsonStudentCourses = JSON.stringify(studentCourses);#}
+            {##}
+            {#    var otherCourse = null;#}
+            {#    if($('#other').prop('checked')){#}
+            {#        otherCourse = $('#course-name').val();#}
+            {#    }#}
+            {##}
+            {#    var student = {#}
+            {#        'sessionId': {{ session_id }},#}
+            {#        'studentId': {{ student.id }},#}
+            {#        'timeIn': $('#time-in').val(),#}
+            {#        'timeOut': $('#time-out').val(),#}
+            {#        'courses': jsonStudentCourses,#}
+            {#        'otherCourse': otherCourse#}
+            {#    };#}
+            {#    var url = '{{ url_for('SessionView:save_student_edits') }}';#}
+            {#    $.post(url, student, function(message){#}
+            {#        window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
+            {#        alert(message);#}
+            {#    });#}
+            {# });#}
+{##}
+{#        });#}
+{#    </script>#}
 {% endblock %}
+

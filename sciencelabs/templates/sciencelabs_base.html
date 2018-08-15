@@ -58,12 +58,12 @@
 
         {{ nav.render(app_settings['LAB_TITLE']) }}
 
+        <div class="margins">{% block alert %}{% endblock %}</div>
         <div class="nav margins">{% block subnav %}{% endblock %}</div>
         <div class="margins semester-selector">{% block semester_switch %}{% endblock %}</div>
         <div class="margins">{% block header %}{% endblock %}</div>
 
         <div class="margins">{% block body_content %}{% endblock %}</div>
-        {% block modalhtml %}{% endblock %}
         {% block scripts %}{% endblock %}
         {% block footer %}
             <div class="footer card margins">
