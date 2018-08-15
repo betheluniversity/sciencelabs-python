@@ -64,12 +64,14 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
+        csv_name = term + year + '_' + lab + '_StudentReport'
+
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
         for student, attendance in self.user.get_student_info():
             my_list.append([student.lastName, student.firstName, student.email, attendance])
 
-        return self.export_csv(my_list, 'StudentReport', term, year, lab, '')
+        return self.export_csv(my_list, csv_name)
 
     def semester(self):
         sess = self.session_.get_closed_sessions()
@@ -117,6 +119,8 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
+        csv_name = term + year + '_' + lab + '_TermReport'
+
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage'])
 
@@ -151,7 +155,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_unscheduled])
 
-        return self.export_csv(my_list, 'TermReport', term, year, lab, '')
+        return self.export_csv(my_list, csv_name)
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
@@ -196,6 +200,8 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
+        csv_name = term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport'
+
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
         schedule_info = self.schedule.get_yearly_schedule_tab_info(year, term)
@@ -232,7 +238,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        return self.export_csv(my_list, 'SummaryReport', term_abbr, year, lab, selected_month)
+        return self.export_csv(my_list, csv_name)
 
     def export_monthly_detail_csv(self, year, month):
         month = int(month)
@@ -250,6 +256,8 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
+        csv_name = term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport'
+
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
         cal = calendar
@@ -264,7 +272,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total:', total_attendance])
 
-        return self.export_csv(my_list, 'DetailReport', term_abbr, year, lab, selected_month)
+        return self.export_csv(my_list, csv_name)
 
     def annual(self):
         sess = self.session_.get_closed_sessions()
@@ -280,6 +288,8 @@ class ReportView(FlaskView):
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
+
+        csv_name = lab + '_CumulativeAttendance'
 
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']]
 
@@ -388,7 +398,7 @@ class ReportView(FlaskView):
 
         my_list.append(sub_list)
 
-        return self.export_csv(my_list, 'CumulativeAttendance', '', '', lab, '')
+        return self.export_csv(my_list, csv_name)
 
     def session(self):
         sess = self.session_.get_closed_sessions()
@@ -424,6 +434,8 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
+        csv_name = term + year + '_' + lab + '_SessionReport'
+
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
         sessions = self.session_.get_closed_sessions()
@@ -443,7 +455,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', '', '', '', 'Total:', total_attendance])
 
-        return self.export_csv(my_list, 'SessionReport', term, year, lab, '')
+        return self.export_csv(my_list, csv_name)
 
     def course(self):
         sess = self.session_.get_closed_sessions()
@@ -480,7 +492,7 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         course = self.courses.get_course(course_id)
-        csv_course_info = '_' + course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
+        csv_course_info = course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
 
         total_attendance = 0
         for session, schedule in sessions:
@@ -493,7 +505,9 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, csv_course_info)
+        csv_name = term + year + '_' + lab + '_SessionAttendance_' + csv_course_info
+
+        return self.export_csv(my_list, csv_name)
 
     def export_course_session_attendance_csv(self, course_id):
         term = 'SP'[:2]  # SEMESTER.TERM[:2]
@@ -501,6 +515,8 @@ class ReportView(FlaskView):
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
+
+        csv_name = term + year + '_' + lab + '_SessionAttendance'
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 
@@ -526,17 +542,9 @@ class ReportView(FlaskView):
 
         my_list.append(['', 'Total:', total_attendance, total_time/index])
 
-        return self.export_csv(my_list, 'SessionAttendance', term, year, lab, '')
+        return self.export_csv(my_list, csv_name)
 
-    def export_csv(self, data, type, term, year, lab, extra):
-        if type == 'DetailReport' or type == 'SummaryReport':
-            csv_name = (term + year + '_' + lab + '_' + extra + '_' + type)
-        elif type == 'CumulativeAttendance':
-            csv_name = (lab + '_' + type)
-        elif type == 'SessionAttendance':
-            csv_name = (term + year + '_' + lab + '_' + type + extra)
-        else:
-            csv_name = (term + year + '_' + lab + '_' + type)
+    def export_csv(self, data, csv_name):
 
         with open(csv_name + '.csv', 'w+') as csvfile:
             filewriter = csv.writer(csvfile)
