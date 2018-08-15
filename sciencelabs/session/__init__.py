@@ -49,6 +49,7 @@ class SessionView(FlaskView):
 
     @route('/closed')
     def closed(self):
+        current_alert = get_alert()
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
         semester = self.schedule.get_active_semester()
@@ -70,7 +71,7 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
-        alert = get_alert()
+        current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
         tutor_names = self.session.get_session_tutor_names(session_id)  # used for a logic check in template
@@ -90,7 +91,7 @@ class SessionView(FlaskView):
         student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
-        alert = get_alert()
+        current_alert = get_alert()
         return render_template('session/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
@@ -115,12 +116,18 @@ class SessionView(FlaskView):
         return render_template('session/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
+        current_alert = get_alert()
         session = self.session.get_session(session_id)
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
-        self.session.delete_session(session_id)
-        return redirect(url_for('SessionView:closed'))
+        try:
+            self.session.delete_session(session_id)
+            set_alert('success', 'Session deleted successfully!')
+            return redirect(url_for('SessionView:closed'))
+        except Exception as error:
+            set_alert('danger', 'Failed to delete session: ' + str(error))
+            return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
     @route('/save_session_edits', methods=['post'])
     def save_session_edits(self):

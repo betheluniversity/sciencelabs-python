@@ -1,5 +1,9 @@
 {% extends 'sciencelabs_base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
+
 {% block subnav %}
     <a id="all" class="nav-item nav-link active" href="#">All</a>
     <a id="active" class="nav-item nav-link disabled" href="#">Active</a>
