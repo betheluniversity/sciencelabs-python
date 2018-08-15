@@ -107,6 +107,7 @@ class SessionView(FlaskView):
     # TODO FIX ROUTE
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
+        current_alert = get_alert()
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
@@ -144,7 +145,10 @@ class SessionView(FlaskView):
             time_in = form.get('time-in')
             time_out = form.get('time-out')
             student_courses = form.getlist('course')
+            other_check = form.get('other-check')
             other_course = form.get('other-name')
+            if not other_check:
+                other_course = None
             self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
             self.session.edit_student_courses(session_id, student_id, student_courses)
             set_alert('success', 'Edited student successfully!')
@@ -157,23 +161,36 @@ class SessionView(FlaskView):
     def save_tutor_edits(self):
         try:
             form = request.form
-            session_id = form.get('sessionId')
-            tutor_id = form.get('tutorId')
-            time_in = form.get('timeIn')
-            time_out = form.get('timeOut')
-            lead = form.get('lead')
+            session_id = form.get('session-id')
+            tutor_id = form.get('tutor-id')
+            time_in = form.get('time-in')
+            time_out = form.get('time-out')
+            lead_check = form.get('lead')
+            lead = 0
+            if lead_check:
+                lead = 1
             self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
-            return 'Tutor edited successfully'
+            set_alert('success', 'Tutor edited successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            return 'Failed to edit tutor: ' + error
+            set_alert('danger', 'Failed to edit tutor: ' + str(error))
+            return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
 
     def delete_student_from_session(self, student_id, session_id):
-        self.session.delete_student_from_session(student_id, session_id)
-        return redirect(url_for('SessionView:closed'))
+        try:
+            self.session.delete_student_from_session(student_id, session_id)
+            set_alert('success', 'Student deleted successfully!')
+        except Exception as error:
+            set_alert('danger', 'Failed to delete student: ' + str(error))
+        return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
-        self.session.delete_tutor_from_session(tutor_id, session_id)
-        return redirect(url_for('SessionView:closed'))
+        try:
+            self.session.delete_tutor_from_session(tutor_id, session_id)
+            set_alert('success', 'Tutor deleted successfully!')
+        except Exception as error:
+            set_alert('danger', 'Failed to delete tutor: ' + str(error))
+        return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     @route('/add_student_submit', methods=['post'])
     def add_student_submit(self):
