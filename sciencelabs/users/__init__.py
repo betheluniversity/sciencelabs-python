@@ -1,7 +1,7 @@
 import json
 
 # Packages
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
@@ -10,6 +10,29 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.oracle_procs.db_functions import get_username_from_name
+
+#######################################################################################################################
+# Alert stuff helps give user info on changes they make
+
+alert = None  # Default alert to nothing
+
+
+# This method get's the current alert (if there is one) and then resets alert to nothing
+def get_alert():
+    global alert
+    alert_return = alert
+    alert = None
+    return alert_return
+
+
+# This method sets the alert for when one is needed next
+def set_alert(message_type, message):
+    global alert
+    alert = {
+        'type': message_type,
+        'message': message
+    }
+#######################################################################################################################
 
 
 class UsersView(FlaskView):
@@ -20,6 +43,7 @@ class UsersView(FlaskView):
         self.schedule = Schedule()
 
     def index(self):
+        current_alert = get_alert()
         users_info = self.user.get_user_info()
         return render_template('users/users.html', **locals())
 
@@ -28,7 +52,8 @@ class UsersView(FlaskView):
         return render_template('users/add_user.html')
 
     def edit_user(self, user_id):
-        professor = False;
+        current_alert = get_alert()
+        professor = False
         user = self.user.get_user(user_id)
         roles = self.user.get_all_roles()
         user_roles = self.user.get_user_roles(user_id)
@@ -36,7 +61,7 @@ class UsersView(FlaskView):
         course_list = self.course.get_semester_courses_with_section(active_semester.id)
         professor_role = self.user.get_professor_role()
         if professor_role in user_roles:
-            professor = True;
+            professor = True
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
 
@@ -56,15 +81,15 @@ class UsersView(FlaskView):
         results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
-    @route("/deactivate_single_user", methods=['post'])
-    def deactivate_single_user(self):
+    @route("/deactivate_single_user/<int:user_id>")
+    def deactivate_single_user(self, user_id):
         try:
-            form = request.form
-            user_id = form.get('userID')
             self.user.delete_user(user_id)
-            return 'User deactivated successfully'
+            set_alert('success', 'User deactivated successfully!')
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
-            return 'Failed to deactivate user: ' + error
+            set_alert('danger', 'Failed to deactivate user: ' + str(error))
+            return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route("/deactivate_users", methods=['post'])
     def deactivate_users(self):

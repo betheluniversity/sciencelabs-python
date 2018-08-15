@@ -1,5 +1,8 @@
 {% extends 'users/base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
 
 {% block body_content %}
    <div class="custom-default row">
@@ -78,7 +81,8 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button id="deactivate-user" type="button" class="delete btn btn-primary">Deactivate</button>
+                        <a href="{{ url_for('UsersView:deactivate_single_user', user_id=user.id) }}" id="deactivate-user"
+                           class="delete btn btn-primary">Deactivate</a>
                     </div>
                     <div class="form-group">
                         <button id="save-user" type="button" class="btn btn-primary">Save</button>
@@ -115,40 +119,28 @@
         </div>
    </div>
     <script>
+        $(document).ready(function(){
 
-    $(document).ready(function(){
-
-        $('#deactivate-user').click(function(){
-           var users = {
-             'userID': {{ user.id }}
-           };
-           var url = '{{ url_for('UsersView:deactivate_single_user') }}';
-           $.post(url, users, function(message){
-               window.location.replace('{{ url_for('UsersView:index') }}');
-               alert(message);
-           });
-        });
-
-        $('#save-user').click(function(){
-            var userRoles = [];
-            $(".role-checkbox:checked").each(function(){
-                userRoles.push($(this).val());
+            $('#save-user').click(function(){
+                var userRoles = [];
+                $(".role-checkbox:checked").each(function(){
+                    userRoles.push($(this).val());
+                });
+                var jsonUserRoles = JSON.stringify(userRoles);
+               var user = {
+                   'userId': {{ user.id }},
+                   'firstName': $('#user-first-name').val(),
+                   'lastName': $('#user-last-name').val(),
+                   'email': $('#user-email').val(),
+                   'username': $('#user-username').val(),
+                   'roles': jsonUserRoles
+               };
+               var url = '{{ url_for('UsersView:save_user_edits') }}';
+               $.post(url, user, function(message){
+                   window.location.replace('{{ url_for('UsersView:index') }}');
+                   alert(message);
+               });
             });
-            var jsonUserRoles = JSON.stringify(userRoles);
-           var user = {
-               'userId': {{ user.id }},
-               'firstName': $('#user-first-name').val(),
-               'lastName': $('#user-last-name').val(),
-               'email': $('#user-email').val(),
-               'username': $('#user-username').val(),
-               'roles': jsonUserRoles
-           };
-           var url = '{{ url_for('UsersView:save_user_edits') }}';
-           $.post(url, user, function(message){
-               window.location.replace('{{ url_for('UsersView:index') }}');
-               alert(message);
-           });
-        });
 
         });
     </script>

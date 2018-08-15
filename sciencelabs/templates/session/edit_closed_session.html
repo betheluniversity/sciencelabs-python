@@ -232,8 +232,8 @@
     <div style="display: block; text-align: right;" class="btn-group">
     <a href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
             class="edit btn btn-primary">Add a Student</a>
-    <button href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
-            class="btn btn-primary">Add Anonymous Student</button>
+    <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
+            class="btn btn-primary">Add Anonymous Student</a>
     </div>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">

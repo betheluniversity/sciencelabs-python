@@ -96,11 +96,13 @@ class SessionView(FlaskView):
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
+        current_alert = get_alert()
         student_list = self.schedule.get_registered_students()
         return render_template('session/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
+        current_alert = get_alert()
         session = self.session.get_session(session_id)
         return render_template('session/add_anonymous.html', **locals())
 
@@ -113,6 +115,7 @@ class SessionView(FlaskView):
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
+        current_alert = get_alert()
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('session/add_tutor.html', **locals())
 
@@ -196,37 +199,46 @@ class SessionView(FlaskView):
     def add_student_submit(self):
         try:
             form = request.form
-            session_id = form.get('sessionId')
-            student_id = form.get('studentId')
+            session_id = form.get('session-id')
+            student_id = form.get('choose-student')
             self.session.add_student_to_session(session_id, student_id)
-            return 'Student Added Successfully'
+            set_alert('success', 'Student added successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            return 'Failed to add student: ' + error
+            set_alert('danger', 'Failed to add student: ' + str(error))
+            return redirect(url_for('SessionView:add_student', session_id=session_id))
 
     @route('/add_anon_submit', methods=['post'])
     def add_anon_submit(self):
         try:
             form = request.form
-            session_id = form.get('sessionId')
-            anon_students = form.get('anonStudents')
+            session_id = form.get('session-id')
+            anon_students = form.get('anon-students')
             self.session.add_anonymous_to_session(session_id, anon_students)
-            return 'Anonymous students edited successfully'
+            set_alert('success', 'Anonymous students edited successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            return 'Failed to edit anonymous students: ' + error
+            set_alert('danger', 'Failed to edit anonymous students: ' + str(error))
+            return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
     @route('/add_tutor_submit', methods=['post'])
     def add_tutor_submit(self):
         try:
             form = request.form
-            session_id = form.get('sessionId')
-            tutor_id = form.get('tutorId')
-            time_in = form.get('timeIn')
-            time_out = form.get('timeOut')
-            lead = form.get('lead')
+            session_id = form.get('session-id')
+            tutor_id = form.get('choose-tutor')
+            time_in = form.get('time-in')
+            time_out = form.get('time-out')
+            lead_check = form.get('lead')
+            lead = 0
+            if lead_check:
+                lead = 1
             self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
-            return 'Tutor added successfully'
+            set_alert('success', 'Tutor added successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            return 'Failed to add tutor: ' + error
+            set_alert('danger', 'Failed to add tutor: ' + str(error))
+            return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):

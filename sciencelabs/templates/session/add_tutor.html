@@ -1,5 +1,9 @@
 {% extends 'session/base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
+
 {% block header %}
     <div class="header card">
         <div class="card-body">
@@ -11,11 +15,12 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('SessionView:add_tutor_submit') }}" method="post">
+                <input type="hidden" name="session-id" value="{{ session_id }}">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="choose-tutor">Registered Tutors</label>
-                        <select id="choose-tutor" class="custom-select">
+                        <select id="choose-tutor" class="custom-select" name="choose-tutor">
                            <option>Choose tutor...</option>
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
@@ -26,24 +31,24 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
-                        <input type="time" class="form-control" id="time-in">
+                        <input type="time" class="form-control" id="time-in" name="time-in">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
-                        <input type="time" class="form-control" id="time-out">
+                        <input type="time" class="form-control" id="time-out" name="time-out">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="lead">
+                            <input type="checkbox" class="custom-control-input" id="lead" name="lead">
                             <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button id="add-tutor" type="button" class="btn btn-primary">Save</button>
+                        <button id="add-tutor" type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -67,28 +72,28 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function(){
-
-            $('#add-tutor').click(function(){
-                var lead = 0;
-                if($('#lead').prop('checked')){
-                    lead = 1;
-                }
-                var tutor = {
-                    'sessionId': {{ session_id }},
-                    'tutorId': $('#choose-tutor :selected').val(),
-                    'timeIn': $('#time-in').val(),
-                    'timeOut': $('#time-out').val(),
-                    'lead': lead
-                };
-               var url = '{{ url_for('SessionView:add_tutor_submit') }}';
-               $.post(url, tutor, function(message){
-                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
-                   alert(message);
-               });
-            });
-
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{##}
+{#            $('#add-tutor').click(function(){#}
+{#                var lead = 0;#}
+{#                if($('#lead').prop('checked')){#}
+{#                    lead = 1;#}
+{#                }#}
+{#                var tutor = {#}
+{#                    'sessionId': {{ session_id }},#}
+{#                    'tutorId': $('#choose-tutor :selected').val(),#}
+{#                    'timeIn': $('#time-in').val(),#}
+{#                    'timeOut': $('#time-out').val(),#}
+{#                    'lead': lead#}
+{#                };#}
+{#               var url = '{{ url_for('SessionView:add_tutor_submit') }}';#}
+{#               $.post(url, tutor, function(message){#}
+{#                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
+{#                   alert(message);#}
+{#               });#}
+{#            });#}
+{##}
+{#        });#}
+{#    </script>#}
 {% endblock %}
