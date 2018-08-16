@@ -1,27 +1,31 @@
 {% extends 'term_startup/base.html' %}
 
-    {% block header %}
-        <div class="header card">
-            <div class="card-body btn-group">
-                <p style="padding: 0px; margin: 0px">Step 2: Review Courses</p>
-            </div>
-        </div>
-    {% endblock %}
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
 
-    {% block body_content %}
-        <div class="info card">
-            <div style="text-align: left;" class="card-body">
-                <p>
-                    Check to make sure that the courses currently served by the lab are correctly listed under the
-                    <span class="button-labels">Courses</span>
-                    tab, in the <strong>Current Term</strong> section of the Courses page. If any edits to the
-                    courses need to be made, please edit the list on the Courses page.
-                </p>
-                <p>
-                    After this check has been completed, go on to the next step by pressing the
-                    <span id="gray" class="button-labels">Step 4: Review Schedules</span> tab located at the top of
-                    the page.
-                </p>
-            </div>
+{% block header %}
+    <div class="header card">
+        <div class="card-body btn-group">
+            <p style="padding: 0px; margin: 0px">Step 2: Review Courses</p>
         </div>
-    {% endblock %}
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="info card">
+        <div style="text-align: left;" class="card-body">
+            <p>
+                Check to make sure that the courses currently served by the lab are correctly listed under the
+                <span class="button-labels">Courses</span>
+                tab, in the <strong>Current Term</strong> section of the Courses page. If any edits to the
+                courses need to be made, please edit the list on the Courses page.
+            </p>
+            <p>
+                After this check has been completed, go on to the next step by pressing the
+                <span id="gray" class="button-labels">Step 4: Review Schedules</span> tab located at the top of
+                the page.
+            </p>
+        </div>
+    </div>
+{% endblock %}

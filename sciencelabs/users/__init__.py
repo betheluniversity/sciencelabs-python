@@ -9,7 +9,7 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-#from sciencelabs.oracle_procs.db_functions import get_username_from_name
+from sciencelabs.oracle_procs.db_functions import get_username_from_name
 
 #######################################################################################################################
 # Alert stuff helps give user info on changes they make
@@ -67,6 +67,7 @@ class UsersView(FlaskView):
 
     @route('/create/<username>/<first_name>/<last_name>')
     def select_user_roles(self, username, first_name, last_name):
+        current_alert = get_alert()
         roles = self.user.get_all_roles()
         existing_user = self.user.check_for_existing_user(username)
         if existing_user:
@@ -78,7 +79,7 @@ class UsersView(FlaskView):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
-        #results = get_username_from_name(first_name, last_name)
+        results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate_single_user/<int:user_id>")
@@ -99,9 +100,10 @@ class UsersView(FlaskView):
             user_ids = json.loads(json_user_ids)
             for user in user_ids:
                 self.user.delete_user(user)
-            return 'User(s) deactivated successfully'
+            set_alert('success', 'User(s) deactivated successfully!')
         except Exception as error:
-            return 'Failed to deactivate user(s): ' + error
+            set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
+        return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
     @route("/save_user_edits", methods=['post'])
     def save_user_edits(self):
@@ -126,13 +128,14 @@ class UsersView(FlaskView):
     def create_user(self):
         try:
             form = request.form
-            first_name = form.get('firstName')
-            last_name = form.get('lastName')
+            first_name = form.get('first-name')
+            last_name = form.get('last-name')
             username = form.get('username')
-            json_roles = form.get('roles')
-            roles = json.loads(json_roles)
+            roles = form.getlist('roles')
             self.user.create_user(first_name, last_name, username)
             self.user.set_user_roles(username, roles)
-            return 'Added user successfully'
+            set_alert('success', 'User added successfully!')
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
-            return 'Failed to add user: ' + error
+            set_alert('danger', 'Failed to add user: ' + str(error))
+            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))

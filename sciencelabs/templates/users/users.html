@@ -28,7 +28,9 @@
                         </tr>
                         <tr>
                             <th colspan="4"></th>
-                            <th colspan="2"><button id="deactivate-users" type="button" class="delete btn btn-primary">Deactivate</button></th>
+                            <th colspan="2">
+                                <button id="deactivate-users" type="button" class="delete btn btn-primary">Deactivate</button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,9 +127,8 @@
                     'jsonUserIds': jsonUserIds
                 };
                 var url = '{{ url_for('UsersView:deactivate_users') }}';
-                $.post(url, users, function(message){
+                $.post(url, users, function(){
                     window.location.replace('{{ url_for('UsersView:index') }}');
-                    alert(message);
                 });
             });
 

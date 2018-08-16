@@ -40,6 +40,7 @@ class ScheduleView(FlaskView):
         self.course = Course()
 
     def index(self):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule_info = self.schedule.get_schedule_tab_info()
         schedule_tutors = self.schedule
@@ -63,7 +64,12 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
-        self.schedule.delete_schedule(schedule_id)
+        try:
+            asdf
+            self.schedule.delete_schedule(schedule_id)
+            set_alert('success', 'Deleted schedule successfully!')
+        except Exception as error:
+            set_alert('danger', 'Failed to delete schedule: ' + str(error))
         return redirect(url_for('ScheduleView:index'))
 
     @route("/save_schedule_edits", methods=['post'])
