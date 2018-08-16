@@ -8,7 +8,6 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                                 <p style="padding: 0px; margin: 0px">Edit Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
@@ -18,25 +17,27 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
-                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}">
+                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}" required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
-                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}">
+                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time" value="{{ schedule.startTime|datetimeformat('%H:%M') }}">
+                        <input type="time" class="form-control" id="start-time"
+                               value="{{ schedule.startTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time" value="{{ schedule.endTime|datetimeformat('%H:%M') }}">
+                        <input type="time" class="form-control" id="end-time"
+                               value="{{ schedule.endTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select id="day-of-week" class="custom-select">
+                        <select id="day-of-week" class="custom-select" required>
                             <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="0">Sunday</option>
                             <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="1">Monday</option>
                             <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="2">Tuesday</option>

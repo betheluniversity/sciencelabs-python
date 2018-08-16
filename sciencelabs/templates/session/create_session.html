@@ -1,5 +1,9 @@
 {% extends 'session/base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
+
 {% block header %}
     <div class="header card">
         <div class="card-body">
@@ -11,19 +15,19 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
-            <form class="create-session-form">
+            <form class="create-session-form" action="{{ url_for('SessionView:create_session_submit') }}" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="session-name">Name of Session</label>
-                        <input type="text" class="form-control" id="session-name">
+                        <input type="text" class="form-control" id="session-name" name="name" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="room-number">Room Number</label>
-                        <input type="text" class="form-control" id="room-number">
+                        <input type="text" class="form-control" id="room-number" name="room">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="semester">Semester</label>
-                        <select id="semester" class="custom-select">
+                        <select id="semester" class="custom-select" name="semester">
                             {% for semester in semester_list %}
                                 <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
                             {% endfor %}
@@ -33,22 +37,22 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="session-date">Date (click to select)</label>
-                        <input type="text" class="form-control" id="session-date">
+                        <input type="text" class="form-control" id="session-date" name="date" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="scheduled-start">Scheduled Start Time</label>
-                        <input type="time" class="form-control" id="scheduled-start">
+                        <input type="time" class="form-control" id="scheduled-start" name="scheduled-start">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="scheduled-end">Scheduled End Time</label>
-                        <input type="time" class="form-control" id="scheduled-end">
+                        <input type="time" class="form-control" id="scheduled-end" name="scheduled-end">
                     </div>
                 </div>
-                {# TODO: This looks nothing like the actual mathlab site #}
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                        <select class="chosen form-control" id="choose-leads" multiple="true"
+                                data-placeholder="Choose lead tutors ..." name="choose-leads">
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
                             {% endfor %}
@@ -58,7 +62,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <select class="chosen form-control" id="choose-tutors" multiple="true" data-placeholder="Choose tutors ...">
+                        <select class="chosen form-control" id="choose-tutors" multiple="true"
+                                data-placeholder="Choose tutors ..." name="choose-tutors">
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
@@ -68,11 +73,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="actual-start">Actual Start Time</label>
-                        <input type="time" class="form-control" id="actual-start">
+                        <input type="time" class="form-control" id="actual-start" name="actual-start">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="actual-end">Actual End Time</label>
-                        <input type="time" class="form-control" id="actual-end">
+                        <input type="time" class="form-control" id="actual-end" name="actual-end">
                     </div>
                 </div>
                 <div class="form-row">
@@ -85,7 +90,7 @@
                         {% for course in course_list %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
                                 <input type="checkbox" class="course-checkbox custom-control-input"
-                                       value="{{ course.id }}" id="{{ course.courseName }}" checked>
+                                       value="{{ course.id }}" id="{{ course.courseName }}" name="courses" checked>
                                 <label class="custom-control-label" for="{{ course.courseName }}">
                                     {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                             </div>
@@ -95,18 +100,18 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="comments">Comments</label>
-                        <textarea class="form-control" id="comments"></textarea>
+                        <textarea class="form-control" id="comments" name="comments"></textarea>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="anon-students">Anonymous Students</label>
-                        <input type="text" class="form-control" id="anon-students" value="0">
+                        <input type="text" class="form-control" id="anon-students" name="anon-students" value="0" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <button type="button" class="btn btn-primary" id="create-session">Save</button>
+                        <button type="submit" class="btn btn-primary" id="create-session">Save</button>
                     </div>
                 </div>
             </form>
@@ -146,44 +151,44 @@
                 display_disabled_options: true
             });
 
-            $('#create-session').click(function(){
-
-                // Getting leads
-                var leads = $('#choose-leads').val();
-                var jsonLeads = JSON.stringify(leads);
-
-                // Getting tutors
-                var tutors = $('#choose-tutors').val();
-                var jsonTutors = JSON.stringify(tutors);
-
-                // Getting courses
-                var courses = [];
-                $('.course-checkbox:checked').each(function(){
-                    courses.push($(this).val());
-                });
-                var jsonCourses = JSON.stringify(courses);
-
-                var session = {
-                    'name': $('#session-name').val(),
-                    'room': $('#room-number').val(),
-                    'semester': $('#semester :selected').val(),
-                    'date': $('#session-date').val(),
-                    'startTime': $('#scheduled-start').val(),
-                    'endTime': $('#scheduled-end').val(),
-                    'leads': jsonLeads,
-                    'tutors': jsonTutors,
-                    'actualStart': $('#actual-start').val(),
-                    'actualEnd': $('#actual-end').val(),
-                    'courses': jsonCourses,
-                    'comments': $('#comments').val(),
-                    'anonStudents': $('#anon-students').val()
-                };
-               var url = '{{ url_for('SessionView:create_session_submit') }}';
-               $.post(url, session, function(message){
-                   window.location.replace('{{ url_for('SessionView:index') }}');
-                   alert(message);
-               });
-            });
+            {#$('#create-session').click(function(){#}
+            {##}
+            {#    // Getting leads#}
+            {#    var leads = $('#choose-leads').val();#}
+            {#    var jsonLeads = JSON.stringify(leads);#}
+            {##}
+            {#    // Getting tutors#}
+            {#    var tutors = $('#choose-tutors').val();#}
+            {#    var jsonTutors = JSON.stringify(tutors);#}
+            {##}
+            {#    // Getting courses#}
+            {#    var courses = [];#}
+            {#    $('.course-checkbox:checked').each(function(){#}
+            {#        courses.push($(this).val());#}
+            {#    });#}
+            {#    var jsonCourses = JSON.stringify(courses);#}
+            {##}
+            {#    var session = {#}
+            {#        'name': $('#session-name').val(),#}
+            {#        'room': $('#room-number').val(),#}
+            {#        'semester': $('#semester :selected').val(),#}
+            {#        'date': $('#session-date').val(),#}
+            {#        'startTime': $('#scheduled-start').val(),#}
+            {#        'endTime': $('#scheduled-end').val(),#}
+            {#        'leads': jsonLeads,#}
+            {#        'tutors': jsonTutors,#}
+            {#        'actualStart': $('#actual-start').val(),#}
+            {#        'actualEnd': $('#actual-end').val(),#}
+            {#        'courses': jsonCourses,#}
+            {#        'comments': $('#comments').val(),#}
+            {#        'anonStudents': $('#anon-students').val()#}
+            {#    };#}
+            {#   var url = '{{ url_for('SessionView:create_session_submit') }}';#}
+            {#   $.post(url, session, function(message){#}
+            {#       window.location.replace('{{ url_for('SessionView:index') }}');#}
+            {#       alert(message);#}
+            {#   });#}
+            {# });#}
 
         });
     </script>

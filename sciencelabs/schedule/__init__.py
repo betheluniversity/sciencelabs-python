@@ -65,7 +65,6 @@ class ScheduleView(FlaskView):
 
     def delete_schedule(self, schedule_id):
         try:
-            asdf
             self.schedule.delete_schedule(schedule_id)
             set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:

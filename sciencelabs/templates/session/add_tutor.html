@@ -20,8 +20,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="choose-tutor">Registered Tutors</label>
-                        <select id="choose-tutor" class="custom-select" name="choose-tutor">
-                           <option>Choose tutor...</option>
+                        <select id="choose-tutor" class="custom-select" name="choose-tutor" required>
+                           <option disabled selected value="">Choose tutor...</option>
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
@@ -71,29 +71,4 @@
             </div>
         </div>
     </div>
-
-{#    <script>#}
-{#        $(document).ready(function(){#}
-{##}
-{#            $('#add-tutor').click(function(){#}
-{#                var lead = 0;#}
-{#                if($('#lead').prop('checked')){#}
-{#                    lead = 1;#}
-{#                }#}
-{#                var tutor = {#}
-{#                    'sessionId': {{ session_id }},#}
-{#                    'tutorId': $('#choose-tutor :selected').val(),#}
-{#                    'timeIn': $('#time-in').val(),#}
-{#                    'timeOut': $('#time-out').val(),#}
-{#                    'lead': lead#}
-{#                };#}
-{#               var url = '{{ url_for('SessionView:add_tutor_submit') }}';#}
-{#               $.post(url, tutor, function(message){#}
-{#                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
-{#                   alert(message);#}
-{#               });#}
-{#            });#}
-{##}
-{#        });#}
-{#    </script>#}
 {% endblock %}

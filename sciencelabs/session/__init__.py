@@ -55,6 +55,7 @@ class SessionView(FlaskView):
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         lead_list = self.schedule.get_registered_leads()
@@ -241,29 +242,29 @@ class SessionView(FlaskView):
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):
         try:
+            asdf
             form = request.form
             name = form.get('name')
             room = form.get('room')
             semester_id = form.get('semester')
             date = form.get('date')
-            scheduled_start = form.get('startTime')
-            scheduled_end = form.get('endTime')
-            json_leads = form.get('leads')
-            leads = json.loads(json_leads)
-            json_tutors = form.get('tutors')
-            tutors = json.loads(json_tutors)
-            actual_start = form.get('actualStart')
-            actual_end = form.get('actualEnd')
-            json_courses = form.get('courses')
-            courses = json.loads(json_courses)
+            scheduled_start = form.get('scheduled-start')
+            scheduled_end = form.get('scheduled-end')
+            leads = form.getlist('choose-leads')
+            tutors = form.getlist('choose-tutors')
+            actual_start = form.get('actual-start')
+            actual_end = form.get('actual-end')
+            courses = form.getlist('courses')
             comments = form.get('comments')
-            anon_students = form.get('anonStudents')
-            self.session.create_new_session(semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-                                            room, comments, anon_students, name)
-            session_id = self.session.get_new_session_id(semester_id, date, room, name)
-            self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
-            self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
-            self.session.create_session_courses(session_id, courses)
-            return 'Session created successfully'
+            anon_students = form.get('anon-students')
+            # self.session.create_new_session(semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
+            #                                 room, comments, anon_students, name)
+            # session_id = self.session.get_new_session_id(semester_id, date, room, name)
+            # self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
+            # self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
+            # self.session.create_session_courses(session_id, courses)
+            set_alert('success', 'Session created successfully!')
+            return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            return 'Failed to create session: ' + error
+            set_alert('danger', 'Failed to create session: ' + str(error))
+            return redirect(url_for('SessionView:create'))

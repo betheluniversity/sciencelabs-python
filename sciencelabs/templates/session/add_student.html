@@ -19,8 +19,8 @@
                 <input type="hidden" name="session-id" value="{{ session_id }}">
                 <div class="form-group">
                    <label for="choose-student">Registered Students</label>
-                   <select id="choose-student" class="custom-select" name="choose-student">
-                       <option>Choose student...</option>
+                   <select id="choose-student" class="custom-select" name="choose-student" required>
+                       <option disabled selected value="">Choose student...</option>
                        {% for student in student_list %}
                             <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
                        {% endfor %}

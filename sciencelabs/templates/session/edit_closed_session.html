@@ -18,7 +18,7 @@
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
                 <input type="text" class="form-control" id="session-name"
-                       value="{{ session_info.name }}">
+                       value="{{ session_info.name }}" required>
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
@@ -36,7 +36,8 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="session-date">Date (click to select)</label>
-                <input type="text" class="form-control" id="session-date" value="{{ session_info.date.strftime('%m/%d/%Y') }}">
+                <input type="text" class="form-control" id="session-date"
+                       value="{{ session_info.date.strftime('%m/%d/%Y') }}" required>
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
@@ -111,7 +112,7 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="anon-students">Anonymous Students</label>
-                <input type="text" class="form-control" id="anon-students" value="{{ session_info.anonStudents }}">
+                <input type="text" class="form-control" id="anon-students" value="{{ session_info.anonStudents }}" required>
             </div>
         </div>
         <div class="form-row">
