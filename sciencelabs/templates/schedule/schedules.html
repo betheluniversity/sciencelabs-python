@@ -1,15 +1,10 @@
 {% extends 'schedule/base.html' %}
 
-{#    {% macro day_abbr(dayofWeek) -%}#}
-{#        {% set abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}#}
-{#        {{ abbr[dayofWeek] }}#}
-{#    {%- endmacro %}#}
-
 {% block body_content %}
     <div class="custom-small row">
         <div class="col-md-8">
             <form>
-                <div class="form-row">
+            da    <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
@@ -39,8 +34,7 @@
                                     {{ schedule.name }}
                                 </td>
                                 <td>
-                                    {{ day_abbr[schedule.dayofWeek] }}
-{#                                    {{ day_abbr(schedule.dayofWeek) }}#}
+                                    {{ macros.day_abbr(schedule.dayofWeek) }}
                                 </td>
                                 <td>
                                     {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}

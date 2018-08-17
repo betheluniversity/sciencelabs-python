@@ -53,7 +53,7 @@
                     <tr>
                         <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                         <td>
-                            {{ day_abbr[schedule.dayofWeek] }}
+                            {{ macros.day_abbr(schedule.dayofWeek) }}
                         </td>
                         <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                         {% set attendance_per_session = session_.get_session_attendees_with_dup(course[0].id, session.id) %}
