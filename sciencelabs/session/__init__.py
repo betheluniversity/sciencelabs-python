@@ -1,4 +1,5 @@
 # Packages
+from datetime import datetime
 from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
@@ -134,10 +135,33 @@ class SessionView(FlaskView):
 
     @route('/save_session_edits', methods=['post'])
     def save_session_edits(self):
-        form = request.form
-        session_id = form.get('sessionID')
-        # TODO: Save edits
-        return 'success'
+        try:
+            form = request.form
+            session_id = form.get('session-id')
+            name = form.get('name')
+            room = form.get('room')
+            semester_id = form.get('semester')
+            date = form.get('date')
+            db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+            scheduled_start = form.get('scheduled-start')
+            scheduled_end = form.get('scheduled-end')
+            leads = form.getlist('leads')
+            tutors = form.getlist('tutors')
+            actual_start = form.get('actual-start')
+            actual_end = form.get('actual-end')
+            courses = form.getlist('courses')
+            comments = form.get('comments')
+            anon_students = form.get('anon-students')
+            self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, actual_start, actual_end, room, comments, anon_students, name)
+            self.session.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
+            self.session.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
+            self.session.edit_session_courses(session_id, courses)
+            set_alert('success', 'Session edited successfully!')
+            return redirect(url_for('SessionView:closed'))
+        except Exception as error:
+            set_alert('danger', 'Failed to edit session: ' + str(error))
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
+
 
     @route('/save_student_edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
@@ -242,12 +266,12 @@ class SessionView(FlaskView):
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):
         try:
-            asdf
             form = request.form
             name = form.get('name')
             room = form.get('room')
             semester_id = form.get('semester')
             date = form.get('date')
+            db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start')
             scheduled_end = form.get('scheduled-end')
             leads = form.getlist('choose-leads')
@@ -257,12 +281,12 @@ class SessionView(FlaskView):
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
-            # self.session.create_new_session(semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-            #                                 room, comments, anon_students, name)
-            # session_id = self.session.get_new_session_id(semester_id, date, room, name)
-            # self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
-            # self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
-            # self.session.create_session_courses(session_id, courses)
+            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, actual_start, actual_end,
+                                            room, comments, anon_students, name)
+            session_id = self.session.get_new_session_id(semester_id, db_date, room, name)
+            self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
+            self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
+            self.session.create_session_courses(session_id, courses)
             set_alert('success', 'Session created successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:

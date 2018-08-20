@@ -9,7 +9,7 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-#from sciencelabs.oracle_procs.db_functions import get_username_from_name
+from sciencelabs.oracle_procs.db_functions import get_username_from_name
 
 #######################################################################################################################
 # Alert stuff helps give user info on changes they make
@@ -79,7 +79,7 @@ class UsersView(FlaskView):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
-        #results = get_username_from_name(first_name, last_name)
+        results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate_single_user/<int:user_id>")

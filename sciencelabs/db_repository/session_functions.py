@@ -4,7 +4,7 @@ from sqlalchemy.sql import text
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
-    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table
+    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, SessionCourseCodes_Table
 
 
 class Session:
@@ -217,3 +217,86 @@ class Session:
                 .filter(Semester_Table.term == term)
                 .filter(Semester_Table.year == year)
                 .filter(Session_Table.startTime != None).all())
+
+    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
+                           comments, anon_students, name):
+        new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
+                                    schedEndTime=scheduled_end, startTime=actual_start, endTime=actual_end, room=room,
+                                    open=0, comments=comments, anonStudents=anon_students, name=name,
+                                    hash='aaaaaaaaaaaaa')  # TODO: hash??
+        session.add(new_session)
+        session.commit()
+
+    def get_new_session_id(self, semester_id, date, room, name):
+        return session.query(Session_Table.id).filter(Session_Table.semester_id == semester_id)\
+            .filter(Session_Table.date == date).filter(Session_Table.room == room)\
+            .filter(Session_Table.name == name).one()
+
+    def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
+        for lead in leads:
+            new_tutor_session = TutorSession_Table(schedTimeIn=scheduled_start, schedTimeOut=scheduled_end, isLead=1,
+                                                   tutorId=lead, sessionId=session_id, substitutable=0)
+            session.add(new_tutor_session)
+        session.commit()
+
+    def create_tutor_sessions(self, scheduled_start, scheduled_end, tutors, session_id):
+        for tutor in tutors:
+            new_tutor_session = TutorSession_Table(schedTimeIn=scheduled_start, schedTimeOut=scheduled_end, isLead=0,
+                                                   tutorId=tutor, sessionId=session_id, substitutable=0)
+            session.add(new_tutor_session)
+        session.commit()
+
+    def create_session_courses(self, session_id, courses):
+        for course in courses:
+            new_session_course = SessionCourseCodes_Table(session_id=session_id, coursecode_id=course)
+            session.add(new_session_course)
+        session.commit()
+
+    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
+                     room, comments, anon_students, name):
+        session_to_edit = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_edit.semester_id = semester_id
+        session_to_edit.date = date
+        session_to_edit.schedStartTime = scheduled_start
+        session_to_edit.schedEndTime = scheduled_end
+        session_to_edit.startTime = actual_start
+        session_to_edit.endTime = actual_end
+        session_to_edit.room = room
+        session_to_edit.comments = comments
+        session_to_edit.anonStudents = anon_students
+        session_to_edit.name = name
+        session.commit()
+
+    def edit_session_leads(self, scheduled_start, scheduled_end, leads, session_id):
+        current_lead_ids = session.query(TutorSession_Table.tutorId).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.isLead == 1).all()
+        # Check to see if any current leads are still leads, and if not delete them
+        for current_lead in current_lead_ids:
+            if current_lead in leads:
+                leads.remove(current_lead)  # Remove lead from list to add
+            else:
+                session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+                    .filter(TutorSession_Table.tutorId == current_lead).delete()  # delete if not still lead
+        session.commit()
+        if leads:  # If there are still leads left we need to add them now
+            self.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
+
+    def edit_session_tutors(self, scheduled_start, scheduled_end, tutors, session_id):
+        current_tutor_ids = session.query(TutorSession_Table.tutorId).filter(TutorSession_Table.sessionId == session_id) \
+            .filter(TutorSession_Table.isLead == 0).all()
+        # Check to see if any current tutors are still tutors
+        for current_tutor in current_tutor_ids:
+            if current_tutor in tutors:
+                tutors.remove(current_tutor)  # Remove tutor from list to add
+            else:
+                session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id) \
+                    .filter(TutorSession_Table.tutorId == current_tutor).delete()  # delete if not still tutor
+        session.commit()
+        if tutors:  # If there are still tutors we need to add them now
+            self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
+
+    def edit_session_courses(self, session_id, courses):
+        session.query(SessionCourseCodes_Table).filter(SessionCourseCodes_Table.session_id == session_id).delete()
+        session.commit()
+        self.create_session_courses(session_id, courses)
+
