@@ -3,7 +3,7 @@ from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
-    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table, Course_Table
+    ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table
 
 
 class Schedule:
@@ -82,7 +82,8 @@ class Schedule:
         return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
 
     def get_schedule_from_session(self, session_id):
-        return session.query(Schedule_Table).filter(Session_Table.id == session_id).filter(Session_Table.schedule_id == Schedule_Table.id).first()
+        return session.query(Schedule_Table).filter(Session_Table.id == session_id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id).first()
 
     def get_schedule_tutors(self, schedule_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.isLead,
@@ -113,7 +114,8 @@ class Schedule:
         session.commit()
 
     def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
-        new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time, dayofWeek=day_of_week, term=term)
+        new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time,
+                                      dayofWeek=day_of_week, term=term)
         session.add(new_schedule)
         session.commit()
 

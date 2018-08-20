@@ -85,7 +85,11 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id).distinct()
 
     def get_session_attendees_with_dup(self, course_id, session_id):
-        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id))).filter(StudentSession_Table.sessionId == session_id).filter(Session_Table.id == StudentSession_Table.sessionId).filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id).filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id).all()
+        return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(Session_Table.id == StudentSession_Table.sessionId)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(SessionCourses_Table.course_id == course_id).group_by(StudentSession_Table.id).all()
 
     def get_studentsession_from_session(self, session_id):
         return session.query(User_Table, StudentSession_Table).filter(User_Table.id == StudentSession_Table.studentId)\
@@ -299,4 +303,40 @@ class Session:
         session.query(SessionCourseCodes_Table).filter(SessionCourseCodes_Table.session_id == session_id).delete()
         session.commit()
         self.create_session_courses(session_id, courses)
+
+    def create_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def create_lead_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def create_tutor_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def get_session_ids_by_schedule(self):
+        # TODO
+        session.commit()
+
+    def create_scheduled_session_courses(self):
+        # TODO
+        session.commit()
+
+    def edit_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def edit_lead_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def edit_tutor_scheduled_sessions(self):
+        # TODO
+        session.commit()
+
+    def edit_scheduled_session_courses(self):
+        # TODO
+        session.commit()
 

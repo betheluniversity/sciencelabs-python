@@ -3,7 +3,8 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('ScheduleView:save_schedule_edits') }}" method="post">
+                <input type="hidden" name="schedule-id" value="{{ schedule_id }}">
                  <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
@@ -13,31 +14,32 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
-                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}" required>
+                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}"
+                               name="name" required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
-                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}" required>
+                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}"
+                               name="room" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time"
+                        <input type="time" class="form-control" id="start-time" name="start-time"
                                value="{{ schedule.startTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time"
+                        <input type="time" class="form-control" id="end-time" name="end-time"
                                value="{{ schedule.endTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select id="day-of-week" class="custom-select" required>
+                        <select id="day-of-week" class="custom-select" name="day-of-week" required>
                             <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="0">Sunday</option>
                             <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="1">Monday</option>
                             <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="2">Tuesday</option>
@@ -51,7 +53,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                        <select class="chosen form-control" id="choose-leads" multiple="true" name="leads"
+                                data-placeholder="Choose lead tutors ...">
                             {% set leads = [] %}
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
@@ -63,7 +66,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <select class="chosen form-control" id="choose-tutors" multiple data-placeholder="Choose tutors ...">
+                        <select class="chosen form-control" id="choose-tutors" name="tutors"
+                                multiple data-placeholder="Choose tutors ...">
                             {% for tutor in tutor_list %}
                                 {% if tutor not in leads %}
                                 <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
@@ -83,7 +87,7 @@
                         {% for course in course_list %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
-                                       value="{{ course.id }}" checked>
+                                       value="{{ course.id }}" name="courses" checked>
                                 <label class="custom-control-label" for="{{ course.id }}">
                                     {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                             </div>
@@ -92,7 +96,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" id="save-schedule">Save</button>
+                        <button type="submit" class="btn btn-primary" id="save-schedule">Save</button>
                     </div>
                 </div>
             </form>
@@ -128,41 +132,6 @@
                     $(this).text('Select No Courses');
                 }
                 $(this).toggleClass('all')
-            });
-
-            $('#save-schedule').click(function(){
-
-                // Getting leads
-                var leads = $('#choose-leads').val();
-                var jsonLeads = JSON.stringify(leads);
-
-                // Getting tutors
-                var tutors = $('#choose-tutors').val();
-                var jsonTutors = JSON.stringify(tutors);
-
-                // Getting courses
-                var courses = [];
-                $('.course-checkbox:checked').each(function(){
-                    courses.push($(this).val());
-                });
-                var jsonCourses = JSON.stringify(courses);
-
-                var schedule = {
-                    'scheduleId': {{ schedule_id }},
-                    'scheduleName': $('#schedule-name').val(),
-                    'room': $('#room').val(),
-                    'startTime': $('#start-time').val(),
-                    'endTime': $('#end-time').val(),
-                    'dayOfWeek': $('#day-of-week :selected').val(),
-                    'leads': jsonLeads,
-                    'tutors': jsonTutors,
-                    'courses': jsonCourses
-                };
-               var url = '{{ url_for('ScheduleView:save_schedule_edits') }}';
-               $.post(url, schedule, function(message){
-                   window.location.replace('{{ url_for('ScheduleView:index') }}');
-                   alert(message);
-               });
             });
 
             $(".chosen").chosen({
