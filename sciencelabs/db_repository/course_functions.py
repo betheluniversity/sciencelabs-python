@@ -183,3 +183,25 @@ class Course:
         new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
         session.add(new_courseprofessor)
         session.commit()
+
+    def delete_course(self, c_info):
+        course = session.query(Course_Table) \
+            .filter(c_info['crn'] == Course_Table.crn) \
+            .filter(c_info['subject'] == Course_Table.dept) \
+            .filter(c_info['cNumber'] == Course_Table.course_num) \
+            .filter(c_info['section'] == Course_Table.section) \
+            .filter(c_info['meetingDay'] == Course_Table.meeting_day) \
+            .filter(c_info['title'] == Course_Table.title) \
+            .filter(c_info['enrolled'] == Course_Table.num_attendees) \
+            .filter(c_info['room'] == Course_Table.room) \
+            .one()
+
+        courseprofessor = session.query(CourseProfessors_Table)\
+            .filter(CourseProfessors_Table.course_id == course.id)\
+            .one()
+
+        session.delete(courseprofessor)
+        session.commit()
+
+        session.delete(course)
+        session.commit()
