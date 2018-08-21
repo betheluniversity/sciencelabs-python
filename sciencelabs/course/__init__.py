@@ -1,12 +1,31 @@
 # Packages
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.course.course_controller import CourseController
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.oracle_procs.db_functions import get_course_is_valid
+from sciencelabs.oracle_procs.db_functions import get_course_is_valid, get_info_for_course
+
+alert = None  # Default alert to nothing
+
+
+# This method get's the current alert (if there is one) and then resets alert to nothing
+def get_alert():
+    global alert
+    alert_return = alert
+    alert = None
+    return alert_return
+
+
+# This method sets the alert for when one is needed next
+def set_alert(message_type, message):
+    global alert
+    alert = {
+        'type': message_type,
+        'message': message
+    }
 
 
 class CourseView(FlaskView):
@@ -16,16 +35,9 @@ class CourseView(FlaskView):
         self.base = CourseController()
         self.course = Course()
         self.schedule = Schedule()
-        self.potential_courses = []
 
     @route('/admin/')
     def index(self):
-        course_info = self.course.get_course_info()
-        active_coursecodes = self.course.get_active_coursecode()
-        cc_str = ''
-        for coursecodes in active_coursecodes:
-            cc_str += coursecodes.dept + str(coursecodes.courseNum) + ' (' + coursecodes.courseName + ')' + ', '
-        semester = self.schedule.get_active_semester()
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
@@ -33,19 +45,46 @@ class CourseView(FlaskView):
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
 
-    @route("/add-potential-courses", methods=['POST'])
-    def add_potential_course(self):
-        form = request.form
-        sbj_num = form.get('sbj_num')
-        self.potential_courses.append(sbj_num)
-        return ''
+    def load_course_table(self):
+        course_info = self.course.get_course_info()
+        active_coursecodes = self.course.get_active_coursecode()
+        cc_str = ''
+        for coursecodes in active_coursecodes:
+            cc_str += coursecodes.dept + str(coursecodes.courseNum) + ' (' + coursecodes.courseName + ')' + '; '
+        semester = self.schedule.get_active_semester()
 
-    @route("/submit", methods=['POST'])
+        return render_template('course/course_table.html', **locals())
+
+    @route("/admin/", methods=['POST'])
     def submit(self):
-        results = []
-        for course in self.potential_courses:
-            result = get_course_is_valid(course[:3], course[3:])
-            if result:
-                results.append(result)
-        self.potential_courses = []
-        return results
+        form = request.form
+        course_string = form.get('potential_courses')
+        course_list = course_string.split(";")
+        for course in course_list:
+            # TODO ASK TO SEE IF THERE IS SUCH THING AS COURSECODE IS VALID?
+            cc_info = get_course_is_valid(course[:3], course[3:])
+            course_info = get_info_for_course(course[:3], course[3:])
+            if cc_info:
+                pass
+                # TODO CAN'T TEST SINCE THERE ARE NO ACTIVATE COURSES ATM
+                # self.handle_coursecode(cc_info[0])
+                #     self.handle_course(course)
+
+        return redirect(url_for('CourseView:index'))
+
+    def handle_coursecode(self, info):
+        does_exist = self.course.check_for_existing_coursecode(info)
+        if does_exist:
+            self.course.check_if_existing_coursecode_is_active(info)
+        else:
+            self.course.create_coursecode(info)
+
+    def handle_course(self, info):
+        does_exist = self.course.check_for_existing_course(info)
+        if not does_exist:
+            self.course.create_course(info)
+
+    def delete(self, dept, course_num, section):
+        course_info = get_info_for_course(dept, course_num)
+        does_exist = self.course.check_for_existing_course(course_info[0])
+        return redirect(url_for('CourseView:index'))
