@@ -180,7 +180,9 @@ class Course:
         session.commit()
 
         user = session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one()
+
         new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
+
         session.add(new_courseprofessor)
         session.commit()
 
