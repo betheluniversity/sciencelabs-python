@@ -94,4 +94,5 @@ def get_info_for_course(sbj, code, date_offset=0):
 
     call_cursor.callproc("bth_websrv_api.coursecode_to_courses", (sbj, code, date_offset, result_cursor))
     result = result_cursor.fetchall()
+
     return get_results(result)
