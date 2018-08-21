@@ -163,6 +163,7 @@ class Course:
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
         # TODO DON'T REALLY KNOW WHETHER TO CREATE IT OR NOT WHEN TERM/YEAR DOESN'T EXIST, RIGHT NOW WE ARE JUST CREATING IT
+        # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
 
         semester_id = None
         semester_list = session.query(Semester_Table).all()
