@@ -63,11 +63,10 @@ class CourseView(FlaskView):
         for course in course_list:
             cc_info = get_course_is_valid(course[:3], course[3:])
             course_info = get_info_for_course(course[:3], course[3:])
-            if cc_info:
+            if cc_info and course_info:
                 self.handle_coursecode(cc_info[0])
-                if course_info:
-                    for info in course_info:
-                        self.handle_course(course_info[info])
+                for info in course_info:
+                    self.handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
 
@@ -83,8 +82,6 @@ class CourseView(FlaskView):
         if not does_exist:
             self.course.create_course(info)
 
-
-    # TODO FIGURE OUT HOW TO DELETE COURSES
     @route("/admin/", methods=['POST'])
     def delete(self):
         form = request.form
