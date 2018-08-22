@@ -50,7 +50,7 @@ class CourseView(FlaskView):
         active_coursecodes = self.course.get_active_coursecode()
         cc_str = ''
         for coursecodes in active_coursecodes:
-            cc_str += coursecodes.dept + str(coursecodes.courseNum) + ' (' + coursecodes.courseName + ')' + '; '
+            cc_str += '%s%s (%s); ' % (coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
         semester = self.schedule.get_active_semester()
 
         return render_template('course/course_table.html', **locals())
