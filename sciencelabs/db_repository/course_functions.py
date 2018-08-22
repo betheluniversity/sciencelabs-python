@@ -137,17 +137,17 @@ class Course:
         end_date.strftime('%Y-%m-%d')
 
         begin_time = c_info['beginTime']
-        meridiem = begin_time[5:]
+        am_or_pm = begin_time[5:]
         begin_time = datetime.strptime(begin_time[:4], '%H:%M')
-        if meridiem == 'AM':
+        if am_or_pm == 'AM':
             begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
         else:
             begin_time = timedelta(hours=(begin_time.hour + 12), minutes=begin_time.minute, seconds=begin_time.second)
 
         end_time = c_info['endTime']
-        meridiem = end_time[5:]
+        am_or_pm = end_time[5:]
         end_time = datetime.strptime(end_time[:4], '%H:%M')
-        if meridiem == 'AM':
+        if am_or_pm == 'AM':
             end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
         else:
             end_time = timedelta(hours=(end_time.hour + 12), minutes=end_time.minute, seconds=end_time.second)
