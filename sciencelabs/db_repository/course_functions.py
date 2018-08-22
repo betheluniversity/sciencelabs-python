@@ -163,6 +163,7 @@ class Course:
             if semesters.year == year and semesters.term == term:
                 semester_id = semesters.id
 
+        # TODO REMOVE HARD-CODED SEMESTER_ID
         new_course = Course_Table(semester_id=40013, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
@@ -187,8 +188,7 @@ class Course:
         coursecode.active = 0
         session.commit()
 
-    def delete_course(self, course_info):
-        course, user, semester = course_info
+    def delete_course(self, course, user):
 
         courseprofessor = session.query(CourseProfessors_Table)\
             .filter(CourseProfessors_Table.course_id == course.id)\
