@@ -9,7 +9,6 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                 {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                                 <p style="padding: 0px; margin: 0px">Edit {{ user.firstName }} {{ user.lastName }} ({{ user.username }})</p>
                             </div>
                         </div>
@@ -40,8 +39,8 @@
                         <label for="roles">Roles</label>
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
-                                        {{ 'checked' if role in user_roles }}>
+                                <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}"
+                                        {{ 'checked' if role in user_roles }} value="{{ role.id }}">
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                             </div>
                         {% endfor %}
@@ -79,10 +78,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="delete btn btn-primary">Deactivate</button>
+                        <button id="deactivate-user" type="button" class="delete btn btn-primary">Deactivate</button>
                     </div>
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button id="save-user" type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -115,5 +114,42 @@
             </div>
         </div>
    </div>
+    <script>
 
+    $(document).ready(function(){
+
+        $('#deactivate-user').click(function(){
+           var users = {
+             'userID': {{ user.id }}
+           };
+           var url = '{{ url_for('UsersView:deactivate_single_user') }}';
+           $.post(url, users, function(message){
+               window.location.replace('{{ url_for('UsersView:index') }}');
+               alert(message);
+           });
+        });
+
+        $('#save-user').click(function(){
+            var userRoles = [];
+            $(".role-checkbox:checked").each(function(){
+                userRoles.push($(this).val());
+            });
+            var jsonUserRoles = JSON.stringify(userRoles);
+           var user = {
+               'userId': {{ user.id }},
+               'firstName': $('#user-first-name').val(),
+               'lastName': $('#user-last-name').val(),
+               'email': $('#user-email').val(),
+               'username': $('#user-username').val(),
+               'roles': jsonUserRoles
+           };
+           var url = '{{ url_for('UsersView:save_user_edits') }}';
+           $.post(url, user, function(message){
+               window.location.replace('{{ url_for('UsersView:index') }}');
+               alert(message);
+           });
+        });
+
+        });
+    </script>
 {% endblock %}

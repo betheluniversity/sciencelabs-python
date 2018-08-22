@@ -17,26 +17,24 @@
                         <label for="time-in">Time In</label>
                         <input type="time" class="form-control" id="time-in"
                                value="{{ tutor.timeIn|datetimeformat('%H:%M') if tutor.timeIn }}">
-
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
                         <input type="time" class="form-control" id="time-out"
                                value="{{ tutor.timeOut|datetimeformat('%H:%M') if tutor.timeOut}}">
-
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <div class="custom-control custom-checkbox" style="display:inline-block;">
-                            <input type="checkbox" class="custom-control-input" id="lead" {{ 'checked' if tutor.lead}}>
+                            <input type="checkbox" class="custom-control-input" id="lead" {{ 'checked' if tutor.isLead}}>
                             <label class="custom-control-label" for="lead">This tutor served as the lead tutor for the session</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button id="save-tutor" type="button" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </form>
@@ -54,4 +52,29 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#save-tutor').click(function(){
+                var lead = 0;
+                if($('#lead').prop('checked')){
+                    lead = 1;
+                }
+                var tutor = {
+                    'sessionId': {{ session_id }},
+                    'tutorId': {{ tutor_id }},
+                    'timeIn': $('#time-in').val(),
+                    'timeOut': $('#time-out').val(),
+                    'lead': lead
+                };
+               var url = '{{ url_for('SessionView:save_tutor_edits') }}';
+               $.post(url, tutor, function(message){
+                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
+                   alert(message);
+               });
+            });
+
+        });
+    </script>
 {% endblock %}

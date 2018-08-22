@@ -14,14 +14,14 @@
             <form>
                 <div class="form-group">
                    <label for="choose-student">Registered Students</label>
-                   <select class="custom-select">
+                   <select id="choose-student" class="custom-select">
                        <option>Choose student...</option>
                        {% for student in student_list %}
-                            <option>{{ student.firstName }} {{ student.lastName }}</option>
+                            <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
                        {% endfor %}
                     </select>
                 </div>
-                <button type="button" class="btn btn-primary">Submit</button>
+                <button id="add-student" type="button" class="btn btn-primary">Submit</button>
             </form>
         </div>
         <div class="col-md-4">
@@ -37,4 +37,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#add-student').click(function(){
+                var student = {
+                    'sessionId': {{ session_id }},
+                    'studentId': $('#choose-student :selected').val()
+                };
+                var url = '{{ url_for('SessionView:add_student_submit') }}';
+                $.post(url, student, function(message){
+                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
+                    alert(message);
+                });
+            });
+
+        });
+    </script>
 {% endblock %}

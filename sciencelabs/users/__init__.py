@@ -1,3 +1,5 @@
+import json
+
 # Packages
 from flask import render_template, request
 from flask_classy import FlaskView, route
@@ -38,10 +40,73 @@ class UsersView(FlaskView):
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
 
-    @route("/search-users", methods=['POST'])
+    @route('/create/<username>/<first_name>/<last_name>')
+    def select_user_roles(self, username, first_name, last_name):
+        roles = self.user.get_all_roles()
+        existing_user = self.user.check_for_existing_user(username)
+        if existing_user:
+            self.user.activate_existing_user(username)
+        return render_template('users/select_user_roles.html', **locals())
+
+    @route("/search-users", methods=['post'])
     def search_users(self):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
         results = get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
+
+    @route("/deactivate_single_user", methods=['post'])
+    def deactivate_single_user(self):
+        try:
+            form = request.form
+            user_id = form.get('userID')
+            self.user.delete_user(user_id)
+            return 'User deactivated successfully'
+        except:
+            return 'Failed to deactivate user'
+
+    @route("/deactivate_users", methods=['post'])
+    def deactivate_users(self):
+        try:
+            form = request.form
+            json_user_ids = form.get('jsonUserIds')
+            user_ids = json.loads(json_user_ids)
+            for user in user_ids:
+                self.user.delete_user(user)
+            return 'User(s) deactivated successfully'
+        except:
+            return 'Failed to deactivate user(s)'
+
+    @route("/save_user_edits", methods=['post'])
+    def save_user_edits(self):
+        try:
+            form = request.form
+            user_id = form.get('userId')
+            first_name = form.get('firstName')
+            last_name = form.get('lastName')
+            email = form.get('email')
+            username = form.get('username')
+            json_roles = form.get('roles')
+            roles = json.loads(json_roles)
+            self.user.update_user_info(user_id, first_name, last_name, email)
+            self.user.clear_current_roles(user_id)
+            self.user.set_user_roles(username, roles)
+            return 'Edited user successfully'
+        except:
+            return 'Failed to edit user'
+
+    @route('/create_user', methods=['post'])
+    def create_user(self):
+        try:
+            form = request.form
+            first_name = form.get('firstName')
+            last_name = form.get('lastName')
+            username = form.get('username')
+            json_roles = form.get('roles')
+            roles = json.loads(json_roles)
+            self.user.create_user(first_name, last_name, username)
+            self.user.set_user_roles(username, roles)
+            return 'Added user successfully'
+        except:
+            return 'Failed to add user'
