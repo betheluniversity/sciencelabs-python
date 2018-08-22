@@ -94,14 +94,14 @@ class CourseView(FlaskView):
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
-        course, user, semester = self.course.get_course(course_id)
-        if course:
+        course_table, user_table, semester_table = self.course.get_course(course_id)
+        if course_table:
             course_info = self.course.get_course_info()
             count = 0
             for courses, user in course_info:
-                if courses.dept == course.dept and courses.course_num == course.course_num:
+                if courses.dept == course_table.dept and courses.course_num == course_table.course_num:
                     count += 1
-                self.course.deactivate_coursecode(course.dept, course.course_num)
-            self.course.delete_course(course, semester)
+                self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
+            self.course.delete_course(course_table, user_table)
 
         return redirect(url_for('CourseView:index'))
