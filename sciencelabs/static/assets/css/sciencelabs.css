@@ -2,6 +2,11 @@ a{
     color: #0069AA;
 }
 
+a:hover{
+    /*background-color: inherit !important;*/
+    filter: brightness(85%);
+}
+
 body {
   background: #fff;
   color: #222;
@@ -14,6 +19,7 @@ body {
   position: relative;
   cursor: auto;
 }
+
 
 p{
     margin-bottom: 1.25rem;
@@ -111,6 +117,7 @@ a.semester-menu{
 }
 
 .edit{
+    color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
 }
