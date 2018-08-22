@@ -68,14 +68,6 @@ class Course:
     def get_active_coursecode(self):
         return session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
 
-    def test_deactivate_coursecode(self, cc_info):
-        coursecode = session.query(CourseCode_Table)\
-            .filter(cc_info['subject'] == CourseCode_Table.dept)\
-            .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-            .one()
-        coursecode.active = 0
-        session.commit()
-
     def check_for_existing_coursecode(self, cc_info):
         try:
             coursecode = session.query(CourseCode_Table)\
@@ -185,6 +177,14 @@ class Course:
         new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
 
         session.add(new_courseprofessor)
+        session.commit()
+
+    def deactivate_coursecode(self, dept, course_num):
+        coursecode = session.query(CourseCode_Table) \
+            .filter(dept == CourseCode_Table.dept) \
+            .filter(course_num == CourseCode_Table.courseNum) \
+            .one()
+        coursecode.active = 0
         session.commit()
 
     def delete_course(self, course_info):
