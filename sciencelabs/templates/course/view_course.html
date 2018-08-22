@@ -3,7 +3,8 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-12">
-            <form>
+            <form role="form" action="{{ url_for('CourseView:delete') }}" method="POST">
+                <input style="display: none;" id="course-info" type="text" name="course-id" value="{{ course.id }}"/>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <h3>{{ course.dept }}{{ course.course_num }} - {{ course.title }} (Section {{ course.section }})</h3>
@@ -39,7 +40,7 @@
                             </tbody>
                         </table>
                         <div style="float: right;" class="btn-group">
-                            <a href="" class="big-button delete btn btn-primary">Delete</a>
+                            <button type="submit" class="big-button delete btn-primary" id="delete-course">Delete</button>
                             <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' class="big-button edit btn btn-primary">View Report</a>
                         </div>
                     </div>

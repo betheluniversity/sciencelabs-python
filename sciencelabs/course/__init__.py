@@ -61,14 +61,13 @@ class CourseView(FlaskView):
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
         for course in course_list:
-            # TODO ASK TO SEE IF THERE IS SUCH THING AS COURSECODE IS VALID?
             cc_info = get_course_is_valid(course[:3], course[3:])
             course_info = get_info_for_course(course[:3], course[3:])
             if cc_info:
-                pass
-                # TODO CAN'T TEST SINCE THERE ARE NO ACTIVATE COURSES ATM
-                # self.handle_coursecode(cc_info[0])
-                #     self.handle_course(course)
+                self.handle_coursecode(cc_info[0])
+                if course_info:
+                    for info in course_info:
+                        self.handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
 
@@ -84,7 +83,13 @@ class CourseView(FlaskView):
         if not does_exist:
             self.course.create_course(info)
 
-    def delete(self, dept, course_num, section):
-        course_info = get_info_for_course(dept, course_num)
-        does_exist = self.course.check_for_existing_course(course_info[0])
+
+    # TODO FIGURE OUT HOW TO DELETE COURSES
+    @route("/admin/", methods=['POST'])
+    def delete(self):
+        form = request.form
+        course_id = form.get('course-id')
+        course_info = self.course.get_course(course_id)
+        if course_info:
+            self.course.delete_course(course_info)
         return redirect(url_for('CourseView:index'))
