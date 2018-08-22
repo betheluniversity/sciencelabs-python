@@ -3,48 +3,46 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-12">
-            <form>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        <h3>{{ course.dept }}{{ course.course_num }} - {{ course.title }} (Section {{ course.section }})</h3>
-                        {# TODO FILL TABLE #}
-                        <table class="table table-striped table-bordered" style="width:100%">
-                            <thead>
-                            <tr>
-                                <td><b>Professor</b></td>
-                                <td>{{ user.firstName }} {{ user.lastName }}</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><b>Semester</b></td>
-                                <td>{{ semester.term }} {{ semester.year }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Meeting Day</b></td>
-                                <td>{{ course.meeting_day }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Time</b></td>
-                                <td>{{ course.begin_time|datetimeformat }} - {{ course.end_time|datetimeformat }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Room</b></td>
-                                <td>{{ course.room }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Enrolled</b></td>
-                                <td>{{ course.num_attendees }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div style="float: right;" class="btn-group">
-                            <a href="{{ url_for('CourseView:delete_course', course_id=course.id) }}" class="big-button delete btn btn-primary">Delete</a>
-                            <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' class="big-button edit btn btn-primary">View Report</a>
-                        </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <h3>{{ course.dept }}{{ course.course_num }} - {{ course.title }} (Section {{ course.section }})</h3>
+                    {# TODO FILL TABLE #}
+                    <table class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <td><b>Professor</b></td>
+                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><b>Semester</b></td>
+                            <td>{{ semester.term }} {{ semester.year }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Meeting Day</b></td>
+                            <td>{{ course.meeting_day }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Time</b></td>
+                            <td>{{ course.begin_time|datetimeformat }} - {{ course.end_time|datetimeformat }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Room</b></td>
+                            <td>{{ course.room }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Enrolled</b></td>
+                            <td>{{ course.num_attendees }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div style="float: right;" class="btn-group">
+                        <a href="{{ url_for('CourseView:delete_course', course_id=course.id) }}" class="big-button delete btn">Delete</a>
+                        <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' class="big-button edit btn">View Report</a>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 {% endblock %}

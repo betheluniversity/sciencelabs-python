@@ -3,7 +3,7 @@
     {% block header %}
         <div class="header card">
             <div class="card-body btn-group">
-                <p style="padding: 0px; margin: 0px">Step 2: Review Courses</p>
+                <p style="padding: 0px; margin: 0px">Step 2: Edit Users</p>
             </div>
         </div>
     {% endblock %}
@@ -12,16 +12,76 @@
         <div class="info card">
             <div style="text-align: left;" class="card-body">
                 <p>
-                    Check to make sure that the courses currently served by the lab are correctly listed under the
-                    <span class="button-labels">Courses</span>
-                    tab, in the <strong>Current Term</strong> section of the Courses page. If any edits to the
-                    courses need to be made, please edit the list on the Courses page.
+                    <strong>Adding and Removing Tutors and Setting their Role(s)</strong>
                 </p>
                 <p>
-                    After this check has been completed, go on to the next step by pressing the
-                    <span id="gray" class="button-labels">Step 4: Review Schedules</span> tab located at the top of
-                    the page.
+                    All tutors for the current term must be in the system with a "Lead Tutor" and/or "Tutor" role.
+                    The following process will help to set these roles. To check these roles/users, it will be
+                    necessary to navigate to another area of the application (the
+                    <span class="button-labels">Users</span> tab), so it may be
+                    helpful to either have this documentation page open in another browser window, or print out this
+                    documentation for instruction.
                 </p>
+                <p>
+                    Using the tutor schedule created by the director of the help session for the new term, do the
+                    following:
+                </p>
+                <ol>
+                    <li>
+                        Click the <span class="button-labels">Users</span> tab in
+                        the main navigation.
+                    </li>
+                    <li>
+                        Start by <strong>deleting</strong> any lead tutors or tutors who are no longer working in
+                        the help session by checking the box next to a user’s name and pressing the
+                        <span id="red" class="button-labels">Deactivate</span> button when you have selected all
+                        users you wish to delete. (Note: this action will  completely deactivate the user(s), even
+                        if they have multiple roles)
+                    </li>
+                    <li>
+                        Next, <strong>check the users and their roles</strong> for all tutors and lead tutors for
+                        the new term. Make any necessary changes by:
+                        <ol type="a">
+                            <li>
+                                <strong>Adding</strong> a tutor to the list of users by clicking the "Add User" tab
+                                or
+                            </li>
+                            <li>
+                                <strong>Changing roles</strong> and <strong>course viewing abilities</strong> by:
+                            </li>
+                            <ol>
+                                <li>
+                                    Clicking on the <span id="darkblue" class="button-labels">Edit</span> button
+                                    next to the user's username
+                                </li>
+                                <li>
+                                    Editing the roles and viewable courses of the user on the following page, and
+                                    pressing <span class="button-labels">Save</span> <strong>Tutor Roles:</strong>
+                                    Users will appear in the list of users, once for each role. For a tutor who is
+                                    also a lead tutor, they may appear twice in the list of users - once as a tutor,
+                                    and once as a lead tutor. If a tutor is no longer a lead tutor, or if they are
+                                    now a lead tutor, you may edit their roles through the process above. If a user
+                                    is listed as a lead, it is assumed that they can act as a tutor and a lead
+                                    tutor, so the dual role listing for a lead is not necessary.
+                                </li>
+                                <li>
+                                    Viewable courses: in the default settings, tutors cannot view course reports and
+                                    professors cannot view course reports for courses other than their own. To add
+                                    viewing abilities, on the User > Edit page, use the “Additional Viewable Courses
+                                    for the Current Term” section to add viewing abilities. This is sometimes used
+                                    for TA’s for a course or for professors who want to view reports from another
+                                    section of the same course. Only an administrator can set these viewing
+                                    privileges.
+                                </li>
+                            </ol>
+                        </ol>
+                    </li>
+                    <li>
+                        Once all tutors are set up correctly, go on to the next step by pressing the
+                        <span id="gray" class="button-labels">Step 3: Review Courses</span> tab located at the top
+                        of the page.
+                    </li>
+                </ol>
             </div>
         </div>
     {% endblock %}

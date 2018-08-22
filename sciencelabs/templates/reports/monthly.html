@@ -93,7 +93,7 @@
                         {% endfor %}
                         <tr>
                             <td>{{ schedule.name }}</td>
-                            <td>{{ day_abbr[schedule.dayofWeek] }}</td>
+                            <td>{{ macros.day_abbr(schedule.dayofWeek) }}</td>
                             <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td>{{ total_attendance_per_schedule[0] }}</td>
                             <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) }}%</td>
@@ -153,7 +153,7 @@
                         <tr>
                             <td>{{ session.name }}</td>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                            <td>{{ day_abbr[(cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7] }}</td>
+                            <td>{{ macros.day_abbr((cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7) }}</td>
                             <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                             <td>
                                 {% set attendance = session_.get_session_attendees(session.id) %}
