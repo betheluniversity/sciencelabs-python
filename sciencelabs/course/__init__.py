@@ -55,7 +55,7 @@ class CourseView(FlaskView):
 
         return render_template('course/course_table.html', **locals())
 
-    @route("/admin/", methods=['POST'])
+    @route("/submit/", methods=['POST'])
     def submit(self):
         form = request.form
         course_string = form.get('potential_courses')
@@ -82,10 +82,8 @@ class CourseView(FlaskView):
         if not does_exist:
             self.course.create_course(info)
 
-    @route("/admin/", methods=['POST'])
-    def delete(self):
-        form = request.form
-        course_id = form.get('course-id')
+    @route("/delete/<int:course_id>")
+    def delete(self, course_id):
         course_info = self.course.get_course(course_id)
         if course_info:
             self.course.delete_course(course_info)
