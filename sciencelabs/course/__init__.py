@@ -61,14 +61,24 @@ class CourseView(FlaskView):
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
         for course in course_list:
-            cc_info = get_course_is_valid(course[:3], course[3:])
-            course_info = get_info_for_course(course[:3], course[3:])
+            number = self.dept_length(course)
+            cc_info = get_course_is_valid(course[:number], course[number:])
+            course_info = get_info_for_course(course[:number], course[number:])
             if cc_info and course_info:
                 self.handle_coursecode(cc_info[0])
                 for info in course_info:
                     self.handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
+
+    def dept_length(self, course_string):
+        count = 0
+        for character in course_string:
+            if character.isalpha():
+                count += 1
+            else:
+                break
+        return count
 
     def handle_coursecode(self, info):
         does_exist = self.course.check_for_existing_coursecode(info)
