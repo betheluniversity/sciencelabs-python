@@ -83,7 +83,7 @@ class CourseView(FlaskView):
             self.course.create_course(info)
 
     @route("/delete/<int:course_id>")
-    def delete(self, course_id):
+    def delete_course(self, course_id):
         course_data = self.course.get_course(course_id)
         if course_data:
             course_info = self.course.get_course_info()
