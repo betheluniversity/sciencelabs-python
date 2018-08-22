@@ -137,16 +137,28 @@ class Course:
         end_date.strftime('%Y-%m-%d')
 
         begin_time = c_info['beginTime']
-        am_or_pm = begin_time[5:]
-        begin_time = datetime.strptime(begin_time[:4], '%H:%M')
+        am_or_pm = ''
+        time_string = ''
+        for character in begin_time:
+            if character.isalpha():
+                am_or_pm += character
+            else:
+                time_string += character
+        begin_time = datetime.strptime(time_string, '%H:%M')
         if am_or_pm == 'AM':
             begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
         else:
             begin_time = timedelta(hours=(begin_time.hour + 12), minutes=begin_time.minute, seconds=begin_time.second)
 
         end_time = c_info['endTime']
-        am_or_pm = end_time[5:]
-        end_time = datetime.strptime(end_time[:4], '%H:%M')
+        am_or_pm = ''
+        time_string = ''
+        for character in end_time:
+            if character.isalpha():
+                am_or_pm += character
+            else:
+                time_string += character
+        end_time = datetime.strptime(time_string, '%H:%M')
         if am_or_pm == 'AM':
             end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
         else:
