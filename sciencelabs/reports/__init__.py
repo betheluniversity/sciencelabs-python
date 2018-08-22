@@ -64,7 +64,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = term + year + '_' + lab + '_StudentReport'
+        csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
@@ -119,7 +119,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = term + year + '_' + lab + '_TermReport'
+        csv_name = '%s%s_%s_TermReport' % (term, year, lab)
 
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage'])
@@ -200,7 +200,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = term_abbr + year + '_' + lab + '_' + selected_month + '_SummaryReport'
+        csv_name = '%s%s_%s_%s_SummaryReport' % (term_abbr, year, lab, selected_month)
 
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
@@ -256,7 +256,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = term_abbr + year + '_' + lab + '_' + selected_month + '_DetailReport'
+        csv_name = '%s%s_%s_%s_DetailReport' % (term_abbr, year, lab, selected_month)
 
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
@@ -289,7 +289,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = lab + '_CumulativeAttendance'
+        csv_name = '%s_CumulativeAttendance' % lab
 
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring', 'Jun', 'Jul', 'Summer', 'Total']]
 
@@ -434,7 +434,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = term + year + '_' + lab + '_SessionReport'
+        csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
@@ -505,7 +505,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        csv_name = term + year + '_' + lab + '_SessionAttendance_' + csv_course_info
+        csv_name = '%s%s_%s_SessionAttendance_%s' % (term, year, lab, csv_course_info)
 
         return self.export_csv(my_list, csv_name)
 
@@ -516,7 +516,7 @@ class ReportView(FlaskView):
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = term + year + '_' + lab + '_SessionAttendance'
+        csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 
