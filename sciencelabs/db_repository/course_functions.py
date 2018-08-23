@@ -3,9 +3,7 @@ from sqlalchemy import orm
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
-    Session_Table, CourseCode_Table, SessionCourses_Table, \
-    StudentSession_Table
-
+    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
 
 class Course:
 
@@ -137,17 +135,29 @@ class Course:
         end_date.strftime('%Y-%m-%d')
 
         begin_time = c_info['beginTime']
-        meridiem = begin_time[5:]
-        begin_time = datetime.strptime(begin_time[:4], '%H:%M')
-        if meridiem == 'AM':
+        am_or_pm = ''
+        time_string = ''
+        for character in begin_time:
+            if character.isalpha():
+                am_or_pm += character
+            else:
+                time_string += character
+        begin_time = datetime.strptime(time_string, '%H:%M')
+        if am_or_pm == 'AM':
             begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
         else:
             begin_time = timedelta(hours=(begin_time.hour + 12), minutes=begin_time.minute, seconds=begin_time.second)
 
         end_time = c_info['endTime']
-        meridiem = end_time[5:]
-        end_time = datetime.strptime(end_time[:4], '%H:%M')
-        if meridiem == 'AM':
+        am_or_pm = ''
+        time_string = ''
+        for character in end_time:
+            if character.isalpha():
+                am_or_pm += character
+            else:
+                time_string += character
+        end_time = datetime.strptime(time_string, '%H:%M')
+        if am_or_pm == 'AM':
             end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
         else:
             end_time = timedelta(hours=(end_time.hour + 12), minutes=end_time.minute, seconds=end_time.second)
@@ -163,6 +173,7 @@ class Course:
             if semesters.year == year and semesters.term == term:
                 semester_id = semesters.id
 
+        # TODO REMOVE HARD-CODED SEMESTER_ID
         new_course = Course_Table(semester_id=40013, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
@@ -187,8 +198,11 @@ class Course:
         coursecode.active = 0
         session.commit()
 
-    def delete_course(self, course_info):
-        course, user, semester = course_info
+    def delete_course(self, course, user):
+
+        does_exist = self.check_for_existing_courseviewer(course.id)
+        if does_exist:
+            self.delete_courseviewer(course.id)
 
         courseprofessor = session.query(CourseProfessors_Table)\
             .filter(CourseProfessors_Table.course_id == course.id)\
@@ -200,3 +214,21 @@ class Course:
 
         session.delete(course)
         session.commit()
+
+    def check_for_existing_courseviewer(self, course_id):
+        try:
+            courseviewer = session.query(CourseViewer_Table)\
+                .filter(CourseViewer_Table.course_id == course_id)\
+                .one()
+            return True
+        except orm.exc.NoResultFound:
+            return False
+
+    def delete_courseviewer(self, course_id):
+        courseviewer = session.query(CourseViewer_Table)\
+            .filter(CourseViewer_Table.course_id == course_id)\
+            .one()
+
+        session.delete(courseviewer)
+        session.commit()
+

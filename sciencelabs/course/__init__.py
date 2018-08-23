@@ -50,7 +50,7 @@ class CourseView(FlaskView):
         active_coursecodes = self.course.get_active_coursecode()
         cc_str = ''
         for coursecodes in active_coursecodes:
-            cc_str += coursecodes.dept + str(coursecodes.courseNum) + ' (' + coursecodes.courseName + ')' + '; '
+            cc_str += '%s%s (%s); ' % (coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
         semester = self.schedule.get_active_semester()
 
         return render_template('course/course_table.html', **locals())
@@ -61,14 +61,24 @@ class CourseView(FlaskView):
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
         for course in course_list:
-            cc_info = get_course_is_valid(course[:3], course[3:])
-            course_info = get_info_for_course(course[:3], course[3:])
+            number = self.dept_length(course)
+            cc_info = get_course_is_valid(course[:number], course[number:])
+            course_info = get_info_for_course(course[:number], course[number:])
             if cc_info and course_info:
                 self.handle_coursecode(cc_info[0])
                 for info in course_info:
                     self.handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
+
+    def dept_length(self, course_string):
+        count = 0
+        for character in course_string:
+            if character.isalpha():
+                count += 1
+            else:
+                break
+        return count
 
     def handle_coursecode(self, info):
         does_exist = self.course.check_for_existing_coursecode(info)
@@ -84,14 +94,14 @@ class CourseView(FlaskView):
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
-        course_data = self.course.get_course(course_id)
-        if course_data:
+        course_table, user_table, semester_table = self.course.get_course(course_id)
+        if course_table:
             course_info = self.course.get_course_info()
             count = 0
-            for course, user in course_info:
-                if course.dept == course_data[0].dept and course.course_num == course_data[0].course_num:
+            for courses, user in course_info:
+                if courses.dept == course_table.dept and courses.course_num == course_table.course_num:
                     count += 1
-                self.course.deactivate_coursecode(course_data[0].dept, course_data[0].course_num)
-            self.course.delete_course(course_data)
+                self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
+            self.course.delete_course(course_table, user_table)
 
         return redirect(url_for('CourseView:index'))
