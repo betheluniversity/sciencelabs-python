@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.session.session_controller import SessionController
+from sciencelabs.sess.session_controller import SessionController
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
