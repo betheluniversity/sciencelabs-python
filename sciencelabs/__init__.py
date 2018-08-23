@@ -63,11 +63,11 @@ def create_semester_selector():
     semester_list = Schedule().get_semesters()
     session['semester_list'] = {}
     for semester in semester_list:
-        session['semester_list'][(semester.term + ';' + str(semester.year))] = semester.active
+        session['semester_list'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
 
 
-def set_semester_selector(term, year):
-    semester_string = term + ';' + str(year)
+def set_semester_selector(id,term, year):
+    semester_string = str(id) + ';' + term + ';' + str(year)
     if semester_string in session['semester_list']:
         for semester in session['semester_list']:
             session['semester_list'][semester] = 0
