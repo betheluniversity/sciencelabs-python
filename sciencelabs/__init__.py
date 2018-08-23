@@ -10,8 +10,10 @@ from datetime import datetime
 # Local
 from app_settings import app_settings
 from sciencelabs.db_repository.user_functions import User
+from sciencelabs.db_repository.schedule_functions import Schedule
 
 app = Flask(__name__)
+app.secret_key = 'super secret key'
 
 app.config.from_object('config.config')
 
@@ -21,7 +23,7 @@ db = create_engine(app_settings['DATABASE_KEY'])
 conn = db.connect()
 
 from sciencelabs.views import View
-from sciencelabs.session import SessionView
+from sciencelabs.sess import SessionView
 from sciencelabs.reports import ReportView
 from sciencelabs.term_startup import TermStartupView
 from sciencelabs.users import UsersView
@@ -41,6 +43,7 @@ ProfileView.register(app)
 
 @app.context_processor
 def utility_processor():
+    print(session)
     to_return = {}
     to_return.update({
         'now': datetime.now()
@@ -54,6 +57,28 @@ def utility_processor():
 def logout():
     session.clear()
     pass
+
+
+@app.context_processor
+def create_semester_selector():
+    semester_list = Schedule().get_semesters()
+    session['semester_list'] = {}
+    for semester in semester_list:
+        session['semester_list'][(semester.term + ';' + str(semester.year))] = semester.active
+        print(semester.term)
+        print(semester.year)
+    pass
+    print(session['semester_list'])
+    set_semester_selector('0', '0')
+    return ''
+#     session['semester_list'] = {}
+
+
+def set_semester_selector(term, year):
+    for semester in session['semester_list']:
+        session['semester_list'][semester] = 0
+
+
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
