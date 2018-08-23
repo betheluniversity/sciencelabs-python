@@ -189,8 +189,6 @@ class Course:
 
         session.add(new_courseprofessor)
         session.commit()
-        
-
 
     def deactivate_coursecode(self, dept, course_num):
         coursecode = session.query(CourseCode_Table) \
