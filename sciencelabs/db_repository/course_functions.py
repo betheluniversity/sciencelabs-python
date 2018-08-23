@@ -3,9 +3,7 @@ from sqlalchemy import orm
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
-    Session_Table, CourseCode_Table, SessionCourses_Table, \
-    StudentSession_Table
-
+    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
 
 class Course:
 
@@ -202,6 +200,10 @@ class Course:
 
     def delete_course(self, course, user):
 
+        does_exist = self.check_for_existing_courseviewer(course.id)
+        if does_exist:
+            self.delete_courseviewer(course.id)
+
         courseprofessor = session.query(CourseProfessors_Table)\
             .filter(CourseProfessors_Table.course_id == course.id)\
             .filter(CourseProfessors_Table.professor_id == user.id)\
@@ -212,3 +214,21 @@ class Course:
 
         session.delete(course)
         session.commit()
+
+    def check_for_existing_courseviewer(self, course_id):
+        try:
+            courseviewer = session.query(CourseViewer_Table)\
+                .filter(CourseViewer_Table.course_id == course_id)\
+                .one()
+            return True
+        except orm.exc.NoResultFound:
+            return False
+
+    def delete_courseviewer(self, course_id):
+        courseviewer = session.query(CourseViewer_Table)\
+            .filter(CourseViewer_Table.course_id == course_id)\
+            .one()
+
+        session.delete(courseviewer)
+        session.commit()
+
