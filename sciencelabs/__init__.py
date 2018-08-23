@@ -2,7 +2,7 @@
 import logging
 
 # Packages
-from flask import Flask
+from flask import Flask, session
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
 from datetime import datetime
@@ -47,6 +47,13 @@ def utility_processor():
     })
 
     return to_return
+
+
+# TODO IN PROGRESS LOGOUT METHOD
+@app.route("/logout", methods=["GET"])
+def logout():
+    session.clear()
+    pass
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
