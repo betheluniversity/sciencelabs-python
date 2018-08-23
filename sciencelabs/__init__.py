@@ -59,24 +59,19 @@ def logout():
     pass
 
 
-@app.context_processor
 def create_semester_selector():
     semester_list = Schedule().get_semesters()
     session['semester_list'] = {}
     for semester in semester_list:
         session['semester_list'][(semester.term + ';' + str(semester.year))] = semester.active
-        print(semester.term)
-        print(semester.year)
-    pass
-    print(session['semester_list'])
-    set_semester_selector('0', '0')
-    return ''
-#     session['semester_list'] = {}
 
 
 def set_semester_selector(term, year):
-    for semester in session['semester_list']:
-        session['semester_list'][semester] = 0
+    semester_string = term + ';' + str(year)
+    if semester_string in session['semester_list']:
+        for semester in session['semester_list']:
+            session['semester_list'][semester] = 0
+        session['semester_list'][semester_string] = 1
 
 
 
