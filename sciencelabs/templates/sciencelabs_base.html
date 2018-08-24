@@ -58,7 +58,18 @@
 
         {{ nav.render(app_settings['LAB_TITLE']) }}
 
-        <div class="margins">{% block alert %}{% endblock %}</div>
+        {# SHOWS ALERTS #}
+        {% if current_alert %}
+            <div class="margins">
+                <div class="alert alert-{{ current_alert.type }} alert-dismissible fade show" role="alert">
+                    {{ current_alert.message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="nav margins">{% block subnav %}{% endblock %}</div>
         <div class="margins semester-selector">{% block semester_switch %}{% endblock %}</div>
         <div class="margins">{% block header %}{% endblock %}</div>
