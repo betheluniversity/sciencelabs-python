@@ -58,6 +58,7 @@ class ScheduleView(FlaskView):
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule = Schedule().get_schedule(schedule_id)
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -77,6 +78,10 @@ class ScheduleView(FlaskView):
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
         try:
+            active_semester = self.schedule.get_active_semester()
+            term_start_date = active_semester.startDate
+            term_end_date = active_semester.endDate
+            term_id = active_semester.id
             form = request.form
             schedule_id = form.get('schedule-id')
             name = form.get('name')
@@ -84,19 +89,17 @@ class ScheduleView(FlaskView):
             start_time = form.get('start-time')
             end_time = form.get('end-time')
             day_of_week = int(form.get('day-of-week'))
-            leads = form.get('leads')
-            tutors = form.get('tutors')
-            courses = form.get('courses')
-            self.schedule.edit_schedule(schedule_id, name, room, start_time, end_time, day_of_week)  # Edits the schedule
-            self.session.edit_scheduled_sessions()  # Edits the recurring sessions for the schedule
-            self.schedule.edit_lead_schedules(schedule_id, start_time, end_time, leads)  # Edits the lead's schedule
-            self.session.edit_lead_scheduled_sessions()  # Edits the recurring sessions for the lead
-            self.schedule.edit_tutor_schedules(schedule_id, start_time, end_time, tutors)  # Edits the tutor's schedule
-            self.session.edit_tutor_scheduled_sessions()  # Edits the recurring sessions for the tutor
-            self.schedule.edit_schedule_courses(schedule_id, courses)  # Edits the schedules courses
-            self.session.edit_scheduled_session_courses()  # Edits the recurring session's courses
-            set_alert('success', 'Schedule edited successfully!')
-            return redirect(url_for('ScheduleView:index'))
+            leads = form.getlist('leads')
+            tutors = form.getlist('tutors')
+            courses = form.getlist('courses')
+            # This returns True if it executes successfully
+            success = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
+                                                  start_time, end_time, day_of_week, leads, tutors, courses)
+            if success:
+                set_alert('success', 'Schedule edited successfully!')
+                return redirect(url_for('ScheduleView:index'))
+            else:
+                raise Exception
         except Exception as error:
             set_alert('danger', 'Failed to edit schedule: ' + str(error))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
@@ -106,27 +109,25 @@ class ScheduleView(FlaskView):
         try:
             active_semester = self.schedule.get_active_semester()
             term = active_semester.term
+            term_start_date = active_semester.startDate
+            term_end_date = active_semester.endDate
+            term_id = active_semester.id
             form = request.form
             name = form.get('name')
             room = form.get('room')
             start_time = form.get('start-time')
             end_time = form.get('end-time')
-            day_of_week = form.get('day-of-week')
-            leads = form.get('leads')
-            tutors = form.get('tutors')
-            courses = form.get('courses')
-            self.schedule.create_new_schedule(name, room, start_time, end_time, day_of_week, term)  # Creates the schedule
-            schedule_id = self.schedule.get_new_schedule_id(name, room, start_time, end_time, day_of_week, term)  # Gets the new schedule id so we can use it
-            self.session.create_scheduled_sessions()  # Creates the recurring sessions for the schedule
-            self.schedule.create_new_lead_schedules(schedule_id, start_time, end_time, leads)  # Creates leads tutor schedules
-            self.session.create_lead_scheduled_sessions()  # Creates leads recurring tutor sessions
-            self.schedule.create_new_tutor_schedules(schedule_id, start_time, end_time, tutors)  # Creates tutors tutor schedules
-            self.session.create_tutor_scheduled_sessions()  # Creates tutors recurring tutor sessions
-            self.schedule.create_new_schedule_courses(schedule_id, courses)  # Creates schedule courses
-            schedule_session_ids = self.session.get_session_ids_by_schedule()  # Gets an array of session ids based on the schedule id
-            self.session.create_scheduled_session_courses()  # Creates recurring session courses
-            set_alert('success', 'Schedule created successfully!')
-            return redirect(url_for('ScheduleView:index'))
+            day_of_week = int(form.get('day-of-week'))
+            leads = form.getlist('leads')
+            tutors = form.getlist('tutors')
+            courses = form.getlist('courses')
+            success = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+                                                    start_time, end_time, day_of_week, leads, tutors, courses)
+            if success:
+                set_alert('success', 'Schedule created successfully!')
+                return redirect(url_for('ScheduleView:index'))
+            else:
+                raise Exception
         except Exception as error:
             set_alert('danger', 'Failed to create schedule: ' + str(error))
             return redirect(url_for('ScheduleView:create_new_schedule'))

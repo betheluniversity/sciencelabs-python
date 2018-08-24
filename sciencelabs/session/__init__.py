@@ -4,7 +4,6 @@ from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.session.session_controller import SessionController
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -36,7 +35,6 @@ def set_alert(message_type, message):
 
 class SessionView(FlaskView):
     def __init__(self):
-        self.base = SessionController()
         self.user = User()
         self.session = Session()
         self.schedule = Schedule()
@@ -152,12 +150,15 @@ class SessionView(FlaskView):
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
-            self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, actual_start, actual_end, room, comments, anon_students, name)
-            self.session.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
-            self.session.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
-            self.session.edit_session_courses(session_id, courses)
-            set_alert('success', 'Session edited successfully!')
-            return redirect(url_for('SessionView:closed'))
+            # Returns True if successful
+            success = self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
+                                                actual_start, actual_end, room, comments, anon_students, name, leads,
+                                                tutors, courses)
+            if success:
+                set_alert('success', 'Session edited successfully!')
+                return redirect(url_for('SessionView:closed'))
+            else:
+                raise Exception
         except Exception as error:
             set_alert('danger', 'Failed to edit session: ' + str(error))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -175,10 +176,14 @@ class SessionView(FlaskView):
             other_course = form.get('other-name')
             if not other_check:
                 other_course = None
-            self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course)
-            self.session.edit_student_courses(session_id, student_id, student_courses)
-            set_alert('success', 'Edited student successfully!')
-            return redirect(url_for('SessionView:edit_session', session_id=session_id))
+            # Returns True if successful
+            success = self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course,
+                                                        student_courses)
+            if success:
+                set_alert('success', 'Edited student successfully!')
+                return redirect(url_for('SessionView:edit_session', session_id=session_id))
+            else:
+                raise Exception
         except Exception as error:
             set_alert('danger', 'Failed to edit student: ' + str(error))
             return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
@@ -281,14 +286,15 @@ class SessionView(FlaskView):
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
-            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, actual_start, actual_end,
-                                            room, comments, anon_students, name)
-            session_id = self.session.get_new_session_id(semester_id, db_date, room, name)
-            self.session.create_lead_sessions(scheduled_start, scheduled_end, leads, session_id)
-            self.session.create_tutor_sessions(scheduled_start, scheduled_end, tutors, session_id)
-            self.session.create_session_courses(session_id, courses)
-            set_alert('success', 'Session created successfully!')
-            return redirect(url_for('SessionView:closed'))
+            # Returns True if successful
+            success = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
+                                                      actual_start, actual_end, room, comments, anon_students, name,
+                                                      leads, tutors, courses)
+            if success:
+                set_alert('success', 'Session created successfully!')
+                return redirect(url_for('SessionView:closed'))
+            else:
+                raise Exception
         except Exception as error:
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))

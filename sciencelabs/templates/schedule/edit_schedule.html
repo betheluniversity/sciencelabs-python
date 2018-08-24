@@ -1,5 +1,9 @@
 {% extends 'schedule/base.html' %}
 
+{% block alert %}
+    {{ macros.alert_popup(current_alert) }}
+{% endblock %}
+
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
@@ -18,12 +22,12 @@
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
                         <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}"
-                               name="name" required>
+                               name="name" required autocomplete="off">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
                         <input type="text" class="form-control" id="room" value="{{ schedule.room }}"
-                               name="room" required>
+                               name="room" required autocomplete="off">
                     </div>
                 </div>
                 <div class="form-row">

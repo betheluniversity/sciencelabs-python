@@ -52,7 +52,8 @@
                     <div class="form-group col-md-10">
                         <label for="course-name">Course Name or Reason</label>
                         <input type="text" class="form-control" id="course-name" name="other-name"
-                               value="{{ other_course.otherCourseName if other_course.otherCourse == 1 else ''}}">
+                               value="{{ other_course.otherCourseName if other_course.otherCourse == 1 else ''}}"
+                               autocomplete="off">
                     </div>
                 </div>
                 <div class="form-row">

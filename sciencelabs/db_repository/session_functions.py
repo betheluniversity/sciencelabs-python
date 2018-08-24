@@ -1,13 +1,16 @@
 from datetime import datetime
 from sqlalchemy import func, distinct
-from sqlalchemy.sql import text
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, SessionCourseCodes_Table
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class Session:
+
+    def __init__(self):
+        self.base = ScienceLabsController()
 
     def get_closed_sessions(self):
         return (session.query(Session_Table)
@@ -144,29 +147,6 @@ class Session:
         session.delete(tutor_session_to_delete)
         session.commit()
 
-    def edit_student_session(self, session_id, student_id, time_in, time_out, other_course):
-        student_session_to_edit = session.query(StudentSession_Table)\
-            .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id).one()
-        student_session_to_edit.timeIn = time_in
-        student_session_to_edit.timeOut = time_out
-        if other_course:
-            student_session_to_edit.otherCourse = 1
-            student_session_to_edit.otherCourseName = other_course
-        else:
-            student_session_to_edit.otherCourse = 0
-            student_session_to_edit.otherCourseName = None
-        session.commit()
-
-    def edit_student_courses(self, session_id, student_id, student_courses):
-        student_session = session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id)\
-            .filter(StudentSession_Table.sessionId == session_id).one()
-        session.query(SessionCourses_Table).filter(SessionCourses_Table.studentsession_id == student_session.id).delete()
-        for course in student_courses:
-            new_student_course = SessionCourses_Table(studentsession_id=student_session.id, course_id=course)
-            session.add(new_student_course)
-        session.commit()
-
     def edit_tutor_session(self, session_id, tutor_id, time_in, time_out, lead):
         tutor_session_to_edit = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id).one()
@@ -222,19 +202,63 @@ class Session:
                 .filter(Semester_Table.year == year)
                 .filter(Session_Table.startTime != None).all())
 
+    ######################### EDIT STUDENT METHODS #########################
+
+    def edit_student_session(self, session_id, student_id, time_in, time_out, other_course, student_courses):
+        try:
+            self.edit_student_session_info(session_id, student_id, time_in, time_out, other_course)
+            self.edit_student_courses(session_id, student_id, student_courses)
+            return True
+        except:
+            return False
+
+    def edit_student_session_info(self, session_id, student_id, time_in, time_out, other_course):
+        student_session_to_edit = session.query(StudentSession_Table) \
+            .filter(StudentSession_Table.sessionId == session_id) \
+            .filter(StudentSession_Table.studentId == student_id).one()
+        student_session_to_edit.timeIn = time_in
+        student_session_to_edit.timeOut = time_out
+        if other_course:
+            student_session_to_edit.otherCourse = 1
+            student_session_to_edit.otherCourseName = other_course
+        else:
+            student_session_to_edit.otherCourse = 0
+            student_session_to_edit.otherCourseName = None
+        session.commit()
+
+    def edit_student_courses(self, session_id, student_id, student_courses):
+        student_session = session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id) \
+            .filter(StudentSession_Table.sessionId == session_id).one()
+        session.query(SessionCourses_Table).filter(
+            SessionCourses_Table.studentsession_id == student_session.id).delete()
+        for course in student_courses:
+            new_student_course = SessionCourses_Table(studentsession_id=student_session.id, course_id=course)
+            session.add(new_student_course)
+        session.commit()
+
+    ######################### CREATE SESSION METHODS #########################
+
     def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
+                           comments, anon_students, name, leads, tutors, courses):
+        try:
+            new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, actual_start,
+                                              actual_end, room, comments, anon_students, name)
+            self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
+            self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
+            self.create_session_courses(new_session.id, courses)
+            return True
+        except:
+            return False
+
+    def create_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
                            comments, anon_students, name):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
                                     schedEndTime=scheduled_end, startTime=actual_start, endTime=actual_end, room=room,
                                     open=0, comments=comments, anonStudents=anon_students, name=name,
-                                    hash='aaaaaaaaaaaaa')  # TODO: hash??
+                                    hash=self.base.get_hash())
         session.add(new_session)
         session.commit()
-
-    def get_new_session_id(self, semester_id, date, room, name):
-        return session.query(Session_Table.id).filter(Session_Table.semester_id == semester_id)\
-            .filter(Session_Table.date == date).filter(Session_Table.room == room)\
-            .filter(Session_Table.name == name).one()
+        return new_session
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
         for lead in leads:
@@ -256,7 +280,21 @@ class Session:
             session.add(new_session_course)
         session.commit()
 
+    ######################### EDIT SESSION METHODS #########################
+
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
+                     room, comments, anon_students, name, leads, tutors, courses):
+        try:
+            self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, actual_start,
+                                   actual_end, room, comments, anon_students, name)
+            self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
+            self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
+            self.edit_session_courses(session_id, courses)
+            return True
+        except:
+            return False
+
+    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
                      room, comments, anon_students, name):
         session_to_edit = session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_edit.semester_id = semester_id
@@ -303,40 +341,3 @@ class Session:
         session.query(SessionCourseCodes_Table).filter(SessionCourseCodes_Table.session_id == session_id).delete()
         session.commit()
         self.create_session_courses(session_id, courses)
-
-    def create_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def create_lead_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def create_tutor_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def get_session_ids_by_schedule(self):
-        # TODO
-        session.commit()
-
-    def create_scheduled_session_courses(self):
-        # TODO
-        session.commit()
-
-    def edit_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def edit_lead_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def edit_tutor_scheduled_sessions(self):
-        # TODO
-        session.commit()
-
-    def edit_scheduled_session_courses(self):
-        # TODO
-        session.commit()
-

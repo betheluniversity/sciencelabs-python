@@ -19,11 +19,12 @@
             <div class="form-group col-md-6">
                 <label for="session-name">Name of Session</label>
                 <input type="text" class="form-control" id="session-name" name="name"
-                       value="{{ session_info.name }}" required>
+                       value="{{ session_info.name }}" required autocomplete="off">
             </div>
             <div class="form-group col-md-3">
                 <label for="room-number">Room Number</label>
-                <input type="text" class="form-control" id="room-number" value="{{ session_info.room }}" name="room">
+                <input type="text" class="form-control" id="room-number" value="{{ session_info.room }}"
+                       name="room" autocomplete="off">
             </div>
             <div class="form-group col-md-3">
                 <label for="">Semester</label>
@@ -38,7 +39,7 @@
             <div class="form-group col-md-4">
                 <label for="session-date">Date (click to select)</label>
                 <input type="text" class="form-control" id="session-date" name="date"
-                       value="{{ session_info.date.strftime('%m/%d/%Y') }}" required>
+                       value="{{ session_info.date.strftime('%m/%d/%Y') }}" required autocomplete="off">
             </div>
             <div class="form-group col-md-4">
                 <label for="scheduled-start">Scheduled Start Time</label>
@@ -282,8 +283,10 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}' class="edit btn btn-primary">Edit</a>
-                            <a href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}' class="delete btn btn-primary">Delete</a>
+                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                               class="edit btn btn-primary">Edit</a>
+                            <a href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                               class="delete btn btn-primary">Delete</a>
                         </div>
                     </td>
                 </tr>
