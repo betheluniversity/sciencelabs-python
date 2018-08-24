@@ -13,8 +13,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
 app = Flask(__name__)
-app.secret_key = 'super secret key'
-
 app.config.from_object('config.config')
 
 #sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
@@ -41,6 +39,7 @@ CourseView.register(app)
 ScheduleView.register(app)
 ProfileView.register(app)
 
+
 @app.context_processor
 def utility_processor():
     print(session)
@@ -52,28 +51,28 @@ def utility_processor():
     return to_return
 
 
+@app.before_first_request
+def create_semester_selector():
+    print(session)
+    semester_list = Schedule().get_semesters()
+    session['SEMESTER-LIST'] = {}
+    for semester in semester_list:
+        session['SEMESTER-LIST'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
+
+
+def set_semester_selector(id, term, year):
+    semester_string = str(id) + ';' + term + ';' + str(year)
+    if semester_string in session['SEMESTER-LIST']:
+        for semester in session['SEMESTER-LIST']:
+            session['SEMESTER-LIST'][semester] = 0
+        session['SEMESTER-LIST'][semester_string] = 1
+
+
 # TODO IN PROGRESS LOGOUT METHOD
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
     pass
-
-
-def create_semester_selector():
-    semester_list = Schedule().get_semesters()
-    session['semester_list'] = {}
-    for semester in semester_list:
-        session['semester_list'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
-
-
-def set_semester_selector(id,term, year):
-    semester_string = str(id) + ';' + term + ';' + str(year)
-    if semester_string in session['semester_list']:
-        for semester in session['semester_list']:
-            session['semester_list'][semester] = 0
-        session['semester_list'][semester_string] = 1
-
-
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
