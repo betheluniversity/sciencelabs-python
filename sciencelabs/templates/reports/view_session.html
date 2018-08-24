@@ -135,7 +135,6 @@
                                                 <ul>
                                                     {% set courses = session_.get_report_student_session_courses(session.id, student.id) %}
                                                     {% for course in courses %}
-                                                        {# TODO FIND OUT HOW TO GET COURSE_ID #}
                                                         <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
                                                     {% if student.otherCourse or student.otherCourseName %}
