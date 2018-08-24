@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, Response
+from flask import render_template, Response, session
 from flask_classy import FlaskView, route
 import calendar
 import csv
@@ -37,7 +37,7 @@ class ReportView(FlaskView):
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
@@ -79,7 +79,7 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
         unique_attendance_info = self.user.get_unique_session_attendance()
@@ -166,7 +166,7 @@ class ReportView(FlaskView):
         months = self.base.months
         selected_year = year
         selected_month = month
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         if month == 1:
             term = 'Interim'
         elif month in (2, 3, 4, 5):
@@ -406,7 +406,7 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         months = self.base.months
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         sessions = self.session_.get_closed_sessions()
         session_ = self.session_
         return render_template('reports/session.html', **locals())
@@ -463,7 +463,7 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         user_ = self.user
         course_info = self.courses.get_active_course_info()
         return render_template('reports/course.html', **locals())

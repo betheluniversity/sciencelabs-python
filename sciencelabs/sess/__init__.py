@@ -1,7 +1,7 @@
 import json
 
 # Packages
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -29,12 +29,12 @@ class SessionView(FlaskView):
         sessions = self.session.get_closed_sessions()
         session_tutors = self.session
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         active_semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -42,7 +42,7 @@ class SessionView(FlaskView):
 
     def deleted(self):
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         return render_template('session/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -54,7 +54,7 @@ class SessionView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
-        semester_list = self.schedule.get_semesters()
+        semester_list = session['SEMESTER-LIST']
         course_list = self.course.get_semester_courses(40013)  # TODO: needs to update with semester selector
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
