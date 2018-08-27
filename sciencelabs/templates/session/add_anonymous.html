@@ -10,30 +10,13 @@
 
 {% block body_content %}
     <div class="col-md-6">
-        <form>
+        <form action="{{ url_for('SessionView:add_anon_submit') }}" method="post">
+            <input type="hidden" name="session-id" value="{{ session_id }}">
             <div class="form-group">
                 <label for="anon-students">Anonymous Students</label>
-                <input type="number" id="anon-students" value="{{ session.anonStudents }}">
+                <input type="number" id="anon-students" value="{{ session.anonStudents }}" name="anon-students" required>
             </div>
-            <button id="add-anon" type="button" class="btn btn-primary">Save</button>
+            <button id="add-anon" type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
-
-    <script>
-        $(document).ready(function(){
-
-            $('#add-anon').click(function(){
-                var anon = {
-                    'sessionId': {{ session.id }},
-                    'anonStudents': $('#anon-students').val()
-                };
-               var url = '{{ url_for('SessionView:add_anon_submit') }}';
-               $.post(url, anon, function(message){
-                   window.location.replace('{{ url_for('SessionView:edit_session', session_id=session.id) }}')
-                   alert(message);
-               });
-            });
-
-        });
-    </script>
 {% endblock %}

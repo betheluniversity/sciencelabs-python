@@ -3,12 +3,11 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('ScheduleView:create_schedule_submit') }}" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                                 <p style="padding: 0px; margin: 0px">Create New Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
@@ -17,39 +16,40 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
-                        <input type="text" class="form-control" id="schedule-name">
+                        <input type="text" class="form-control" id="schedule-name" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
-                        <input type="text" class="form-control" id="room">
+                        <input type="text" class="form-control" id="room" name="room" required autocomplete="off">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time">
+                        <input type="time" class="form-control" id="start-time" name="start-time" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time">
+                        <input type="time" class="form-control" id="end-time" name="end-time" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select class="custom-select">
-                            <option value="Sunday">Sunday</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
+                        <select id="day-of-week" class="custom-select" name="day-of-week" required>
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                         <select class="chosen form-control" id="choose-leads" multiple="true" data-placeholder="Choose lead tutors ...">
+                         <select class="chosen form-control" id="choose-leads" multiple="true" name="leads"
+                                 data-placeholder="Choose lead tutors ...">
                              {% for tutor in tutor_list %}
                                  <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
                              {% endfor %}
@@ -59,14 +59,14 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <select class="chosen form-control" id="choose-tutors" multiple="true" data-placeholder="Choose tutors ...">
+                        <select class="chosen form-control" id="choose-tutors" multiple="true" name="tutors"
+                                data-placeholder="Choose tutors ...">
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <button type="button" class="btn btn-primary" id="all-courses">Select All Courses</button>
@@ -76,8 +76,9 @@
                         <div class="form-group col-md-12">
                             {% for course in course_list %}
                                 <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
-                                    <label class="custom-control-label" for="{{ course.courseName }}">
+                                    <input type="checkbox" class="course-checkbox custom-control-input"
+                                           id="{{ course.id }}" value="{{ course.id }}" name="courses" checked>
+                                    <label class="custom-control-label" for="{{ course.id }}">
                                         {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                                 </div>
                             {% endfor %}
@@ -85,7 +86,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" id="save-schedule">Save</button>
+                        <button type="submit" class="btn btn-primary" id="save-schedule">Save</button>
                     </div>
                 </div>
             </form>
@@ -130,16 +131,6 @@
                     $(this).text('Select No Courses');
                 }
                 $(this).toggleClass('all')
-            });
-
-            $('#save-schedule').click(function(){
-                var schedule = {
-                 'schedID': 0
-               };
-               var url = '{{ url_for('ScheduleView:create_schedule_submit') }}';
-               $.post(url, schedule, function(){
-                   window.location.replace('{{ url_for('ScheduleView:index') }}')
-               });
             });
 
             $(".chosen").chosen({
