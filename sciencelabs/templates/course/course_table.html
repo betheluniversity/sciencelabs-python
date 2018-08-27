@@ -1,0 +1,61 @@
+{% block table %}
+    <div class="form-group col-md-12">
+        <h3>{{ app_settings['LAB_TITLE'] }} Courses for {{ semester.term }} {{ semester.year }}</h3>
+    </div>
+    {# TODO FILL TABLE #}
+    <table id="table"  class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Sec</th>
+                <th>Course Code</th>
+                <th>Professor</th>
+                <th>Enr</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course, user in course_info %}
+                <tr>
+                    <td>
+                        <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title }}</a>
+                    </td>
+                    <td>
+                        {{ course.section }}
+                    </td>
+                    <td>
+                        {{ course.dept + course.course_num }}
+                    </td>
+                    <td>
+                        {{ user.firstName }}
+                        {{ user.lastName }}
+                    </td>
+                    <td>
+                        {{ course.num_attendees }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: right; margin-top: 20px;" class="form-group col-md-12">
+        <h3 style="text-align: left;">{{ app_settings['LAB_TITLE'] }} Courses Across all Terms</h3>
+        <input id="tags" type="text" name="potential_courses" class="tags" value="{{ cc_str }}"/>
+        <button style="margin-top: 10px;" type="submit" class="btn btn-primary" id="submit-courses">Submit Courses</button>
+    </div>
+{% endblock %}
+
+<script type="text/javascript">
+    $(function() {
+        $('#tags').tagsInput({
+            delimiter: ';',
+            height:'150px',
+            width:'100%',
+            interactive:true,
+            defaultText:'add a course',
+            minInputWidth: '90px',
+            removeWithBackspace : true,
+            minChars : 6,
+            maxChars : 0, //if not provided there is no limit,
+            placeholderColor : '#666666'
+        });
+    });
+</script>

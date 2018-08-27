@@ -84,7 +84,7 @@
                                 {{ schedule.name }}
                             </td>
                             <td>
-                                {{ day_abbr[schedule.dayofWeek] }}
+                                {{ macros.day_abbr(schedule.dayofWeek) }}
                             </td>
                             <td>
                                 {{ (schedule.startTime|datetimeformat) }}

@@ -2,6 +2,11 @@ a{
     color: #0069AA;
 }
 
+a:hover{
+    /*background-color: inherit !important;*/
+    filter: brightness(85%);
+}
+
 body {
   background: #fff;
   color: #222;
@@ -14,6 +19,7 @@ body {
   position: relative;
   cursor: auto;
 }
+
 
 p{
     margin-bottom: 1.25rem;
@@ -92,6 +98,16 @@ form.create-session-form{
     margin-top: 15px;
 }
 
+span.tag {
+    border: 1px solid #0069aa !important;
+    background: #6caedf !important;
+    color: #0f2c52 !important;
+}
+
+span.tag a {
+    color: #0069aa !important;
+}
+
 a.semester-menu{
     background-color: white;
 }
@@ -101,6 +117,7 @@ a.semester-menu{
 }
 
 .edit{
+    color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
 }

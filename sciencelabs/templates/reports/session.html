@@ -69,7 +69,7 @@
                                     <td>{{ session.name }}</td>
                                     <td>
                                         {% set schedule = session_.get_dayofWeek_from_session(session.id) %}
-                                        {{ day_abbr[schedule.dayofWeek] }}
+                                        {{ macros.day_abbr(schedule.dayofWeek) }}
                                     </td>
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                                     <td>
