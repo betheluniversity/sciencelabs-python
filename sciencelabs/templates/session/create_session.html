@@ -147,45 +147,6 @@
                 display_disabled_options: true
             });
 
-            {#$('#create-session').click(function(){#}
-            {##}
-            {#    // Getting leads#}
-            {#    var leads = $('#choose-leads').val();#}
-            {#    var jsonLeads = JSON.stringify(leads);#}
-            {##}
-            {#    // Getting tutors#}
-            {#    var tutors = $('#choose-tutors').val();#}
-            {#    var jsonTutors = JSON.stringify(tutors);#}
-            {##}
-            {#    // Getting courses#}
-            {#    var courses = [];#}
-            {#    $('.course-checkbox:checked').each(function(){#}
-            {#        courses.push($(this).val());#}
-            {#    });#}
-            {#    var jsonCourses = JSON.stringify(courses);#}
-            {##}
-            {#    var session = {#}
-            {#        'name': $('#session-name').val(),#}
-            {#        'room': $('#room-number').val(),#}
-            {#        'semester': $('#semester :selected').val(),#}
-            {#        'date': $('#session-date').val(),#}
-            {#        'startTime': $('#scheduled-start').val(),#}
-            {#        'endTime': $('#scheduled-end').val(),#}
-            {#        'leads': jsonLeads,#}
-            {#        'tutors': jsonTutors,#}
-            {#        'actualStart': $('#actual-start').val(),#}
-            {#        'actualEnd': $('#actual-end').val(),#}
-            {#        'courses': jsonCourses,#}
-            {#        'comments': $('#comments').val(),#}
-            {#        'anonStudents': $('#anon-students').val()#}
-            {#    };#}
-            {#   var url = '{{ url_for('SessionView:create_session_submit') }}';#}
-            {#   $.post(url, session, function(message){#}
-            {#       window.location.replace('{{ url_for('SessionView:index') }}');#}
-            {#       alert(message);#}
-            {#   });#}
-            {# });#}
-
         });
     </script>
 {% endblock %}
