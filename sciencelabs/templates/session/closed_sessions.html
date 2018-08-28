@@ -13,55 +13,59 @@
 {% endblock %}
 
 {% block body_content %}
-    <table id="closed-table"  class="table table-striped table-bordered" style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Room</th>
-                <th>Tutors</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for session in sessions %}
+    {% if sessions %}
+        <table id="closed-table"  class="table table-striped table-bordered" style="width:100%">
+            <thead>
                 <tr>
-                    <td>
-                        {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}
-                    </td>
-                    <td>
-                        {{ session.date.strftime('%m/%d/%Y') }}
-                    </td>
-                    <td>
-                        {{ session.startTime|datetimeformat + ' - ' + session.endTime|datetimeformat }}
-                    </td>
-                    <td>
-                        {{ session.room }}
-                    </td>
-                    <td>
-                        <button type="button" class="show-tutors btn btn-primary">Show</button>
-                        <div style="display:none;margin-top:10px" class="text-left">
-                        {% set tutors = session_tutors.get_session_tutors(session.id) %}
-                        {% for tutor in tutors %}
-                            {{ tutor.firstName }} {{ tutor.lastName }}
-                            {% if tutor.isLead %}
-                                <span class="button-labels">Lead</span>
-                            {% endif %}
-                            <br />
-                        {% endfor %}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
-                            <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
-                        </div>
-                    </td>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Room</th>
+                    <th>Tutors</th>
+                    <th></th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                    <tr>
+                        <td>
+                            {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}
+                        </td>
+                        <td>
+                            {{ session.date.strftime('%m/%d/%Y') }}
+                        </td>
+                        <td>
+                            {{ session.startTime|datetimeformat + ' - ' + session.endTime|datetimeformat }}
+                        </td>
+                        <td>
+                            {{ session.room }}
+                        </td>
+                        <td>
+                            <button type="button" class="show-tutors btn btn-primary">Show</button>
+                            <div style="display:none;margin-top:10px" class="text-left">
+                            {% set tutors = session_tutors.get_session_tutors(session.id) %}
+                            {% for tutor in tutors %}
+                                {{ tutor.firstName }} {{ tutor.lastName }}
+                                {% if tutor.isLead %}
+                                    <span class="button-labels">Lead</span>
+                                {% endif %}
+                                <br />
+                            {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
+                                <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3 class="text-center">There are no past sessions.</h3>
+    {% endif %}
 
     <script>
          $(document).ready( function () {

@@ -15,7 +15,12 @@ class Session:
     def get_closed_sessions(self):
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).filter(Session_Table.deletedAt == None).order_by(Session_Table.date.asc()).all())
+                .filter(Session_Table.startTime != None).filter(Session_Table.deletedAt == None)
+                .order_by(Session_Table.date.asc()).all())
+
+    def get_available_sessions(self, semester_id):
+        return session.query(Session_Table).filter(Session_Table.semester_id == semester_id)\
+            .filter(Session_Table.deletedAt == None).filter(Session_Table.startTime == None).all()
 
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()

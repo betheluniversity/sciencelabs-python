@@ -19,7 +19,11 @@ class SessionView(FlaskView):
         self.course = Course()
 
     def index(self):
+        current_alert = get_alert()
         semester = self.schedule.get_active_semester()
+        semester_list = self.schedule.get_semesters()
+        sessions = self.session.get_available_sessions(semester.id)
+        session_tutors = self.session
         return render_template('session/available_sessions.html', **locals())
 
     @route('/closed')
