@@ -47,6 +47,8 @@ class SessionView(FlaskView):
     def deleted(self):
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
+        sessions = self.session.get_deleted_sessions(semester.id)
+        session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -280,3 +282,6 @@ class SessionView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
+
+    def open_session(self, hash):
+        return render_template('session/open_session.html')
