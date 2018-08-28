@@ -2,7 +2,7 @@
     <form class="form-inline">
         <button id="set-semester" type="button" class="btn btn-primary">Set</button>
         <select id="semester-select" class="custom-select">
-            {% for semester in semester_list |sort %}
+            {% for semester in semester_list %}
                 {% set semester_info = semester.split(';') %}
                 {% if semester_list[semester] == 1 %}
                     <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>

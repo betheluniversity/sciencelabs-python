@@ -43,7 +43,6 @@ ProfileView.register(app)
 
 @app.context_processor
 def utility_processor():
-    print(session)
     to_return = {}
     to_return.update({
         'now': datetime.now()
