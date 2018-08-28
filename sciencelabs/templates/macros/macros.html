@@ -25,6 +25,7 @@
                     data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
+                        document.location.reload()
                         console.log(response);
                     },
                     error: function (error) {
