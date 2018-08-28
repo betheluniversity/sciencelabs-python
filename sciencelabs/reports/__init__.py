@@ -38,8 +38,7 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         semester_list = session['SEMESTER-LIST']
-        # student_info = self.user.get_student_info_test(session['SELECTED-SEMESTER'])
-        student_info = self.user.get_student_info()
+        student_info = self.user.get_student_info(session['SELECTED-SEMESTER'])
         return render_template('reports/student.html', **locals())
 
     @route('/student/<int:student_id>')
@@ -69,7 +68,7 @@ class ReportView(FlaskView):
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
-        for student, attendance in self.user.get_student_info():
+        for student, attendance in self.user.get_student_info(session['SELECTED-SEMESTER']):
             my_list.append([student.lastName, student.firstName, student.email, attendance])
 
         return self.export_csv(my_list, csv_name)
