@@ -18,9 +18,7 @@
             $('#set-semester').click(function(){
                 var select_tag = document.getElementById("semester-select");
                 var semester_id = select_tag.options[select_tag.selectedIndex].value;
-                alert(semester_id);
                 var semester_term_year = select_tag.options[select_tag.selectedIndex].text;
-                alert(semester_term_year);
                 $.ajax({
                     type: "POST",
                     url: "/set-semester",
