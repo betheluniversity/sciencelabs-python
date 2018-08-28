@@ -70,6 +70,7 @@ def set_semester_selector():
         for semester in session['SEMESTER-LIST']:
             session['SEMESTER-LIST'][semester] = 0
         session['SEMESTER-LIST'][semester_string] = 1
+        session.modified = True
         return 'success'
     else:
         return 'error'
