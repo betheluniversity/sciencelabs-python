@@ -26,14 +26,14 @@ class ReportView(FlaskView):
 
     # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
     def index(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
         return render_template('reports/base.html', **locals())
 
     def student(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
@@ -43,13 +43,13 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id)
-        total_sessions = self.session_.get_closed_sessions()
+        total_sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         courses = self.user.get_student_courses(student_id)
         sessions = self.user.get_studentsession(student_id)
         user = self.user
@@ -57,9 +57,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
-
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term[:2]  # SEMESTER.TERM[:2]
+        year = sem.year  # SEMESTER.YEAR
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -74,11 +74,11 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def semester(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
-        semester = self.schedule.get_active_semester()
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         term_info = self.schedule.get_term_report()
         term_attendance = self.schedule.get_session_attendance()
@@ -113,8 +113,9 @@ class ReportView(FlaskView):
         return render_template('reports/term.html', **locals())
 
     def export_semester_csv(self):
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term[:2]  # SEMESTER.TERM[:2]
+        year = sem.year  # SEMESTER.YEAR
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -159,7 +160,7 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         first_month = int(str(sess[0].date)[5:7])
         first_year = int(str(sess[0].date)[:4])
         cal = calendar
@@ -275,7 +276,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def annual(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
         cumulative = self.base.cumulative
@@ -401,23 +402,23 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def session(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
         months = self.base.months
         semester_list = session['SEMESTER-LIST']
-        sessions = self.session_.get_closed_sessions()
+        sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_ = self.session_
         return render_template('reports/session.html', **locals())
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
-        session = self.session_.get_session(session_id)
+        session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
         session_students = self.session_.get_session_students(session_id)
@@ -428,8 +429,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term[:2]  # SEMESTER.TERM[:2]
+        year = sem.year  # SEMESTER.YEAR
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -438,19 +440,19 @@ class ReportView(FlaskView):
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
-        sessions = self.session_.get_closed_sessions()
+        sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         dates = []
-        for session in sessions:
-            if (str(session.date)[5:7]) not in dates:
-                dates.append(str(session.date)[5:7])
+        for session_info in sessions:
+            if (str(session_info.date)[5:7]) not in dates:
+                dates.append(str(session_info.date)[5:7])
 
         total_attendance = 0
         for date in dates:
-            for session in sessions:
-                if (str(session.date)[5:7]) == date:
-                    attendance = len(self.session_.get_session_students(session.id))
+            for session_info in sessions:
+                if (str(session_info.date)[5:7]) == date:
+                    attendance = len(self.session_.get_session_students(session_info.id))
                     # TODO FIX SESSION.GET_DAYOFWEEK_FROM_SESSION
-                    my_list.append([session.date.strftime('%m/%d/%Y'), session.name, self.session_.get_dayofWeek_from_session(session.id).dayofWeek, session.startTime, session.endTime, session.room, attendance, session.comments])
+                    my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name, self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek, session_info.startTime, session_info.endTime, session_info.room, attendance, session_info.comments])
                     total_attendance += attendance
 
         my_list.append(['', '', '', '', '', 'Total:', total_attendance])
@@ -458,7 +460,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def course(self):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
@@ -470,7 +472,7 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
-        sess = self.session_.get_closed_sessions()
+        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
@@ -482,8 +484,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term[:2]  # SEMESTER.TERM[:2]
+        year = sem.year  # SEMESTER.YEAR
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -510,8 +513,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_course_session_attendance_csv(self, course_id):
-        term = 'SP'[:2]  # SEMESTER.TERM[:2]
-        year = '2018'  # SEMESTER.YEAR
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term[:2]  # SEMESTER.TERM[:2]
+        year = sem.year  # SEMESTER.YEAR
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
