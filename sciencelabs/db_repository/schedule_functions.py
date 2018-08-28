@@ -53,6 +53,11 @@ class Schedule:
             .order_by(Semester_Table.year.desc())\
             .all()
 
+    def get_semester(self, semester_id):
+        return session.query(Semester_Table)\
+            .filter(Semester_Table.id == semester_id)\
+            .one()
+
     def get_registered_leads(self):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
             .filter(User_Table.id == user_role_Table.user_id)\
@@ -130,5 +135,3 @@ class Schedule:
         new_term = Semester_Table(term=term, year=year, startDate=db_start_date, endDate=db_end_date, active=1)
         session.add(new_term)
         session.commit()
-
-
