@@ -57,6 +57,8 @@ def create_semester_selector():
     session['SEMESTER-LIST'] = {}
     for semester in semester_list:
         session['SEMESTER-LIST'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
+        if semester.active == 1:
+            session['SELECTED-SEMESTER'] = semester.id
 
 
 @app.route("/set-semester", methods=["POST"])
@@ -70,6 +72,7 @@ def set_semester_selector():
         for semester in session['SEMESTER-LIST']:
             session['SEMESTER-LIST'][semester] = 0
         session['SEMESTER-LIST'][semester_string] = 1
+        session['SELECTED-SEMESTER'] = semester_id
         session.modified = True
         return 'success'
     else:
