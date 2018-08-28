@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body btn-group">
-            <p style="margin: 0px" class="card-text">{{ session.name }} ({{ session.date.strftime('%m/%d/%Y') }})</p>
+            <p style="margin: 0px" class="card-text">{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</p>
         </div>
     </div>
 {% endblock %}
@@ -25,7 +25,7 @@
                             <li><b>Date:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>{{ session.date.strftime('%B %d, %Y') }}</li>
+                                    <li>{{ session_info.date.strftime('%B %d, %Y') }}</li>
                                 </ul>
                             </li>
                         </ul>
@@ -34,7 +34,7 @@
                             <li><b>Scheduled Time:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</li>
+                                    <li>{{ session_info.schedStartTime|datetimeformat }} - {{ session_info.schedEndTime|datetimeformat }}</li>
                                 </ul>
                             </li>
                         </ul>
@@ -43,16 +43,16 @@
                             <li><b>Actual Time:</b></li>
                             <li>
                                 <ul class="no-bullet">
-                                    <li>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</li>
+                                    <li>{{ session_info.startTime|datetimeformat }} - {{ session_info.endTime|datetimeformat }}</li>
                                 </ul>
                             </li>
                         </ul>
-                        {% if session.openerId %}
+                        {% if session_info.openerId %}
                             <ul class="no-bullet">
                                 <li><b>Opened By:</b></li>
                                 <li>
                                     <ul class="no-bullet">
-                                        {% set opener = user.get_user(session.openerId) %}
+                                        {% set opener = user.get_user(session_info.openerId) %}
                                         <li>{{ opener.firstName }} {{ opener.lastName }}</li>
                                     </ul>
                                 </li>
@@ -109,7 +109,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <h3>Tutor Comments</h3>
-                        <p>{{ session.comments }}</p>
+                        <p>{{ session_info.comments }}</p>
                     </div>
                 </div>
                 <button id="show-hide" style="margin-bottom: 20px;" type="button" class="big-button edit btn-primary">View by Course</button>
@@ -133,7 +133,7 @@
                                             <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td>
                                                 <ul>
-                                                    {% set courses = session_.get_report_student_session_courses(session.id, student.id) %}
+                                                    {% set courses = session_.get_report_student_session_courses(session_info.id, student.id) %}
                                                     {% for course in courses %}
                                                         <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
@@ -159,7 +159,7 @@
                                     <th style="border-top: none;">Anonymous Students</th>
                                 </tr>
                                 <tr>
-                                    <th style="border-top: none;">{{ session.anonStudents }}</th>
+                                    <th style="border-top: none;">{{ session_info.anonStudents }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -174,7 +174,7 @@
                                     </thead>
                                     <tbody>
                                     {% for student in session_students %}
-                                        {% if course in session_.get_student_session_courses(session.id, student.id) %}
+                                        {% if course in session_.get_student_session_courses(session_info.id, student.id) %}
                                             <tr>
                                                 <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                                 <td>
