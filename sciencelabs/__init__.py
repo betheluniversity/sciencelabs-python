@@ -71,7 +71,9 @@ def set_semester_selector():
         for semester in session['SEMESTER-LIST']:
             session['SEMESTER-LIST'][semester] = 0
         session['SEMESTER-LIST'][semester_string] = 1
-    return 'success'
+        return 'success'
+    else:
+        return 'error'
 
 
 # TODO IN PROGRESS LOGOUT METHOD
