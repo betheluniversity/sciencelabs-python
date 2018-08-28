@@ -10,23 +10,16 @@ class User:
 
     def get_session_students(self, session_id):
         return session.query(User_Table, StudentSession_Table) \
-            .filter(StudentSession_Table.sessionId == session_id).filter(StudentSession_Table.studentId == User_Table.id).all()
-
-    def get_student_info(self):
-        return session.query(User_Table, func.count(User_Table.id)) \
-            .filter(User_Table.id == StudentSession_Table.studentId) \
-            .filter(StudentSession_Table.sessionId == Session_Table.id) \
-            .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
-            .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
-    def get_student_info_test(self, sem_id):
+    def get_student_info(self, semester_id):
         return session.query(User_Table, func.count(User_Table.id)) \
             .filter(User_Table.id == StudentSession_Table.studentId) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.id == sem_id) \
+            .filter(Semester_Table.id == semester_id) \
             .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
             .all()
 
