@@ -58,8 +58,8 @@ class ReportView(FlaskView):
 
     def export_student_csv(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        term = sem.term[:2]  # SEMESTER.TERM[:2]
-        year = sem.year  # SEMESTER.YEAR
+        term = sem.term[:2]
+        year = sem.year
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -114,8 +114,8 @@ class ReportView(FlaskView):
 
     def export_semester_csv(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        term = sem.term[:2]  # SEMESTER.TERM[:2]
-        year = sem.year  # SEMESTER.YEAR
+        term = sem.term[:2]
+        year = sem.year
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -430,8 +430,8 @@ class ReportView(FlaskView):
 
     def export_session_csv(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        term = sem.term[:2]  # SEMESTER.TERM[:2]
-        year = sem.year  # SEMESTER.YEAR
+        term = sem.term[:2]
+        year = sem.year
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -485,8 +485,8 @@ class ReportView(FlaskView):
 
     def export_course_session_csv(self, course_id):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        term = sem.term[:2]  # SEMESTER.TERM[:2]
-        year = sem.year  # SEMESTER.YEAR
+        term = sem.term[:2]
+        year = sem.year
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
@@ -498,10 +498,10 @@ class ReportView(FlaskView):
         csv_course_info = course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
 
         total_attendance = 0
-        for session, schedule in sessions:
+        for sess, schedule in sessions:
             # TODO FIX SCHEDULE.DAYOFWEEK AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDSTARTTIME
-            sub_list = [session.date.strftime('%m/%d/%Y'), schedule.dayofWeek, str(session.schedStartTime) + ' - ' + str(session.schedEndTime)]
-            attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, session.id)
+            sub_list = [sess.date.strftime('%m/%d/%Y'), schedule.dayofWeek, str(sess.schedStartTime) + ' - ' + str(sess.schedEndTime)]
+            attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, sess.id)
             sub_list.append(len(attendance_per_session))
             total_attendance += len(attendance_per_session)
             my_list.append(sub_list)
@@ -514,8 +514,8 @@ class ReportView(FlaskView):
 
     def export_course_session_attendance_csv(self, course_id):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        term = sem.term[:2]  # SEMESTER.TERM[:2]
-        year = sem.year  # SEMESTER.YEAR
+        term = sem.term[:2]
+        year = sem.year
         lab = ''
         for letter in app_settings['LAB_TITLE'].split():
             lab += letter[0]
