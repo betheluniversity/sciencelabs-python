@@ -42,6 +42,7 @@ class User:
             .group_by(User_Table.id) \
             .all()
 
+    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
     def get_studentsession(self, student_id):
         return session.query(StudentSession_Table, Session_Table)\
             .filter(StudentSession_Table.studentId == student_id)\
@@ -55,6 +56,7 @@ class User:
             .filter(User_Table.id == user_id)\
             .one()
 
+    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
     def get_student_attendance(self, student_id):
             return session.query(User_Table, func.count(User_Table.id)) \
                 .filter(student_id == User_Table.id)\
@@ -65,6 +67,7 @@ class User:
                 .group_by(User_Table.id) \
                 .one()
 
+    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
     def get_student_courses(self, student_id):
         return session.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\
