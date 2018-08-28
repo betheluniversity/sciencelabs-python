@@ -26,7 +26,7 @@ class SessionView(FlaskView):
 
     @route('/closed')
     def closed(self):
-        sessions = self.session.get_closed_sessions()
+        sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_tutors = self.session
         semester = self.schedule.get_active_semester()
         semester_list = session['SEMESTER-LIST']
