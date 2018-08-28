@@ -21,6 +21,15 @@ class User:
             .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
             .all()
 
+    def get_student_info_test(self, sem_id):
+        return session.query(User_Table, func.count(User_Table.id)) \
+            .filter(User_Table.id == StudentSession_Table.studentId) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.id == sem_id) \
+            .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
+            .all()
+
     def get_user_info(self):
         return session.query(User_Table, Role_Table).filter(User_Table.id == user_role_Table.user_id) \
             .filter(User_Table.id == user_role_Table.user_id) \

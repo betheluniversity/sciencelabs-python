@@ -38,6 +38,7 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         semester_list = session['SEMESTER-LIST']
+        # student_info = self.user.get_student_info_test(session['SELECTED-SEMESTER'])
         student_info = self.user.get_student_info()
         return render_template('reports/student.html', **locals())
 
