@@ -1,5 +1,8 @@
 {% extends 'session/base.html' %}
 
-{% block body_content %}
-
+{% block subnav %}
+    <a id="student" class="nav-item nav-link {{ 'active' if 'open' in request.path else 'disabled'}}"
+           href="{{ url_for('SessionView:open_session') }}">Student</a>
+    <a id="tutor" class="nav-item nav-link {{ 'active' if 'tutor' in request.path else 'disabled'}}"
+       href="{{ url_for('SessionView:tutor_attendance') }}">Tutor</a>
 {% endblock %}

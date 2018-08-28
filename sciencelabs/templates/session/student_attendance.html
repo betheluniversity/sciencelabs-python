@@ -1,0 +1,18 @@
+{% extends 'session/open_session.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <h3 class="card-text text-center">Welcome to the Bethel University {{ app_settings['LAB_TITLE'] }}</h3>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="centered">
+        <a href='#' class="big-button btn btn-primary">Please Sign In Here</a>
+    </div>
+{#    <table id="student-attendance">#}
+{#    #}
+{#    </table>#}
+{% endblock %}

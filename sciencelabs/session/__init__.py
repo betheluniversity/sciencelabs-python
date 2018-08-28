@@ -283,5 +283,8 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
 
-    def open_session(self, hash):
-        return render_template('session/open_session.html')
+    def open_session(self):
+        return render_template('session/student_attendance.html')
+
+    def tutor_attendance(self):
+        return render_template('session/tutor_attendance.html')

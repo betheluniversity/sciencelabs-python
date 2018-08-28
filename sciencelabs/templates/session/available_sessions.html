@@ -53,7 +53,7 @@
                             <div class="btn-group">
                                 <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
                                 <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
-                                <a href="{{ url_for('SessionView:open_session', hash=session.hash) }}" class="btn btn-primary">Start</a>
+                                <a href="{{ url_for('SessionView:open_session') }}" class="btn btn-primary">Start</a>
                             </div>
                         </td>
                     </tr>
