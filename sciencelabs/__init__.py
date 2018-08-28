@@ -2,10 +2,11 @@
 import logging
 
 # Packages
-from flask import Flask, session
+from flask import Flask, session, request
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
 from datetime import datetime
+import json
 
 # Local
 from app_settings import app_settings
@@ -53,19 +54,24 @@ def utility_processor():
 
 @app.before_first_request
 def create_semester_selector():
-    print(session)
     semester_list = Schedule().get_semesters()
     session['SEMESTER-LIST'] = {}
     for semester in semester_list:
         session['SEMESTER-LIST'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
 
 
-def set_semester_selector(id, term, year):
-    semester_string = str(id) + ';' + term + ';' + str(year)
+@app.route("/set-semester", methods=["POST"])
+def set_semester_selector():
+    semester_id = str(json.loads(request.data).get('id'))
+    term_year = str(json.loads(request.data).get('term-year'))
+    term_year_list = term_year.split(" ")
+    term, year = term_year_list
+    semester_string = str(semester_id) + ';' + term + ';' + str(year)
     if semester_string in session['SEMESTER-LIST']:
         for semester in session['SEMESTER-LIST']:
             session['SEMESTER-LIST'][semester] = 0
         session['SEMESTER-LIST'][semester_string] = 1
+    return 'success'
 
 
 # TODO IN PROGRESS LOGOUT METHOD

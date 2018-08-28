@@ -1,11 +1,11 @@
 {% macro semester_selector(semester_list) %}
     <form class="form-inline">
         <button id="set-semester" type="button" class="btn btn-primary">Set</button>
-        <select class="custom-select">
+        <select id="semester-select" class="custom-select">
             {% for semester in semester_list |sort %}
                 {% set semester_info = semester.split(';') %}
                 {% if semester_list[semester] == 1 %}
-                    <option selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                    <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
                 {% else %}
                     <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
                 {% endif %}
@@ -16,14 +16,23 @@
         $(document).ready(function(){
 
             $('#set-semester').click(function(){
-                alert("Set Semester");
+                var select_tag = document.getElementById("semester-select");
+                var semester_id = select_tag.options[select_tag.selectedIndex].value;
+                alert(semester_id);
+                var semester_term_year = select_tag.options[select_tag.selectedIndex].text;
+                alert(semester_term_year);
                 $.ajax({
                     type: "POST",
-                    url: "set_semester_selector",
-                    data: {'semester_id': '000', 'term': '000', 'year': '000' },
-                    success: function(result){
-                    $("#div1").html(result);
-                }});
+                    url: "/set-semester",
+                    data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
             });
 
         });
