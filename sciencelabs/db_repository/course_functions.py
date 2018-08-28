@@ -34,8 +34,11 @@ class Course:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(StudentSession_Table.sessionId == Session_Table.id).filter(Session_Table.semester_id == semester_id) \
-            .filter(StudentSession_Table.studentId == User_Table.id).filter(User_Table.id == student_id).distinct()
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == semester_id) \
+            .filter(StudentSession_Table.studentId == User_Table.id)\
+            .filter(User_Table.id == student_id)\
+            .distinct()
 
     def get_course(self, course_id):
         return session.query(Course_Table, User_Table, Semester_Table)\
@@ -61,10 +64,14 @@ class Course:
             .all()
 
     def get_semester_courses_with_section(self, semester_id):
-        return session.query(Course_Table).filter(Course_Table.semester_id == semester_id).all()
+        return session.query(Course_Table)\
+            .filter(Course_Table.semester_id == semester_id)\
+            .all()
 
     def get_active_coursecode(self):
-        return session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
+        return session.query(CourseCode_Table)\
+            .filter(CourseCode_Table.active == 1)\
+            .all()
 
     def check_for_existing_coursecode(self, cc_info):
         try:
@@ -183,7 +190,9 @@ class Course:
         session.add(new_course)
         session.commit()
 
-        user = session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one()
+        user = session.query(User_Table)\
+            .filter(User_Table.username == c_info['instructorUsername'])\
+            .one()
 
         new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
 

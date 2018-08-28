@@ -20,11 +20,13 @@ class User:
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
             .filter(Semester_Table.id == semester_id) \
-            .group_by(User_Table.id).order_by(User_Table.lastName.asc()) \
+            .group_by(User_Table.id)\
+            .order_by(User_Table.lastName.asc()) \
             .all()
 
     def get_user_info(self):
-        return session.query(User_Table, Role_Table).filter(User_Table.id == user_role_Table.user_id) \
+        return session.query(User_Table, Role_Table)\
+            .filter(User_Table.id == user_role_Table.user_id) \
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
             .filter(User_Table.deletedAt == None) \
@@ -49,7 +51,9 @@ class User:
             .all()
 
     def get_user(self, user_id):
-        return session.query(User_Table).filter(User_Table.id == user_id).one()
+        return session.query(User_Table)\
+            .filter(User_Table.id == user_id)\
+            .one()
 
     def get_student_attendance(self, student_id):
             return session.query(User_Table, func.count(User_Table.id)) \
@@ -88,10 +92,12 @@ class User:
             .all()
 
     def get_student_from_studentsession(self, student_id):
-        return session.query(User_Table).fitler(User_Table.id == student_id)
+        return session.query(User_Table)\
+            .filter(User_Table.id == student_id)
 
     def get_all_roles(self):
-        return session.query(Role_Table).all()
+        return session.query(Role_Table)\
+            .all()
 
     def get_user_roles(self, user_id):
         return session.query(Role_Table)\
@@ -101,10 +107,14 @@ class User:
             .all()
 
     def get_professor_role(self):
-        return session.query(Role_Table).filter(Role_Table.name == "Professor").one()
+        return session.query(Role_Table)\
+            .filter(Role_Table.name == "Professor")\
+            .one()
 
     def get_all_current_users(self):
-        return session.query(User_Table).filter(User_Table.deletedAt == None).all()
+        return session.query(User_Table)\
+            .filter(User_Table.deletedAt == None)\
+            .all()
 
     def delete_user(self, user_id):
         user_to_delete = self.get_user(user_id)
@@ -113,13 +123,17 @@ class User:
 
     def check_for_existing_user(self, username):
         try:  # return true if there is an existing user
-            user = session.query(User_Table).filter(User_Table.username == username).one()
+            user = session.query(User_Table)\
+                .filter(User_Table.username == username)\
+                .one()
             return True
         except:  # otherwise return false
             return False
 
     def activate_existing_user(self, username):
-        user = session.query(User_Table).filter(User_Table.username == username).one()
+        user = session.query(User_Table)\
+            .filter(User_Table.username == username)\
+            .one()
         user.deletedAt = None
         session.commit()
 
@@ -130,7 +144,9 @@ class User:
         session.commit()
 
     def set_user_roles(self, username, roles):
-        user = session.query(User_Table).filter(User_Table.username == username).one()
+        user = session.query(User_Table)\
+            .filter(User_Table.username == username)\
+            .one()
         user_id = user.id
         for role in roles:
             user_role = user_role_Table(user_id=user_id, role_id=role)
@@ -138,14 +154,18 @@ class User:
         session.commit()
 
     def update_user_info(self, user_id, first_name, last_name, email):
-        user = session.query(User_Table).filter(User_Table.id == user_id).one()
+        user = session.query(User_Table)\
+            .filter(User_Table.id == user_id)\
+            .one()
         user.firstName = first_name
         user.lastName = last_name
         user.email = email
         session.commit()
 
     def clear_current_roles(self, user_id):
-        roles = session.query(user_role_Table).filter(user_role_Table.user_id == user_id).all()
+        roles = session.query(user_role_Table)\
+            .filter(user_role_Table.user_id == user_id)\
+            .all()
         for role in roles:
             session.delete(role)
         session.commit()

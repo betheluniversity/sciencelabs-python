@@ -42,7 +42,8 @@ class Session:
                              TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
             .filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id)\
-            .filter(User_Table.id == tutor_id).one()
+            .filter(User_Table.id == tutor_id)\
+            .one()
 
     def get_student_session_info(self, student_id, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
@@ -86,7 +87,8 @@ class Session:
             .one()
 
     def get_sessions(self, course_id):
-        return session.query(Session_Table, Schedule_Table).filter(Session_Table.schedule_id == Schedule_Table.id)\
+        return session.query(Session_Table, Schedule_Table)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
@@ -96,7 +98,8 @@ class Session:
     def get_session_attendees(self, session_id):
         return session.query(User_Table.id) \
             .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == User_Table.id).distinct()
+            .filter(StudentSession_Table.studentId == User_Table.id)\
+            .distinct()
 
     def get_session_attendees_with_dup(self, course_id, session_id):
         return session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
@@ -120,12 +123,14 @@ class Session:
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == Course_Table.id)\
-            .filter(CourseCode_Table.id == Course_Table.course_code_id).all()
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
 
     def get_dayofWeek_from_session(self, session_id):
         return session.query(Schedule_Table)\
             .filter(Session_Table.id == session_id)\
-            .filter(Session_Table.schedule_id == Schedule_Table.id).one()
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .one()
 
     def delete_session(self, session_id):
         session_to_delete = self.get_session(session_id)
@@ -228,20 +233,25 @@ class Session:
             .filter(Session_Table.date.between(start_date, end_date))
 
     def get_years(self):
-        return session.query(Semester_Table.year).order_by(Semester_Table.year.desc()).distinct()
+        return session.query(Semester_Table.year)\
+            .order_by(Semester_Table.year.desc())\
+            .distinct()
 
     def get_monthly_sessions_attendance(self, start_date, end_date):
-        return (session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == Session_Table.id)\
+        return (session.query(StudentSession_Table)
+                .filter(StudentSession_Table.sessionId == Session_Table.id)\
                 .filter(Session_Table.date.between(start_date, end_date))
                 .filter(Session_Table.semester_id == Semester_Table.id)
-                .filter(Session_Table.startTime != None).all())
+                .filter(Session_Table.startTime != None)
+                .all())
 
     def get_semester_closed_sessions(self, year, term):
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Semester_Table.year == year)
                 .filter(Semester_Table.term == term)
-                .filter(Session_Table.startTime != None).all())
+                .filter(Session_Table.startTime != None)
+                .all())
 
     def get_unscheduled_sessions(self, year, term):
         return (session.query(Session_Table)
@@ -250,4 +260,5 @@ class Session:
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Semester_Table.term == term)
                 .filter(Semester_Table.year == year)
-                .filter(Session_Table.startTime != None).all())
+                .filter(Session_Table.startTime != None)
+                .all())
