@@ -284,7 +284,10 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:create'))
 
     def open_session(self):
-        return render_template('session/student_attendance.html')
+        return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self):
-        return render_template('session/tutor_attendance.html')
+        return render_template('session/tutor_attendance.html', **locals())
+
+    def close_open_session(self):
+        return render_template('session/close_open_session.html')
