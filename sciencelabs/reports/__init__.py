@@ -25,16 +25,16 @@ class ReportView(FlaskView):
 
     # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
     def index(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         return render_template('reports/base.html', **locals())
 
     def student(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         semester_list = session['SEMESTER-LIST']
         student_info = self.user.get_student_info(session['SELECTED-SEMESTER'])
@@ -42,9 +42,9 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id, session['SELECTED-SEMESTER'])
@@ -73,9 +73,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def semester(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
@@ -162,9 +162,9 @@ class ReportView(FlaskView):
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
         # TODO NEED TO ADD SEMESTER SELECTOR TO MONTH TAB SINCE RIGHT NOW CHANGING SS DOES NOTHING
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        first_month = int(str(sess[0].date)[5:7])
-        first_year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
         cal = calendar
         months = self.base.months
         selected_year = year
@@ -290,9 +290,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def annual(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
         cumulative = self.base.cumulative
 
         session_ = self.session_
@@ -423,9 +423,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def session(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         months = self.base.months
         semester_list = session['SEMESTER-LIST']
@@ -435,9 +435,9 @@ class ReportView(FlaskView):
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
@@ -483,9 +483,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def course(self):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
@@ -495,9 +495,9 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
-        sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        month = int(str(sess[0].date)[5:7])
-        year = int(str(sess[0].date)[:4])
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        month = self.get_selected_month()
+        year = sem.year
 
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
@@ -590,3 +590,15 @@ class ReportView(FlaskView):
                 f.read(),
                 mimetype="text/csv",
                 headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
+
+    def get_selected_month(self):
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        term = sem.term
+        if term == 'Interim':
+            return 1
+        elif term == 'Spring':
+            return 2
+        elif term == 'Fall':
+            return 9
+        else:
+            return 6
