@@ -13,6 +13,7 @@ class Session:
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id)
                 .filter(Semester_Table.id == semester_id)
+                .filter(Session_Table.schedule_id != None)
                 .filter(Session_Table.startTime != None)
                 .filter(Session_Table.deletedAt == None)
                 .order_by(Session_Table.date.asc())
