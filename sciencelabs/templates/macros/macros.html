@@ -26,7 +26,13 @@
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
                         document.location.reload()
-                        {#location.replace("{{ url_for('ReportView:student') }}")#}
+                        {#if ('month' in window.location.pathname){#}
+                        {#    location.replace("{{ url_for('ReportView:student') }}")#}
+                        {##}
+                        {#else{#}
+                        {#    alert('no')#}
+                        {#    document.location.reload()#}
+                        {##}
                         console.log(response);
                     },
                     error: function (error) {
