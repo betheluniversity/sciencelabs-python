@@ -28,13 +28,13 @@ class SessionView(FlaskView):
     def closed(self):
         sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_tutors = self.session
-        semester = self.schedule.get_active_semester()
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         active_semester = self.schedule.get_active_semester()
-        semester_list = session['SEMESTER-LIST']
+        semester_list = self.schedule.get_semesters()
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -55,7 +55,7 @@ class SessionView(FlaskView):
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
         semester_list = session['SEMESTER-LIST']
-        course_list = self.course.get_semester_courses(40013)  # TODO: needs to update with semester selector
+        course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])  # TODO: needs to update with semester selector
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
@@ -63,7 +63,7 @@ class SessionView(FlaskView):
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
+        student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER']) #TODO: needs to update with semester selector
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
         return render_template('session/edit_student.html', **locals())

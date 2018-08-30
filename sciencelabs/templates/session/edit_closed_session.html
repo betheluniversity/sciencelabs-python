@@ -24,7 +24,12 @@
                 <label for="">Semester</label>
                 <select class="custom-select">
                     {% for semester in semester_list %}
-                        <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
+                        {% set semester_info = semester.split(';') %}
+                        {% if semester_list[semester] == 1 %}
+                            <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                        {% else %}
+                            <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
