@@ -16,6 +16,7 @@ class Session:
                 .filter(Session_Table.schedule_id != None)
                 .filter(Session_Table.startTime != None)
                 .filter(Session_Table.deletedAt == None)
+                .filter(Session_Table.date != None)
                 .order_by(Session_Table.date.asc())
                 .all())
 
