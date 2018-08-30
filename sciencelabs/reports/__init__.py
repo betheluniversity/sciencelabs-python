@@ -464,7 +464,7 @@ class ReportView(FlaskView):
         month = int(str(sess[0].date)[5:7])
         year = int(str(sess[0].date)[:4])
 
-        semester = self.schedule.get_active_semester()
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         user_ = self.user
         course_info = self.courses.get_active_course_info()
