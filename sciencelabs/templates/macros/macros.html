@@ -26,6 +26,7 @@
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
                         document.location.reload()
+                        {#location.replace("{{ url_for('ReportView:student') }}")#}
                         console.log(response);
                     },
                     error: function (error) {
