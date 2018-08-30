@@ -218,11 +218,11 @@ class Session:
                 .filter(Session_Table.startTime != None)
                 .all())
 
-    def get_avg_total_time_per_student(self):
+    def get_avg_total_time_per_student(self, semester_id):
         return session.query(StudentSession_Table) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
+            .filter(Semester_Table.id == semester_id) \
             .filter(Schedule_Table.id == Session_Table.schedule_id)\
             .all()
 

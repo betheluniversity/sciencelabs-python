@@ -48,10 +48,10 @@ class ReportView(FlaskView):
         year = int(str(sess[0].date)[:4])
 
         student = self.user.get_user(student_id)
-        student_info, attendance = self.user.get_student_attendance(student_id)
+        student_info, attendance = self.user.get_student_attendance(student_id, session['SELECTED-SEMESTER'])
         total_sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
-        courses = self.user.get_student_courses(student_id)
-        sessions = self.user.get_studentsession(student_id)
+        courses = self.user.get_student_courses(student_id, session['SELECTED-SEMESTER'])
+        sessions = self.user.get_studentsession(student_id, session['SELECTED-SEMESTER'])
         user = self.user
         session_ = self.session_
         return render_template('reports/view_student.html', **locals())
@@ -80,9 +80,9 @@ class ReportView(FlaskView):
 
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
-        term_info = self.schedule.get_term_report()
-        term_attendance = self.schedule.get_session_attendance()
-        unique_attendance_info = self.user.get_unique_session_attendance()
+        term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
+        term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
+        unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
         session_ = self.session_
         user_ = self.user
 
@@ -97,7 +97,7 @@ class ReportView(FlaskView):
             total_attendance += sessions[1]
             attendance_list += [sessions[1]]
 
-        avg_total = self.session_.get_avg_total_time_per_student()
+        avg_total = self.session_.get_avg_total_time_per_student(session['SELECTED-SEMESTER'])
         avg_total_time = 0
         for ss in avg_total:
             if ss.timeIn and ss.timeOut:
@@ -107,8 +107,8 @@ class ReportView(FlaskView):
         for attendance_data in unique_attendance_info:
             unique_attendance += attendance_data[1]
 
-        # TODO MAKE SURE SO NOT HARD-CODED
-        unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
 
         return render_template('reports/term.html', **locals())
 
@@ -125,7 +125,7 @@ class ReportView(FlaskView):
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance', 'Percentage'])
 
-        term_attendance = self.schedule.get_session_attendance()
+        term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         total_attendance = 0
         attendance_list = []
         for sessions in term_attendance:
@@ -134,12 +134,12 @@ class ReportView(FlaskView):
 
         index = 0
         session_count = 0
-        for schedule, sessions in self.schedule.get_term_report():
+        for schedule, sessions in self.schedule.get_term_report(session['SELECTED-SEMESTER']):
             session_count += sessions
             # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE/ENDTIME
             my_list.append([schedule.name, schedule.dayofWeek, schedule.startTime, schedule.endTime, sessions,
-                       attendance_list[index],
-                       str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
+                            attendance_list[index],
+                            str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
             index += 1
 
         my_list.append(['', '', '', 'Total:', session_count, total_attendance, '100%'])
@@ -147,7 +147,8 @@ class ReportView(FlaskView):
         my_list.append(['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance'])
 
         # TODO MAKE SURE SO NOT HARD-CODED
-        unscheduled_sessions = self.session_.get_unscheduled_sessions('2018', 'Spring')
+        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
         total_unscheduled = 0
         for sessions in unscheduled_sessions:
             # TODO FIX SESSIONS.STARTTIME AND SESSIONS.ENDTIME
@@ -160,6 +161,7 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
+        # TODO NEED TO ADD SEMESTER SELECTOR TO MONTH TAB SINCE RIGHT NOW CHANGING SS DOES NOTHING
         sess = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         first_month = int(str(sess[0].date)[5:7])
         first_year = int(str(sess[0].date)[:4])
@@ -423,7 +425,7 @@ class ReportView(FlaskView):
         student_s_list = self.session_.get_studentsession_from_session(session_id)
         session_students = self.session_.get_session_students(session_id)
         session_courses = self.session_.get_session_courses(session_id)
-        course_list = self.courses.get_semester_courses(40013)
+        course_list = self.courses.get_semester_courses(session['SELECTED-SEMESTER'])
         user = self.user
         session_ = self.session_
         return render_template('reports/view_session.html', **locals())
@@ -467,7 +469,7 @@ class ReportView(FlaskView):
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         user_ = self.user
-        course_info = self.courses.get_active_course_info()
+        course_info = self.courses.get_active_course_info(session['SELECTED-SEMESTER'])
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')

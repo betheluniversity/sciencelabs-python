@@ -32,23 +32,23 @@ class User:
             .filter(User_Table.deletedAt == None) \
             .all()
 
-    def get_unique_session_attendance(self):
+    def get_unique_session_attendance(self, semester_id):
         return session.query(User_Table, func.count(distinct(User_Table.id))) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
+            .filter(Semester_Table.id == semester_id) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .group_by(User_Table.id) \
             .all()
 
     # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
-    def get_studentsession(self, student_id):
+    def get_studentsession(self, student_id, semester_id):
         return session.query(StudentSession_Table, Session_Table)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == Semester_Table.id)\
-            .filter(Semester_Table.active == 1)\
+            .filter(Semester_Table.id == semester_id)\
             .all()
 
     def get_user(self, user_id):
@@ -56,24 +56,22 @@ class User:
             .filter(User_Table.id == user_id)\
             .one()
 
-    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
-    def get_student_attendance(self, student_id):
+    def get_student_attendance(self, student_id, semester_id):
             return session.query(User_Table, func.count(User_Table.id)) \
                 .filter(student_id == User_Table.id)\
                 .filter(User_Table.id == StudentSession_Table.studentId) \
                 .filter(StudentSession_Table.sessionId == Session_Table.id) \
                 .filter(Session_Table.semester_id == Semester_Table.id) \
-                .filter(Semester_Table.active == 1) \
+                .filter(Semester_Table.id == semester_id)\
                 .group_by(User_Table.id) \
                 .one()
 
-    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
-    def get_student_courses(self, student_id):
+    def get_student_courses(self, student_id, semester_id):
         return session.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
-            .filter(Semester_Table.active == 1)\
+            .filter(Semester_Table.id == semester_id)\
             .all()
 
     def get_students_in_course(self, course_id):
