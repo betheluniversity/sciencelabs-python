@@ -283,11 +283,18 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
 
-    def open_session(self):
+    # TODO: hash and CAS authentications
+
+    def open_session(self, session_id):
+        session_info = self.session.get_session(session_id)
         return render_template('session/student_attendance.html', **locals())
 
-    def tutor_attendance(self):
+    def tutor_attendance(self, session_id):
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info()
         return render_template('session/tutor_attendance.html', **locals())
 
-    def close_open_session(self):
-        return render_template('session/close_open_session.html')
+    def close_open_session(self, session_id):
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info()
+        return render_template('session/close_open_session.html', **locals())

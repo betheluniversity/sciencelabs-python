@@ -1,11 +1,14 @@
 {% extends 'session/base.html' %}
 
+{# TODO: Email comments, save comments, close session #}
+
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
             <div class="header card" style="margin-bottom: 10px;">
                 <div class="card-body">
-                    <p class="card-text">Enter your final comments to close SESSION session held on DATE.</p>
+                    <p class="card-text">Enter your final comments to close {{ session_info.name }}
+                        session held on {{ session_info.date.strftime('%m/%d/%Y') }}.</p>
                     <p class="card-text">Comments will be sent to the lab administrator.</p>
                 </div>
             </div>
@@ -25,7 +28,19 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    {% for course, user in course_info %}
+                        <tr>
+                            <td>
+                                {{ course.title }} (Section {{ course.section }})
+                            </td>
+                            <td>
+                                {{ user.firstName }} {{ user.lastName }}
+                            </td>
+                            <td>
+                                {{ user.email }}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
