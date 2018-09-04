@@ -25,14 +25,34 @@
                     data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
-                        document.location.reload()
-                        {#if ('month' in window.location.pathname){#}
-                        {#    location.replace("{{ url_for('ReportView:student') }}")#}
-                        {##}
-                        {#else{#}
-                        {#    alert('no')#}
-                        {#    document.location.reload()#}
-                        {##}
+                        if (/month/.test(window.location.pathname))
+                        {
+                            var result = semester_term_year.split(" ");
+                            var term = result[0];
+                            var year = result[1];
+                            var month = 0;
+                            if (term == 'Interim')
+                            {
+                                month = 1;
+                            }
+                            else if (term == 'Spring')
+                            {
+                                month = 2;
+                            }
+                            else if (term == 'Fall')
+                            {
+                                month = 9;
+                            }
+                            else
+                            {
+                                month = 6;
+                            }
+                            window.location.replace("/report/month/" + year + '/' + month);
+                        }
+                        else
+                        {
+                            document.location.reload()
+                        }
                         console.log(response);
                     },
                     error: function (error) {
