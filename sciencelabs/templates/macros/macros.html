@@ -18,6 +18,40 @@
     </script>
 {% endmacro %}
 
+{% macro select_courses(course_list) %}
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <button type="button" class="all btn btn-primary" id="all-courses">Select No Courses</button>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            {% for course in course_list %}
+                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                    <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
+                    <label class="custom-control-label" for="{{ course.courseName }}">
+                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            $('#all-courses').click(function () {
+                if ($(this).hasClass('all')) {
+                    $('.custom-control-input').prop('checked', false);
+                    $(this).text('Select All Courses');
+                } else {
+                    $('.custom-control-input').prop('checked', true);
+                    $(this).text('Select No Courses');
+                }
+                $(this).toggleClass('all')
+            });
+        });
+    </script>
+{% endmacro %}
+
 {% macro day_abbr(dayofWeek) %}
     {% set abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
     {{ abbr[dayofWeek] }}
