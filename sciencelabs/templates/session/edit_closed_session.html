@@ -86,22 +86,7 @@
                        value="{{ session_info.endTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-md-12">
-                <button type="button" class="btn btn-primary" id="all-courses">Select No Courses</button>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-12">
-                {% for course in course_list %}
-                    <div class="custom-control custom-checkbox" style="display:inline-block;">
-                        <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}"
-                               name="courses" value="{{ course.id }}" checked>
-                        <label class="custom-control-label" for="{{ course.courseName }}">
-                            {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
-                    </div>
-                {% endfor %}
-            </div>
+        {{ macros.select_courses(course_list) }}
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
@@ -338,17 +323,6 @@
 
             var picker = new Pikaday({
                 field: document.getElementById('session-date')
-            });
-
-            $('#all-courses').click(function(){
-                if($(this).hasClass('all')){
-                    $('.custom-control-input').prop('checked', false);
-                    $(this).text('Select All Courses');
-                }else {
-                    $('.custom-control-input').prop('checked', true);
-                    $(this).text('Select No Courses');
-                }
-                $(this).toggleClass('all')
             });
 
             $('#student-views').click(function(){
