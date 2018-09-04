@@ -225,10 +225,12 @@ class Course:
             return False
 
     def delete_courseviewer(self, course_id):
-        courseviewer = session.query(CourseViewer_Table)\
+        courseviewers = session.query(CourseViewer_Table)\
             .filter(CourseViewer_Table.course_id == course_id)\
-            .one()
+            .all()
 
-        session.delete(courseviewer)
-        session.commit()
+        if courseviewers:
+            for courseviewer in courseviewers:
+                session.delete(courseviewer)
+                session.commit()
 
