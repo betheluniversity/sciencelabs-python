@@ -135,28 +135,18 @@ class Course:
         end_date.strftime('%Y-%m-%d')
 
         begin_time = c_info['beginTime']
-        am_or_pm = ''
-        time_string = ''
-        for character in begin_time:
-            if character.isalpha():
-                am_or_pm += character
-            else:
-                time_string += character
-        begin_time = datetime.strptime(time_string, '%H:%M')
+        begin_time = datetime.strptime(begin_time, '%H:%M%p')
+        am_or_pm = begin_time.strftime('%p')
+
         if am_or_pm == 'AM':
             begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
         else:
             begin_time = timedelta(hours=(begin_time.hour + 12), minutes=begin_time.minute, seconds=begin_time.second)
 
         end_time = c_info['endTime']
-        am_or_pm = ''
-        time_string = ''
-        for character in end_time:
-            if character.isalpha():
-                am_or_pm += character
-            else:
-                time_string += character
-        end_time = datetime.strptime(time_string, '%H:%M')
+        end_time = datetime.strptime(end_time, '%H:%M%p')
+        am_or_pm = end_time.strftime('%p')
+
         if am_or_pm == 'AM':
             end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
         else:
@@ -183,12 +173,13 @@ class Course:
         session.add(new_course)
         session.commit()
 
-        user = session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one()
+        user = session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
 
         new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
 
-        session.add(new_courseprofessor)
-        session.commit()
+        if new_courseprofessor:
+            session.add(new_courseprofessor)
+            session.commit()
 
     def deactivate_coursecode(self, dept, course_num):
         coursecode = session.query(CourseCode_Table) \
