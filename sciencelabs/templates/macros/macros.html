@@ -18,7 +18,7 @@
     </script>
 {% endmacro %}
 
-{% macro day_abbr(dayofWeek) -%}
+{% macro day_abbr(dayofWeek) %}
     {% set abbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
     {{ abbr[dayofWeek] }}
-{%- endmacro %}
+{% endmacro %}
