@@ -126,11 +126,19 @@ class SessionView(FlaskView):
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start')
+            if scheduled_start == '':
+                scheduled_start = None
             scheduled_end = form.get('scheduled-end')
+            if scheduled_end == '':
+                scheduled_end = None
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             actual_start = form.get('actual-start')
+            if actual_start == '':
+                actual_start = None
             actual_end = form.get('actual-end')
+            if actual_end == '':
+                actual_end = None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -154,7 +162,11 @@ class SessionView(FlaskView):
             form = request.form
             student_id = form.get('student-id')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             student_courses = form.getlist('course')
             other_check = form.get('other-check')
             other_course = form.get('other-name')
@@ -179,7 +191,11 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             tutor_id = form.get('tutor-id')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -240,7 +256,11 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             tutor_id = form.get('choose-tutor')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -262,11 +282,19 @@ class SessionView(FlaskView):
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start')
+            if scheduled_start == '':
+                scheduled_start = None
             scheduled_end = form.get('scheduled-end')
+            if scheduled_end == '':
+                scheduled_end = None
             leads = form.getlist('choose-leads')
             tutors = form.getlist('choose-tutors')
             actual_start = form.get('actual-start')
+            if actual_start == '':
+                actual_start = None
             actual_end = form.get('actual-end')
+            if actual_end == '':
+                actual_end = None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -298,3 +326,6 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         return render_template('session/close_open_session.html', **locals())
+
+    def confirm_close(self, session_id):
+        return redirect(url_for("SessionView:index"))
