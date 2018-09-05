@@ -289,6 +289,8 @@ class Session:
             session.add(new_session_course)
         session.commit()
 
+    ########################################################################
+
     ######################### EDIT SESSION METHODS #########################
 
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
@@ -350,3 +352,10 @@ class Session:
         session.query(SessionCourseCodes_Table).filter(SessionCourseCodes_Table.session_id == session_id).delete()
         session.commit()
         self.create_session_courses(session_id, courses)
+
+    ########################################################################
+
+    def restore_deleted_session(self, session_id):
+        session_to_restore = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_restore.deletedAt = None
+        session.commit()

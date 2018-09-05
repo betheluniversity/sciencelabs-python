@@ -47,15 +47,18 @@
                             {% endfor %}
                             </div>
                         </td>
-                        <td>
-                            <a href="#" class="btn btn-primary">Restore</a>
+                        <td class="btn-group">
+                            <a href="{{ url_for('SessionView:edit_session', session_id=session.id) }}"
+                               class="edit btn btn-primary">View/Edit Session</a>
+                            <a href="{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}"
+                               class="btn btn-primary">Restore</a>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <h3>There are no deleted sessions.</h3>
+        <h3 class="text-center">There are no deleted sessions.</h3>
     {% endif %}
 
     <script>

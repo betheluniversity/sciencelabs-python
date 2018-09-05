@@ -45,6 +45,7 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
+        current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
         sessions = self.session.get_deleted_sessions(semester.id)
@@ -329,3 +330,12 @@ class SessionView(FlaskView):
 
     def confirm_close(self, session_id):
         return redirect(url_for("SessionView:index"))
+
+    def restore_deleted_session(self, session_id):
+        try:
+            self.session.restore_deleted_session(session_id)
+            set_alert('success', 'Session restored successfully!')
+            return redirect(url_for('SessionView:index'))
+        except Exception as error:
+            set_alert('danger', 'Failed to restore session: ' + str(error))
+            return redirect(url_for('SessionView:deleted'))
