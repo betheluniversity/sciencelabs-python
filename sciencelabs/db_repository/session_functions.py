@@ -359,3 +359,16 @@ class Session:
         session_to_restore = session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_restore.deletedAt = None
         session.commit()
+
+    def start_open_session(self, session_id):  # TODO: opener id
+        session_to_open = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_open.open = 1
+        session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
+        session.commit()
+
+    def close_open_session(self, session_id, comments):
+        session_to_close = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_close.open = 0
+        session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
+        session_to_close.comments = comments
+        session.commit()

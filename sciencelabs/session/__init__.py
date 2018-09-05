@@ -315,6 +315,7 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
+        self.session.start_open_session(session_id)  # TODO: opener id
         session_info = self.session.get_session(session_id)
         return render_template('session/student_attendance.html', **locals())
 
@@ -324,12 +325,23 @@ class SessionView(FlaskView):
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
+        current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         return render_template('session/close_open_session.html', **locals())
 
-    def confirm_close(self, session_id):
-        return redirect(url_for("SessionView:index"))
+    @route('/confirm_close', methods=['post'])
+    def confirm_close(self):
+        try:
+            form = request.form
+            session_id = form.get('session-id')
+            comments = form.get('comments')
+            self.session.close_open_session(session_id, comments)
+            set_alert('success', 'Session closed successfully!')
+            return redirect(url_for("SessionView:index"))
+        except Exception as error:
+            set_alert('danger', 'Failed to close session: ' + str(error))
+            return redirect(url_for('SessionView:close_open_session', session_id=session_id))
 
     def restore_deleted_session(self, session_id):
         try:
