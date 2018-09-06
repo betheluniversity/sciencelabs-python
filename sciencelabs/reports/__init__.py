@@ -135,8 +135,9 @@ class ReportView(FlaskView):
         session_count = 0
         for schedule, sessions in self.schedule.get_term_report(session['SELECTED-SEMESTER']):
             session_count += sessions
-            # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE/ENDTIME
-            my_list.append([schedule.name, schedule.dayofWeek, schedule.startTime, schedule.endTime, sessions,
+            my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
+                            self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
+                            sessions,
                             attendance_list[index],
                             str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
             index += 1
@@ -149,8 +150,8 @@ class ReportView(FlaskView):
         unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
         total_unscheduled = 0
         for sessions in unscheduled_sessions:
-            # TODO FIX SESSIONS.STARTTIME AND SESSIONS.ENDTIME
-            my_list.append(['', sessions.date.strftime('%m/%d/%Y'), sessions.startTime, sessions.endTime,
+            my_list.append(['', sessions.date.strftime('%m/%d/%Y'), self.datetimeformatter(sessions.startTime),
+                            self.datetimeformatter(sessions.endTime),
                             len(self.user.get_session_students(sessions.id)) + sessions.anonStudents])
             total_unscheduled += len(self.user.get_session_students(sessions.id)) + sessions.anonStudents
 
@@ -160,7 +161,6 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
-        # TODO NEED TO ADD SEMESTER SELECTOR TO MONTH TAB SINCE RIGHT NOW CHANGING SS DOES NOTHING
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = month
         year = sem.year
@@ -230,8 +230,9 @@ class ReportView(FlaskView):
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
                         total_attendance_per_schedule += attendance.count() + session.anonStudents
-            # TODO FIX SCHEDULE.DAYOFWEEK AND SCHEDULE.STARTTIME/SCHEDULE.ENDTIME
-            my_list.append([schedule.name, schedule.dayofWeek, str(schedule.startTime) + ' - ' + str(schedule.endTime),
+            my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
+                            self.datetimeformatter(schedule.startTime) + ' - ' +
+                            self.datetimeformatter(schedule.endTime),
                             total_attendance_per_schedule,
                             str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%'])
 
@@ -278,11 +279,12 @@ class ReportView(FlaskView):
         for session in monthly_sessions:
             attendance = self.session_.get_session_attendees(session.id)
             total_attendance += attendance.count() + session.anonStudents
-            # TODO FIX CAL.WEEKDAY AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDENDTIME
+            sel_year, sel_month, sel_day = str(session.date).split('-')
             my_list.append([session.name, session.date.strftime('%m/%d/%Y'),
-                            (cal.weekday(((int(str(session.date)[:4]))), ((int(str(session.date)[5:7]))),
-                                         (((int(str(session.date)[8:]))))) + 1) % 7, str(session.schedStartTime) +
-                            ' - ' + str(session.schedEndTime), attendance.count() + session.anonStudents])
+                            (self.get_dayofweek((cal.weekday(int(sel_year), int(sel_month), int(sel_day)) + 1) % 7)),
+                            self.datetimeformatter(session.schedStartTime) +
+                            ' - ' + self.datetimeformatter(session.schedStartTime), attendance.count() +
+                            session.anonStudents])
 
         my_list.append(['', '', 'Total:', total_attendance])
 
@@ -521,9 +523,9 @@ class ReportView(FlaskView):
 
         total_attendance = 0
         for sess, schedule in sessions:
-            # TODO FIX SCHEDULE.DAYOFWEEK AND SESSION.SCHEDSTARTTIME/SESSION.SCHEDSTARTTIME
-            sub_list = [sess.date.strftime('%m/%d/%Y'), schedule.dayofWeek, str(sess.schedStartTime) + ' - ' +
-                        str(sess.schedEndTime)]
+            sub_list = [sess.date.strftime('%m/%d/%Y'), self.get_dayofweek(schedule.dayofWeek),
+                        self.datetimeformatter(sess.schedStartTime) + ' - ' +
+                        self.datetimeformatter(sess.schedEndTime)]
             attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, sess.id)
             sub_list.append(len(attendance_per_session))
             total_attendance += len(attendance_per_session)
@@ -601,3 +603,13 @@ class ReportView(FlaskView):
             return 9
         else:
             return 6
+
+    def get_dayofweek(self, day_value):
+        day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        return day[day_value]
+
+    def datetimeformatter(self, value, custom_format='%l:%M%p'):
+        if value:
+            return (datetime.min + value).strftime(custom_format)
+        else:
+            return '???'
