@@ -23,7 +23,6 @@ class ReportView(FlaskView):
         self.user = User()
         self.session_ = Session()
 
-    # TODO GET RID OF THIS SESS, MONTH, YEAR CODE-BAD CODE
     def index(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -163,7 +162,7 @@ class ReportView(FlaskView):
     def month(self, year, month):
         # TODO NEED TO ADD SEMESTER SELECTOR TO MONTH TAB SINCE RIGHT NOW CHANGING SS DOES NOTHING
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = month
         year = sem.year
         cal = calendar
         months = self.base.months

@@ -92,7 +92,12 @@
                             <td>{{ macros.day_abbr(schedule.dayofWeek) }}</td>
                             <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td>{{ total_attendance_per_schedule[0] }}</td>
+                            {% if total_attendance[0] %}
                             <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) }}%</td>
+                            {% else %}
+                                <td>???</td>
+                            {% endif %}
+
                         </tr>
                     {% endfor %}
                     </tbody>
