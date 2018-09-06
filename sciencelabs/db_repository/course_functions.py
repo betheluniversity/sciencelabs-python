@@ -135,22 +135,14 @@ class Course:
         end_date.strftime('%Y-%m-%d')
 
         begin_time = c_info['beginTime']
-        begin_time = datetime.strptime(begin_time, '%H:%M%p')
-        am_or_pm = begin_time.strftime('%p')
+        begin_time = datetime.strptime(begin_time, '%I:%M%p')
 
-        if am_or_pm == 'AM':
-            begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
-        else:
-            begin_time = timedelta(hours=(begin_time.hour + 12), minutes=begin_time.minute, seconds=begin_time.second)
+        begin_time = timedelta(hours=begin_time.hour, minutes=begin_time.minute, seconds=begin_time.second)
 
         end_time = c_info['endTime']
-        end_time = datetime.strptime(end_time, '%H:%M%p')
-        am_or_pm = end_time.strftime('%p')
+        end_time = datetime.strptime(end_time, '%I:%M%p')
 
-        if am_or_pm == 'AM':
-            end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
-        else:
-            end_time = timedelta(hours=(end_time.hour + 12), minutes=end_time.minute, seconds=end_time.second)
+        end_time = timedelta(hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second)
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
@@ -164,7 +156,7 @@ class Course:
                 semester_id = semesters.id
 
         # TODO REMOVE HARD-CODED SEMESTER_ID
-        new_course = Course_Table(semester_id=40013, begin_date=begin_date,
+        new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
                                   end_date=end_date, end_time=end_time,
@@ -175,9 +167,8 @@ class Course:
 
         user = session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
 
-        new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
-
-        if new_courseprofessor:
+        if user:
+            new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
             session.add(new_courseprofessor)
             session.commit()
 
