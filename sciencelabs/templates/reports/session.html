@@ -36,7 +36,7 @@
                                     <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
                                 {% endif %}
                             {% endfor %}
-                        {% for date in dates %}
+                        {% for date in dates|sort %}
                             {% if date %}
                                 <a style="text-decoration: none;" href="#{{ months[date|int - 1] }}">{{ months[date|int - 1] }}</a>&emsp;
                             {% endif %}
@@ -72,8 +72,8 @@
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                                     <td>
                                         {% set attendance = session_.get_session_students(session.id) %}
-                                        {{ attendance|length }}
-                                        {% if total_attendance.append(total_attendance.pop() + (attendance|length)) %}{% endif %}
+                                        {{ attendance|length + session.anonStudents }}
+                                        {% if total_attendance.append(total_attendance.pop() + (attendance|length) + session.anonStudents) %}{% endif %}
                                     </td>
                                     <td>
                                         <button type="button" class="show-tutors btn btn-primary">Show</button>
