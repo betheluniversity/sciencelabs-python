@@ -148,4 +148,7 @@ class User:
             session.delete(role)
         session.commit()
 
+    def get_user_by_username(self, username):
+        return session.query(User_Table).filter(User_Table.username == username).one()
+
 

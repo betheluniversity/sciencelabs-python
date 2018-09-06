@@ -360,10 +360,11 @@ class Session:
         session_to_restore.deletedAt = None
         session.commit()
 
-    def start_open_session(self, session_id):  # TODO: opener id
+    def start_open_session(self, session_id, opener_id):
         session_to_open = session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_open.open = 1
         session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
+        session_to_open.openerId = opener_id
         session.commit()
 
     def close_open_session(self, session_id, comments):

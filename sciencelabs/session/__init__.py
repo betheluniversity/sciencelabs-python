@@ -9,6 +9,7 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
+from app_settings import app_settings
 
 
 class SessionView(FlaskView):
@@ -287,13 +288,17 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        self.session.start_open_session(session_id)  # TODO: opener id
+        opener_username = app_settings['TEST_USERNAME']  # TODO: update with roles and permissions
+        opener_user = self.user.get_user_by_username(opener_username)
+        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
+        self.session.start_open_session(session_id, opener_user.id)
         session_info = self.session.get_session(session_id)
         return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self, session_id):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
+        tutors = self.session.get_session_tutors(session_id)
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
