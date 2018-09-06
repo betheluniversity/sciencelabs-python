@@ -292,6 +292,9 @@ class SessionView(FlaskView):
         opener_user = self.user.get_user_by_username(opener_username)
         self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         self.session.start_open_session(session_id, opener_user.id)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+
+    def student_attendance(self, session_id):
         session_info = self.session.get_session(session_id)
         return render_template('session/student_attendance.html', **locals())
 
@@ -328,3 +331,7 @@ class SessionView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
+
+    def tutor_sign_out(self, session_id, tutor_id):
+        self.session.tutor_sign_out(session_id, tutor_id)
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))

@@ -3,7 +3,7 @@
 {# TODO: ADD Tutors, put in start time #}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link disabled" href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}">Student</a>
+    <a id="student" class="nav-item nav-link disabled" href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}">Student</a>
     <a id="tutor" class="nav-item nav-link active" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
 {% endblock %}
 
@@ -39,7 +39,8 @@
                             <td>{{ tutor.timeOut|datetimeformat }}</td>
                         {% else %}
                             <td>
-                                <a href="#" class="delete btn btn-primary">Sign Out</a>
+                                <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id) }}"
+                                   class="delete btn btn-primary">Sign Out</a>
                             </td>
                         {% endif %}
                     </tr>
@@ -64,7 +65,7 @@
                 </tr>
                 <tr>
                     <th>Started</th>
-                    <td>{{ session_info.startTime }}</td>
+                    <td>{{ session_info.startTime|datetimeformat }}</td>
                 </tr>
                 <tr>
                     <th>Ended</th>
@@ -72,11 +73,11 @@
                 </tr>
                 <tr>
                     <th>Scheduled Start</th>
-                    <td>{{ session_info.schedStartTime }}</td>
+                    <td>{{ session_info.schedStartTime|datetimeformat }}</td>
                 </tr>
                 <tr>
                     <th>Scheduled End</th>
-                    <td>{{ session_info.schedEndTime }}</td>
+                    <td>{{ session_info.schedEndTime|datetimeformat }}</td>
                 </tr>
                 <tr>
                     <th>Tutors</th>

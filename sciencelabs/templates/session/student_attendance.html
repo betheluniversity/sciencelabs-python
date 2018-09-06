@@ -1,7 +1,7 @@
 {% extends 'session/base.html' %}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link active" href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}">Student</a>
+    <a id="student" class="nav-item nav-link active" href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}">Student</a>
     <a id="tutor" class="nav-item nav-link disabled" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
 {% endblock %}
 

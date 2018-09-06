@@ -373,3 +373,9 @@ class Session:
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
         session.commit()
+
+    def tutor_sign_out(self, session_id, tutor_id):
+        tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).one()
+        tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
+        session.commit()
