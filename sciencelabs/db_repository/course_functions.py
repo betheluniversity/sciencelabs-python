@@ -155,7 +155,6 @@ class Course:
             if semesters.year == year and semesters.term == term:
                 semester_id = semesters.id
 
-        # TODO REMOVE HARD-CODED SEMESTER_ID
         new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
