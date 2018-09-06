@@ -15,7 +15,16 @@ class Session:
     def get_closed_sessions(self):
         return (session.query(Session_Table)
                 .filter(Session_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1)
-                .filter(Session_Table.startTime != None).filter(Session_Table.deletedAt == None).order_by(Session_Table.date.asc()).all())
+                .filter(Session_Table.startTime != None).filter(Session_Table.deletedAt == None)
+                .order_by(Session_Table.date.asc()).all())
+
+    def get_available_sessions(self, semester_id):
+        return session.query(Session_Table).filter(Session_Table.semester_id == semester_id)\
+            .filter(Session_Table.deletedAt == None).filter(Session_Table.startTime == None).all()
+
+    def get_deleted_sessions(self, semester_id):
+        return session.query(Session_Table).filter(Session_Table.semester_id == semester_id)\
+            .filter(Session_Table.deletedAt != None).filter(Session_Table.startTime != None).all()
 
     def get_session(self, session_id):
         return session.query(Session_Table).filter(Session_Table.id == session_id).one()
@@ -280,6 +289,8 @@ class Session:
             session.add(new_session_course)
         session.commit()
 
+    ########################################################################
+
     ######################### EDIT SESSION METHODS #########################
 
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
@@ -341,3 +352,23 @@ class Session:
         session.query(SessionCourseCodes_Table).filter(SessionCourseCodes_Table.session_id == session_id).delete()
         session.commit()
         self.create_session_courses(session_id, courses)
+
+    ########################################################################
+
+    def restore_deleted_session(self, session_id):
+        session_to_restore = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_restore.deletedAt = None
+        session.commit()
+
+    def start_open_session(self, session_id):  # TODO: opener id
+        session_to_open = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_open.open = 1
+        session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
+        session.commit()
+
+    def close_open_session(self, session_id, comments):
+        session_to_close = session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_close.open = 0
+        session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
+        session_to_close.comments = comments
+        session.commit()

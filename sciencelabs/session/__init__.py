@@ -19,8 +19,12 @@ class SessionView(FlaskView):
         self.course = Course()
 
     def index(self):
+        current_alert = get_alert()
         semester = self.schedule.get_active_semester()
-        return render_template('session/base.html', **locals())
+        semester_list = self.schedule.get_semesters()
+        sessions = self.session.get_available_sessions(semester.id)
+        session_tutors = self.session
+        return render_template('session/available_sessions.html', **locals())
 
     @route('/closed')
     def closed(self):
@@ -41,8 +45,11 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
+        current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         semester_list = self.schedule.get_semesters()
+        sessions = self.session.get_deleted_sessions(semester.id)
+        session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -120,11 +127,19 @@ class SessionView(FlaskView):
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start')
+            if scheduled_start == '':
+                scheduled_start = None
             scheduled_end = form.get('scheduled-end')
+            if scheduled_end == '':
+                scheduled_end = None
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             actual_start = form.get('actual-start')
+            if actual_start == '':
+                actual_start = None
             actual_end = form.get('actual-end')
+            if actual_end == '':
+                actual_end = None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -148,7 +163,11 @@ class SessionView(FlaskView):
             form = request.form
             student_id = form.get('student-id')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             student_courses = form.getlist('course')
             other_check = form.get('other-check')
             other_course = form.get('other-name')
@@ -173,7 +192,11 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             tutor_id = form.get('tutor-id')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -234,7 +257,11 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             tutor_id = form.get('choose-tutor')
             time_in = form.get('time-in')
+            if time_in == '':
+                time_in = None
             time_out = form.get('time-out')
+            if time_out == '':
+                time_out = None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -256,11 +283,19 @@ class SessionView(FlaskView):
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start')
+            if scheduled_start == '':
+                scheduled_start = None
             scheduled_end = form.get('scheduled-end')
+            if scheduled_end == '':
+                scheduled_end = None
             leads = form.getlist('choose-leads')
             tutors = form.getlist('choose-tutors')
             actual_start = form.get('actual-start')
+            if actual_start == '':
+                actual_start = None
             actual_end = form.get('actual-end')
+            if actual_end == '':
+                actual_end = None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -276,3 +311,43 @@ class SessionView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
+
+    # TODO: hash and CAS authentications
+
+    def open_session(self, session_id):
+        self.session.start_open_session(session_id)  # TODO: opener id
+        session_info = self.session.get_session(session_id)
+        return render_template('session/student_attendance.html', **locals())
+
+    def tutor_attendance(self, session_id):
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info()
+        return render_template('session/tutor_attendance.html', **locals())
+
+    def close_open_session(self, session_id):
+        current_alert = get_alert()
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info()
+        return render_template('session/close_open_session.html', **locals())
+
+    @route('/confirm_close', methods=['post'])
+    def confirm_close(self):
+        try:
+            form = request.form
+            session_id = form.get('session-id')
+            comments = form.get('comments')
+            self.session.close_open_session(session_id, comments)
+            set_alert('success', 'Session closed successfully!')
+            return redirect(url_for("SessionView:index"))
+        except Exception as error:
+            set_alert('danger', 'Failed to close session: ' + str(error))
+            return redirect(url_for('SessionView:close_open_session', session_id=session_id))
+
+    def restore_deleted_session(self, session_id):
+        try:
+            self.session.restore_deleted_session(session_id)
+            set_alert('success', 'Session restored successfully!')
+            return redirect(url_for('SessionView:index'))
+        except Exception as error:
+            set_alert('danger', 'Failed to restore session: ' + str(error))
+            return redirect(url_for('SessionView:deleted'))

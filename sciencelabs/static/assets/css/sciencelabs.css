@@ -236,6 +236,8 @@ a.nav-link.button{
     border-radius: 6%;
     color: white;
     background-color: #0069AA;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .csv-button.btn.btn-primary{
@@ -257,6 +259,12 @@ a.nav-link.button{
     float: right;
 }
 
+.sign-in{
+    background-color: #FFC600;
+    border-color: #FFC600;
+    color: black;
+}
+
 #red{
     background-color: #DA1736;
 }
@@ -268,4 +276,9 @@ a.nav-link.button{
 #gray{
     color: #333333;
     background-color: #BDBCB0;
+}
+
+#yellow{
+    color: black;
+    background-color: #FFC600;
 }

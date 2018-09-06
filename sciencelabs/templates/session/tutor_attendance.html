@@ -1,0 +1,152 @@
+{% extends 'session/base.html' %}
+
+{# TODO: ADD Tutors, put in start time #}
+
+{% block subnav %}
+    <a id="student" class="nav-item nav-link disabled" href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}">Student</a>
+    <a id="tutor" class="nav-item nav-link active" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
+{% endblock %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }}) is open.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="centered" style="margin-bottom: 10px;">
+                <a href='#' class="big-button btn btn-primary sign-in">Sign in as a Tutor</a>
+            </div>
+
+            <table id="tutor-attendance" class="table table-striped table-bordered" style="width:100%">
+                <tr>
+                    <th colspan="3" class="text-center">Tutors</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                </tr>
+            </table>
+
+            <table id="session-info" class="table table-striped table-bordered" style="width:100%">
+                <tr>
+                    <th colspan="2" class="text-center">Session Information</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ session_info.name }}</td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td>{{ session_info.date.strftime('%m/%d/%Y') }}</td>
+                </tr>
+                <tr>
+                    <th>Room</th>
+                    <td>{{ session_info.room }}</td>
+                </tr>
+                <tr>
+                    <th>Started</th>
+                    <td>{{ session_info.startTime if session_info.startTime else 'TO DO' }}</td>
+                </tr>
+                <tr>
+                    <th>Ended</th>
+                    <td>In Progress</td>
+                </tr>
+                <tr>
+                    <th>Scheduled Start</th>
+                    <td>{{ session_info.schedStartTime }}</td>
+                </tr>
+                <tr>
+                    <th>Scheduled End</th>
+                    <td>{{ session_info.schedEndTime }}</td>
+                </tr>
+                <tr>
+                    <th>Tutors</th>
+                    <td>{{ 'TO DO' }}</td>
+                </tr>
+            </table>
+
+            <table id="course-info" class="table table-striped table-bordered" style="width:100%">
+                <tr>
+                    <th colspan="3" class="text-center">Course Information</th>
+                </tr>
+                <tr>
+                    <th>Course</th>
+                    <th>Professor</th>
+                    <th>Email</th>
+                </tr>
+                {% for course, user in course_info %}
+                    <tr>
+                        <td>
+                            {{ course.title }} (Section {{ course.section }})
+                        </td>
+                        <td>
+                            {{ user.firstName }} {{ user.lastName }}
+                        </td>
+                        <td>
+                            {{ user.email }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <div class="centered">
+                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id) }}"
+                   class="big-button btn btn-primary">Lead Tutor Close Session</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card info">
+                <div class="card-body">
+                    <p class="card-text"><strong>Running the Help Session:</strong></p>
+
+                    <p class="card-text"><strong>Tutor Sign In:</strong> Each tutor must personally sign in using the
+                        <span id="yellow" class="button-labels">Sign in as a Tutor</span> button.</p>
+
+                    <p class="card-text"><strong>Student Sign In:</strong> Make sure that each student signs in when
+                        they visit the help session by pressing the
+                        <span id="yellow" class="button-labels">Please Sign In Here</span> button on the student sign
+                        in page. The student will be prompted to select the courses for which they are visiting the lab
+                        or the reason for their attendance before they sign in.</p>
+
+                    <p class="card-text"><strong>Emails to Professors:</strong> If you need to email a professor during
+                        a help session, see the list of professor names and emails for each class listed on this page.
+                        Make sure to open a new web browser (such as Internet Explorer or Firefox, but not Chrome) to
+                        send this email due to CAS authentication overlap issues.</p>
+
+                    <p class="card-text"><strong>Editing Attendance:</strong> To edit a student's attendance, the lead
+                        tutor must log in to the system using the <span class="button-labels">Login</span> button in
+                        the upper right hand corner of the screen. Go to the <span class="button-labels">Sessions</span>
+                        tab and choose the <span class="button-labels">Edit Attendance</span> button next to the open
+                        session. You may then proceed to edit individual student or tutor attendance. When editing is
+                        complete, return to the available sessions listing and press
+                        <span id="darkblue" class="button-labels">Enter Session</span>.</p>
+
+                    <p class="card-text"><strong>Closing a Session:</strong> To close a session, the lead tutor must
+                        press the <span class="button-labels">Lead Tutor Close Session</span> button at the bottom of
+                        the screen. This will prompt the lead tutor to log in to authenticate. Once the lead tutor is
+                        logged in, they may click the <span class="button-labels">Session</span> tab and close the
+                        session by clicking the <span id="red" class="button-labels">Close Session</span> button next
+                        to the current open session. The final two steps will be to enter final comments from the
+                        session, and then press the <span id="red" class="button-labels">Close</span> button.</p>
+
+                    <p class="card-text">
+                        <strong>Reminders:</strong>
+                        <ol>
+                            <li>Use Chrome when running the help session sign in application.</li>
+                            <li>Do not have other Chrome browsers open that require CAS authentication (such as
+                                MyBethel or Gmail) while running the help session sign in.</li>
+                            <li>Make sure that students check out when leaving the lab, and that all students remaining
+                                in the lab are checked out when the session ends.</li>
+                        </ol>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
