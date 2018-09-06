@@ -88,6 +88,14 @@ class Session:
             .filter(StudentSession_Table.studentId == student_id)\
             .one()
 
+    def get_deleted_sessions(self, semester):
+        return session.query(Session_Table)\
+            .filter(Session_Table.semester_id == semester.id)\
+            .filter(Session_Table.startTime).filter(Session_Table.endTime)\
+            .filter(Session_Table.deletedAt != None)\
+            .order_by(Session_Table.date)\
+            .all()
+
     def get_sessions(self, course_id):
         return session.query(Session_Table, Schedule_Table)\
             .filter(Session_Table.schedule_id == Schedule_Table.id)\

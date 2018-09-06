@@ -41,8 +41,10 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
-        semester = self.schedule.get_active_semester()
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
+        deleted_sessions = self.session.get_deleted_sessions(semester)
+        session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
