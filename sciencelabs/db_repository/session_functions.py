@@ -379,3 +379,15 @@ class Session:
             .filter(TutorSession_Table.tutorId == tutor_id).one()
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         session.commit()
+
+    def student_sign_in(self, session_id, student_id):
+        new_student_session = StudentSession_Table(timeIn=datetime.now().strftime('%H:%M:%S'), studentId=student_id,
+                                                   sessionId=session_id)  # TODO: course stuff
+        session.add(new_student_session)
+        session.commit()
+
+    def student_sign_out(self, session_id, student_id):
+        student_session = session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).one()
+        student_session.timeOut = datetime.now().strftime('%H:%M:%S')
+        session.commit()
