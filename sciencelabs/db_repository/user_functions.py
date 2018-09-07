@@ -151,4 +151,11 @@ class User:
     def get_user_by_username(self, username):
         return session.query(User_Table).filter(User_Table.username == username).one()
 
+    def edit_user(self, first_name,last_name, username, email_pref):
+        user_to_edit = self.get_user_by_username(username)
+        user_to_edit.firstName = first_name
+        user_to_edit.lastName = last_name
+        user_to_edit.send_email = email_pref
+        session.commit()
+
 
