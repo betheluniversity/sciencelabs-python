@@ -5,5 +5,5 @@ app_settings = {
     'TEST_EMAIL': 'joj28267@bethel.edu',
     'TEST_FIRSTNAME': 'Jordan',
     'TEST_LASTNAME': 'Jasik',
-    'TEST_ROLES': ['Administrator', 'Lead Tutor', 'Tutor', 'Student']
+    'TEST_ROLES': ['Administrator', 'Professor', 'Lead Tutor', 'Tutor', 'Student']
 }
