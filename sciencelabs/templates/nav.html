@@ -1,7 +1,5 @@
 {% macro render(title) %}
 
-    {% set user = "Jordan Jasik" %}
-
     <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0px 10px; background-color: #0069AA;">
         <a class="navbar-brand" href="{{ url_for('View:index') }}" style="color:#FFC600;">{{ title }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -9,16 +7,28 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        {# TODO: Implemented local role-checking, but need to set it up to work always. #}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
+                {% if 'Lead Tutor' in app_settings['TEST_ROLES'] or 'Administrator' in app_settings['TEST_ROLES'] %}
                 <li class="nav-item">
                     <a id="session" class="nav-link button {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint }}"
                        href="{{ url_for('SessionView:index') }}">Session</a>
                 </li>
+                {% endif %}
+                {% if 'Professor' in app_settings['TEST_ROLES'] %}
+                <li>
+                    <a id="reports" class="nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
+                       href="{{ url_for('ReportView:course') }}">Course Reports</a>
+                </li>
+                {% endif %}
+                {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] %}
                 <li class="nav-item">
                     <a id="reports" class="nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
                        href="{{ url_for('ReportView:index') }}">Reports</a>
                 </li>
+                {% endif %}
+                {% if 'Administrator' in app_settings['TEST_ROLES'] %}
                 <li class="nav-item">
                     <a id="users" class="nav-link button {{ 'nav-bar-active' if 'UsersView' in request.url_rule.endpoint }}"
                        href="{{ url_for('UsersView:index') }}">Users</a>
@@ -39,13 +49,15 @@
                     <a id="email" class="nav-link button {{ 'nav-bar-active' if 'EmailView' in request.url_rule.endpoint }}"
                        href="{{ url_for('EmailView:index') }}">Email</a>
                 </li>
+                {% endif %}
             </ul>
             <div class="form-inline nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false" style="color:#FFC600;">{{ user }}</a>
+                   aria-haspopup="true" aria-expanded="false" style="color:#FFC600;">
+                    {{ app_settings['TEST_FIRSTNAME'] }} {{ app_settings['TEST_LASTNAME'] }}</a> {# TODO: roles and permissions #}
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #0069AA;">
                     <a class="dropdown-item" href="{{ url_for('ProfileView:index') }}" style="color:#FFC600;">My Profile</a>
-                    <a class="dropdown-item" href="#" style="color:#FFC600;">Logout</a>
+                    <a class="dropdown-item" href="#" style="color:#FFC600;">Logout</a> {# TODO: CAS Authentication #}
                 </div>
             </div>
         </div>

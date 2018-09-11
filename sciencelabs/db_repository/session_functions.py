@@ -399,10 +399,11 @@ class Session:
         session_to_restore.deletedAt = None
         session.commit()
 
-    def start_open_session(self, session_id):  # TODO: opener id
+    def start_open_session(self, session_id, opener_id):
         session_to_open = session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_open.open = 1
         session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
+        session_to_open.openerId = opener_id
         session.commit()
 
     def close_open_session(self, session_id, comments):
@@ -410,4 +411,22 @@ class Session:
         session_to_close.open = 0
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
+        session.commit()
+
+    def tutor_sign_out(self, session_id, tutor_id):
+        tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).one()
+        tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
+        session.commit()
+
+    def student_sign_in(self, session_id, student_id):
+        new_student_session = StudentSession_Table(timeIn=datetime.now().strftime('%H:%M:%S'), studentId=student_id,
+                                                   sessionId=session_id)  # TODO: course stuff
+        session.add(new_student_session)
+        session.commit()
+
+    def student_sign_out(self, session_id, student_id):
+        student_session = session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).one()
+        student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         session.commit()

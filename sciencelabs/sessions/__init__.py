@@ -9,6 +9,8 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
+from app_settings import app_settings
+
 
 
 class SessionView(FlaskView):
@@ -45,6 +47,7 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
+        sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         deleted_sessions = self.session.get_deleted_sessions(semester)
@@ -63,7 +66,7 @@ class SessionView(FlaskView):
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
         semester_list = session['SEMESTER-LIST']
-        course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])  # TODO: needs to update with semester selector
+        course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
@@ -71,7 +74,7 @@ class SessionView(FlaskView):
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER']) #TODO: needs to update with semester selector
+        student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
         current_alert = get_alert()
@@ -126,20 +129,12 @@ class SessionView(FlaskView):
             semester_id = form.get('semester')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
-            scheduled_start = form.get('scheduled-start')
-            if scheduled_start == '':
-                scheduled_start = None
-            scheduled_end = form.get('scheduled-end')
-            if scheduled_end == '':
-                scheduled_end = None
+            scheduled_start = form.get('scheduled-start') or None
+            scheduled_end = form.get('scheduled-end') or None
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
-            actual_start = form.get('actual-start')
-            if actual_start == '':
-                actual_start = None
-            actual_end = form.get('actual-end')
-            if actual_end == '':
-                actual_end = None
+            actual_start = form.get('actual-start') or None
+            actual_end = form.get('actual-end') or None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -162,12 +157,8 @@ class SessionView(FlaskView):
         try:
             form = request.form
             student_id = form.get('student-id')
-            time_in = form.get('time-in')
-            if time_in == '':
-                time_in = None
-            time_out = form.get('time-out')
-            if time_out == '':
-                time_out = None
+            time_in = form.get('time-in') or None
+            time_out = form.get('time-out') or None
             student_courses = form.getlist('course')
             other_check = form.get('other-check')
             other_course = form.get('other-name')
@@ -191,12 +182,8 @@ class SessionView(FlaskView):
             form = request.form
             session_id = form.get('session-id')
             tutor_id = form.get('tutor-id')
-            time_in = form.get('time-in')
-            if time_in == '':
-                time_in = None
-            time_out = form.get('time-out')
-            if time_out == '':
-                time_out = None
+            time_in = form.get('time-in') or None
+            time_out = form.get('time-out') or None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -256,12 +243,8 @@ class SessionView(FlaskView):
             form = request.form
             session_id = form.get('session-id')
             tutor_id = form.get('choose-tutor')
-            time_in = form.get('time-in')
-            if time_in == '':
-                time_in = None
-            time_out = form.get('time-out')
-            if time_out == '':
-                time_out = None
+            time_in = form.get('time-in') or None
+            time_out = form.get('time-out') or None
             lead_check = form.get('lead')
             lead = 0
             if lead_check:
@@ -282,20 +265,12 @@ class SessionView(FlaskView):
             semester_id = form.get('semester')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
-            scheduled_start = form.get('scheduled-start')
-            if scheduled_start == '':
-                scheduled_start = None
-            scheduled_end = form.get('scheduled-end')
-            if scheduled_end == '':
-                scheduled_end = None
+            scheduled_start = form.get('scheduled-start') or None
+            scheduled_end = form.get('scheduled-end') or None
             leads = form.getlist('choose-leads')
             tutors = form.getlist('choose-tutors')
-            actual_start = form.get('actual-start')
-            if actual_start == '':
-                actual_start = None
-            actual_end = form.get('actual-end')
-            if actual_end == '':
-                actual_end = None
+            actual_start = form.get('actual-start') or None
+            actual_end = form.get('actual-end') or None
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
@@ -315,13 +290,21 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        self.session.start_open_session(session_id)  # TODO: opener id
+        opener_username = app_settings['TEST_USERNAME']  # TODO: update with roles and permissions
+        opener_user = self.user.get_user_by_username(opener_username)
+        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
+        self.session.start_open_session(session_id, opener_user.id)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+
+    def student_attendance(self, session_id):
         session_info = self.session.get_session(session_id)
+        students = self.session.get_session_students(session_id)
         return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self, session_id):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
+        tutors = self.session.get_session_tutors(session_id)
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
@@ -351,3 +334,19 @@ class SessionView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
+
+    def student_sign_in(self, session_id):
+        self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+
+    def student_sign_out(self, session_id, student_id):
+        self.session.student_sign_out(session_id, student_id)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+
+    def tutor_sign_in(self, session_id):
+        self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)  # TODO: Update with actual sign in
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+
+    def tutor_sign_out(self, session_id, tutor_id):
+        self.session.tutor_sign_out(session_id, tutor_id)
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))

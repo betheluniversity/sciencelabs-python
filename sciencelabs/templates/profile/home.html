@@ -7,7 +7,7 @@
 {% block body_content %}
     <div class="custom row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('ProfileView:save_edits') }}" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
@@ -17,47 +17,51 @@
                         </div>
                     </div>
                 </div>
-                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="first-name">First name</label>
-                        <input value="Jordan" type="text" class="form-control" id="first-name">
+                        <input value="{{ user.firstName }}" type="text" class="form-control"
+                               id="first-name" name="first-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="last-name">Last name</label>
-                        <input value="Jasik" type="text" class="form-control" id="last-name">
+                        <input value="{{ user.lastName }}" type="text" class="form-control"
+                               id="last-name" name="last-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="username">Username</label>
-                        <input value="joj28267" readonly type="text" class="form-control" id="username">
+                        <input value="{{ user.username }}" readonly type="text" class="form-control"
+                               id="username" name="username">
                     </div>
                 </div>
-                {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="email">Email</label>
-                        <input value="joj28267@bethel.edu" readonly type="text" class="form-control" id="email">
+                        <input value="{{ user.email }}" readonly type="text" class="form-control" id="email">
                     </div>
+                    {# TODO: Update with roles and permissions #}
+                    {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Professor' in app_settings['TEST_ROLES'] %}
                     <div class="form-group col-md-6">
-
                         <label for="email-pref">Receive an Email when a Session is Closed</label>
-                        {# TODO FIX BUTTON SPACING/PLACEMENT #}
                         <div id="email-pref" class="form-group col-md-4">
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline1" name="customRadioInline1" class="custom-control-input">
+                                <input type="radio" id="customRadioInline1" class="custom-control-input"
+                                       name="receive-email" value="1" {{ 'checked' if user.send_email == 1 }}>
                                 <label class="custom-control-label" for="customRadioInline1">Yes</label>
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input" checked>
+                                <input type="radio" id="customRadioInline2" class="custom-control-input"
+                                       name="receive-email" value="0" {{ 'checked' if user.send_email == 0 }}>
                                 <label class="custom-control-label" for="customRadioInline2">No</label>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
                 <div style="text-align: right;" class="form-row">
                     <div class="form-group col-md-12">
-                        <button type="button" class="btn btn-primary" id="save-session">Save</button>
+                        <button type="submit" class="btn btn-primary" id="save-session">Save</button>
                     </div>
                 </div>
 

@@ -1,6 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
+        {# TODO: Update with roles and permissions #}
+        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] %}
         <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:student') }}">Student</a>
         <a id="term" class="nav-link {{ 'active' if 'semester' in request.path else 'disabled'}}"
@@ -13,6 +15,13 @@
            href="{{ url_for('ReportView:session') }}">Session</a>
         <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:course') }}">Course</a>
+        {% endif %}
+        {% if 'Professor' in app_settings['TEST_ROLES'] and 'Administrator' not in app_settings['TEST_ROLES']%}
+        <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:student') }}">Student</a>
+        <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
+           href="{{ url_for('ReportView:course') }}">Course</a>
+        {% endif %}
 {% endblock %}
 
 {% block semester_switch %}{% endblock %}
@@ -31,6 +40,7 @@
 
     <div class="header card-body" style="background-color: white; padding: 0px">
         <div class="row row-group">
+        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] or 'Professor' in app_settings['TEST_ROLES'] %}
         <a class="report-img col-sm-4 col-group" href="student">
         <img src="{{ url_for('static', filename='img/student.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Student Icon">
             <div>
@@ -42,8 +52,9 @@
             <div>
                 <label>Course</label>
             </div>
-
         </a>
+        {% endif %}
+        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] %}
         <a class="report-img col-sm-4 col-group" href="session">
         <img src="{{ url_for('static', filename='img/session.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Classroom Icon">
             <div>
@@ -70,6 +81,7 @@
                 <label>Cumulative</label>
             </div>
         </a>
+        {% endif %}
             </div>
 
     </div>
