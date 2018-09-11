@@ -25,9 +25,9 @@ class Session:
         return session.query(Session_Table).filter(Session_Table.semester_id == semester_id)\
             .filter(Session_Table.deletedAt == None).filter(Session_Table.startTime == None).all()
 
-    def get_deleted_sessions(self, semester):
+    def get_deleted_sessions(self, semester_id):
         return session.query(Session_Table) \
-            .filter(Session_Table.semester_id == semester.id) \
+            .filter(Session_Table.semester_id == semester_id) \
             .filter(Session_Table.startTime).filter(Session_Table.endTime) \
             .filter(Session_Table.deletedAt != None) \
             .order_by(Session_Table.date) \
