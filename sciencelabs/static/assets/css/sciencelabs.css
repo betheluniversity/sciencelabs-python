@@ -26,6 +26,10 @@ p{
     line-height: 1.6;
 }
 
+.chosen-container{
+    min-width: 100%;
+}
+
 .side-borders{
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
