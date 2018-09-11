@@ -39,8 +39,9 @@
                         <label for="email">Email</label>
                         <input value="{{ user.email }}" readonly type="text" class="form-control" id="email">
                     </div>
+                    {# TODO: Update with roles and permissions #}
+                    {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Professor' in app_settings['TEST_ROLES'] %}
                     <div class="form-group col-md-6">
-
                         <label for="email-pref">Receive an Email when a Session is Closed</label>
                         <div id="email-pref" class="form-group col-md-4">
                             <div class="custom-control custom-radio custom-control-inline">
@@ -55,6 +56,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
                 <div style="text-align: right;" class="form-row">
