@@ -30,49 +30,66 @@ class Schedule:
             .filter(Semester_Table.term == term)\
             .all()
 
-    def get_term_report(self):
+    def get_term_report(self, semester_id):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \
             .filter(Session_Table.startTime != None) \
             .filter(Session_Table.schedule_id == Schedule_Table.id) \
             .filter(Schedule_Table.deletedAt == None) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
-            .group_by(Schedule_Table.id).all()
+            .filter(Semester_Table.id == semester_id) \
+            .group_by(Schedule_Table.id)\
+            .all()
 
-    def get_session_attendance(self):
+    def get_session_attendance(self, semester_id):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.active == 1) \
+            .filter(Semester_Table.id == semester_id) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
-            .group_by(Schedule_Table.id).all()
+            .group_by(Schedule_Table.id)\
+            .all()
 
     def get_active_semester(self):
-        return session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+        return session.query(Semester_Table)\
+            .filter(Semester_Table.active == 1)\
+            .one()
 
     def get_semesters(self):
-        return session.query(Semester_Table).order_by(Semester_Table.year.desc()).all()
+        return session.query(Semester_Table)\
+            .order_by(Semester_Table.year.desc())\
+            .all()
+
+    def get_semester(self, semester_id):
+        return session.query(Semester_Table)\
+            .filter(Semester_Table.id == semester_id)\
+            .one()
 
     def get_registered_leads(self):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
             .filter(User_Table.id == user_role_Table.user_id)\
             .filter(user_role_Table.role_id == Role_Table.id)\
             .filter(Role_Table.name == "Lead Tutor")\
-            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).all()
+            .filter(User_Table.deletedAt == None)\
+            .order_by(User_Table.lastName)\
+            .all()
 
     def get_registered_tutors(self):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
             .filter(User_Table.id == user_role_Table.user_id)\
             .filter(user_role_Table.role_id == Role_Table.id)\
             .filter(or_(Role_Table.name == "Tutor", Role_Table.name == "Lead Tutor")) \
-            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()
+            .filter(User_Table.deletedAt == None)\
+            .order_by(User_Table.lastName)\
+            .distinct()
 
     def get_registered_students(self):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
             .filter(Role_Table.name == "Student") \
-            .filter(User_Table.deletedAt == None).order_by(User_Table.lastName).distinct()
+            .filter(User_Table.deletedAt == None)\
+            .order_by(User_Table.lastName)\
+            .distinct()
 
     def get_schedule_courses(self, schedule_id):
         courses = session.query(ScheduleCourseCodes_Table, CourseCode_Table)\
@@ -85,11 +102,15 @@ class Schedule:
         return schedule_courses
 
     def get_schedule(self, schedule_id):
-        return session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
+        return session.query(Schedule_Table)\
+            .filter(Schedule_Table.id == schedule_id)\
+            .one()
 
     def get_schedule_from_session(self, session_id):
-        return session.query(Schedule_Table).filter(Session_Table.id == session_id)\
-            .filter(Session_Table.schedule_id == Schedule_Table.id).first()
+        return session.query(Schedule_Table)\
+            .filter(Session_Table.id == session_id)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .first()
 
     def get_schedule_tutors(self, schedule_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.isLead,
@@ -113,7 +134,9 @@ class Schedule:
         session.commit()
 
     def set_current_term(self, term, year, start_date, end_date):
-        current_term = session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+        current_term = session.query(Semester_Table)\
+            .filter(Semester_Table.active == 1)\
+            .one()
         current_term.active = 0
         db_start_date = datetime.strptime(start_date, "%a %b %d %Y").strftime("%Y-%m-%d")
         db_end_date = datetime.strptime(end_date, "%a %b %d %Y").strftime("%Y-%m-%d")

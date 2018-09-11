@@ -50,7 +50,6 @@
                         </ul>
                     </li>
                 </ul>
-                {# TODO FILL TABLE #}
                 <table class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
@@ -104,7 +103,6 @@
                         <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
                     <ul style="list-style-type: none;">
-                        {# TODO MAKE THIS A LINK #}
                         {% for course in courses %}
                             <li>
                                 <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}'><span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span></a>
@@ -139,7 +137,6 @@
         </div>
         <div class="col-md-12">
             <form>
-                {# TODO FILL TABLE #}
                 <table id="table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>

@@ -7,7 +7,6 @@
 {% block body_content %}
     <div class="form-row">
         <div style="text-align: right;" class="form-group col-md-12">
-            {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
             <p>
                 {% set dates = [] %}
                 {% set year = [] %}
@@ -44,7 +43,6 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                    {# TODO PUT IN MONTH YEAR #}
                                     <p style="padding: 0px; margin: 0px">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
                                 <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
                                 <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="csv-button btn btn-primary">CSV Detail Export</a>
@@ -54,11 +52,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                         <h4>Schedule Statistics for Closed Sessions during {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
-                {# TODO FILL TABLE #}
                 <table id="closed-table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
@@ -96,7 +92,12 @@
                             <td>{{ macros.day_abbr(schedule.dayofWeek) }}</td>
                             <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td>{{ total_attendance_per_schedule[0] }}</td>
+                            {% if total_attendance[0] %}
                             <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) }}%</td>
+                            {% else %}
+                                <td>???</td>
+                            {% endif %}
+
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -109,14 +110,12 @@
                         {% if total_attendance.append(total_attendance.pop() + total_unscheduled[0]) %}{% endif %}
                         <tr>
                             <th style="border-top: none;" colspan="3">Unscheduled Sessions</th>
-                            {# TODO THESE ARE JUST  #}
                             <th style="border-top: none;">{{ total_unscheduled[0] }}</th>
                             <th style="border-top: none;">{{ ((total_unscheduled[0] / total_attendance[0])*100)|round(2) }}%</th>
                         </tr>
                         {% else %}
                             <tr>
                                 <th style="border-top: none;" colspan="3">Unscheduled Sessions</th>
-                                {# TODO THESE ARE JUST  #}
                                 <th style="border-top: none;">0</th>
                                 <th style="border-top: none;">???</th>
                             </tr>
@@ -131,11 +130,9 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        {# TODO MAKE SURE TO UPDATE WHEN CONNECTING TO DATABASES #}
                         <h4>Session Statistics for {{ months[selected_month|int - 1] }}</h4>
                     </div>
                 </div>
-                {# TODO FILL TABLE #}
                 <table id="table"  class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
