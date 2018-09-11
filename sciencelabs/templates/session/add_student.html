@@ -11,17 +11,18 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form>
+            <form action="{{ url_for('SessionView:add_student_submit') }}" method="post">
+                <input type="hidden" name="session-id" value="{{ session_id }}">
                 <div class="form-group">
                    <label for="choose-student">Registered Students</label>
-                   <select id="choose-student" class="custom-select">
-                       <option>Choose student...</option>
+                   <select id="choose-student" class="custom-select" name="choose-student" required>
+                       <option disabled selected value="">Choose student...</option>
                        {% for student in student_list %}
                             <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
                        {% endfor %}
                     </select>
                 </div>
-                <button id="add-student" type="button" class="btn btn-primary">Submit</button>
+                <button id="add-student" type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
         <div class="col-md-4">
@@ -38,21 +39,21 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function(){
-
-            $('#add-student').click(function(){
-                var student = {
-                    'sessionId': {{ session_id }},
-                    'studentId': $('#choose-student :selected').val()
-                };
-                var url = '{{ url_for('SessionView:add_student_submit') }}';
-                $.post(url, student, function(message){
-                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');
-                    alert(message);
-                });
-            });
-
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{##}
+{#            $('#add-student').click(function(){#}
+{#                var student = {#}
+{#                    'sessionId': {{ session_id }},#}
+{#                    'studentId': $('#choose-student :selected').val()#}
+{#                };#}
+{#                var url = '{{ url_for('SessionView:add_student_submit') }}';#}
+{#                $.post(url, student, function(message){#}
+{#                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
+{#                    alert(message);#}
+{#                });#}
+{#            });#}
+{##}
+{#        });#}
+{#    </script>#}
 {% endblock %}

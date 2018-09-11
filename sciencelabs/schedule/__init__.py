@@ -1,3 +1,5 @@
+import json
+
 # Packages
 from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
@@ -6,6 +8,8 @@ from flask_classy import FlaskView, route
 from sciencelabs.schedule.schedule_controller import ScheduleController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
+from sciencelabs.db_repository.session_functions import Session
+from sciencelabs.alerts.alerts import *
 
 
 class ScheduleView(FlaskView):
@@ -13,8 +17,10 @@ class ScheduleView(FlaskView):
         self.base = ScheduleController()
         self.schedule = Schedule()
         self.course = Course()
+        self.session = Session()
 
     def index(self):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule_info = self.schedule.get_schedule_tab_info()
         schedule_tutors = self.schedule
@@ -23,12 +29,14 @@ class ScheduleView(FlaskView):
 
     @route('/create')
     def create_new_schedule(self):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses(active_semester.id)
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):
+        current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule = Schedule().get_schedule(schedule_id)
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -38,19 +46,66 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
-        self.schedule.delete_schedule(schedule_id)
+        try:
+            self.schedule.delete_schedule(schedule_id)
+            set_alert('success', 'Deleted schedule successfully!')
+        except Exception as error:
+            set_alert('danger', 'Failed to delete schedule: ' + str(error))
         return redirect(url_for('ScheduleView:index'))
 
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
-        form = request.form
-        schedule_id = form.get('schedID')
-        # TODO: add users
-        return 'success'
+        try:
+            active_semester = self.schedule.get_active_semester()
+            term_start_date = active_semester.startDate
+            term_end_date = active_semester.endDate
+            term_id = active_semester.id
+            form = request.form
+            schedule_id = form.get('schedule-id')
+            name = form.get('name')
+            room = form.get('room')
+            start_time = form.get('start-time')
+            end_time = form.get('end-time')
+            day_of_week = int(form.get('day-of-week'))
+            leads = form.getlist('leads')
+            tutors = form.getlist('tutors')
+            courses = form.getlist('courses')
+            # This returns True if it executes successfully
+            success = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
+                                                  start_time, end_time, day_of_week, leads, tutors, courses)
+            if success:
+                set_alert('success', 'Schedule edited successfully!')
+                return redirect(url_for('ScheduleView:index'))
+            else:
+                raise Exception
+        except Exception as error:
+            set_alert('danger', 'Failed to edit schedule: ' + str(error))
+            return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
     @route('/create_schedule_submit', methods=['post'])
     def create_schedule_submit(self):
-        form = request.form
-        schedule_id = form.get('schedID')
-        # TODO: Save edits
-        return 'success'
+        try:
+            active_semester = self.schedule.get_active_semester()
+            term = active_semester.term
+            term_start_date = active_semester.startDate
+            term_end_date = active_semester.endDate
+            term_id = active_semester.id
+            form = request.form
+            name = form.get('name')
+            room = form.get('room')
+            start_time = form.get('start-time')
+            end_time = form.get('end-time')
+            day_of_week = int(form.get('day-of-week'))
+            leads = form.getlist('leads')
+            tutors = form.getlist('tutors')
+            courses = form.getlist('courses')
+            success = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+                                                    start_time, end_time, day_of_week, leads, tutors, courses)
+            if success:
+                set_alert('success', 'Schedule created successfully!')
+                return redirect(url_for('ScheduleView:index'))
+            else:
+                raise Exception
+        except Exception as error:
+            set_alert('danger', 'Failed to create schedule: ' + str(error))
+            return redirect(url_for('ScheduleView:create_new_schedule'))

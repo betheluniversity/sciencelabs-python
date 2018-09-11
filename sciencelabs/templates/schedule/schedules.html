@@ -67,8 +67,10 @@
                                     </div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}' class="edit btn btn-primary">Edit</a>
-                                    <a href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}" class="delete btn btn-primary">Delete</a>
+                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
+                                       class="edit btn btn-primary">Edit</a>
+                                    <a href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
+                                       class="delete btn btn-primary">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

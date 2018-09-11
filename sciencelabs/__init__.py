@@ -22,7 +22,7 @@ db = create_engine(app_settings['DATABASE_KEY'])
 conn = db.connect()
 
 from sciencelabs.views import View
-from sciencelabs.sess import SessionView
+from sciencelabs.sessions import SessionView
 from sciencelabs.reports import ReportView
 from sciencelabs.term_startup import TermStartupView
 from sciencelabs.users import UsersView

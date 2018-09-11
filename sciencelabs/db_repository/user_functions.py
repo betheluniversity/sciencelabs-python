@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, orm
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
@@ -128,7 +128,7 @@ class User:
                 .filter(User_Table.username == username)\
                 .one()
             return True
-        except:  # otherwise return false
+        except orm.exc.NoResultFound:  # otherwise return false
             return False
 
     def activate_existing_user(self, username):

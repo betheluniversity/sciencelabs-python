@@ -10,15 +10,3 @@
         <a id="restore" class="nav-item nav-link {{ 'active' if 'delete' in request.path else 'disabled'}}"
            href="{{ url_for('SessionView:deleted') }}">Restore a Deleted Session</a>
 {% endblock %}
-
-{% block header %}
-    <div class="header card">
-        <div class="card-body">
-            <p class="card-text">Remaining Scheduled Sessions for {{ semester.term }} {{ semester.year }}</p>
-        </div>
-    </div>
-{% endblock %}
-
-{% block body_content %}
-    <h3 class="text-center">There are no sessions scheduled.</h3>
-{% endblock %}

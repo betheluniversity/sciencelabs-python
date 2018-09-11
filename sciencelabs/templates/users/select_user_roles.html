@@ -17,13 +17,17 @@
                     <p>If this user existed in the database previously, their account is activated again.</p>
                 </div>
             {% else %}
-                <form>
+                <form action="{{ url_for('UsersView:create_user') }}" method="post">
+                    <input type="hidden" name="first-name" value="{{ first_name }}">
+                    <input type="hidden" name="last-name" value="{{ last_name }}">
+                    <input type="hidden" name="username" value="{{ username }}">
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="roles">Roles</label>
                             {% for role in roles %}
                                 <div class="custom-control custom-checkbox" style="display:inline-block;">
-                                    <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}" value="{{ role.id }}">
+                                    <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
+                                           value="{{ role.id }}" name="roles">
                                     <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                                 </div>
                             {% endfor %}
@@ -31,7 +35,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <button id="create-user" type="button" class="btn btn-primary">Create</button>
+                            <button id="create-user" type="submit" class="btn btn-primary">Create</button>
                         </div>
                     </div>
                 </form>
@@ -62,28 +66,28 @@
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function(){
-
-           $('#create-user').click(function(){
-                var userRoles = [];
-                $(".role-checkbox:checked").each(function(){
-                    userRoles.push($(this).val());
-                });
-                var jsonUserRoles = JSON.stringify(userRoles);
-               var user = {
-                   'firstName': '{{ first_name }}',
-                   'lastName': '{{ last_name }}',
-                   'username': '{{ username }}',
-                   'roles': jsonUserRoles
-               };
-               var url = '{{ url_for('UsersView:create_user') }}';
-                $.post(url, user, function(message){
-                    window.location.replace('{{ url_for('UsersView:index') }}');
-                    alert(message);
-                });
-           });
-
-        });
-    </script>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{##}
+{#           $('#create-user').click(function(){#}
+{#                var userRoles = [];#}
+{#                $(".role-checkbox:checked").each(function(){#}
+{#                    userRoles.push($(this).val());#}
+{#                });#}
+{#                var jsonUserRoles = JSON.stringify(userRoles);#}
+{#               var user = {#}
+{#                   'firstName': '{{ first_name }}',#}
+{#                   'lastName': '{{ last_name }}',#}
+{#                   'username': '{{ username }}',#}
+{#                   'roles': jsonUserRoles#}
+{#               };#}
+{#               var url = '{{ url_for('UsersView:create_user') }}';#}
+{#                $.post(url, user, function(message){#}
+{#                    window.location.replace('{{ url_for('UsersView:index') }}');#}
+{#                    alert(message);#}
+{#                });#}
+{#           });#}
+{##}
+{#        });#}
+{#    </script>#}
 {% endblock %}
