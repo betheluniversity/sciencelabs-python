@@ -50,7 +50,6 @@ class SessionView(FlaskView):
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
-        deleted_sessions = self.session.get_deleted_sessions(semester)
         current_alert = get_alert()
         session_tutors = self.session
         return render_template('session/restore_session.html', **locals())

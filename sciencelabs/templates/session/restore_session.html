@@ -26,11 +26,11 @@
             </tr>
         </thead>
         <tbody>
-        {% for session in deleted_sessions %}
+        {% for session in sessions %}
             <tr>
                 <td>{{ session.name }}</td>
                 <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                <td>{{ session.deletedAt }}</td>
+                <td>{{ session.deletedAt.strftime('%m/%d/%Y') }}</td>
                 <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                 {% if session.room %}
                     <td>{{ session.room }}</td>
