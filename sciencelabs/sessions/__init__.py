@@ -1,6 +1,6 @@
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -10,6 +10,7 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
 from app_settings import app_settings
+
 
 
 class SessionView(FlaskView):
@@ -29,11 +30,11 @@ class SessionView(FlaskView):
 
     @route('/closed')
     def closed(self):
+        sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         current_alert = get_alert()
-        sessions = self.session.get_closed_sessions()
         session_tutors = self.session
-        semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        semester_list = session['SEMESTER-LIST']
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
@@ -46,10 +47,11 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
+        sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
+        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        semester_list = session['SEMESTER-LIST']
+        deleted_sessions = self.session.get_deleted_sessions(semester)
         current_alert = get_alert()
-        semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
-        sessions = self.session.get_deleted_sessions(semester.id)
         session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
 
@@ -63,8 +65,8 @@ class SessionView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
-        semester_list = self.schedule.get_semesters()
-        course_list = self.course.get_semester_courses(40013)  # TODO: needs to update with semester selector
+        semester_list = session['SEMESTER-LIST']
+        course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
@@ -72,7 +74,7 @@ class SessionView(FlaskView):
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, 40013) #TODO: needs to update with semester selector
+        student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
         current_alert = get_alert()

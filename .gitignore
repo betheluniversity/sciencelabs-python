@@ -11,7 +11,7 @@ upgrade.txt
 node_modules/
 tinker/static/bower_components
 tinker/static/scripts/js/
-tinker/.DS_Store
+.DS_Store
 
 .idea
 .idea/tinker.iml
