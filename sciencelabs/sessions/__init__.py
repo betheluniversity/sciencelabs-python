@@ -291,8 +291,8 @@ class SessionView(FlaskView):
     def open_session(self, session_id):
         opener_username = app_settings['TEST_USERNAME']  # TODO: update with roles and permissions
         opener_user = self.user.get_user_by_username(opener_username)
-        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         self.session.start_open_session(session_id, opener_user.id)
+        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_attendance(self, session_id):
