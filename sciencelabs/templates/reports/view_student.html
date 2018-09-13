@@ -12,14 +12,7 @@
                     <div style="text-align: right;" class="form-group col-md-12">
                         <div class="semester-selector">
                             <div class="btn-group">
-                                <form class="form-inline">
-                                    <button type="button" class="button-curved btn btn-primary">Set</button>
-                                    <select class="custom-select">
-                                        {% for semester in app_settings['SEMESTER_OPTIONS'] %}
-                                            <option value="{{ semester }}">{{ semester }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </form>
+                                {{ macros.semester_selector(semester_list) }}
                             </div>
                         </div>
                     </div>
@@ -28,7 +21,7 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">{{ student.firstName }} {{ student.lastName }} Attendance for ***SEMESTER YEAR***</p>
+                                <p style="padding: 0px; margin: 0px">{{ student.firstName }} {{ student.lastName }} Attendance for {{ sem.term }} {{ sem.year }}</p>
                             </div>
                         </div>
                     </div>
@@ -100,7 +93,7 @@
             <form>
                 <ul class="no-bullet">
                     <li>
-                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for ***SEMESTER YEAR*** as of {{ now.strftime('%m/%d/%Y') }}</b>
+                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for {{ sem.term }} {{ sem.year }} as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
                     <ul style="list-style-type: none;">
                         {% for course in courses %}
@@ -112,7 +105,7 @@
                 </ul>
                 <ul class="no-bullet">
                     <li>
-                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during ***SEMESTER YEAR***</b>
+                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during {{ sem.term }} {{ sem.year }}</b>
                     </li>
                     <ul style="list-style-type: none;">
                         {% for course in courses %}

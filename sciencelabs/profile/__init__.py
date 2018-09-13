@@ -6,7 +6,6 @@ from flask_classy import FlaskView, route
 from sciencelabs.profile.profile_controller import ProfileController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.alerts.alerts import *
-from app_settings import app_settings
 
 
 class ProfileView(FlaskView):

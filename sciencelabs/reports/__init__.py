@@ -44,7 +44,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
-
+        semester_list = session['SEMESTER-LIST']
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id, session['SELECTED-SEMESTER'])
         total_sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])

@@ -9,7 +9,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
-from app_settings import app_settings
 
 
 
