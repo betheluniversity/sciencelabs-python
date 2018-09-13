@@ -56,7 +56,7 @@ class Schedule:
 
     def get_semesters(self):
         return session.query(Semester_Table)\
-            .order_by(Semester_Table.year.desc())\
+            .order_by(Semester_Table.id.desc())\
             .all()
 
     def get_semester(self, semester_id):

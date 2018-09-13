@@ -56,7 +56,7 @@ def create_semester_selector():
     semester_list = Schedule().get_semesters()
     session['SEMESTER-LIST'] = {}
     for semester in semester_list:
-        session['SEMESTER-LIST'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active
+        session['SEMESTER-LIST'][semester.id] = {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active}
         if semester.active == 1:
             session['SELECTED-SEMESTER'] = semester.id
 
@@ -64,14 +64,10 @@ def create_semester_selector():
 @app.route("/set-semester", methods=["POST"])
 def set_semester_selector():
     semester_id = str(json.loads(request.data).get('id'))
-    term_year = str(json.loads(request.data).get('term-year'))
-    term_year_list = term_year.split(" ")
-    term, year = term_year_list
-    semester_string = str(semester_id) + ';' + term + ';' + str(year)
-    if semester_string in session['SEMESTER-LIST']:
+    if semester_id in session['SEMESTER-LIST']:
         for semester in session['SEMESTER-LIST']:
-            session['SEMESTER-LIST'][semester] = 0
-        session['SEMESTER-LIST'][semester_string] = 1
+            session['SEMESTER-LIST'][semester]['active'] = 0
+        session['SEMESTER-LIST'][semester_id]['active'] = 1
         session['SELECTED-SEMESTER'] = semester_id
         session.modified = True
         return 'success'
