@@ -54,6 +54,13 @@ def utility_processor():
 @app.before_first_request
 def create_semester_selector():
     semester_list = Schedule().get_semesters()
+    current_user = User().get_user_by_username(app_settings['TEST_USERNAME'])  # TODO: Update with CAS Authentication
+    user_roles = User().get_user_roles(current_user.id)
+    session['USERNAME'] = current_user.username
+    session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+    session['USER-ROLES'] = []
+    for role in user_roles:
+        session['USER-ROLES'].append(role.name)
     session['SEMESTER-LIST'] = {}
     for semester in semester_list:
         session['SEMESTER-LIST'][(str(semester.id) + ';' + semester.term + ';' + str(semester.year))] = semester.active

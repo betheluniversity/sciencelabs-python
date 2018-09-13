@@ -289,7 +289,7 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        opener_username = app_settings['TEST_USERNAME']  # TODO: update with roles and permissions
+        opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
         self.session.start_open_session(session_id, opener_user.id)
         self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)

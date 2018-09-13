@@ -53,7 +53,7 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                {% if 'Administrator' in app_settings['TEST_ROLES'] %}
+                                {% if 'Administrator' in session['USER-ROLES'] %}
                                 <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
                                 <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
                                 {% endif %}
