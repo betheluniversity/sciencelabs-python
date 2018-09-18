@@ -1,0 +1,72 @@
+{% extends 'email_tab/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Review your email. If all information is correct, press send.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <form action="#" method="post">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="choose-recipients">Recipients</label>
+                <select name="groups" class="chosen form-control" id="choose-recipients" multiple="true"
+                        data-placeholder="Choose recipients ...">
+                    {% for role in role_list %}
+                        <option value="{{ role.id }}" {{ 'selected' if role.id in groups }}>{{ role.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="subject">Subject</label>
+                <input name="subject" type="text" class="form-control" id="subject" autocomplete="off" value="{{ subject }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="cc-div" class="form-group col-md-12 chosen-container">
+                <label for="choose-cc">CC</label>
+                <select name="cc" class="chosen form-control" id="choose-cc" multiple="true"
+                        data-placeholder="Choose CC recipients ...">
+                    {% for user in user_list %}
+                        <option value="{{ user.id }}" {{ 'selected' if user.id in cc }}>{{ user.firstName }} {{ user.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="bcc-div" class="form-group col-md-12 chosen-container">
+                <label for="choose-bcc">BCC</label>
+                <select name="bcc" class="chosen form-control" id="choose-bcc" multiple="true"
+                        data-placeholder="Choose BBC recipients ...">
+                    {% for user in user_list %}
+                        <option value="{{ user.id }}" {{ 'selected' if user.id in bcc }}>{{ user.firstName }} {{ user.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="subject">Message</label>
+                <textarea name="message" class="form-control" rows="15" cols="67">{{ message }}</textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="send-email">Send</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+
+        $(document).ready(function () {
+            $(".chosen").chosen({
+                display_disabled_options: true
+            });
+        });
+
+    </script>
+{% endblock %}
