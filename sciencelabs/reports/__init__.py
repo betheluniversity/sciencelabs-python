@@ -491,7 +491,7 @@ class ReportView(FlaskView):
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         semester_list = session['SEMESTER-LIST']
         user_ = self.user
-        course_info = self.courses.get_active_course_info(session['SELECTED-SEMESTER'])
+        course_info = self.courses.get_selected_course_info(session['SELECTED-SEMESTER'])
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')
