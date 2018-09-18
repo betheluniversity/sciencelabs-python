@@ -23,6 +23,7 @@
                     data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
+                        {# Checks to see if the semester selector is used in the report/month page #}
                         if (/month/.test(window.location.pathname))
                         {
                             var result = semester_term_year.split(" ");
