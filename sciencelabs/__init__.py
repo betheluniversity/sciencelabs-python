@@ -2,7 +2,7 @@
 import logging
 
 # Packages
-from flask import Flask, session, request
+from flask import Flask, session, request, render_template
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
 from datetime import datetime
@@ -90,7 +90,8 @@ def set_semester_selector():
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    pass
+    return render_template('index.html')  # TODO: CAS AUTHENTICATION
+# (it's just rendering the main page again right now to show that the flask session is cleared)
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
