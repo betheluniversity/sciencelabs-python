@@ -55,8 +55,10 @@ def utility_processor():
 def create_semester_selector():
     semester_list = Schedule().get_semesters()
     session['SEMESTER-LIST'] = {}
+    # Adds all semesters to a dictionary
     for semester in semester_list:
         session['SEMESTER-LIST'][semester.id] = {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active}
+        # Sets the current active semester to 'SELECTED-SEMESTER'
         if semester.active == 1:
             session['SELECTED-SEMESTER'] = semester.id
 
@@ -64,11 +66,16 @@ def create_semester_selector():
 @app.route("/set-semester", methods=["POST"])
 def set_semester_selector():
     semester_id = str(json.loads(request.data).get('id'))
+    # Makes sure that semester_id is valid (always should be but just in case)
     if semester_id in session['SEMESTER-LIST']:
+        # Sets the attribute 'active' of all the semesters to 0 so none are active
         for semester in session['SEMESTER-LIST']:
             session['SEMESTER-LIST'][semester]['active'] = 0
+        # Activates the specified semester
         session['SEMESTER-LIST'][semester_id]['active'] = 1
+        # Sets the SELECTED-SEMESTER
         session['SELECTED-SEMESTER'] = semester_id
+        # Lets the session know it was modified
         session.modified = True
         return 'success'
     else:
