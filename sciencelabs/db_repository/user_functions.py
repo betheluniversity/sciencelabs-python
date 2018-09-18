@@ -42,7 +42,6 @@ class User:
             .group_by(User_Table.id) \
             .all()
 
-    # TODO UPDATE QUERY TO INCLUDE SELECTED SEMESTER
     def get_studentsession(self, student_id, semester_id):
         return session.query(StudentSession_Table, Session_Table)\
             .filter(StudentSession_Table.studentId == student_id)\

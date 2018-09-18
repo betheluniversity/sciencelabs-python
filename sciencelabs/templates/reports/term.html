@@ -33,13 +33,35 @@
                             <h3>Term Statistics</h3>
                             <ul class="no-bullet">
                                 <li>
-                                    <b>Sessions held:</b> {{ total_sessions }}
+                                    <b>Sessions held:</b> {{ total_sessions + unscheduled_sessions|length }}
                                 </li>
                                 <li>
-                                    <b>Total attendance:</b> {{ total_attendance }}
+                                    {% set total_unscheduled = [0] %}
+                                    {% set total_unique_unscheduled_attendance = [0] %}
+                                    {% if unscheduled_sessions %}
+                                        {% for sessions in unscheduled_sessions %}
+                                            {% for unscheduled_attendance in session_.get_unscheduled_unique_attendance(sessions.id) %}
+                                                {% if unscheduled_attendance[0].id not in unique_attendance_list %}
+                                                    {% if total_unique_unscheduled_attendance.append(total_unique_unscheduled_attendance.pop() + unscheduled_attendance[1]) %}{% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if total_unscheduled.append(total_unscheduled.pop() + (user_.get_session_students(sessions.id)|length) + sessions.anonStudents) %}{% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% set total_anon_attendance = [0] %}
+                                    {% for schedule, sessions in term_info %}
+                                        {% set anonStudents = [0] %}
+                                        {% for sess, sched in anon_attendance %}
+                                            {% if sched.id == schedule.id %}
+                                                {% if anonStudents.append(anonStudents.pop() + sess.anonStudents) %}{% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}
+                                    {% endfor %}
+                                    <b>Total attendance:</b> {{ total_attendance + total_unscheduled[0] + total_anon_attendance[0] }}
                                 </li>
                                 <li>
-                                    <b>Unique student attendance:</b> {{ unique_attendance }}
+                                    <b>Unique student attendance:</b> {{ unique_attendance + total_unique_unscheduled_attendance[0] }}
                                 </li>
                             </ul>
                         </p>
@@ -49,13 +71,13 @@
                             <h3><br></h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <b>Average total time spent per student:</b> {{ (avg_total_time / unique_attendance)|round(2) }} hours
+                                    <b>Average total time spent per student:</b> {{ (avg_total_time / (unique_attendance + total_unique_unscheduled_attendance[0]))|round(2) }} hours
                                 </li>
                                 <li>
-                                    <b>Average student attendance per session:</b> {{ (total_attendance / total_sessions)|round(2) }}
+                                    <b>Average student attendance per session:</b> {{ ((total_attendance + total_unscheduled[0] + total_anon_attendance[0]) / (total_sessions + unscheduled_sessions|length))|round(2) }}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b> {{ (total_attendance / unique_attendance)|round(2) }}
+                                    <b>Average number of visits per student:</b> {{ ((total_attendance + total_unscheduled[0] + total_anon_attendance[0]) / unique_attendance)|round(2) }}
                                 </li>
                             </ul>
                         </p>
@@ -75,6 +97,7 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% set total_anon_attendance = [0] %}
                     {% for schedule, sessions in term_info %}
                         <tr>
                             <td>
@@ -92,20 +115,27 @@
                             <td>
                                 {{ sessions }}
                             </td>
+                            {% set anonStudents = [0] %}
+                            {% for sess, sched in anon_attendance %}
+                                {% if sched.id == schedule.id %}
+                                    {% if anonStudents.append(anonStudents.pop() + sess.anonStudents) %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
                             <td>
-                                 {{ attendance_list[loop.index0] }}
+                                 {{ attendance_list[loop.index0] + anonStudents[0] }}
                             </td>
                             <td>
-                                {{ (attendance_list[loop.index0] / total_attendance * 100)|round|int  }}%
+                                {{ ((attendance_list[loop.index0] + anonStudents[0]) / total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
+                        {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}
                     {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
                             <th style="border-top: none;" colspan="4" class="text-right">Total</th>
                             <th style="border-top: none;">{{ total_sessions }}</th>
-                            <th style="border-top: none;">{{ total_attendance }}</th>
+                            <th style="border-top: none;">{{ total_attendance + total_anon_attendance[0] }}</th>
                             <th style="border-top: none;">100%</th>
                         </tr>
                     </tfoot>
