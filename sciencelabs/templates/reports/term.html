@@ -33,10 +33,16 @@
                             <h3>Term Statistics</h3>
                             <ul class="no-bullet">
                                 <li>
-                                    <b>Sessions held:</b> {{ total_sessions }}
+                                    <b>Sessions held:</b> {{ total_sessions + unscheduled_sessions|length }}
                                 </li>
                                 <li>
-                                    <b>Total attendance:</b> {{ total_attendance }}
+                                    {% set total_unscheduled = [0] %}
+                                    {% if unscheduled_sessions %}
+                                        {% for sessions in unscheduled_sessions %}
+                                            {% if total_unscheduled.append(total_unscheduled.pop() + (user_.get_session_students(sessions.id)|length) + sessions.anonStudents) %}{% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    <b>Total attendance:</b> {{ total_attendance + total_unscheduled[0] }}
                                 </li>
                                 <li>
                                     <b>Unique student attendance:</b> {{ unique_attendance }}
