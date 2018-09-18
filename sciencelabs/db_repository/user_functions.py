@@ -181,4 +181,18 @@ class User:
         user_to_edit.send_email = email_pref
         session.commit()
 
+    def get_role_by_role_id(self, role_id):
+        return session.query(Role_Table).filter(Role_Table.id == role_id).one()
 
+    def get_users_to_email(self, groups, cc, bcc):
+        users_to_email = []
+        for group in groups:
+            role = self.get_role_by_role_id(group)
+            users_to_email.append(role.name)
+        for user_id in cc:
+            current_user = self.get_user(user_id)
+            users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
+        for user_id in bcc:
+            current_user = self.get_user(user_id)
+            users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
+        return users_to_email
