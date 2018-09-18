@@ -250,6 +250,13 @@ class Session:
                 .filter(Session_Table.startTime != None)
                 .all())
 
+    def get_unscheduled_unique_attendance(self, session_id):
+        return session.query(User_Table, func.count(distinct(User_Table.id)))\
+            .filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .group_by(User_Table.id)\
+            .all()
+
     ######################### EDIT STUDENT METHODS #########################
 
     def edit_student_session(self, session_id, student_id, time_in, time_out, other_course, student_courses):

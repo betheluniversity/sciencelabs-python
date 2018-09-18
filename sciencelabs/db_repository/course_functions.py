@@ -18,6 +18,15 @@ class Course:
 
     def get_active_course_info(self, semester_id):
         return (session.query(Course_Table, User_Table)
+                .filter(Course_Table.num_attendees)
+                .filter(User_Table.id == CourseProfessors_Table.professor_id)
+                .filter(CourseProfessors_Table.course_id == Course_Table.id)
+                .filter(Course_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.active == 1)
+                .all())
+
+    def get_selected_course_info(self, semester_id):
+        return (session.query(Course_Table, User_Table)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id)
                 .filter(CourseProfessors_Table.course_id == Course_Table.id)
                 .filter(Course_Table.semester_id == Semester_Table.id)

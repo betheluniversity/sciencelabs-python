@@ -1,20 +1,19 @@
 {% macro semester_selector() %}
     <form class="form-inline">
-        <button style="border-radius: .25rem !important;" id="set-semester" type="button" class="btn btn-primary">Set</button>
+        <button id="set-semester" type="button" class="btn btn-primary button-border">Set</button>
         <select id="semester-select" class="custom-select">
             {% for semester in session['SEMESTER-LIST'] %}
                 {% set semester_info = semester.split(';') %}
                 {% if session['SEMESTER-LIST'][semester] == 1 %}
                     <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
                 {% else %}
-                    <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                    <option value="{{ semester_id }}">{{ semester_list[semester_id]['term'] }} {{ semester_list[semester_id]['year'] }}</option>
                 {% endif %}
             {% endfor %}
         </select>
     </form>
     <script>
         $(document).ready(function(){
-
             $('#set-semester').click(function(){
                 var select_tag = document.getElementById("semester-select");
                 var semester_id = select_tag.options[select_tag.selectedIndex].value;
@@ -25,6 +24,7 @@
                     data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
+                        {# Checks to see if the semester selector is used in the report/month page #}
                         if (/month/.test(window.location.pathname))
                         {
                             var result = semester_term_year.split(" ");
@@ -60,7 +60,6 @@
                     }
                 });
             });
-
         });
     </script>
 {% endmacro %}

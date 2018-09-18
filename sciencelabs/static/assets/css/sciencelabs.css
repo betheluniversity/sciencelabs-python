@@ -26,6 +26,10 @@ p{
     line-height: 1.6;
 }
 
+.button-border {
+    border-radius: .25rem !important;
+}
+
 .chosen-container{
     min-width: 100%;
 }

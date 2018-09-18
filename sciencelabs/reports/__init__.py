@@ -76,6 +76,7 @@ class ReportView(FlaskView):
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
+        anon_attendance = self.schedule.get_anon_student_attendance_info(session['SELECTED-SEMESTER'])
         unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
         session_ = self.session_
         user_ = self.user
@@ -97,15 +98,23 @@ class ReportView(FlaskView):
             if ss.timeIn and ss.timeOut:
                 avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds()/3600)
 
+        for sessions in self.session_.get_unscheduled_sessions(sem.year, sem.term):
+            for studentsession in self.session_.get_studentsession_from_session(sessions.id):
+                if studentsession[1].timeIn and studentsession[1].timeOut:
+                    avg_total_time += ((studentsession[1].timeOut - studentsession[1].timeIn).total_seconds()/3600)
+
         unique_attendance = 0
+        unique_attendance_list = []
         for attendance_data in unique_attendance_info:
             unique_attendance += attendance_data[1]
+            unique_attendance_list += [attendance_data[0].id]
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
 
         return render_template('reports/term.html', **locals())
 
+    # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
@@ -482,7 +491,7 @@ class ReportView(FlaskView):
         year = sem.year
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         user_ = self.user
-        course_info = self.courses.get_active_course_info(session['SELECTED-SEMESTER'])
+        course_info = self.courses.get_selected_course_info(session['SELECTED-SEMESTER'])
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')
@@ -542,7 +551,6 @@ class ReportView(FlaskView):
 
         students = self.user.get_students_in_course(course_id)
 
-        sub_list = []
         total_attendance = 0
         total_time = 0
         index = 0
