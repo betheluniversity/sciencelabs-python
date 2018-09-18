@@ -37,15 +37,23 @@
                                 </li>
                                 <li>
                                     {% set total_unscheduled = [0] %}
+                                    {% set total_unique_unscheduled_attendance = [0] %}
                                     {% if unscheduled_sessions %}
                                         {% for sessions in unscheduled_sessions %}
+                                            {% for unscheduled_attendance in session_.get_unscheduled_unique_attendance(sessions.id) %}
+                                                {% if total_unique_unscheduled_attendance.append(total_unique_unscheduled_attendance.pop() + unscheduled_attendance[1]) %}{% endif %}
+                                            {% endfor %}
                                             {% if total_unscheduled.append(total_unscheduled.pop() + (user_.get_session_students(sessions.id)|length) + sessions.anonStudents) %}{% endif %}
                                         {% endfor %}
                                     {% endif %}
                                     <b>Total attendance:</b> {{ total_attendance + total_unscheduled[0] }}
                                 </li>
                                 <li>
-                                    <b>Unique student attendance:</b> {{ unique_attendance }}
+                                    {% if unscheduled_sessions %}
+                                        <b>Unique student attendance:</b> {{ unique_attendance + total_unique_unscheduled_attendance[0] }}
+                                    {% else %}
+                                        <b>Unique student attendance:</b> {{ unique_attendance }}
+                                    {% endif %}
                                 </li>
                             </ul>
                         </p>
