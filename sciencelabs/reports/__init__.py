@@ -102,6 +102,11 @@ class ReportView(FlaskView):
             if ss.timeIn and ss.timeOut:
                 avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds()/3600)
 
+        for sessions in self.session_.get_unscheduled_sessions(sem.year, sem.term):
+            for studentsession in self.session_.get_studentsession_from_session(sessions.id):
+                if studentsession[1].timeIn and studentsession[1].timeOut:
+                    avg_total_time += ((studentsession[1].timeOut - studentsession[1].timeIn).total_seconds()/3600)
+
         unique_attendance = 0
         unique_attendance_list = []
         for attendance_data in unique_attendance_info:
