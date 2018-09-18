@@ -1,102 +1,103 @@
 {% extends 'sciencelabs_base.html' %}
 
-    {% block subnav %}
-            <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
-               href="{{ url_for('EmailView:index') }}">Create Email</a>
-    {% endblock %}
+{% block subnav %}
+        <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+           href="{{ url_for('EmailView:index') }}">Create Email</a>
+{% endblock %}
 
-    {% block body_content %}
-        <div class="custom-default row">
-            <div class="col-md-8">
-                <form>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <div class="header card">
-                                <div class="card-body btn-group">
-                                    <p style="padding: 0px; margin: 0px">Send Email</p>
-                                </div>
-                            </div>
-                        </div>
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Send Email.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-8">
+            <form action="{{ url_for('EmailView:send_email_confirm') }}" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="choose-recipients">Recipients</label>
+                        <select name="groups" class="chosen form-control" id="choose-recipients" multiple="true"
+                                data-placeholder="Choose recipients ...">
+                            {% for role in role_list %}
+                                <option value="{{ role.id }}">{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="form-row">
-                        {# TODO: This looks nothing like the actual mathlab site #}
-                        <div class="form-group col-md-6">
-                            <label for="choose-recipients">Recipients</label>
-                            <select class="chosen form-control" id="choose-recipients" multiple="true" data-placeholder="Choose recipients ...">
-                                {% for role in role_list %}
-                                    <option value="{{ role.id }}">{{ role.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="subject">Subject</label>
-                            <input type="text" class="form-control" id="subject" autocomplete="off">
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label for="subject">Subject</label>
+                        <input name="subject" type="text" class="form-control" id="subject" autocomplete="off">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-3 btn-group">
-                            <button type="button" class="button-curved btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
-                            <button style="left: 10px;" type="button" class="button-curved btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3 btn-group">
+                        <button type="button" class="button-curved btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
+                        <button style="left: 10px;" type="button" class="button-curved btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
                     </div>
-                    {# TODO NEED TO FIX THIS SO THE DIVS ARE PROPERLY SIZED #}
+                </div>
+                {# TODO NEED TO FIX THIS SO THE DIVS ARE PROPERLY SIZED #}
+                <div class="form-group">
+                    <div id="cc-div" style="display: none;" class="form-group col-md-12 chosen-container">
+                        <label for="choose-cc">CC</label>
+                        <select name="cc" class="chosen form-control" id="choose-cc" multiple="true"
+                                data-placeholder="Choose CC recipients ...">
+                            {% for user in user_list %}
+                                <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="bcc-div" style="display: none;"  class="form-group col-md-12 chosen-container">
+                        <label for="choose-bcc">BCC</label>
+                        <select name="bcc" class="chosen form-control" id="choose-bcc" multiple="true"
+                                data-placeholder="Choose BBC recipients ...">
+                            {% for user in user_list %}
+                                <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="subject">Message</label>
+                        <textarea name="message" class="form-control" rows="15" cols="67"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <div id="cc-div" style="display: none;" class="form-group col-md-12 chosen-container">
-                            <label for="choose-cc">CC</label>
-                            <select class="chosen form-control" id="choose-cc" multiple="true" data-placeholder="Choose CC recipients ...">
-                                {% for user in user_list %}
-                                    <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div id="bcc-div" style="display: none;"  class="form-group col-md-12 chosen-container">
-                            <label for="choose-bcc">BCC</label>
-                            <select class="chosen form-control" id="choose-cc" multiple="true" data-placeholder="Choose BBC recipients ...">
-                                {% for user in user_list %}
-                                    <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <button type="submit" class="btn btn-primary" id="send-email">Send</button>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="subject">Message</label>
-                            <textarea class="form-control" rows="15" cols="67"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" id="send-email">Send</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="sub-info card info">
-                    <div class="card-body">
-                        <p class="card-text">
-                            This section gives you the option to email {{ app_settings['LAB_TITLE'] }} users. These
-                            emails are only sent to users who are set to active in the system. See the
-                            <span class="button-labels">Users</span> tab for more information on the users currently in
-                            the system. When the email is sent, all users will be BCC’d, so that Bethel username
-                            information will not appear in the email.
-                        </p>
-                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="sub-info card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        This section gives you the option to email {{ app_settings['LAB_TITLE'] }} users. These
+                        emails are only sent to users who are set to active in the system. See the
+                        <span class="button-labels">Users</span> tab for more information on the users currently in
+                        the system. When the email is sent, all users will be BCC’d, so that Bethel username
+                        information will not appear in the email.
+                    </p>
                 </div>
             </div>
         </div>
-        <script>
-            function ccFunction() {
-                document.getElementById('cc-div').style.display = 'block';
-            }
-            function bccFunction() {
-                document.getElementById('bcc-div').style.display = 'block';
-            }
+    </div>
+    <script>
+        function ccFunction() {
+            document.getElementById('cc-div').style.display = 'block';
+        }
+        function bccFunction() {
+            document.getElementById('bcc-div').style.display = 'block';
+        }
 
-            $(document).ready(function () {
-                $(".chosen").chosen({
-                    display_disabled_options: true
-                });
+        $(document).ready(function () {
+            $(".chosen").chosen({
+                display_disabled_options: true
             });
-        </script>
-    {% endblock %}
+        });
+    </script>
+{% endblock %}

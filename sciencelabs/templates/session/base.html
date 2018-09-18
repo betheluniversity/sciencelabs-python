@@ -2,7 +2,7 @@
 
 {% block subnav %}
     {# TODO: Update with roles and permissions #}
-    {% if 'Administrator' in app_settings['TEST_ROLES'] %}
+    {% if 'Administrator' in session['USER-ROLES'] %}
         <a id="home" class="nav-item nav-link {{ 'active' if '/session/' == request.path else 'disabled'}}"
            href="{{ url_for('SessionView:index') }}">Available Sessions</a>
         <a id="closed" class="nav-item nav-link {{ 'active' if 'closed' in request.path else 'disabled'}}"

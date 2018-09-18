@@ -9,7 +9,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
-from app_settings import app_settings
 
 
 
@@ -23,7 +22,6 @@ class SessionView(FlaskView):
     def index(self):
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
         sessions = self.session.get_available_sessions(semester.id)
         session_tutors = self.session
         return render_template('session/available_sessions.html', **locals())
@@ -34,13 +32,11 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         session_tutors = self.session
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -49,7 +45,6 @@ class SessionView(FlaskView):
     def deleted(self):
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         current_alert = get_alert()
         session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
@@ -64,7 +59,6 @@ class SessionView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
-        semester_list = session['SEMESTER-LIST']
         course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
@@ -289,10 +283,10 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        opener_username = app_settings['TEST_USERNAME']  # TODO: update with roles and permissions
+        opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
-        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         self.session.start_open_session(session_id, opener_user.id)
+        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_attendance(self, session_id):

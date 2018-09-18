@@ -1,12 +1,11 @@
 # Packages
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.profile.profile_controller import ProfileController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.alerts.alerts import *
-from app_settings import app_settings
 
 
 class ProfileView(FlaskView):
@@ -18,7 +17,7 @@ class ProfileView(FlaskView):
 
     def index(self):
         current_alert = get_alert()
-        user = self.user.get_user_by_username(app_settings['TEST_USERNAME'])  # TODO: Update with roles and permissions
+        user = self.user.get_user_by_username(session['USERNAME'])
         return render_template('profile/home.html', **locals())
 
     @route('/save_edits', methods=['post'])

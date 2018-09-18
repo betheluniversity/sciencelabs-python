@@ -2,7 +2,7 @@
 
 {% block subnav %}
         {# TODO: Update with roles and permissions #}
-        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] %}
+        {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
         <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:student') }}">Student</a>
         <a id="term" class="nav-link {{ 'active' if 'semester' in request.path else 'disabled'}}"
@@ -16,7 +16,7 @@
         <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:course') }}">Course</a>
         {% endif %}
-        {% if 'Professor' in app_settings['TEST_ROLES'] and 'Administrator' not in app_settings['TEST_ROLES']%}
+        {% if 'Professor' in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] %}
         <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:student') }}">Student</a>
         <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
@@ -40,7 +40,7 @@
 
     <div class="header card-body" style="background-color: white; padding: 0px">
         <div class="row row-group">
-        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] or 'Professor' in app_settings['TEST_ROLES'] %}
+        {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
         <a class="report-img col-sm-4 col-group" href="student">
         <img src="{{ url_for('static', filename='img/student.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Student Icon">
             <div>
@@ -54,7 +54,7 @@
             </div>
         </a>
         {% endif %}
-        {% if 'Administrator' in app_settings['TEST_ROLES'] or 'Academic Counselor' in app_settings['TEST_ROLES'] %}
+        {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
         <a class="report-img col-sm-4 col-group" href="session">
         <img src="{{ url_for('static', filename='img/session.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Classroom Icon">
             <div>

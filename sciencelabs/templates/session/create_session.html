@@ -22,10 +22,15 @@
                         <input type="text" class="form-control" id="room-number" name="room" autocomplete="off">
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="semester">Semester</label>
-                        <select id="semester" class="custom-select" name="semester">
-                            {% for semester in semester_list %}
-                                <option value="{{ semester.id }}">{{ semester.term }} {{ semester.year }}</option>
+                        <label for="">Semester</label>
+                        <select class="custom-select" name="semester">
+                            {% for semester in session['SEMESTER-LIST'] %}
+                                {% set semester_info = semester.split(';') %}
+                                {% if session['SEMESTER-LIST'][semester] == 1 %}
+                                    <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                                {% else %}
+                                    <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>

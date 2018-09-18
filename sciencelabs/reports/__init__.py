@@ -34,8 +34,6 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
-
-        semester_list = session['SEMESTER-LIST']
         student_info = self.user.get_student_info(session['SELECTED-SEMESTER'])
         return render_template('reports/student.html', **locals())
 
@@ -44,7 +42,6 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
-
         student = self.user.get_user(student_id)
         student_info, attendance = self.user.get_student_attendance(student_id, session['SELECTED-SEMESTER'])
         total_sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
@@ -77,7 +74,6 @@ class ReportView(FlaskView):
         year = sem.year
 
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         anon_attendance = self.schedule.get_anon_student_attendance_info(session['SELECTED-SEMESTER'])
@@ -177,7 +173,6 @@ class ReportView(FlaskView):
         months = self.base.months
         selected_year = year
         selected_month = month
-        semester_list = session['SEMESTER-LIST']
         if month == 1:
             term = 'Interim'
         elif month in (2, 3, 4, 5):
@@ -436,9 +431,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
-
         months = self.base.months
-        semester_list = session['SEMESTER-LIST']
         sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_ = self.session_
         return render_template('reports/session.html', **locals())
@@ -496,9 +489,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
-
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         user_ = self.user
         course_info = self.courses.get_selected_course_info(session['SELECTED-SEMESTER'])
         return render_template('reports/course.html', **locals())

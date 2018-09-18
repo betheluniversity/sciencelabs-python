@@ -24,24 +24,24 @@
                 </tr>
             </thead>
             <tbody>
-                {% for session in sessions %}
+                {% for session_info in sessions %}
                     <tr>
                         <td>
-                            {{ session.name }}
+                            {{ session_info.name }}
                         </td>
                         <td>
-                            {{ session.date.strftime('%m/%d/%Y') }}
+                            {{ session_info.date.strftime('%m/%d/%Y') }}
                         </td>
                         <td>
-                            {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                            {{ session_info.schedStartTime|datetimeformat + ' - ' + session_info.schedEndTime|datetimeformat }}
                         </td>
                         <td>
-                            {{ session.room }}
+                            {{ session_info.room }}
                         </td>
                         <td>
                             <button type="button" class="show-tutors btn btn-primary">Show</button>
                             <div style="display:none;margin-top:10px" class="text-left">
-                            {% set tutors = session_tutors.get_session_tutors(session.id) %}
+                            {% set tutors = session_tutors.get_session_tutors(session_info.id) %}
                             {% for tutor in tutors %}
                                 {{ tutor.firstName }} {{ tutor.lastName }}
                                 {% if tutor.isLead %}
@@ -53,11 +53,11 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                {% if 'Administrator' in app_settings['TEST_ROLES'] %}
-                                <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="edit btn btn-primary">Edit</a>
-                                <a href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="delete btn btn-primary">Delete</a>
+                                {% if 'Administrator' in session['USER-ROLES'] %}
+                                    <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}' class="edit btn btn-primary">Edit</a>
+                                    <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}' class="delete btn btn-primary">Delete</a>
                                 {% endif %}
-                                <a href="{{ url_for('SessionView:open_session', session_id=session.id) }}" class="btn btn-primary">Start</a>
+                                <a href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}" class="btn btn-primary">Start</a>
                             </div>
                         </td>
                     </tr>
