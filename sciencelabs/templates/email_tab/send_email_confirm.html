@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body_content %}
-    <form action="#" method="post">
+    <form action="{{ url_for('EmailView:send') }}" method="post">
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="choose-recipients">Recipients</label>

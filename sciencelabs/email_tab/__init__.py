@@ -1,10 +1,11 @@
 # Packages
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.email_tab.email_controller import EmailController
 from sciencelabs.db_repository.user_functions import User
+from sciencelabs.alerts.alerts import *
 
 
 class EmailView(FlaskView):
@@ -16,6 +17,7 @@ class EmailView(FlaskView):
 
     @route('/create')
     def index(self):
+        current_alert = get_alert()
         role_list = self.user.get_all_roles()
         user_list = self.user.get_all_current_users()
         return render_template('email_tab/base.html', **locals())
@@ -40,3 +42,13 @@ class EmailView(FlaskView):
         role_list = self.user.get_all_roles()
         user_list = self.user.get_all_current_users()
         return render_template('email_tab/send_email_confirm.html', **locals())
+
+    @route('/send', methods=['post'])
+    def send(self):
+        try:
+            form = request.form
+            # TODO: Get users to put in alert
+            set_alert('success', 'Email sent successfully to the following users: ')
+        except Exception as error:
+            set_alert('danger', 'Failed to send email: ' + str(error))
+        return redirect(url_for('EmailView:index'))
