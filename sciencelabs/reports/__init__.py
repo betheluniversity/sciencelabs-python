@@ -103,14 +103,17 @@ class ReportView(FlaskView):
                 avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds()/3600)
 
         unique_attendance = 0
+        unique_attendance_list = []
         for attendance_data in unique_attendance_info:
             unique_attendance += attendance_data[1]
+            unique_attendance_list += [attendance_data[0].id]
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
 
         return render_template('reports/term.html', **locals())
 
+    # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
