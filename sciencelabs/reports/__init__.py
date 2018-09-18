@@ -560,7 +560,6 @@ class ReportView(FlaskView):
 
         students = self.user.get_students_in_course(course_id)
 
-        sub_list = []
         total_attendance = 0
         total_time = 0
         index = 0
