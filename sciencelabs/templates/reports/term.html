@@ -89,6 +89,7 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% set total_anon_attendance = [0] %}
                     {% for schedule, sessions in term_info %}
                         <tr>
                             <td>
@@ -106,20 +107,27 @@
                             <td>
                                 {{ sessions }}
                             </td>
+                            {% set anonStudents = [0] %}
+                            {% for sess, sched in anon_attendance %}
+                                {% if sched.id == schedule.id %}
+                                    {% if anonStudents.append(anonStudents.pop() + sess.anonStudents) %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
                             <td>
-                                 {{ attendance_list[loop.index0] }}
+                                 {{ attendance_list[loop.index0] + anonStudents[0] }}
                             </td>
                             <td>
-                                {{ (attendance_list[loop.index0] / total_attendance * 100)|round|int  }}%
+                                {{ (attendance_list[loop.index0] + anonStudents[0] / total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
+                        {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}
                     {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
                             <th style="border-top: none;" colspan="4" class="text-right">Total</th>
                             <th style="border-top: none;">{{ total_sessions }}</th>
-                            <th style="border-top: none;">{{ total_attendance }}</th>
+                            <th style="border-top: none;">{{ total_attendance + total_anon_attendance[0] }}</th>
                             <th style="border-top: none;">100%</th>
                         </tr>
                     </tfoot>

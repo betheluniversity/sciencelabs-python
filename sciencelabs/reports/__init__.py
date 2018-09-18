@@ -80,6 +80,7 @@ class ReportView(FlaskView):
         semester_list = session['SEMESTER-LIST']
         term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
+        anon_attendance = self.schedule.get_anon_student_attendance_info(session['SELECTED-SEMESTER'])
         unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
         session_ = self.session_
         user_ = self.user
