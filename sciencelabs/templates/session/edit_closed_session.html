@@ -25,9 +25,9 @@
             <div class="form-group col-md-3">
                 <label for="">Semester</label>
                 <select class="custom-select" name="semester">
-                    {% for semester in semester_list %}
+                    {% for semester in session['SEMESTER-LIST'] %}
                         {% set semester_info = semester.split(';') %}
-                        {% if semester_list[semester] == 1 %}
+                        {% if session['SEMESTER-LIST'][semester] == 1 %}
                             <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
                         {% else %}
                             <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>

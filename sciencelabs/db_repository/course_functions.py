@@ -157,7 +157,7 @@ class Course:
         # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
 
         semester_id = None
-        semester_list = session.query(Semester_Table).all()
+        semester_list = session['SEMESTER-LIST']
         for semesters in semester_list:
             if semesters.year == year and semesters.term == term:
                 semester_id = semesters.id

@@ -22,7 +22,6 @@ class SessionView(FlaskView):
     def index(self):
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
         sessions = self.session.get_available_sessions(semester.id)
         session_tutors = self.session
         return render_template('session/available_sessions.html', **locals())
@@ -33,13 +32,11 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         session_tutors = self.session
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
-        semester_list = self.schedule.get_semesters()
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -48,7 +45,6 @@ class SessionView(FlaskView):
     def deleted(self):
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        semester_list = session['SEMESTER-LIST']
         current_alert = get_alert()
         session_tutors = self.session
         return render_template('session/restore_session.html', **locals())
@@ -63,7 +59,6 @@ class SessionView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
         student_courses = self.session
-        semester_list = session['SEMESTER-LIST']
         course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
