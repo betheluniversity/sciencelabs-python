@@ -9,6 +9,7 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import requires_auth
 
 
 
@@ -343,3 +344,12 @@ class SessionView(FlaskView):
     def tutor_sign_out(self, session_id, tutor_id):
         self.session.tutor_sign_out(session_id, tutor_id)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+
+    @requires_auth
+    @route('/cron_close_sessions', methods=['get'])
+    def cron_close_sessions(self):
+        try:
+            self.session.close_open_sessions_cron()
+            return 'success'
+        except Exception as error:
+            return 'failed: ' + str(error)
