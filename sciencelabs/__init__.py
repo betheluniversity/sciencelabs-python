@@ -45,7 +45,8 @@ ProfileView.register(app)
 def utility_processor():
     to_return = {}
     to_return.update({
-        'now': datetime.now()
+        'now': datetime.now(),
+        'lab_title': app.config['LAB_TITLE']
     })
 
     return to_return

@@ -6,7 +6,6 @@ import csv
 from datetime import datetime
 
 # Local
-from sciencelabs import app_settings
 from sciencelabs import app
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -56,7 +55,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
@@ -120,7 +119,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_TermReport' % (term, year, lab)
@@ -204,7 +203,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -266,7 +265,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -306,7 +305,7 @@ class ReportView(FlaskView):
 
     def export_cumulative_csv(self):
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s_CumulativeAttendance' % lab
@@ -457,7 +456,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
@@ -512,7 +511,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
@@ -542,7 +541,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)

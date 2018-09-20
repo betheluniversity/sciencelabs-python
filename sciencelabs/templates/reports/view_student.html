@@ -93,7 +93,7 @@
             <form>
                 <ul class="no-bullet">
                     <li>
-                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Enrolled in for {{ sem.term }} {{ sem.year }} as of {{ now.strftime('%m/%d/%Y') }}</b>
+                        <b>{{ lab_title }} Course(s) Enrolled in for {{ sem.term }} {{ sem.year }} as of {{ now.strftime('%m/%d/%Y') }}</b>
                     </li>
                     <ul style="list-style-type: none;">
                         {% for course in courses %}
@@ -105,7 +105,7 @@
                 </ul>
                 <ul class="no-bullet">
                     <li>
-                        <b>{{ app_settings['LAB_TITLE'] }} Course(s) Attendend during {{ sem.term }} {{ sem.year }}</b>
+                        <b>{{ lab_title }} Course(s) Attendend during {{ sem.term }} {{ sem.year }}</b>
                     </li>
                     <ul style="list-style-type: none;">
                         {% for course in courses %}
