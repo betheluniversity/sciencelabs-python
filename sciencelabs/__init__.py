@@ -9,7 +9,6 @@ from datetime import datetime
 import json
 
 # Local
-from app_settings import app_settings
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
@@ -107,7 +106,6 @@ def datetimeformat(value, custom_format='%l:%M%p'):
 
 
 app.jinja_env.filters['datetimeformat'] = datetimeformat
-app.jinja_env.globals.update(app_settings=app_settings)
 
 if __name__ == "__main__":
     app.run()
