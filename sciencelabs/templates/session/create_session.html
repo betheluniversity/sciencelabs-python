@@ -23,14 +23,9 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="">Semester</label>
-                        <select class="custom-select" name="semester">
+                        <select id="semester-select" class="custom-select">
                             {% for semester in session['SEMESTER-LIST'] %}
-                                {% set semester_info = semester.split(';') %}
-                                {% if session['SEMESTER-LIST'][semester] == 1 %}
-                                    <option class="selected" selected value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
-                                {% else %}
-                                    <option value="{{ semester_info[0] }}">{{ semester_info[1] }} {{ semester_info[2] }}</option>
-                                {% endif %}
+                                <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
                             {% endfor %}
                         </select>
                     </div>
