@@ -58,10 +58,12 @@
                                         {% endfor %}
                                         {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}
                                     {% endfor %}
-                                    <b>Total attendance:</b> {{ total_attendance + total_unscheduled[0] + total_anon_attendance[0] }}
+                                    {% set all_total_attendance = total_attendance + total_unscheduled[0] + total_anon_attendance[0] %}
+                                    <b>Total attendance:</b> {{ all_total_attendance }}
                                 </li>
                                 <li>
-                                    <b>Unique student attendance:</b> {{ unique_attendance + total_unique_unscheduled_attendance[0] }}
+                                    {% set total_unique_attendance = unique_attendance + total_unique_unscheduled_attendance[0] %}
+                                    <b>Unique student attendance:</b> {{ total_unique_attendance }}
                                 </li>
                             </ul>
                         </p>
@@ -71,13 +73,13 @@
                             <h3><br></h3>
                             <ul style="list-style-type: none;">
                                 <li>
-                                    <b>Average total time spent per student:</b> {{ (avg_total_time / (unique_attendance + total_unique_unscheduled_attendance[0]))|round(2) }} hours
+                                    <b>Average total time spent per student:</b> {{ (avg_total_time / (total_unique_attendance))|round(2) }} hours
                                 </li>
                                 <li>
-                                    <b>Average student attendance per session:</b> {{ ((total_attendance + total_unscheduled[0] + total_anon_attendance[0]) / (total_sessions + unscheduled_sessions|length))|round(2) }}
+                                    <b>Average student attendance per session:</b> {{ ((all_total_attendance) / (total_sessions + unscheduled_sessions|length))|round(2) }}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b> {{ ((total_attendance + total_unscheduled[0] + total_anon_attendance[0]) / unique_attendance)|round(2) }}
+                                    <b>Average number of visits per student:</b> {{ ((all_total_attendance) / total_unique_attendance)|round(2) }}
                                 </li>
                             </ul>
                         </p>
@@ -125,7 +127,7 @@
                                  {{ attendance_list[loop.index0] + anonStudents[0] }}
                             </td>
                             <td>
-                                {{ ((attendance_list[loop.index0] + anonStudents[0]) / total_attendance * 100)|round|int  }}%
+                                {{ ((attendance_list[loop.index0] + anonStudents[0]) / all_total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
                         {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}

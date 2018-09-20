@@ -8,25 +8,6 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.oracle_procs.db_functions import get_course_is_valid, get_info_for_course
 
-alert = None  # Default alert to nothing
-
-
-# This method get's the current alert (if there is one) and then resets alert to nothing
-def get_alert():
-    global alert
-    alert_return = alert
-    alert = None
-    return alert_return
-
-
-# This method sets the alert for when one is needed next
-def set_alert(message_type, message):
-    global alert
-    alert = {
-        'type': message_type,
-        'message': message
-    }
-
 
 class CourseView(FlaskView):
     route_base = 'course'

@@ -6,7 +6,6 @@ import csv
 from datetime import datetime
 
 # Local
-from sciencelabs import app_settings
 from sciencelabs import app
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -56,7 +55,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
@@ -98,10 +97,10 @@ class ReportView(FlaskView):
             if ss.timeIn and ss.timeOut:
                 avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds()/3600)
 
-        for sessions in self.session_.get_unscheduled_sessions(sem.year, sem.term):
-            for studentsession in self.session_.get_studentsession_from_session(sessions.id):
-                if studentsession[1].timeIn and studentsession[1].timeOut:
-                    avg_total_time += ((studentsession[1].timeOut - studentsession[1].timeIn).total_seconds()/3600)
+        for unscheduled_session in self.session_.get_unscheduled_sessions(sem.year, sem.term):
+            for user, studentsession in self.session_.get_studentsession_from_session(unscheduled_session.id):
+                if studentsession.timeIn and studentsession.timeOut:
+                    avg_total_time += ((studentsession.timeOut - studentsession.timeIn).total_seconds() / 3600)
 
         unique_attendance = 0
         unique_attendance_list = []
@@ -120,7 +119,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_TermReport' % (term, year, lab)
@@ -131,28 +130,54 @@ class ReportView(FlaskView):
 
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         total_attendance = 0
+        unique_attendance = 0
         attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
             attendance_list += [sessions[1]]
 
+        unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
+        unique_attendance_list = []
+        for attendance_data in unique_attendance_info:
+            unique_attendance += attendance_data[1]
+            unique_attendance_list += [attendance_data[0].id]
+
+        all_total_attendance = total_attendance
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
+        for sessions in unscheduled_sessions:
+            for unscheduled_attendance in self.session_.get_unscheduled_unique_attendance(sessions.id):
+                if unscheduled_attendance[0].id not in unique_attendance_list:
+                    all_total_attendance += unscheduled_attendance[1]
+
+        term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
+        anon_attendance = self.schedule.get_anon_student_attendance_info(session['SELECTED-SEMESTER'])
+
+        for schedule, sessions in term_info:
+            for sess, sched in anon_attendance:
+                if sched.id == schedule.id:
+                    all_total_attendance += sess.anonStudents
+
         index = 0
         session_count = 0
-        for schedule, sessions in self.schedule.get_term_report(session['SELECTED-SEMESTER']):
+        total_anon = 0
+        for schedule, sessions in term_info:
+            anonStudents = 0
+            for sess, sched in anon_attendance:
+                if schedule.id == sched.id:
+                    anonStudents += sess.anonStudents
+            total_anon += anonStudents
             session_count += sessions
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
                             sessions,
-                            attendance_list[index],
-                            str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
+                            attendance_list[index] + anonStudents,
+                            str(round((((attendance_list[index] + anonStudents) / all_total_attendance) * 100))) + '%'])
             index += 1
 
-        my_list.append(['', '', '', 'Total:', session_count, total_attendance, '100%'])
+        my_list.append(['', '', '', 'Total:', session_count, total_attendance + total_anon, '100%'])
         my_list.append([])
         my_list.append(['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance'])
 
-        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
         total_unscheduled = 0
         for sessions in unscheduled_sessions:
             my_list.append(['', sessions.date.strftime('%m/%d/%Y'), self.datetimeformatter(sessions.startTime),
@@ -204,7 +229,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -266,7 +291,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -306,7 +331,7 @@ class ReportView(FlaskView):
 
     def export_cumulative_csv(self):
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s_CumulativeAttendance' % lab
@@ -457,7 +482,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
@@ -512,7 +537,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
@@ -542,7 +567,7 @@ class ReportView(FlaskView):
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)

@@ -17,13 +17,13 @@
                 <div class="sub-info card info">
                     <div class="card-body">
                         <p class="card-text">
-                            This page has two sections, the "{{ app_settings['LAB_TITLE'] }} Courses Across All Terms"
-                            and the "{{ app_settings['LAB_TITLE'] }} Courses for Current Term". Administrators should
-                            populate the bottom "{{ app_settings['LAB_TITLE'] }} Courses Across All Terms" section with
+                            This page has two sections, the "{{ lab_title }} Courses Across All Terms"
+                            and the "{{ lab_title }} Courses for Current Term". Administrators should
+                            populate the bottom "{{ lab_title }} Courses Across All Terms" section with
                             all courses that this lab serves across all terms.
                         </p>
                         <p class="card-text">
-                            To <strong>add</strong> courses to the "{{ app_settings['LAB_TITLE'] }} Courses Across All
+                            To <strong>add</strong> courses to the "{{ lab_title }} Courses Across All
                             Terms" section, click on the "add a course" text in the box, type a course number
                             (ex. MAT124M, use appropriate capitalization and no spaces) and press enter. When you have
                             added all applicable courses, press <span class="button-labels">Submit Courses</span>.
@@ -31,23 +31,23 @@
                         <p class="card-text">
                             Each new course number will now be checked against Banner; if the course number is valid,
                             the course name will be added to the course number in the list and all sections of the
-                            course will populate the "{{ app_settings['LAB_TITLE'] }} Courses for Current Term" list at
+                            course will populate the "{{ lab_title }} Courses for Current Term" list at
                             the top of the page. If the course number is not valid, an error message will appear at the
                             top of the screen.
                         </p>
                         <p class="card-text">
-                            <strong>{{ app_settings['LAB_TITLE'] }} Courses Across All Terms</strong> determines which
+                            <strong>{{ lab_title }} Courses Across All Terms</strong> determines which
                             courses will be available to be offered at help sessions. If you no longer want a course to
-                            be offered at future help sessions, you should delete it from the "{{ app_settings['LAB_TITLE'] }}
-                            Courses Across All Terms" section. In the bottom {{ app_settings['LAB_TITLE'] }} Course list,
+                            be offered at future help sessions, you should delete it from the "{{ lab_title }}
+                            Courses Across All Terms" section. In the bottom {{ lab_title }} Course list,
                             press the "x" next to the course name and number. When you have removed all applicable
                             courses, press Submit Courses. This will NOT remove the course from the current term course
                             listing found at the top of this page.
                         </p>
                         <p class="card-text">
-                            <strong>{{ app_settings['LAB_TITLE'] }} Courses for Current Term</strong> determines which
+                            <strong>{{ lab_title }} Courses for Current Term</strong> determines which
                             courses will be available for reports. If you no longer want a course to be available for
-                            reports, you should delete it from the "{{ app_settings['LAB_TITLE'] }} Courses for Current
+                            reports, you should delete it from the "{{ lab_title }} Courses for Current
                             Term" section. To delete a course in this section, click on the course title, and then press
                             <span id="red" class="button-labels">Delete</span> in the following window to delete the
                             course. Make sure this is done for all sections of the course, if desired. Please note that
