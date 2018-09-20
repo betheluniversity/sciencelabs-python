@@ -8,12 +8,13 @@ from sqlalchemy import create_engine
 from datetime import datetime
 import json
 
+app = Flask(__name__)
+app.config.from_object('config')
+
+
 # Local
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
-
-app = Flask(__name__)
-app.config.from_object('config')
 
 #sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
