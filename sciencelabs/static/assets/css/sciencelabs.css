@@ -339,6 +339,34 @@ a.report-img:hover {
     background-color: #005488;
 }
 
+#save-session:hover {
+    background-color: #005488;
+}
+
+#student-views:hover {
+    background-color: #005488;
+}
+
+#save-student:hover {
+    background-color: #005488;
+}
+
+#save-tutor:hover {
+    background-color: #005488;
+}
+
+#add-student:hover {
+    background-color: #005488;
+}
+
+#add-anon:hover {
+    background-color: #005488;
+}
+
+#add-tutor:hover {
+    background-color: #005488;
+}
+
 #create-session:hover {
     background-color: #005488;
 }
