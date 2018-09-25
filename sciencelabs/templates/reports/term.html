@@ -36,6 +36,7 @@
                                     <b>Sessions held:</b> {{ total_sessions + unscheduled_sessions|length }}
                                 </li>
                                 <li>
+                                    {# Due to jinja scoping issues, set doesn't work as expected here #}
                                     {% set total_unscheduled = [0] %}
                                     {% set total_unique_unscheduled_attendance = [0] %}
                                     {% if unscheduled_sessions %}

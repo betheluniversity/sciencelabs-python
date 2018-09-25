@@ -20,7 +20,6 @@ body {
   cursor: auto;
 }
 
-
 p{
     margin-bottom: 1.25rem;
     line-height: 1.6;
@@ -124,16 +123,28 @@ a.semester-menu{
     background-color: #0069AA;
 }
 
-.edit{
+#edit{
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
 }
 
-.delete{
+#edit:hover {
+    filter: brightness(85%);
+}
+
+#delete{
     color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
+}
+
+#delete:hover {
+    filter:brightness(85%);
+}
+
+#blue:hover {
+    background-color: #005488;
 }
 
 .report-img{
