@@ -25,7 +25,7 @@
                         <tr>
                             <th colspan="4"></th>
                             <th colspan="2">
-                                <button id="deactivate-users" type="button" class="delete btn btn-primary">Deactivate</button>
+                                <button id="deactivate-users" type="button" class="btn btn-primary">Deactivate</button>
                             </th>
                         </tr>
                     </thead>
@@ -45,7 +45,7 @@
                                     {{ role.name }}
                                 </td>
                                 <td>
-                                    <a href='{{ url_for('UsersView:edit_user', user_id=user.id) }}' id="darkblue" class="btn btn-primary">Edit</a>
+                                    <a id="darkblue" href='{{ url_for('UsersView:edit_user', user_id=user.id) }}' class="btn btn-primary">Edit</a>
                                 </td>
                                 <td class="text-center">
                                     <input type="checkbox" value="{{ user.id }}" class="deactivate-checkbox">

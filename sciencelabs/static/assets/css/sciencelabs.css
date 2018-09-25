@@ -2,9 +2,22 @@ a{
     color: #0069AA;
 }
 
-a:hover{
-    /*background-color: inherit !important;*/
-    filter: brightness(85%);
+select{
+    width: 100%;
+}
+
+label{
+    width: 100%;
+
+}
+
+input{
+    width: 100%;
+    padding: 8px;
+}
+
+nav a{
+    color: gray;
 }
 
 body {
@@ -25,17 +38,22 @@ p{
     line-height: 1.6;
 }
 
-.button-border {
-    border-radius: .25rem !important;
+a:hover{
+    /*background-color: inherit !important;*/
+    filter: brightness(85%);
 }
 
-.chosen-container{
-    min-width: 100%;
+div.info{
+    background-color: #f2f2f2;
+    border-color: #d8d8d8;
 }
 
-.side-borders{
-    border-left: 2px solid #000000 !important;
-    border-right: 2px solid #000000 !important;
+div.sub-info{
+    margin-bottom: 20px;
+}
+
+a.nav-link.button{
+    color: #FFC600 !important;
 }
 
 div.footer{
@@ -65,24 +83,6 @@ div.row-group{
 
 ul.no-margin{
     margin: 0px;
-}
-
-select{
-    width: 100%;
-}
-
-label{
-    width: 100%;
-
-}
-
-input{
-    width: 100%;
-    padding: 8px;
-}
-
-nav a{
-    color: gray;
 }
 
 a.disabled:hover{
@@ -119,54 +119,9 @@ a.semester-menu{
     background-color: white;
 }
 
-.btn-primary{
-    background-color: #0069AA;
-}
-
-#edit{
-    color: white !important;
-    background-color: #0F2C52;
-    border-color: #0F2C52;
-}
-
-#edit:hover {
-    filter: brightness(85%);
-}
-
-#delete{
-    color: white !important;
-    background-color: #DA1736;
-    border-color: #DA1736;
-}
-
-#delete:hover {
-    filter:brightness(85%);
-}
-
-#blue:hover {
-    background-color: #005488;
-}
-
-.report-img{
-    top: 0px !important;
-}
-
 a.report-img:hover {
     color: white;
     background-color: #0F2C52;
-}
-
-.no-bullet{
-    list-style-type: none;
-}
-
-.hidden{
-    display: none;
-}
-
-.big-button{
-    font-size: 25px;
-    padding: 15px 40px;
 }
 
 @media only screen and (max-width: 767px){
@@ -197,17 +152,38 @@ a.report-img:hover {
     }
 }
 
-div.info{
-    background-color: #f2f2f2;
-    border-color: #d8d8d8;
+.btn-primary{
+    background-color: #0069AA;
 }
 
-div.sub-info{
-    margin-bottom: 20px;
+.report-img{
+    top: 0px !important;
 }
 
-a.nav-link.button{
-    color: #FFC600 !important;
+.button-border {
+    border-radius: .25rem !important;
+}
+
+.chosen-container{
+    min-width: 100%;
+}
+
+.side-borders{
+    border-left: 2px solid #000000 !important;
+    border-right: 2px solid #000000 !important;
+}
+
+.no-bullet{
+    list-style-type: none;
+}
+
+.hidden{
+    display: none;
+}
+
+.big-button{
+    font-size: 25px;
+    padding: 15px 40px;
 }
 
 .margins{
@@ -282,6 +258,89 @@ a.nav-link.button{
     background-color: #FFC600;
     border-color: #FFC600;
     color: black;
+}
+
+#edit{
+    color: white !important;
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#edit:hover {
+    filter: brightness(85%);
+}
+
+#delete{
+    color: white !important;
+    background-color: #DA1736;
+    border-color: #DA1736;
+}
+
+#delete:hover {
+    filter:brightness(85%);
+}
+
+#blue:hover {
+    background-color: #005488;
+}
+
+#set-semester:hover {
+    background-color: #005488;
+}
+
+#show-hide {
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#deactivate-users {
+    color: white !important;
+    background-color: #DA1736;
+    border-color: #DA1736;
+}
+
+#deactivate-users:hover {
+    filter: brightness(85%);
+}
+
+#save-user:hover {
+    background-color: #005488;
+}
+
+#show-courses:hover {
+    background-color: #005488;
+}
+
+#show-tutors:hover {
+    background-color: #005488;
+}
+
+#save-schedule:hover {
+    background-color: #005488;
+}
+
+#all-courses:hover {
+    background-color: #005488;
+}
+
+#set-term:hover {
+    background-color: #005488;
+}
+
+#submit-courses:hover {
+    background-color: #005488;
+}
+
+#show-bcc:hover {
+    background-color: #005488;
+}
+
+#show-cc:hover {
+    background-color: #005488;
+}
+
+#create-session:hover {
+    background-color: #005488;
 }
 
 #red{
