@@ -1,7 +1,7 @@
 import json
 
 # Packages
-from flask import render_template, request, redirect, url_for
+from flask import abort, render_template, request, redirect, url_for, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -21,15 +21,24 @@ class UsersView(FlaskView):
         self.schedule = Schedule()
 
     def index(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         users_info = self.user.get_user_info()
         return render_template('users/users.html', **locals())
 
     @route('/search')
     def add_user(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         return render_template('users/add_user.html')
 
     def edit_user(self, user_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         professor = False
         user = self.user.get_user(user_id)
@@ -45,6 +54,9 @@ class UsersView(FlaskView):
 
     @route('/create/<username>/<first_name>/<last_name>')
     def select_user_roles(self, username, first_name, last_name):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         roles = self.user.get_all_roles()
         existing_user = self.user.check_for_existing_user(username)
@@ -54,6 +66,9 @@ class UsersView(FlaskView):
 
     @route("/search-users", methods=['post'])
     def search_users(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
@@ -62,6 +77,9 @@ class UsersView(FlaskView):
 
     @route("/deactivate_single_user/<int:user_id>")
     def deactivate_single_user(self, user_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.user.delete_user(user_id)
             set_alert('success', 'User deactivated successfully!')
@@ -72,6 +90,9 @@ class UsersView(FlaskView):
 
     @route("/deactivate_users", methods=['post'])
     def deactivate_users(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             json_user_ids = form.get('jsonUserIds')
@@ -85,6 +106,9 @@ class UsersView(FlaskView):
 
     @route("/save_user_edits", methods=['post'])
     def save_user_edits(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             user_id = form.get('user-id')
@@ -104,6 +128,9 @@ class UsersView(FlaskView):
 
     @route('/create_user', methods=['post'])
     def create_user(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             first_name = form.get('first-name')

@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, Response, session
+from flask import abort, render_template, Response, session
 from flask_classy import FlaskView, route
 import calendar
 import csv
@@ -23,6 +23,8 @@ class ReportView(FlaskView):
         self.session_ = Session()
 
     def index(self):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -30,6 +32,9 @@ class ReportView(FlaskView):
         return render_template('reports/base.html', **locals())
 
     def student(self):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -38,6 +43,9 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -51,6 +59,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
@@ -68,6 +79,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def semester(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -115,6 +129,9 @@ class ReportView(FlaskView):
 
     # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
@@ -191,6 +208,9 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         self.set_semester_selector(year, month)
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = month
@@ -219,6 +239,9 @@ class ReportView(FlaskView):
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         month = int(month)
         if month == 1:
             term = 'Interim'
@@ -245,21 +268,21 @@ class ReportView(FlaskView):
 
         total_attendance = 0
         for schedule in schedule_info:
-            for session in monthly_sessions:
-                session_schedule = self.schedule.get_schedule_from_session(session.id)
-                attendance = self.session_.get_session_attendees(session.id)
+            for session_info in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session_info.id)
+                attendance = self.session_.get_session_attendees(session_info.id)
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
-                        total_attendance += attendance.count() + session.anonStudents
+                        total_attendance += attendance.count() + session_info.anonStudents
 
         for schedule in schedule_info:
             total_attendance_per_schedule = 0
-            for session in monthly_sessions:
-                session_schedule = self.schedule.get_schedule_from_session(session.id)
-                attendance = self.session_.get_session_attendees(session.id)
+            for session_info in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session_info.id)
+                attendance = self.session_.get_session_attendees(session_info.id)
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
-                        total_attendance_per_schedule += attendance.count() + session.anonStudents
+                        total_attendance_per_schedule += attendance.count() + session_info.anonStudents
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime) + ' - ' +
                             self.datetimeformatter(schedule.endTime),
@@ -269,8 +292,8 @@ class ReportView(FlaskView):
         unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
         total_unscheduled = 0
         if unscheduled_sessions:
-            for session in unscheduled_sessions:
-                total_unscheduled += (len(self.user.get_session_students(session.id))) + session.anonStudents
+            for session_info in unscheduled_sessions:
+                total_unscheduled += (len(self.user.get_session_students(session_info.id))) + session_info.anonStudents
             total_attendance += total_unscheduled
 
         my_list.append(['Unscheduled Sessions', '', '', total_unscheduled,
@@ -281,6 +304,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_monthly_detail_csv(self, year, month):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         month = int(month)
         if month == 1:
             term = 'Interim'
@@ -306,21 +332,24 @@ class ReportView(FlaskView):
                                                                                                        str(month) +
                                                                                                        '-31'))
         total_attendance = 0
-        for session in monthly_sessions:
-            attendance = self.session_.get_session_attendees(session.id)
-            total_attendance += attendance.count() + session.anonStudents
-            sel_year, sel_month, sel_day = str(session.date).split('-')
-            my_list.append([session.name, session.date.strftime('%m/%d/%Y'),
+        for session_info in monthly_sessions:
+            attendance = self.session_.get_session_attendees(session_info.id)
+            total_attendance += attendance.count() + session_info.anonStudents
+            sel_year, sel_month, sel_day = str(session_info.date).split('-')
+            my_list.append([session_info.name, session_info.date.strftime('%m/%d/%Y'),
                             (self.get_dayofweek((cal.weekday(int(sel_year), int(sel_month), int(sel_day)) + 1) % 7)),
-                            self.datetimeformatter(session.schedStartTime) +
-                            ' - ' + self.datetimeformatter(session.schedStartTime), attendance.count() +
-                            session.anonStudents])
+                            self.datetimeformatter(session_info.schedStartTime) +
+                            ' - ' + self.datetimeformatter(session_info.schedStartTime), attendance.count() +
+                            session_info.anonStudents])
 
         my_list.append(['', '', 'Total:', total_attendance])
 
         return self.export_csv(my_list, csv_name)
 
     def annual(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -331,6 +360,9 @@ class ReportView(FlaskView):
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         lab = ''
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
@@ -454,6 +486,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def session(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -464,6 +499,9 @@ class ReportView(FlaskView):
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -479,6 +517,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
@@ -512,6 +553,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def course(self):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -522,6 +566,9 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -534,6 +581,9 @@ class ReportView(FlaskView):
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
@@ -564,6 +614,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_course_session_attendance_csv(self, course_id):
+        if 'Professor' not in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
