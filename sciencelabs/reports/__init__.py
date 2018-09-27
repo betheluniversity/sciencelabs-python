@@ -191,6 +191,7 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
+        self.set_semester_selector(year, month)
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = month
         year = sem.year
@@ -637,3 +638,26 @@ class ReportView(FlaskView):
             return (datetime.min + value).strftime(custom_format)
         else:
             return '???'
+
+    def set_semester_selector(self, year, month):
+        if month == 1:
+            term = 'Interim'
+        elif month in (2, 3, 4, 5):
+            term = 'Spring'
+        elif month in (8, 9, 10, 11, 12):
+            term = 'Fall'
+        else:
+            term = 'Summer'
+        sem = self.schedule.get_semester_by_year(year, term)
+
+        # Sets the attribute 'active' of all the semesters to 0 so none are active
+        for semester in session['SEMESTER-LIST']:
+            if semester['id'] == sem.id:
+                semester['active'] = 1  # activates the semester chosen
+            else:
+                semester['active'] = 0  # deactivates all others
+        # Sets the SELECTED-SEMESTER
+        session['SELECTED-SEMESTER'] = int(sem.id)
+        # Lets the session know it was modified
+        session.modified = True
+
