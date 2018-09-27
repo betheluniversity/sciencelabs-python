@@ -67,6 +67,12 @@ class Schedule:
             .filter(Semester_Table.id == semester_id)\
             .one()
 
+    def get_semester_by_year(self, year, term):
+        return session.query(Semester_Table)\
+            .filter(Semester_Table.term == term)\
+            .filter(Semester_Table.year == year)\
+            .first()
+
     def get_registered_leads(self):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
             .filter(User_Table.id == user_role_Table.user_id)\
