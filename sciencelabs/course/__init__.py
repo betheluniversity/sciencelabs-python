@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, request, redirect, url_for
+from flask import abort, render_template, request, redirect, url_for, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -19,10 +19,16 @@ class CourseView(FlaskView):
 
     @route('/admin/')
     def index(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
     def view_course(self, course_id):
+        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
+            abort(403)
+
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
 
@@ -38,6 +44,9 @@ class CourseView(FlaskView):
 
     @route("/submit/", methods=['POST'])
     def submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         form = request.form
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
@@ -75,6 +84,9 @@ class CourseView(FlaskView):
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         course_table, user_table, semester_table = self.course.get_course(course_id)
         if course_table:
             course_info = self.course.get_course_info()

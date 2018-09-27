@@ -1,7 +1,7 @@
 import json
 
 # Packages
-from flask import render_template, redirect, url_for, request
+from flask import abort, render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -20,6 +20,9 @@ class ScheduleView(FlaskView):
         self.session = Session()
 
     def index(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule_info = self.schedule.get_schedule_tab_info()
@@ -29,6 +32,9 @@ class ScheduleView(FlaskView):
 
     @route('/create')
     def create_new_schedule(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -36,6 +42,9 @@ class ScheduleView(FlaskView):
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule = Schedule().get_schedule(schedule_id)
@@ -46,6 +55,9 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.schedule.delete_schedule(schedule_id)
             set_alert('success', 'Deleted schedule successfully!')
@@ -55,6 +67,9 @@ class ScheduleView(FlaskView):
 
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             active_semester = self.schedule.get_active_semester()
             term_start_date = active_semester.startDate
@@ -84,6 +99,9 @@ class ScheduleView(FlaskView):
 
     @route('/create_schedule_submit', methods=['post'])
     def create_schedule_submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             active_semester = self.schedule.get_active_semester()
             term = active_semester.term

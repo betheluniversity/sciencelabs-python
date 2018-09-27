@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, request, redirect, url_for
+from flask import abort, render_template, request, redirect, url_for, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -17,6 +17,9 @@ class EmailView(FlaskView):
 
     @route('/create')
     def index(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         role_list = self.user.get_all_roles()
         user_list = self.user.get_all_current_users()
@@ -24,6 +27,9 @@ class EmailView(FlaskView):
 
     @route('/confirm', methods=['post'])
     def send_email_confirm(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         form = request.form
         group_id_strings = form.getlist('groups')
         groups = []
@@ -45,6 +51,9 @@ class EmailView(FlaskView):
 
     @route('/send', methods=['post'])
     def send(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             # TODO: actually send email
             form = request.form

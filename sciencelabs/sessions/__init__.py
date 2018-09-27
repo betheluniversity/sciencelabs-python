@@ -1,6 +1,6 @@
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request, session
+from flask import abort, render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -20,6 +20,9 @@ class SessionView(FlaskView):
         self.course = Course()
 
     def index(self):
+        if 'Administrator' not in session['USER-ROLES'] and 'Lead Tutor' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
@@ -28,6 +31,9 @@ class SessionView(FlaskView):
 
     @route('/closed')
     def closed(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         current_alert = get_alert()
         session_tutors = self.session
@@ -35,6 +41,9 @@ class SessionView(FlaskView):
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         lead_list = self.schedule.get_registered_leads()
@@ -43,6 +52,9 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         current_alert = get_alert()
@@ -51,6 +63,9 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
@@ -66,6 +81,9 @@ class SessionView(FlaskView):
     # TODO FIX ROUTE
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
@@ -75,12 +93,18 @@ class SessionView(FlaskView):
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         student_list = self.schedule.get_registered_students()
         return render_template('session/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
+        # if 'Administrator' not in session['USER-ROLES']:
+        #     abort(403)
+
         current_alert = get_alert()
         session = self.session.get_session(session_id)
         return render_template('session/add_anonymous.html', **locals())
@@ -88,22 +112,34 @@ class SessionView(FlaskView):
     # TODO FIX ROUTE
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('session/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('session/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
+        # if 'Administrator' not in session['USER-ROLES']:
+        #     abort(403)
+
         current_alert = get_alert()
         session = self.session.get_session(session_id)
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.session.delete_session(session_id)
             set_alert('success', 'Session deleted successfully!')
@@ -114,6 +150,9 @@ class SessionView(FlaskView):
 
     @route('/save_session_edits', methods=['post'])
     def save_session_edits(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -147,6 +186,9 @@ class SessionView(FlaskView):
 
     @route('/save_student_edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             student_id = form.get('student-id')
@@ -171,6 +213,9 @@ class SessionView(FlaskView):
 
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -189,6 +234,9 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
 
     def delete_student_from_session(self, student_id, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.session.delete_student_from_session(student_id, session_id)
             set_alert('success', 'Student deleted successfully!')
@@ -197,6 +245,9 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.session.delete_tutor_from_session(tutor_id, session_id)
             set_alert('success', 'Tutor deleted successfully!')
@@ -206,6 +257,9 @@ class SessionView(FlaskView):
 
     @route('/add_student_submit', methods=['post'])
     def add_student_submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -219,6 +273,9 @@ class SessionView(FlaskView):
 
     @route('/add_anon_submit', methods=['post'])
     def add_anon_submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -232,6 +289,9 @@ class SessionView(FlaskView):
 
     @route('/add_tutor_submit', methods=['post'])
     def add_tutor_submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -251,6 +311,9 @@ class SessionView(FlaskView):
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             name = form.get('name')
@@ -283,6 +346,9 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
         self.session.start_open_session(session_id, opener_user.id)
@@ -290,17 +356,26 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_attendance(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
@@ -308,6 +383,9 @@ class SessionView(FlaskView):
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             form = request.form
             session_id = form.get('session-id')
@@ -320,6 +398,9 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:close_open_session', session_id=session_id))
 
     def restore_deleted_session(self, session_id):
+        if 'Administrator' not in session['USER-ROLES']:
+            abort(403)
+
         try:
             self.session.restore_deleted_session(session_id)
             set_alert('success', 'Session restored successfully!')
