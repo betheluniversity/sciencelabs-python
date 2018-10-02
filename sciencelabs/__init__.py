@@ -18,9 +18,6 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 
 #sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
-db = create_engine(app.config['DATABASE_KEY'])
-conn = db.connect()
-
 from sciencelabs.views import View
 from sciencelabs.sessions import SessionView
 from sciencelabs.reports import ReportView

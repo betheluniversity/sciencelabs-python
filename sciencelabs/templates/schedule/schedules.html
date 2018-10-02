@@ -41,7 +41,7 @@
                                     {{ schedule.room }}
                                 </td>
                                 <td>
-                                    <button id="show-courses" type="button" class="show-courses btn btn-primary">Show</button>
+                                    <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
                                     <div style="display:none;margin-top:10px" class="text-left">
                                         {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
                                         <ul>
@@ -54,7 +54,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
+                                    <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
                                     <div style="display:none;margin-top:10px" class="text-left">
                                         {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
@@ -67,10 +67,10 @@
                                     </div>
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
-                                       class="edit btn btn-primary">Edit</a>
-                                    <a href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
-                                       class="delete btn btn-primary">Delete</a>
+                                    <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
+                                       class="btn btn-primary">Edit</a>
+                                    <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
+                                       class="btn btn-primary">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

@@ -102,7 +102,7 @@
         </div>
         <div class="form-row">
             <div style="text-align:right;" class="form-group col-md-12">
-                <button type="submit" class="btn btn-primary" id="save-session">Save</button>
+                <button type="submit" class="btn blue btn-primary" id="save-session">Save</button>
             </div>
         </div>
     </form>
@@ -154,10 +154,10 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
-                                   class="edit btn btn-primary">Edit</a>
-                                <a href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
-                                   class="delete btn btn-primary">Delete</a>
+                                <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
+                                   class="btn btn-primary">Edit</a>
+                                <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
+                                   class="btn btn-primary">Delete</a>
                             </div>
                         </td>
                     </tr>
@@ -201,10 +201,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
-                                           class="edit btn btn-primary">Edit</a>
-                                        <a href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
-                                           class="delete btn btn-primary">Delete</a>
+                                        <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
+                                           class="btn btn-primary">Edit</a>
+                                        <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
+                                           class="btn btn-primary">Delete</a>
                                     </div>
                                 </td>
                             </tr>
@@ -216,10 +216,10 @@
         {% endfor %}
     </div>
     <div style="display: block; text-align: right;" class="btn-group">
-    <a href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
-            class="edit btn btn-primary">Add a Student</a>
+    <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
+            class="btn btn-primary">Add a Student</a>
     <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
-            class="btn btn-primary">Add Anonymous Student</a>
+            class="btn blue btn-primary">Add Anonymous Student</a>
     </div>
     <div class="header card" style="margin-top:10px;margin-bottom:10px;">
         <div class="card-body">
@@ -263,10 +263,10 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}'
-                               class="edit btn btn-primary">Edit</a>
-                            <a href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}'
-                               class="delete btn btn-primary">Delete</a>
+                            <a id="edit" href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                               class="btn btn-primary">Edit</a>
+                            <a id="delete" href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                               class="btn btn-primary">Delete</a>
                         </div>
                     </td>
                 </tr>
@@ -274,7 +274,7 @@
         </tbody>
     </table>
     <div style="text-align: right;">
-        <a href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="edit btn btn-primary">Add a Tutor</a>
+        <a id="edit" href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="btn btn-primary">Add a Tutor</a>
     </div>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
