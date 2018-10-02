@@ -11,6 +11,7 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.oracle_procs.db_functions import get_username_from_name
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class UsersView(FlaskView):
@@ -19,10 +20,10 @@ class UsersView(FlaskView):
         self.user = User()
         self.course = Course()
         self.schedule = Schedule()
+        self.slc = ScienceLabsController()
 
     def index(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         current_alert = get_alert()
         users_info = self.user.get_user_info()
@@ -30,14 +31,12 @@ class UsersView(FlaskView):
 
     @route('/search')
     def add_user(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         return render_template('users/add_user.html')
 
     def edit_user(self, user_id):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         current_alert = get_alert()
         professor = False
@@ -54,8 +53,7 @@ class UsersView(FlaskView):
 
     @route('/create/<username>/<first_name>/<last_name>')
     def select_user_roles(self, username, first_name, last_name):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         current_alert = get_alert()
         roles = self.user.get_all_roles()
@@ -66,8 +64,7 @@ class UsersView(FlaskView):
 
     @route("/search-users", methods=['post'])
     def search_users(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         form = request.form
         first_name = form.get('firstName')
@@ -77,8 +74,7 @@ class UsersView(FlaskView):
 
     @route("/deactivate_single_user/<int:user_id>")
     def deactivate_single_user(self, user_id):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         try:
             self.user.delete_user(user_id)
@@ -90,8 +86,7 @@ class UsersView(FlaskView):
 
     @route("/deactivate_users", methods=['post'])
     def deactivate_users(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         try:
             form = request.form
@@ -106,8 +101,7 @@ class UsersView(FlaskView):
 
     @route("/save_user_edits", methods=['post'])
     def save_user_edits(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         try:
             form = request.form
@@ -128,8 +122,7 @@ class UsersView(FlaskView):
 
     @route('/create_user', methods=['post'])
     def create_user(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_route(['Administrator'])
 
         try:
             form = request.form
