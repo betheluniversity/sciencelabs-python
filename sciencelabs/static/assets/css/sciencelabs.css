@@ -263,6 +263,10 @@ a.report-img:hover {
     color: black;
 }
 
+.dd-background:hover {
+    background-color: #0F2C52;
+}
+
 #edit {
     color: white !important;
     background-color: #0F2C52;
