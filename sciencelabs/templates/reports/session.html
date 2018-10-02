@@ -76,7 +76,7 @@
                                         {% if total_attendance.append(total_attendance.pop() + (attendance|length) + session.anonStudents) %}{% endif %}
                                     </td>
                                     <td>
-                                        <button id="blue" type="button" class="show-tutors btn btn-primary">Show</button>
+                                        <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                                         <div style="display:none;margin-top:10px" class="text-left">
                                             {% set tutors = session_.get_session_tutors(session.id) %}
                                             {% for tutor in tutors %}

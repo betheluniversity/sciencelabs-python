@@ -39,7 +39,7 @@
                             {{ session_info.room }}
                         </td>
                         <td>
-                            <button type="button" class="show-tutors btn btn-primary">Show</button>
+                            <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                             <div style="display:none;margin-top:10px" class="text-left">
                             {% set tutors = session_tutors.get_session_tutors(session_info.id) %}
                             {% for tutor in tutors %}
