@@ -22,7 +22,7 @@ class SessionView(FlaskView):
         self.slc = ScienceLabsController()
 
     def index(self):
-        self.slc.check_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
@@ -32,7 +32,7 @@ class SessionView(FlaskView):
 
     @route('/closed')
     def closed(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         current_alert = get_alert()
@@ -41,7 +41,7 @@ class SessionView(FlaskView):
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
@@ -51,7 +51,7 @@ class SessionView(FlaskView):
         return render_template('session/create_session.html', **locals())
 
     def deleted(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
@@ -61,7 +61,7 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
@@ -78,7 +78,7 @@ class SessionView(FlaskView):
     # TODO FIX ROUTE
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER'])
@@ -89,7 +89,7 @@ class SessionView(FlaskView):
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         student_list = self.schedule.get_registered_students()
@@ -97,7 +97,7 @@ class SessionView(FlaskView):
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         session = self.session.get_session(session_id)
@@ -106,7 +106,7 @@ class SessionView(FlaskView):
     # TODO FIX ROUTE
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
@@ -114,21 +114,21 @@ class SessionView(FlaskView):
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('session/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         session = self.session.get_session(session_id)
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.session.delete_session(session_id)
@@ -140,7 +140,7 @@ class SessionView(FlaskView):
 
     @route('/save_session_edits', methods=['post'])
     def save_session_edits(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -175,7 +175,7 @@ class SessionView(FlaskView):
 
     @route('/save_student_edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -201,7 +201,7 @@ class SessionView(FlaskView):
 
     @route('/save_tutor_edits', methods=['post'])
     def save_tutor_edits(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -221,7 +221,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
 
     def delete_student_from_session(self, student_id, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.session.delete_student_from_session(student_id, session_id)
@@ -231,7 +231,7 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.session.delete_tutor_from_session(tutor_id, session_id)
@@ -242,7 +242,7 @@ class SessionView(FlaskView):
 
     @route('/add_student_submit', methods=['post'])
     def add_student_submit(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -257,7 +257,7 @@ class SessionView(FlaskView):
 
     @route('/add_anon_submit', methods=['post'])
     def add_anon_submit(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -272,7 +272,7 @@ class SessionView(FlaskView):
 
     @route('/add_tutor_submit', methods=['post'])
     def add_tutor_submit(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -293,7 +293,7 @@ class SessionView(FlaskView):
 
     @route('/create_session_submit', methods=['post'])
     def create_session_submit(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -327,7 +327,7 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
@@ -336,14 +336,14 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_attendance(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
@@ -351,7 +351,7 @@ class SessionView(FlaskView):
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
@@ -360,7 +360,7 @@ class SessionView(FlaskView):
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
@@ -374,7 +374,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:close_open_session', session_id=session_id))
 
     def restore_deleted_session(self, session_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.session.restore_deleted_session(session_id)

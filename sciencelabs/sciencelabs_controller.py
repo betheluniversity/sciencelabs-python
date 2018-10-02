@@ -13,7 +13,7 @@ class ScienceLabsController(object):
     def get_hash(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=13))
 
-    def check_route(self, allowed_roles):
+    def check_roles_and_route(self, allowed_roles):
         count = 0
         for role in allowed_roles:
             if role not in session['USER-ROLES']:

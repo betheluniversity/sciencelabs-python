@@ -25,7 +25,7 @@ class ReportView(FlaskView):
         self.slc = ScienceLabsController()
 
     def index(self):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -34,7 +34,7 @@ class ReportView(FlaskView):
         return render_template('reports/base.html', **locals())
 
     def student(self):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -44,7 +44,7 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -59,7 +59,7 @@ class ReportView(FlaskView):
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
@@ -78,7 +78,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def semester(self):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -127,7 +127,7 @@ class ReportView(FlaskView):
 
     # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
@@ -205,7 +205,7 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         self.set_semester_selector(year, month)
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
@@ -235,7 +235,7 @@ class ReportView(FlaskView):
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         month = int(month)
         if month == 1:
@@ -299,7 +299,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_monthly_detail_csv(self, year, month):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         month = int(month)
         if month == 1:
@@ -341,7 +341,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def annual(self):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -353,7 +353,7 @@ class ReportView(FlaskView):
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         lab = ''
         for letter in app.config['LAB_TITLE'].split():
@@ -478,7 +478,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def session(self):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -490,7 +490,7 @@ class ReportView(FlaskView):
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -507,7 +507,7 @@ class ReportView(FlaskView):
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
@@ -542,7 +542,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def course(self):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -554,7 +554,7 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
@@ -568,7 +568,7 @@ class ReportView(FlaskView):
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
@@ -600,7 +600,7 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_course_session_attendance_csv(self, course_id):
-        self.slc.check_route(['Professor', 'Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]

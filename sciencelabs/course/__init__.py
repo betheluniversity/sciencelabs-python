@@ -21,13 +21,13 @@ class CourseView(FlaskView):
 
     @route('/admin/')
     def index(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
     def view_course(self, course_id):
-        self.slc.check_route(['Administrator', 'Academic Counselor'])
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
@@ -44,7 +44,7 @@ class CourseView(FlaskView):
 
     @route("/submit/", methods=['POST'])
     def submit(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
         course_string = form.get('potential_courses')
@@ -83,7 +83,7 @@ class CourseView(FlaskView):
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         course_table, user_table, semester_table = self.course.get_course(course_id)
         if course_table:

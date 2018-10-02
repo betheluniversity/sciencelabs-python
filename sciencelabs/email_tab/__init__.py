@@ -19,7 +19,7 @@ class EmailView(FlaskView):
 
     @route('/create')
     def index(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         role_list = self.user.get_all_roles()
@@ -28,7 +28,7 @@ class EmailView(FlaskView):
 
     @route('/confirm', methods=['post'])
     def send_email_confirm(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
         group_id_strings = form.getlist('groups')
@@ -51,7 +51,7 @@ class EmailView(FlaskView):
 
     @route('/send', methods=['post'])
     def send(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             # TODO: actually send email

@@ -19,7 +19,7 @@ class TermStartupView(FlaskView):
 
     @route('/1/')
     def index(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
@@ -27,26 +27,26 @@ class TermStartupView(FlaskView):
 
     @route('/2')
     def step_two(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         return render_template('term_startup/step_two.html', **locals())
 
     @route('/3')
     def step_three(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('term_startup/step_three.html')
 
     @route('/4')
     def step_four(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('term_startup/step_four.html')
 
     @route('/set_term', methods=['post'])
     def set_term(self):
-        self.slc.check_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form
