@@ -6,6 +6,7 @@ from flask_classy import FlaskView, route
 from sciencelabs.term_startup.term_startup_controller import TermStartupController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class TermStartupView(FlaskView):
@@ -14,11 +15,11 @@ class TermStartupView(FlaskView):
     def __init__(self):
         self.base = TermStartupController()
         self.schedule = Schedule()
+        self.slc = ScienceLabsController()
 
     @route('/1/')
     def index(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
@@ -26,30 +27,26 @@ class TermStartupView(FlaskView):
 
     @route('/2')
     def step_two(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         return render_template('term_startup/step_two.html', **locals())
 
     @route('/3')
     def step_three(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('term_startup/step_three.html')
 
     @route('/4')
     def step_four(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('term_startup/step_four.html')
 
     @route('/set_term', methods=['post'])
     def set_term(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             form = request.form

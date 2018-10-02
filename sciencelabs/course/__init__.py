@@ -7,6 +7,7 @@ from sciencelabs.course.course_controller import CourseController
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.oracle_procs.db_functions import get_course_is_valid, get_info_for_course
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class CourseView(FlaskView):
@@ -16,18 +17,17 @@ class CourseView(FlaskView):
         self.base = CourseController()
         self.course = Course()
         self.schedule = Schedule()
+        self.slc = ScienceLabsController()
 
     @route('/admin/')
     def index(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
     def view_course(self, course_id):
-        if 'Administrator' not in session['USER-ROLES'] and 'Academic Counselor' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
@@ -44,8 +44,7 @@ class CourseView(FlaskView):
 
     @route("/submit/", methods=['POST'])
     def submit(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
         course_string = form.get('potential_courses')
@@ -84,8 +83,7 @@ class CourseView(FlaskView):
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         course_table, user_table, semester_table = self.course.get_course(course_id)
         if course_table:

@@ -10,6 +10,7 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class ScheduleView(FlaskView):
@@ -18,10 +19,10 @@ class ScheduleView(FlaskView):
         self.schedule = Schedule()
         self.course = Course()
         self.session = Session()
+        self.slc = ScienceLabsController()
 
     def index(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
@@ -32,8 +33,7 @@ class ScheduleView(FlaskView):
 
     @route('/create')
     def create_new_schedule(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
@@ -42,8 +42,7 @@ class ScheduleView(FlaskView):
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
@@ -55,8 +54,7 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.schedule.delete_schedule(schedule_id)
@@ -67,8 +65,7 @@ class ScheduleView(FlaskView):
 
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             active_semester = self.schedule.get_active_semester()
@@ -99,8 +96,7 @@ class ScheduleView(FlaskView):
 
     @route('/create_schedule_submit', methods=['post'])
     def create_schedule_submit(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             active_semester = self.schedule.get_active_semester()

@@ -6,6 +6,7 @@ from flask_classy import FlaskView, route
 from sciencelabs.email_tab.email_controller import EmailController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class EmailView(FlaskView):
@@ -14,11 +15,11 @@ class EmailView(FlaskView):
     def __init__(self):
         self.base = EmailController()
         self.user = User()
+        self.slc = ScienceLabsController()
 
     @route('/create')
     def index(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
         role_list = self.user.get_all_roles()
@@ -27,8 +28,7 @@ class EmailView(FlaskView):
 
     @route('/confirm', methods=['post'])
     def send_email_confirm(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
         group_id_strings = form.getlist('groups')
@@ -51,8 +51,7 @@ class EmailView(FlaskView):
 
     @route('/send', methods=['post'])
     def send(self):
-        if 'Administrator' not in session['USER-ROLES']:
-            abort(403)
+        self.slc.check_roles_and_route(['Administrator'])
 
         try:
             # TODO: actually send email
