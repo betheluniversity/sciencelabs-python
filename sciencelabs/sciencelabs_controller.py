@@ -14,7 +14,6 @@ class ScienceLabsController(object):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=13))
 
     def check_roles_and_route(self, allowed_roles):
-        count = 0
         for role in allowed_roles:
             if role in session['USER-ROLES']:
                 return
