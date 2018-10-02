@@ -16,8 +16,7 @@ class ScienceLabsController(object):
     def check_roles_and_route(self, allowed_roles):
         count = 0
         for role in allowed_roles:
-            if role not in session['USER-ROLES']:
-                count += 1
-        if count == len(allowed_roles):
-            abort(403)
+            if role in session['USER-ROLES']:
+                return
+        abort(403)
 
