@@ -16,6 +16,6 @@ class ScienceLabsController(object):
     def check_roles_and_route(self, allowed_roles):
         for role in allowed_roles:
             if role in session['USER-ROLES']:
-                return
+                return True
         abort(403)
 
