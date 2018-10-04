@@ -87,3 +87,39 @@
     </div>
 
 {% endblock %}
+
+{% block footer %}
+    <div class="container">
+        <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal">Icon Attribution</a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h2 id="modalTitle">Icon Attribution</h2>
+                        <ul>
+                            <li>Teacher designed by <a href="http://www.thenounproject.com/visualiaBCN">visualiaBCN</a>
+                                from the <a href="http://www.thenounproject.com">Noun Project</a></li>
+                            <li>Calendar designed by <a href="http://www.thenounproject.com/edward">Edward Boatman</a>
+                                from the <a href="http://www.thenounproject.com">Noun Project</a></li>
+                            <li>Classroom designed by
+                                <a href="http://www.thenounproject.com/rafaleao">Rafael Farias Leão</a> from the
+                                <a href="http://www.thenounproject.com">Noun Project</a></li>
+                            <li>Student designed by <a href="http://www.thenounproject.com/jerrywang.ntu">Jerry Wang</a>
+                                from the <a href="http://www.thenounproject.com">Noun Project</a></li>
+                            <li>Report Card designed by <a href="http://thenounproject.com/Iconathon1">Iconathon</a>
+                                from the <a href="http://www.thenounproject.com">Noun Project</a></li>
+                            <li>Drawer designed by <a href="http://thenounproject.com/rigo/">Rigo Peter</a> from the
+                                <a href="http://www.thenounproject.com">Noun Project</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{ super() }}{% endblock %}
