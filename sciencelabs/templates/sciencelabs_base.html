@@ -79,12 +79,9 @@
 
         <div class="footer container card margins">
             <div class="card-body">
-        {% block footer %}
-            <div style="float: right;">
-            <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>
-            </div>
-{#            <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>#}
-        {% endblock %}
+                {% block footer %}
+                    <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>
+                {% endblock %}
             </div>
         </div>
 
