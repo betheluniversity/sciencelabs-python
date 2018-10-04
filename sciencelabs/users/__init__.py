@@ -11,9 +11,12 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.oracle_procs.db_functions import get_username_from_name
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import requires_auth
 
 
 class UsersView(FlaskView):
+    route_base = 'user'
+
     def __init__(self):
         self.base = UsersController()
         self.user = User()
@@ -117,3 +120,12 @@ class UsersView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to add user: ' + str(error))
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
+
+    @requires_auth
+    @route('/cron_populate_user_courses', methods=['get'])
+    def cron_populate_user_courses(self):
+        try:
+            self.user.populate_user_courses_cron()
+            return 'success'
+        except Exception as error:
+            return 'failed: ' + str(error)

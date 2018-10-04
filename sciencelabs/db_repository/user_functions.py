@@ -195,3 +195,6 @@ class User:
             current_user = self.get_user(user_id)
             users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
         return users_to_email
+
+    def populate_user_courses_cron(self):
+        print('success!!!')

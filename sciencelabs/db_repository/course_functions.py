@@ -231,3 +231,6 @@ class Course:
                 session.delete(courseviewer)
                 session.commit()
 
+    def populate_courses_cron(self):
+        print("success!!!")
+
