@@ -77,10 +77,13 @@
         <div class="margins">{% block body_content %}{% endblock %}</div>
         {% block scripts %}{% endblock %}
 
-        <div class="footer card margins">
+        <div class="footer container card margins">
             <div class="card-body">
         {% block footer %}
-                    <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>
+            <div style="float: right;">
+            <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>
+            </div>
+{#            <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>#}
         {% endblock %}
             </div>
         </div>
