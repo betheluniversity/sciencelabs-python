@@ -41,13 +41,13 @@
     <div class="header card-body" style="background-color: white; padding: 0px">
         <div class="row row-group">
         {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
-        <a class="report-img col-sm-4 col-group" href="student">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:student') }}">
         <img src="{{ url_for('static', filename='img/student.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Student Icon">
             <div>
                 <label>Student</label>
             </div>
         </a>
-        <a class="report-img col-sm-4 col-group" href="course">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:course') }}">
         <img src="{{ url_for('static', filename='img/course.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Teacher Icon">
             <div>
                 <label>Course</label>
@@ -55,7 +55,7 @@
         </a>
         {% endif %}
         {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
-        <a class="report-img col-sm-4 col-group" href="session">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:session') }}">
         <img src="{{ url_for('static', filename='img/session.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Classroom Icon">
             <div>
                 <label>Session</label>
@@ -63,19 +63,19 @@
         </a>
         </div>
             <div class="row row-group">
-        <a class="report-img col-sm-4 col-group" href="semester">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:semester') }}">
         <img src="{{ url_for('static', filename='img/semester.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Report Card Icon">
             <div>
                 <label>Term</label>
             </div>
         </a>
-        <a class="report-img col-sm-4 col-group" href="month">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:month', year=year, month=month) }}">
         <img src="{{ url_for('static', filename='img/month.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Calendar Icon">
             <div>
                 <label>Monthly</label>
             </div>
         </a>
-        <a class="report-img col-sm-4 col-group" href="annual">
+        <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:annual') }}">
         <img src="{{ url_for('static', filename='img/cumulative.svg') }}" style="max-height: 60px; max-width: 60px; margin-top: 50px;" alt="Drawer Icon">
             <div>
                 <label>Cumulative</label>
@@ -89,7 +89,7 @@
 {% endblock %}
 
 {% block footer %}
-    <div class="container">
+    <div class="text-left container">
         <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal">Icon Attribution</a>
 
         <!-- Modal -->
