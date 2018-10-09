@@ -3,7 +3,9 @@ from sqlalchemy import func, distinct, orm
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
-    Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, SessionCourseCodes_Table, CourseViewer_Table, SessionCourses_Table
+    Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
+    SessionCourseCodes_Table, CourseViewer_Table, SessionCourses_Table
+from sciencelabs.oracle_procs.db_functions import student_course_list
 
 
 class User:
@@ -196,5 +198,53 @@ class User:
             users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
         return users_to_email
 
+#################### The following methods are all for the populate user courses cron ####################
+
+    def get_all_active_students(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student').all()
+
+    def get_lab_courses(self, student_term_courses):
+        student_term_course_codes = []
+        for key in student_term_courses:
+            student_term_course_codes.append(student_term_courses[key]['subj_code'] + ' '
+                                             + student_term_courses[key]['crse_numb'] + ' '
+                                             + student_term_courses[key]['section'])
+        lab_courses = session.query(Course_Table).filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1).all()
+        lab_course_codes = []
+        for course in lab_courses:
+            lab_course_codes.append(course.dept + ' ' + course.course_num + ' ' + str(course.section))
+        student_lab_courses = []
+        for student_course in student_term_course_codes:
+            if student_course in lab_course_codes:
+                student_lab_courses.append(student_course)
+        return student_lab_courses
+
+    def get_course_by_course_code(self, course_code):
+        course_split = course_code.split()
+        course_dept = course_split[0]
+        course_num = course_split[1]
+        course_section = course_split[2]
+        return session.query(Course_Table).filter(Course_Table.dept == course_dept)\
+            .filter(Course_Table.course_num == course_num).filter(Course_Table.section == course_section)\
+            .filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).one()
+
     def populate_user_courses_cron(self):
-        print('success!!!')
+        students = self.get_all_active_students()
+        for student in students:
+            student_courses = student_course_list(student.username)  # Get courses student are in currently from banner
+            student_lab_courses = self.get_lab_courses(student_courses)
+            for course in student_lab_courses:
+                lab_course = self.get_course_by_course_code(course)
+                if session.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
+                        .filter(user_course_Table.course_id == lab_course.id).one_or_none():  # This check is to ensure an entry doesn't already exist
+                    continue
+                else:
+                    student_course_entry = user_course_Table(user_id=student.id, course_id=lab_course.id)
+                    session.add(student_course_entry)
+        session.commit()
+
+##########################################################################################################

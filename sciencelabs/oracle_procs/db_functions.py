@@ -47,7 +47,7 @@ def get_results(result, label="", type=None):
     return ret
 
 
-@try_db_method_twice
+# @try_db_method_twice
 def portal_profile(username):
     try:
         call_cursor_bw = conn_bw.cursor()
@@ -96,3 +96,18 @@ def get_info_for_course(sbj, code, date_offset=0):
     result = result_cursor.fetchall()
 
     return get_results(result)
+
+
+# @try_db_method_twice
+def student_course_list(username, term_code=None):
+    try:
+        call_cursor_bw = conn_bw.cursor()
+        result_cursor_bw = conn_bw.cursor()
+
+        call_cursor_bw.callproc('bth_portal_channel_api.class_list_stu', (username, term_code, result_cursor_bw,))
+        result = result_cursor_bw.fetchall()
+        results = get_results(result)
+
+        return results
+    except:
+        return abort(503)
