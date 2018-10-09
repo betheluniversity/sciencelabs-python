@@ -1,5 +1,5 @@
 # Packages
-from flask import abort, render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
