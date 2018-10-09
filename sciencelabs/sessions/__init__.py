@@ -1,6 +1,6 @@
 # Packages
 from datetime import datetime
-from flask import abort, render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session
 from flask_classy import FlaskView, route
 
 # Local
