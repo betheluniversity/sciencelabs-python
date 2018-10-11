@@ -262,6 +262,11 @@ ul.no-margin {
     list-style-type: none;
 }
 
+.no-margin-padding {
+    padding: 0px;
+    margin: 0px;
+}
+
 .report-img {
     top: 0px !important;
 }
