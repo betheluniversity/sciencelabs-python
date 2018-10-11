@@ -2,22 +2,29 @@ a {
     color: #0069AA;
 }
 
-select {
-    width: 100%;
+a.disabled:hover {
+    color: black;
 }
 
-label {
-    width: 100%;
-
+a:hover {
+    filter: brightness(85%);
 }
 
-input {
-    width: 100%;
-    padding: 8px;
+a.month-nav:hover {
+    color: black;
 }
 
-nav a {
-    color: gray;
+a.nav-link.button {
+    color: #FFC600 !important;
+}
+
+a.report-img:hover {
+    color: white;
+    background-color: #0F2C52;
+}
+
+a.semester-menu {
+    background-color: white;
 }
 
 body {
@@ -33,26 +40,12 @@ body {
   cursor: auto;
 }
 
-p {
-    margin-bottom: 1.25rem;
-    line-height: 1.6;
+div.centered {
+    text-align:center;
 }
 
-a:hover {
-    filter: brightness(85%);
-}
-
-div.info {
-    background-color: #f2f2f2;
-    border-color: #d8d8d8;
-}
-
-div.sub-info {
-    margin-bottom: 20px;
-}
-
-a.nav-link.button {
-    color: #FFC600 !important;
+div.dropdown {
+    cursor: pointer;
 }
 
 div.footer {
@@ -61,15 +54,16 @@ div.footer {
     text-align: right;
 }
 
-div.dropdown {
-    cursor: pointer;
-}
-
 div.header {
     background-color: #eaf1fb;
     text-align: left;
     border-color: #bdd4f3;
     padding: 0px;
+}
+
+div.info {
+    background-color: #f2f2f2;
+    border-color: #d8d8d8;
 }
 
 div.row-group {
@@ -80,28 +74,43 @@ div.row-group {
     margin: 0px
 }
 
-ul.no-margin {
-    margin: 0px;
-}
-
-a.disabled:hover {
-    color: black;
-}
-
-a.month-nav:hover {
-    color: black;
-}
-
 div.semester-selector {
     direction: rtl;
 }
 
-div.centered {
-    text-align:center;
+div.sub-info {
+    margin-bottom: 20px;
 }
 
 form.create-session-form {
     margin-top: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+}
+
+label {
+    width: 100%;
+
+}
+
+nav a {
+    color: gray;
+}
+
+p {
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+
+select {
+    width: 100%;
+}
+
+span.tag a {
+    color: #0069aa !important;
 }
 
 span.tag {
@@ -110,17 +119,8 @@ span.tag {
     color: #0f2c52 !important;
 }
 
-span.tag a {
-    color: #0069aa !important;
-}
-
-a.semester-menu {
-    background-color: white;
-}
-
-a.report-img:hover {
-    color: white;
-    background-color: #0F2C52;
+ul.no-margin {
+    margin: 0px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -151,54 +151,6 @@ a.report-img:hover {
     }
 }
 
-.btn-primary {
-    background-color: #0069AA;
-}
-
-.report-img {
-    top: 0px !important;
-}
-
-.button-border {
-    border-radius: .25rem !important;
-}
-
-.chosen-container {
-    min-width: 100%;
-}
-
-.icon-margins {
-    margin-top: 50px;
-}
-
-.side-borders {
-    border-left: 2px solid #000000 !important;
-    border-right: 2px solid #000000 !important;
-}
-
-.no-bullet {
-    list-style-type: none;
-}
-
-.hidden {
-    display: none;
-}
-
-.big-button {
-    font-size: 25px;
-    padding: 15px 40px;
-}
-
-.margins {
-    width: 100%;
-    margin: 20px auto;
-    max-width: 70rem;
-}
-
-.month-nav {
-    color: #6c757d;
-}
-
 .active {
     max-height: 30px;
     background-color: #0F2C52;
@@ -207,29 +159,33 @@ a.report-img:hover {
     padding: 3px 16px
 }
 
-.disabled {
-    max-height: 30px;
-    padding: 3px 16px;
+.add-user {
+    float: right;
 }
 
-.nav-bar-active {
-    background-color: #0F2C52;
+.background-blue {
+    background-color: #0069AA;
+}
+
+.big-button {
+    font-size: 25px;
+    padding: 15px 40px;
+}
+
+.blue:hover {
+    background-color: #005488;
+}
+
+.btn-primary {
+    background-color: #0069AA;
+}
+
+.button-border {
+    border-radius: .25rem !important;
 }
 
 .button-curved {
     border-radius: .25rem !important;
-}
-
-.no-border-top {
-    border-top: none !important;
-}
-
-.col-group {
-    padding: 0px;
-    margin: 0px;
-    text-align: center;
-    color: white;
-    top: 35%;
 }
 
 .button-labels {
@@ -242,8 +198,16 @@ a.report-img:hover {
     white-space: nowrap;
 }
 
-.blue:hover {
-    background-color: #005488;
+.chosen-container {
+    min-width: 100%;
+}
+
+.col-group {
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    color: white;
+    top: 35%;
 }
 
 .csv-button.btn.btn-primary {
@@ -255,14 +219,55 @@ a.report-img:hover {
    border-color: #0c2342;
 }
 
-.user-search-result {
-    border: 1px dotted grey;
-    padding: 10px;
-    float: left;
+.dd-background:hover {
+    background-color: #0F2C52;
 }
 
-.add-user {
-    float: right;
+.disabled {
+    max-height: 30px;
+    padding: 3px 16px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+.icon-margins {
+    margin-top: 50px;
+}
+
+.margins {
+    width: 100%;
+    margin: 20px auto;
+    max-width: 70rem;
+}
+
+.month-nav {
+    color: #6c757d;
+}
+
+.nav-bar-active {
+    background-color: #0F2C52;
+}
+
+.no-border-top {
+    border-top: none !important;
+}
+
+.no-bullet {
+    list-style-type: none;
+}
+
+.report-img {
+    top: 0px !important;
+}
+.side-borders {
+    border-left: 2px solid #000000 !important;
+    border-right: 2px solid #000000 !important;
 }
 
 .sign-in {
@@ -271,35 +276,27 @@ a.report-img:hover {
     color: black;
 }
 
+.user-search-result {
+    border: 1px dotted grey;
+    padding: 10px;
+    float: left;
+}
+
 .yellow {
     color: #FFC600 !important;
 }
 
-.background-blue {
-    background-color: #0069AA;
-}
-
-.dd-background:hover {
+#darkblue {
     background-color: #0F2C52;
 }
 
-#edit {
+#deactivate-users {
     color: white !important;
-    background-color: #0F2C52;
-    border-color: #0F2C52;
+    background-color: #DA1736;
+    border-color: #DA1736;
 }
 
-#edit:hover {
-    filter: brightness(85%);
-}
-
-#student-views {
-    color: white !important;
-    background-color: #0F2C52;
-    border-color: #0F2C52;
-}
-
-#student-views:hover {
+#deactivate-users:hover {
     filter: brightness(85%);
 }
 
@@ -313,32 +310,38 @@ a.report-img:hover {
     filter:brightness(85%);
 }
 
-#show-hide {
+#edit {
+    color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
 }
 
-#deactivate-users {
-    color: white !important;
-    background-color: #DA1736;
-    border-color: #DA1736;
+#edit:hover {
+    filter: brightness(85%);
 }
 
-#deactivate-users:hover {
-    filter: brightness(85%);
+#gray {
+    color: #333333;
+    background-color: #BDBCB0;
 }
 
 #red {
     background-color: #DA1736;
 }
 
-#darkblue {
+#show-hide {
     background-color: #0F2C52;
+    border-color: #0F2C52;
 }
 
-#gray {
-    color: #333333;
-    background-color: #BDBCB0;
+#student-views {
+    color: white !important;
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#student-views:hover {
+    filter: brightness(85%);
 }
 
 #yellow {
