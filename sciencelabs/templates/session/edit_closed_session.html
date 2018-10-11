@@ -101,7 +101,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div style="text-align:right;" class="form-group col-md-12">
+            <div class="form-group col-md-12 text-right">
                 <button type="submit" class="btn blue btn-primary" id="save-session">Save</button>
             </div>
         </div>
@@ -165,7 +165,7 @@
             </tbody>
             <tr>
                 <th colspan="4">Anonymous Students</th>
-                <td style="text-align:right;">{{ session_info.anonStudents }}</td>
+                <td class="text-right">{{ session_info.anonStudents }}</td>
             </tr>
         </table>
     </div>
@@ -215,7 +215,7 @@
             <br>
         {% endfor %}
     </div>
-    <div style="display: block; text-align: right;" class="btn-group">
+    <div style="display: block;" class="btn-group text-right">
     <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
             class="btn btn-primary">Add a Student</a>
     <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
@@ -273,7 +273,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <div style="text-align: right;">
+    <div class="text-right">
         <a id="edit" href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="btn btn-primary">Add a Tutor</a>
     </div>
 
