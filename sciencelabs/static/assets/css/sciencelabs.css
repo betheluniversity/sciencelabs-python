@@ -220,6 +220,10 @@ a.report-img:hover {
     border-radius: .25rem !important;
 }
 
+.no-border-top {
+    border-top: none !important;
+}
+
 .col-group {
     padding: 0px;
     margin: 0px;
