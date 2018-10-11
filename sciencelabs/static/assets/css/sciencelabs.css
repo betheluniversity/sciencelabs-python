@@ -270,6 +270,12 @@ ul.no-margin {
 .report-img {
     top: 0px !important;
 }
+
+.right-side-borders
+{
+    border-right: 2px solid #000000 !important;
+}
+
 .side-borders {
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
