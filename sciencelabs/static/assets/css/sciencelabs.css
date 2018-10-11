@@ -167,6 +167,10 @@ a.report-img:hover {
     min-width: 100%;
 }
 
+.icon-margins {
+    margin-top: 50px;
+}
+
 .side-borders {
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
