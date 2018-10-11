@@ -267,6 +267,14 @@ a.report-img:hover {
     color: black;
 }
 
+.yellow {
+    color: #FFC600 !important;
+}
+
+.background-blue {
+    background-color: #0069AA;
+}
+
 .dd-background:hover {
     background-color: #0F2C52;
 }

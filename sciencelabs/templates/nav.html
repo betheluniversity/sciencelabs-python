@@ -1,7 +1,7 @@
 {% macro render(title) %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0px 10px; background-color: #0069AA;">
-        <a class="navbar-brand" href="{{ url_for('View:index') }}" style="color:#FFC600;">{{ title }}</a>
+    <nav class="navbar navbar-expand-lg navbar-dark background-blue" style="padding: 0px 10px;">
+        <a class="navbar-brand yellow" href="{{ url_for('View:index') }}">{{ title }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -52,12 +52,12 @@
                 {% endif %}
             </ul>
             <div class="form-inline nav-item dropdown">
-                <a class="nav-link dd-background dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false" style="color:#FFC600;">
+                <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
                     {{ session['NAME'] }}</a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color: #0069AA;">
-                    <a class="dropdown-item dd-background" href="{{ url_for('ProfileView:index') }}" style="color:#FFC600;">My Profile</a>
-                    <a class="dropdown-item dd-background" href="{{ url_for('logout') }}" style="color:#FFC600;">Logout</a>  {# TODO: CAS Authentication #}
+                <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
+                    <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
                 </div>
             </div>
         </div>
