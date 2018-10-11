@@ -126,7 +126,7 @@
                     <div class="form-group col-md-12">
                         <h3 id="show-hide-text">Student Attendance by Name</h3>
                         <div class="form-group col-md-12">
-                            <table id="table"  class="table table-striped table-bordered" style="width:100%">
+                            <table id="table"  class="table table-striped table-bordered">
                                 <thead>
                                 <tr>
                                     <th>Name</th>
@@ -174,7 +174,7 @@
                             </table>
                             {% for course in session_courses %}
                                 <p class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</b></p>
-                                <table id="{{ course.course_num }}" class="hidden table table-striped table-bordered" style="width:100%">
+                                <table id="{{ course.course_num }}" class="hidden table table-striped table-bordered">
                                     <thead>
                                     <th>Name</th>
                                     <th>Time In</th>

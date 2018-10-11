@@ -113,7 +113,7 @@
     </div>
     <button id="student-views" type="button" class="edit btn btn-primary" style="margin-bottom:10px;">View by Course</button>
     <div id="view-by-name">
-        <table id="edit-student-table-by-name" class="table table-striped table-bordered" style="width:100%">
+        <table id="edit-student-table-by-name" class="table table-striped table-bordered">
             <thead>
                 <th>Name</th>
                 <th>Time In</th>
@@ -173,7 +173,7 @@
     <div id="view-by-course">
         {% for course in session_courses %}
             <h5><strong>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</strong></h5>
-            <table class="course-table table table-striped table-bordered" style="width:100%">
+            <table class="course-table table table-striped table-bordered">
                 <thead>
                     <th>Name</th>
                     <th>Time In</th>
@@ -226,7 +226,7 @@
             <p class="card-text">Edit Tutor Attendance</p>
         </div>
     </div>
-    <table id="edit-tutor-table" class="table table-striped table-bordered" style="width:100%">
+    <table id="edit-tutor-table" class="table table-striped table-bordered">
         <thead>
             <th>Name</th>
             <th>Time In</th>
