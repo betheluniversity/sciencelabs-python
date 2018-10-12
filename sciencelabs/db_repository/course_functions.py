@@ -1,9 +1,16 @@
+import requests
+import hmac
+import hashlib
+
 from datetime import datetime, timedelta
 from sqlalchemy import orm
+from flask import json
 
+from sciencelabs import app
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
+from sciencelabs.oracle_procs.db_functions import get_course_is_valid, get_info_for_course
 
 class Course:
 
@@ -232,5 +239,24 @@ class Course:
                 session.commit()
 
     def populate_courses_cron(self):
-        print("success!!!")
+        active_courses = session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
+        for course in active_courses:
+            print(course.underived)
+            if get_course_is_valid(course.dept, course.courseNum):
+                print(get_info_for_course(course.dept, course.courseNum))
+        if get_course_is_valid('ABC', '123'):
+            print('Valid:', get_info_for_course('ABC', '123'))
+        else:
+            print('Invalid:', get_info_for_course('ABC', '123'))
+
+            # TODO: WSAPI stuff that I can't figure out...
+            # url = 'https://wsapi.bethel.edu/course/info/%s/%s' % (course.dept, course.courseNum)
+            # request = requests.Request('GET', url)
+            # prepped = request.prepare()
+            # signature = hmac.new(bytes(app.config['WSAPI_SECRET'], 'utf-8'), prepped.body, digestmod=hashlib.sha512)
+            # prepped.headers['Sign'] = signature.hexdigest()
+            # with requests.Session() as s:
+            #     r = s.send(prepped)
+            # course_info = json.loads(r.content)
+            # print(course_info)
 

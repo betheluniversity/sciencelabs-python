@@ -200,12 +200,6 @@ class User:
 
 #################### The following methods are all for the populate user courses cron ####################
 
-    def get_all_active_students(self):
-        return session.query(User_Table).filter(User_Table.deletedAt == None)\
-            .filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == Role_Table.id)\
-            .filter(Role_Table.name == 'Student').all()
-
     def get_lab_courses(self, student_term_courses):
         student_term_course_codes = []
         for key in student_term_courses:
@@ -224,17 +218,21 @@ class User:
         return student_lab_courses
 
     def get_course_by_course_code(self, course_code):
-        course_split = course_code.split()
-        course_dept = course_split[0]
-        course_num = course_split[1]
-        course_section = course_split[2]
+        course_info = course_code.split()
+        course_dept = course_info[0]
+        course_num = course_info[1]
+        course_section = course_info[2]
         return session.query(Course_Table).filter(Course_Table.dept == course_dept)\
             .filter(Course_Table.course_num == course_num).filter(Course_Table.section == course_section)\
             .filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).one()
 
     def populate_user_courses_cron(self):
-        students = self.get_all_active_students()
-        for student in students:
+        active_students = session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student').all()
+
+        for student in active_students:
             student_courses = student_course_list(student.username)  # Get courses student are in currently from banner
             student_lab_courses = self.get_lab_courses(student_courses)
             for course in student_lab_courses:

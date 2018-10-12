@@ -21,6 +21,7 @@ class SessionView(FlaskView):
         self.course = Course()
 
     def index(self):
+        self.course.populate_courses_cron()
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
