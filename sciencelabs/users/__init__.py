@@ -129,3 +129,12 @@ class UsersView(FlaskView):
             return 'success'
         except Exception as error:
             return 'failed: ' + str(error)
+
+    @requires_auth
+    @route('/cron_populate_courses', methods=['get'])
+    def cron_populate_courses(self):
+        try:
+            self.user.populate_courses_cron()
+            return 'success'
+        except Exception as error:
+            return 'failed: ' + str(error)

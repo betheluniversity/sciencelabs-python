@@ -87,12 +87,3 @@ class CourseView(FlaskView):
             self.course.delete_course(course_table, user_table)
 
         return redirect(url_for('CourseView:index'))
-
-    @requires_auth
-    @route('/cron_populate_courses', methods=['get'])
-    def cron_populate_courses(self):
-        try:
-            self.course.populate_courses_cron()
-            return 'success'
-        except Exception as error:
-            return 'failed: ' + str(error)

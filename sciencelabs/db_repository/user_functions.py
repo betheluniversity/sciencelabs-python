@@ -5,7 +5,7 @@ from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
     SessionCourseCodes_Table, CourseViewer_Table, SessionCourses_Table
-from sciencelabs.oracle_procs.db_functions import student_course_list
+from sciencelabs.oracle_procs.db_functions import student_course_list, get_info_for_course, get_course_is_valid
 
 
 class User:
@@ -198,7 +198,7 @@ class User:
             users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
         return users_to_email
 
-#################### The following methods are all for the populate user courses cron ####################
+# ################### The following methods are all for the cron jobs for this project ################### #
 
     def get_lab_courses(self, student_term_courses):
         student_term_course_codes = []
@@ -227,22 +227,50 @@ class User:
             .filter(Course_Table.semester_id == Semester_Table.id).filter(Semester_Table.active == 1).one()
 
     def populate_user_courses_cron(self):
+        # get all active students
         active_students = session.query(User_Table).filter(User_Table.deletedAt == None)\
             .filter(User_Table.id == user_role_Table.user_id)\
             .filter(user_role_Table.role_id == Role_Table.id)\
             .filter(Role_Table.name == 'Student').all()
 
+        # this block gets student courses from banner and checks if it is valid, exists, and if not it creates it.
         for student in active_students:
-            student_courses = student_course_list(student.username)  # Get courses student are in currently from banner
+            student_courses = student_course_list(student.username)
+            print(student_courses)
             student_lab_courses = self.get_lab_courses(student_courses)
             for course in student_lab_courses:
                 lab_course = self.get_course_by_course_code(course)
-                if session.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
-                        .filter(user_course_Table.course_id == lab_course.id).one_or_none():  # This check is to ensure an entry doesn't already exist
-                    continue
-                else:
-                    student_course_entry = user_course_Table(user_id=student.id, course_id=lab_course.id)
-                    session.add(student_course_entry)
-        session.commit()
+                print(get_info_for_course(lab_course.dept, lab_course.course_num))
+
+        #         if session.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
+        #                 .filter(user_course_Table.course_id == lab_course.id).one_or_none():
+        #             continue
+        #         else:
+        #             student_course_entry = user_course_Table(user_id=student.id, course_id=lab_course.id)
+        #             session.add(student_course_entry)
+        # session.commit()
+
+    # This probably doesn't belong in this file, but it shares a lot of logic with the other cron job above
+    def populate_courses_cron(self):
+        active_courses = session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
+        for course in active_courses:
+            print(course.underived)
+            if get_course_is_valid(course.dept, course.courseNum):
+                print(get_info_for_course(course.dept, course.courseNum))
+        if get_course_is_valid('ABC', '123'):
+            print('Valid:', get_info_for_course('ABC', '123'))
+        else:
+            print('Invalid:', get_info_for_course('ABC', '123'))
+
+            # TODO: WSAPI stuff that I can't figure out...
+            # url = 'https://wsapi.bethel.edu/course/info/%s/%s' % (course.dept, course.courseNum)
+            # request = requests.Request('GET', url)
+            # prepped = request.prepare()
+            # signature = hmac.new(bytes(app.config['WSAPI_SECRET'], 'utf-8'), prepped.body, digestmod=hashlib.sha512)
+            # prepped.headers['Sign'] = signature.hexdigest()
+            # with requests.Session() as s:
+            #     r = s.send(prepped)
+            # course_info = json.loads(r.content)
+            # print(course_info)
 
 ##########################################################################################################
