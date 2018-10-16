@@ -262,6 +262,10 @@ ul.no-margin {
     list-style-type: none;
 }
 
+.no-decoration {
+    text-decoration: none !important;
+}
+
 .no-margin-padding {
     padding: 0px;
     margin: 0px;

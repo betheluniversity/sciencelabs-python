@@ -38,7 +38,7 @@
                             {% endfor %}
                         {% for date in dates|sort %}
                             {% if date %}
-                                <a style="text-decoration: none;" href="#{{ months[date|int - 1] }}">{{ months[date|int - 1] }}</a>&emsp;
+                                <a class="no-decoration" href="#{{ months[date|int - 1] }}">{{ months[date|int - 1] }}</a>&emsp;
                             {% endif %}
                         {% endfor %}
                         </p>
