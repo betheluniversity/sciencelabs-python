@@ -25,7 +25,7 @@
                         <div class="form-group col-md-12">
                             <label for="roles">Roles</label>
                             {% for role in roles %}
-                                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
                                            value="{{ role.id }}" name="roles">
                                     <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
