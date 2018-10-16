@@ -250,6 +250,10 @@ ul.no-margin {
     max-width: 70rem;
 }
 
+.margin-top-10 {
+    margin-top: 10px;
+}
+
 .month-nav {
     color: #6c757d;
 }

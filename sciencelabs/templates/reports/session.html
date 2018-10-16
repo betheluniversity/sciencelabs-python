@@ -77,7 +77,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
-                                        <div style="display: none; margin-top:10px" class="text-left">
+                                        <div style="display: none;" class="text-left margin-top-10">
                                             {% set tutors = session_.get_session_tutors(session.id) %}
                                             {% for tutor in tutors %}
                                                 {{ tutor.firstName }} {{ tutor.lastName }}

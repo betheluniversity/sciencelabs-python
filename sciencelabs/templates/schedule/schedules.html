@@ -42,7 +42,7 @@
                                 </td>
                                 <td>
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
-                                    <div style="display: none ;margin-top: 10px" class="text-left">
+                                    <div style="display: none;" class="text-left margin-top-10">
                                         {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
                                         <ul>
                                             {% for course in courses %}
@@ -55,7 +55,7 @@
                                 </td>
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
-                                    <div style="display: none; margin-top: 10px" class="text-left">
+                                    <div style="display: none;" class="text-left margin-top-10">
                                         {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
                                         {% if tutor.isLead %}
