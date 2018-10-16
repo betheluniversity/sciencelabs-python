@@ -176,6 +176,10 @@ ul.no-margin {
     background-color: #005488;
 }
 
+.border-white {
+    border-color: white;
+}
+
 .btn-primary {
     background-color: #0069AA;
 }
