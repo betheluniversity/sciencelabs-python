@@ -53,7 +53,7 @@
                 <td>
                     <div class="btn-group">
                         <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">View/Edit Session</a>
-                        <a href='' id="darkblue" class="btn btn-primary border-white">Restore</a>
+                        <a href='{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">Restore</a>
                     </div>
                 </td>
             </tr>
