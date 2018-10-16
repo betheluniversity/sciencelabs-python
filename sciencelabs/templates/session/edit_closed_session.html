@@ -56,7 +56,7 @@
                     {% set leads = [] %}
                     {% for lead in lead_list %}
                         <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
-                        <p style="display: none;">{{ leads.append(lead) }}</p>
+                        <p>{{ leads.append(lead) }}</p>
                     {% endfor %}
                 </select>
             </div>
@@ -106,12 +106,12 @@
             </div>
         </div>
     </form>
-    <div class="header card" style="margin-bottom:10px;">
+    <div class="header card margin-bottom-10">
         <div class="card-body">
             <p class="card-text">Edit Student Attendance</p>
         </div>
     </div>
-    <button id="student-views" type="button" class="edit btn btn-primary" style="margin-bottom:10px;">View by Course</button>
+    <button id="student-views" type="button" class="edit btn btn-primary margin-bottom-10">View by Course</button>
     <div id="view-by-name">
         <table id="edit-student-table-by-name" class="table table-striped table-bordered">
             <thead>
@@ -221,7 +221,7 @@
     <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
             class="btn blue btn-primary">Add Anonymous Student</a>
     </div>
-    <div class="header card" style="margin-top:10px;margin-bottom:10px;">
+    <div class="header card margin-top-10 margin-bottom-10">
         <div class="card-body">
             <p class="card-text">Edit Tutor Attendance</p>
         </div>

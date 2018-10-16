@@ -41,7 +41,12 @@ class Schedule:
             .all()
 
     def get_anon_student_attendance_info(self, semester_id):
-        return session.query(Session_Table, Schedule_Table).filter(Session_Table.schedule_id == Schedule_Table.id).filter(Session_Table.startTime).filter(Session_Table.deletedAt == None).filter(Session_Table.semester_id == semester_id).all()
+        return session.query(Session_Table, Schedule_Table)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Session_Table.startTime)\
+            .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.semester_id == semester_id)\
+            .all()
 
     def get_session_attendance(self, semester_id):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \

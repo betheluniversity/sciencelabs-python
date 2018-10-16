@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body btn-group">
-            <p style="margin: 0px" class="card-text">{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</p>
+            <p class="card-text">{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</p>
         </div>
     </div>
 {% endblock %}
@@ -121,7 +121,7 @@
                         <p>{{ session_info.comments }}</p>
                     </div>
                 </div>
-                <button id="show-hide" style="margin-bottom: 20px;" type="button" class="big-button edit btn-primary">View by Course</button>
+                <button id="show-hide" type="button" class="big-button edit btn-primary margin-bottom-20">View by Course</button>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <h3 id="show-hide-text">Student Attendance by Name</h3>

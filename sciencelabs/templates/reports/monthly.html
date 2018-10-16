@@ -13,14 +13,14 @@
                 {% for session in sessions %}
                     {% if ((session.date|string)[5:7]) not in dates %}
                         {% if ((session.date|string)[5:7]) %}
-                        <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
-                        <p style="display: none;">{{ year.append((session.date|string)[:4]) }}</p>
+                        <p class="no-display">{{ dates.append((session.date|string)[5:7]) }}</p>
+                        <p class="no-display">{{ year.append((session.date|string)[:4]) }}</p>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             {% for date in dates|sort %}
                 {% if date %}
-                    <a style="text-decoration: none" class="month-nav {{ 'active' if ((year[loop.index0]|string) + '/' + ((dates|sort)[loop.index0]|int)|string) in request.path else 'disabled'}}" href="{{ url_for('ReportView:month', year=year[loop.index0], month=(dates|sort)[loop.index0]|int) }}">{{ months[date|int - 1][:3] }}</a>&emsp;
+                    <a class="no-decoration month-nav {{ 'active' if ((year[loop.index0]|string) + '/' + ((dates|sort)[loop.index0]|int)|string) in request.path else 'disabled'}}" href="{{ url_for('ReportView:month', year=year[loop.index0], month=(dates|sort)[loop.index0]|int) }}">{{ months[date|int - 1][:3] }}</a>&emsp;
                 {% endif %}
             {% endfor %}
             </p>
