@@ -56,7 +56,7 @@
                     {% set leads = [] %}
                     {% for lead in lead_list %}
                         <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
-                        <p style="display: none;">{{ leads.append(lead) }}</p>
+                        <p>{{ leads.append(lead) }}</p>
                     {% endfor %}
                 </select>
             </div>

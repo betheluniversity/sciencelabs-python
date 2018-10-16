@@ -33,7 +33,7 @@
                             {% set dates = [] %}
                             {% for session in sessions %}
                                 {% if ((session.date|string)[5:7]) not in dates %}
-                                    <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
+                                    <p class="no-display">{{ dates.append((session.date|string)[5:7]) }}</p>
                                 {% endif %}
                             {% endfor %}
                         {% for date in dates|sort %}
@@ -77,7 +77,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
-                                        <div style="display:none;margin-top:10px" class="text-left">
+                                        <div style="display: none; margin-top:10px" class="text-left">
                                             {% set tutors = session_.get_session_tutors(session.id) %}
                                             {% for tutor in tutors %}
                                                 {{ tutor.firstName }} {{ tutor.lastName }}

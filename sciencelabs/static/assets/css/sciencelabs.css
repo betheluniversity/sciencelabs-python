@@ -266,6 +266,10 @@ ul.no-margin {
     text-decoration: none !important;
 }
 
+.no-display {
+    display: none;
+}
+
 .no-margin-padding {
     padding: 0px;
     margin: 0px;

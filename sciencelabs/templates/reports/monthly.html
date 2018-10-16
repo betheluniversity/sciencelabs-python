@@ -13,8 +13,8 @@
                 {% for session in sessions %}
                     {% if ((session.date|string)[5:7]) not in dates %}
                         {% if ((session.date|string)[5:7]) %}
-                        <p style="display: none;">{{ dates.append((session.date|string)[5:7]) }}</p>
-                        <p style="display: none;">{{ year.append((session.date|string)[:4]) }}</p>
+                        <p class="no-display">{{ dates.append((session.date|string)[5:7]) }}</p>
+                        <p class="no-display">{{ year.append((session.date|string)[:4]) }}</p>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
