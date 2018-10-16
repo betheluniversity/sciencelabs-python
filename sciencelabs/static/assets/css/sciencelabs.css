@@ -228,6 +228,10 @@ ul.no-margin {
     padding: 3px 16px;
 }
 
+.display-inl-b {
+    display: inline-block;
+}
+
 .full-width {
     width: 100%;
 }
