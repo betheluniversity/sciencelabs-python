@@ -113,7 +113,7 @@ class UsersView(FlaskView):
             last_name = form.get('last-name')
             username = form.get('username')
             roles = form.getlist('roles')
-            self.user.create_user(first_name, last_name, username)
+            self.user.create_user(first_name, last_name, username, 0)
             self.user.set_user_roles(username, roles)
             set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
@@ -125,8 +125,8 @@ class UsersView(FlaskView):
     @route('/cron_populate_user_courses', methods=['get'])
     def cron_populate_user_courses(self):
         try:
-            self.user.populate_user_courses_cron()
-            return 'success'
+            message = self.user.populate_user_courses_cron()
+            return message
         except Exception as error:
             return 'failed: ' + str(error)
 
@@ -134,7 +134,7 @@ class UsersView(FlaskView):
     @route('/cron_populate_courses', methods=['get'])
     def cron_populate_courses(self):
         try:
-            self.user.populate_courses_cron()
-            return 'success'
+            message = self.user.populate_courses_cron()
+            return message
         except Exception as error:
             return 'failed: ' + str(error)
