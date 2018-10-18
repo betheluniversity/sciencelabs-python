@@ -28,12 +28,21 @@
             <tbody>
                 {% for session in sessions %}
                     <tr>
+                        {% if session.date != None %}
                         <td>
                             {{ session.name + ' (' + session.date.strftime('%m/%d/%Y') + ')'  }}
                         </td>
                         <td>
                             {{ session.date.strftime('%m/%d/%Y') }}
                         </td>
+                        {% else %}
+                        <td>
+                            {{ session.name }} (None)
+                        </td>
+                        <td>
+                            None
+                        </td>
+                        {% endif %}
                         <td>
                             {{ session.startTime|datetimeformat + ' - ' + session.endTime|datetimeformat }}
                         </td>
