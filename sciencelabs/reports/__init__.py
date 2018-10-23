@@ -232,6 +232,8 @@ class ReportView(FlaskView):
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' +
                                                                                                        str(month) +
                                                                                                        '-31'))
+        for ses in monthly_sessions:
+            print(ses.date.strftime('%d'))
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
@@ -523,13 +525,13 @@ class ReportView(FlaskView):
         sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         dates = []
         for session_info in sessions:
-            if (str(session_info.date)[5:7]) not in dates:
-                dates.append(str(session_info.date)[5:7])
+            if (str(session_info.date.strftime('%m'))) not in dates:
+                dates.append(str(session_info.date.strftime('%m')))
 
         total_attendance = 0
         for date in dates:
             for session_info in sessions:
-                if (str(session_info.date)[5:7]) == date:
+                if (str(session_info.date.strftime('%m'))) == date:
                     attendance = len(self.session_.get_session_students(session_info.id))
                     my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
                                     self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek,
