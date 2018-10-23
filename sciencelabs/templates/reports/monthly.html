@@ -11,14 +11,14 @@
                 {% set dates = [] %}
                 {% set year = [] %}
                 {% for session in sessions %}
-                    {% if ((session.date|string)[5:7]) not in dates %}
-                        {% if ((session.date|string)[5:7]) %}
-                            <p class="no-display">{{ dates.append((session.date|string)[5:7]) }}</p>
+                    {% if (session.date.strftime('%m')) not in dates %}
+                        {% if (session.date.strftime('%m')) %}
+                            <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
                             {% if loop.index0 == 0 %}
-                                <p class="no-display">{{ year.append((session.date|string)[:4]) }}</p>
+                                <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
                             {% endif %}
-                            {% if ((session.date|string)[:4]) in year %}
-                                <p class="no-display">{{ year.append((session.date|string)[:4]) }}</p>
+                            {% if (session.date.strftime('%Y')) in year %}
+                                <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
                             {% endif %}
                         {% endif %}
                     {% endif %}
