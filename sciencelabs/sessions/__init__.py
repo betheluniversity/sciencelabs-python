@@ -21,8 +21,6 @@ class SessionView(FlaskView):
         self.course = Course()
 
     def index(self):
-        # message = self.user.populate_user_courses_cron()
-        self.user.test()
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
@@ -351,7 +349,7 @@ class SessionView(FlaskView):
     @route('/cron_close_sessions', methods=['get'])
     def cron_close_sessions(self):
         try:
-            self.session.close_open_sessions_cron()
-            return 'success'
+            message = self.session.close_open_sessions_cron()
+            return message
         except Exception as error:
             return 'failed: ' + str(error)

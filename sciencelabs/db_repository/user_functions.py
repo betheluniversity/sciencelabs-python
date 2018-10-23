@@ -201,10 +201,33 @@ class User:
 
 # ################### The following methods are all for the cron jobs for this project ################### #
 
+    def create_course(self, course, semester):
+        db_start_date = datetime.strptime(course['beginDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
+        db_end_date = datetime.strptime(course['endDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
+        db_start_time = None
+        if course['beginTime']:
+            db_start_time = datetime.strptime(course['beginTime'], "%I:%M%p").strftime("%H:%M:%S")
+        db_end_time = None
+        if course['endTime']:
+            db_end_time = datetime.strptime(course['endTime'], "%I:%M%p").strftime("%H:%M:%S")
+        course_code = session.query(CourseCode_Table) \
+            .filter(CourseCode_Table.courseNum == course['cNumber']) \
+            .filter(CourseCode_Table.dept == course['subject']).one()
+        course_entry = Course_Table(semester_id=semester.id, begin_date=db_start_date,
+                                    begin_time=db_start_time, course_num=course['cNumber'],
+                                    section=course['section'], crn=course['crn'],
+                                    dept=course['subject'], end_date=db_end_date,
+                                    end_time=db_end_time, meeting_day=course['meetingDay'],
+                                    title=course['title'], course_code_id=course_code.id,
+                                    num_attendees=course['enrolled'], room=course['room'])
+        session.add(course_entry)
+        session.commit()
+        return course_entry
+
     def populate_user_courses_cron(self):
-        print(get_info_for_course('MAT', '125'))
         # We will be creating a message as we go to be logged at the end
         message = ''
+
         # get all active students
         active_students = session.query(User_Table).filter(User_Table.deletedAt == None)\
             .filter(User_Table.id == user_role_Table.user_id)\
@@ -214,62 +237,63 @@ class User:
         for student in active_students:
             # Get courses from banner
             student_banner_courses = student_course_list(student.username)
-            print(student_banner_courses)
             message += student.firstName + ' ' + student.lastName + ' ' + 'Courses:\n'
+
             # Check if courseCode exists (yes = move on, no = quit)
             for key, course in student_banner_courses.items():
                 if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['crse_numb'])\
                         .filter(CourseCode_Table.dept == course['subj_code'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
                     message += course['subj_code'] + ' ' + course['crse_numb'] + '\n'
+
                     # For this valid lab course we need to get it's full info now
                     possible_courses = get_info_for_course(course['subj_code'], course['crse_numb'])
+
                     # Get right section for the student
                     for key, possible_course in possible_courses.items():
                         if possible_course['section'] == course['section']:
                             student_course = possible_course
+
                     semester_info = student_course['term'].split()  # Returns in form ['term', 'year', '-', 'CAS']
                     # Check if semester exists (yes = move on, no = throw exception)
                     semester = session.query(Semester_Table).filter(Semester_Table.term == semester_info[0])\
                         .filter(Semester_Table.year == semester_info[1]).one_or_none()
                     if not semester:
                         raise Exception
+
                     # Check if professor exists (yes = move on, no = create professor and move on)
                     professor = session.query(User_Table)\
-                        .fitler(User_Table.username == student_course['instructorUsername']).one_or_none()
+                        .filter(User_Table.username == student_course['instructorUsername']).one_or_none()
                     if not professor:
                         # Name comes in form 'First M. Last'
                         name_info = student_course['instructor'].split()
                         first_name = name_info[0]
                         last_name = name_info[2]
                         professor = self.create_user(first_name, last_name, student_course['instructorUsername'], 1)
-                        self.set_user_roles(professor.username, [40005])
+                        self.set_user_roles(professor.username, [40005])  # 40005 is the role id for professor
+
                     # Check that entry in Course table exists (yes = move on, no = create course and move on)
                     course_entry = session.query(Course_Table).filter(Course_Table.crn == student_course['crn'])\
                         .filter(Course_Table.semester_id == semester.id).one_or_none()
                     if not course_entry:
-                        db_start_date = datetime.strptime(student_course['beginDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-                        db_end_date = datetime.strptime(student_course['endDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-                        db_start_time = datetime.strptime(student_course['beginTime'], "%I:%M%p").strftime("%H:%M:%S")
-                        db_end_time = datetime.strptime(student_course['endTime'], "%I:%M%p").strftime("%H:%M:%S")
-                        course_code = session.query(CourseCode_Table)\
-                            .filter(CourseCode_Table.courseNum == student_course['cNumber'])\
-                            .filter(CourseCode_Table.dept == student_course['subject']).one()
-                        course_entry = Course_Table(semester_id=semester.id, begin_date=db_start_date,
-                                                    begin_time=db_start_time, course_num=student_course['cNumber'],
-                                                    section=student_course['section'], crn=student_course['crn'],
-                                                    dept=student_course['subject'], end_date=db_end_date,
-                                                    end_time=db_end_time, meeting_day=student_course['meetingDay'],
-                                                    title=student_course['title'], course_code_id=course_code.id,
-                                                    num_attendees=student_course['enrolled'], room=student_course['room'])
-                        session.add(course_entry)
-                    # Create a professor_course table entry
-                    professor_course = CourseProfessors_Table(professor_id=professor.id, course_id=course_entry.id)
-                    session.add(professor_course)
-                    # Create user_course table entry
-                    new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
-                    session.add(new_user_course)
-        session.commit()
+                        course_entry = self.create_course(student_course, semester)
+
+                    # Create a professor_course table entry if needed
+                    professor_course = session.query(CourseProfessors_Table)\
+                        .filter(CourseProfessors_Table.professor_id == professor.id)\
+                        .filter(CourseProfessors_Table.course_id == course_entry.id).one_or_none()
+                    if not professor_course:
+                        new_professor_course = CourseProfessors_Table(professor_id=professor.id, course_id=course_entry.id)
+                        session.add(new_professor_course)
+                        session.commit()
+
+                    # Create user_course table entry if needed
+                    user_course = session.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
+                        .filter(user_course_Table.course_id == course_entry.id).one_or_none()
+                    if not user_course:
+                        new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                        session.add(new_user_course)
+                        session.commit()
         # return message for logging purposes
         return message
 
@@ -277,64 +301,73 @@ class User:
     def populate_courses_cron(self):
         # We will be creating a message as we go to be logged at the end
         message = ''
-        # Get all active courseCodes
+
+        # Get all active courseCodes from lab database
         active_courses = session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
         for course in active_courses:
-            print(course.underived)
-            # validate course with banner
+            # verify that the course code is valid with banner
             if get_course_is_valid(course.dept, course.courseNum):
-                print(get_info_for_course(course.dept, course.courseNum))
+                message += "Valid Course Code\n"
+
                 # For each active courseCode get courses (banner):
                 banner_courses = get_info_for_course(course.dept, course.courseNum)
-                # Update courseCode info
-                course.dept = banner_courses[0]['subject']
-                course.courseNum = banner_courses[0]['cNumber']
-                course.underived = banner_courses[0]['subject'] + banner_courses[0]['cNumber']
-                course.active = 1
-                course.courseName = banner_courses[0]['title']
-                for key, banner_course in banner_courses.items():
-                    # Check if semester exists (yes = move on, no = throw exception)
-                    semester_info = banner_course['term'].split()  # Returns in form ['term', 'year', '-', 'CAS']
-                    semester = session.query(Semester_Table).filter(Semester_Table.term == semester_info[0]) \
-                        .filter(Semester_Table.year == semester_info[1]).one_or_none()
-                    if not semester:
-                        raise Exception
-                    # Check if professor exists (yes = move on, no = create professor and move on)
-                    professor = session.query(User_Table) \
-                        .fitler(User_Table.username == banner_course['instructorUsername']).one_or_none()
-                    if not professor:
-                        # Name comes in form 'First M. Last'
-                        name_info = banner_course['instructor'].split()
-                        first_name = name_info[0]
-                        last_name = name_info[2]
-                        professor = self.create_user(first_name, last_name, banner_course['instructorUsername'], 1)
-                        self.set_user_roles(professor.username, [40005])
-                    # Check that entry in Course table exists (yes = move on, no = create course and move on)
-                    course_entry = session.query(Course_Table).filter(Course_Table.crn == banner_course['crn']) \
-                        .filter(Course_Table.semester_id == semester.id).one_or_none()
-                    if not course_entry:
-                        db_start_date = datetime.strptime(banner_course['beginDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-                        db_end_date = datetime.strptime(banner_course['endDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
-                        db_start_time = datetime.strptime(banner_course['beginTime'], "%I:%M%p").strftime("%H:%M:%S")
-                        db_end_time = datetime.strptime(banner_course['endTime'], "%I:%M%p").strftime("%H:%M:%S")
-                        course_code = session.query(CourseCode_Table) \
-                            .filter(CourseCode_Table.courseNum == banner_course['cNumber']) \
-                            .filter(CourseCode_Table.dept == banner_course['subject']).one()
-                        course_entry = Course_Table(semester_id=semester.id, begin_date=db_start_date,
-                                                    begin_time=db_start_time, course_num=banner_course['cNumber'],
-                                                    section=banner_course['section'], crn=banner_course['crn'],
-                                                    dept=banner_course['subject'], end_date=db_end_date,
-                                                    end_time=db_end_time, meeting_day=banner_course['meetingDay'],
-                                                    title=banner_course['title'], course_code_id=course_code.id,
-                                                    num_attendees=banner_course['enrolled'], room=banner_course['room'])
-                        session.add(course_entry)
-                    # Create a professor_course table entry
-                    professor_course = CourseProfessors_Table(professor_id=professor.id, course_id=course_entry.id)
-                    session.add(professor_course)
-        session.commit()
+
+                # Check to make sure banner_courses isn't None - if it is then the course isn't offered this semester
+                # even though is has a valid course code. This check should be redundant in most cases, but potentially
+                # not all, which is why I included it.
+                if banner_courses:
+                    # Update courseCode info
+                    course.dept = banner_courses[0]['subject']
+                    course.courseNum = banner_courses[0]['cNumber']
+                    course.underived = banner_courses[0]['subject'] + banner_courses[0]['cNumber']
+                    course.active = 1
+                    course.courseName = banner_courses[0]['title']
+                    session.commit()
+                    message += "Course Code edited\n"
+                    message += course.underived + " (" + course.courseName + ")\n"
+
+                    for key, banner_course in banner_courses.items():
+                        # Check if semester exists (yes = move on, no = throw exception)
+                        semester_info = banner_course['term'].split()  # Returns in form ['term', 'year', '-', 'CAS']
+                        semester = session.query(Semester_Table).filter(Semester_Table.term == semester_info[0]) \
+                            .filter(Semester_Table.year == semester_info[1]).one_or_none()
+                        if not semester:
+                            raise Exception
+
+                        # Check if professor exists (yes = move on, no = create professor and move on)
+                        professor = session.query(User_Table) \
+                            .filter(User_Table.username == banner_course['instructorUsername']).one_or_none()
+                        if not professor:
+                            # Name comes in form 'First M. Last'
+                            name_info = banner_course['instructor'].split()
+                            first_name = name_info[0]
+                            last_name = name_info[2]
+                            professor = self.create_user(first_name, last_name, banner_course['instructorUsername'], 1)
+                            self.set_user_roles(professor.username, [40005])  # 40005 is the role id for professor
+
+                        # Check that entry in Course table exists (yes = move on, no = create course and move on)
+                        course_entry = session.query(Course_Table).filter(Course_Table.crn == banner_course['crn']) \
+                            .filter(Course_Table.semester_id == semester.id).one_or_none()
+                        if not course_entry:
+                            course_entry = self.create_course(banner_course, semester)
+
+                        # Create a professor_course table entry if needed
+                        professor_course = session.query(CourseProfessors_Table) \
+                            .filter(CourseProfessors_Table.professor_id == professor.id) \
+                            .filter(CourseProfessors_Table.course_id == course_entry.id).one_or_none()
+                        if not professor_course:
+                            new_professor_course = CourseProfessors_Table(professor_id=professor.id, course_id=course_entry.id)
+                            session.add(new_professor_course)
+                            session.commit()
+                else:
+                    message += "Course not offered this semester\n"
+            else:
+                message += "Invalid Course Code\n"
+
         # return message for logging purposes
         return message
 
+    def test(self):
         # TODO: WSAPI stuff that I can't figure out...
         # url = 'https://wsapi.bethel.edu/course/info/%s/%s' % (course.dept, course.courseNum)
         # request = requests.Request('GET', url)
@@ -345,9 +378,25 @@ class User:
         #     r = s.send(prepped)
         # course_info = json.loads(r.content)
         # print(course_info)
-
-    def test(self):
-        print(get_course_is_valid('MAT', '125'))
-        print(get_info_for_course('MAT', '125'))
+        calc_valid = get_course_is_valid('MAT', '125')
+        OR_valid = get_course_is_valid('MAT', '376')
+        calc_info = get_info_for_course('MAT', '125')
+        OR_info = get_info_for_course('MAT', '376')
+        if calc_valid:
+            print("MAT125 is a valid course code.")
+        else:
+            print("Not a valid course code")
+        if calc_info:
+            print(calc_info)
+        else:
+            print("MAT125 is not offered this semester")
+        if OR_valid:
+            print("MAT376 is a valid course code")
+        else:
+            print("Not a valid course code")
+        if OR_info:
+            print(OR_info)
+        else:
+            print("MAT376 is not offered this semester")
 
 ##########################################################################################################

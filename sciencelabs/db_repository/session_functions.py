@@ -443,3 +443,4 @@ class Session:
         for open_session in open_sessions:
             self.close_open_session(open_session.id, None)
         session.commit()
+        return "All open sessions closed"
