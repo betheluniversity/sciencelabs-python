@@ -232,8 +232,6 @@ class ReportView(FlaskView):
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' +
                                                                                                        str(month) +
                                                                                                        '-31'))
-        for ses in monthly_sessions:
-            print(ses.date.strftime('%d'))
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
