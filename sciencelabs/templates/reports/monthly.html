@@ -11,16 +11,21 @@
                 {% set dates = [] %}
                 {% set year = [] %}
                 {% for session in sessions %}
-                    {% if session.date %}
-                        {% if (session.date.strftime('%m')) not in dates %}
-                            {% if (session.date.strftime('%m')) %}
-                                <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
-                                {% if loop.index0 == 0 %}
-                                    <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
-                                {% endif %}
-                                {% if (session.date.strftime('%Y')) in year %}
-                                    <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
-                                {% endif %}
+                    {# We iterate through the sessions here and then we check to make sure the month we are currently #}
+                    {# at isn't already in the array #}
+                    {% if session.date and (session.date.strftime('%m')) not in dates %}
+                        {% if (session.date.strftime('%m')) %}
+                            {# here we add the month to the list in order to create the month buttons #}
+                            <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
+                            {# here we grab the year so we can set the month/year route #}
+                            {# we only grab the first year since there has been a case where the third or fourth time #}
+                            {# the year showed up it was an invalid year #}
+                            {% if loop.index0 == 0 %}
+                                <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
+                            {% endif %}
+                            {# if the year is already in the loop, then we know it is the good year and we add it again #}
+                            {% if (session.date.strftime('%Y')) in year %}
+                                <p class="no-display">{{ year.append(session.date.strftime('%Y')) }}</p>
                             {% endif %}
                         {% endif %}
                     {% endif %}
