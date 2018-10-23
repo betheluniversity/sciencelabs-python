@@ -162,7 +162,7 @@
                         <tr>
                             <td>{{ session.name }}</td>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                            <td>{{ macros.day_abbr((cal.weekday(((session.date|string)[:4])|int, ((session.date|string)[5:7])|int, ((session.date|string)[8:])|int) + 1) % 7) }}</td>
+                            <td>{{ macros.day_abbr((cal.weekday((session.date.strftime('%Y'))|int, (session.date.strftime('%m'))|int, (session.date.strftime('%d'))|int) + 1) % 7) }}</td>
                             <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                             <td>
                                 {% set attendance = session_.get_session_attendees(session.id) %}

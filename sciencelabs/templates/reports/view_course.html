@@ -5,7 +5,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body btn-group">
-            {% set month = ((((course[0].end_date)|string)[5:7])|int) %}
+            {% set month = (((course[0].end_date).strftime('%m'))|int) %}
             {% set term = '' %}
             {% if month == 1 %}
                 {% set term = 'Interim' %}
@@ -16,7 +16,7 @@
             {% else %}
                 {% set term = 'Summer' %}
             {% endif %}
-            <p class="card-text margin-0">Attendance for {{ term }} {{ ((course[0].end_date)|string)[:4] }}</p>
+            <p class="card-text margin-0">Attendance for {{ term }} {{ (course[0].end_date).strftime('%Y') }}</p>
             <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course[0].id) }}" style="right: 200px;" class="csv-button  btn btn-primary">CSV Session Export</a>
             <a href="{{ url_for('ReportView:export_course_session_attendance_csv', course_id=course[0].id) }}" class="csv-button btn btn-primary">CSV Student Export</a>
         </div>

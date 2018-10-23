@@ -32,8 +32,8 @@
                         <p>
                             {% set dates = [] %}
                             {% for session in sessions %}
-                                {% if ((session.date|string)[5:7]) not in dates %}
-                                    <p class="no-display">{{ dates.append((session.date|string)[5:7]) }}</p>
+                                {% if (session.date.strftime('%m')) not in dates %}
+                                    <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
                                 {% endif %}
                             {% endfor %}
                         {% for date in dates|sort %}
