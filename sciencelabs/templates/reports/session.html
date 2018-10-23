@@ -61,7 +61,7 @@
                         <tbody>
                         {% set total_attendance = [0] %}
                         {% for session in sessions %}
-                            {% if ((session.date|string)[5:7]) == date %}
+                            {% if (session.date.strftime('%m')) == date %}
                                 <tr>
                                     <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                                     <td>{{ session.name }}</td>
