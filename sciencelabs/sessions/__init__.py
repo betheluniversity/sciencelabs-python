@@ -404,7 +404,6 @@ class SessionView(FlaskView):
     @route('/cron_close_sessions', methods=['get'])
     def cron_close_sessions(self):
         try:
-            message = self.session.close_open_sessions_cron()
-            return message
+            return self.session.close_open_sessions_cron()
         except Exception as error:
             return 'failed: ' + str(error)
