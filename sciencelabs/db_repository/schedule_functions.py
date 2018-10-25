@@ -33,8 +33,14 @@ class Schedule:
     def get_term_report(self, semester_id):
         return session.query(Schedule_Table, func.count(Schedule_Table.id)) \
             .filter(Session_Table.startTime != None) \
+            .filter(Session_Table.endTime != None) \
+            .filter(Schedule_Table.id != None) \
+            .filter(Schedule_Table.term == Semester_Table.term) \
+            .filter(Schedule_Table.startTime != None) \
+            .filter(Schedule_Table.endTime != None) \
             .filter(Session_Table.schedule_id == Schedule_Table.id) \
             .filter(Schedule_Table.deletedAt == None) \
+            .filter(Session_Table.deletedAt == None) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
             .filter(Semester_Table.id == semester_id) \
             .group_by(Schedule_Table.id)\
