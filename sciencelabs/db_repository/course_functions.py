@@ -5,8 +5,8 @@ from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
 
-class Course:
 
+class Course:
     def get_course_info(self):
         return (session.query(Course_Table, User_Table)
                 .filter(Course_Table.num_attendees)

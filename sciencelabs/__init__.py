@@ -11,7 +11,6 @@ import json
 app = Flask(__name__)
 app.config.from_object('config')
 
-
 # Local
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule

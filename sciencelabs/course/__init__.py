@@ -6,7 +6,7 @@ from flask_classy import FlaskView, route
 from sciencelabs.course.course_controller import CourseController
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.oracle_procs.db_functions import get_course_is_valid, get_info_for_course
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs.alerts.alerts import *
 
@@ -18,7 +18,9 @@ class CourseView(FlaskView):
         self.base = CourseController()
         self.course = Course()
         self.schedule = Schedule()
+        self.wsapi = WSAPIController()
         self.slc = ScienceLabsController()
+
 
     @route('/admin/')
     def index(self):
@@ -53,8 +55,8 @@ class CourseView(FlaskView):
         course_list = course_string.split(";")
         for course in course_list:
             number = self.dept_length(course)
-            cc_info = get_course_is_valid(course[:number], course[number:])
-            course_info = get_info_for_course(course[:number], course[number:])
+            cc_info = self.wsapi.validate_course(course[:number], course[number:])
+            course_info = self.wsapi.get_course_info(course[:number], course[number:])
             if cc_info and course_info:
                 self.handle_coursecode(cc_info[0])
                 for info in course_info:

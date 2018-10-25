@@ -27,7 +27,7 @@ class ProfileView(FlaskView):
             first_name = form.get('first-name')
             last_name = form.get('last-name')
             username = form.get('username')
-            email_pref = form.get('receive-email')
+            email_pref = form.get('receive-email') or 0  # if User is not allowed to change email pref, set to 0
             self.user.edit_user(first_name,last_name, username, email_pref)
             set_alert('success', 'User edited successfully!')
         except Exception as error:

@@ -437,3 +437,10 @@ class Session:
             .filter(StudentSession_Table.studentId == student_id).one()
         student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         session.commit()
+
+    def close_open_sessions_cron(self):
+        open_sessions = session.query(Session_Table).filter(Session_Table.open == 1).all()
+        for open_session in open_sessions:
+            self.close_open_session(open_session.id, None)
+        session.commit()
+        return "All open sessions closed"

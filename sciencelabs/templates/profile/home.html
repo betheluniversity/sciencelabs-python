@@ -71,9 +71,16 @@
             <div class="card info">
                 <div class="card-body">
                     <p class="card-text">
+                        {% if 'Administrator' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
                         There are two pieces that you may edit on this page: your name and the option to receive an
                         email when a session is closed. The gray boxes contain information that is pulled from Banner
                         and cannot be edited (username and email).
+                        {% else %}
+                        This page contains your personal information. The gray boxes contain information that is pulled
+                        from Banner and cannot be edited (username and email). You may, however, change your first or
+                        last name by editing the given information and then pressing
+                        <span class="button-labels">Save</span>.
+                        {% endif %}
                     </p>
                 </div>
             </div>

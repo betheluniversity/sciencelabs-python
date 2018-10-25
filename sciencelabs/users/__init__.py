@@ -9,17 +9,21 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.oracle_procs.db_functions import get_username_from_name
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class UsersView(FlaskView):
+    route_base = 'user'
+
     def __init__(self):
         self.base = UsersController()
         self.user = User()
         self.course = Course()
         self.schedule = Schedule()
+        self.wsapi = WSAPIController()
         self.slc = ScienceLabsController()
 
     def index(self):
@@ -69,7 +73,7 @@ class UsersView(FlaskView):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
-        results = get_username_from_name(first_name, last_name)
+        results = self.wsapi.get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate_single_user/<int:user_id>")
@@ -130,10 +134,29 @@ class UsersView(FlaskView):
             last_name = form.get('last-name')
             username = form.get('username')
             roles = form.getlist('roles')
-            self.user.create_user(first_name, last_name, username)
+            email_pref = 0  # Default sending emails to No
+            if '40001' in roles or '40005' in roles:  # If the user is a administrator or a professor, they get emails.
+                email_pref = 1
+            self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
             set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
             set_alert('danger', 'Failed to add user: ' + str(error))
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
+
+    @requires_auth
+    @route('/cron_populate_user_courses', methods=['get'])
+    def cron_populate_user_courses(self):
+        try:
+            return self.user.populate_user_courses_cron()
+        except Exception as error:
+            return 'failed: ' + str(error)
+
+    @requires_auth
+    @route('/cron_populate_courses', methods=['get'])
+    def cron_populate_courses(self):
+        try:
+            return self.user.populate_courses_cron()
+        except Exception as error:
+            return 'failed: ' + str(error)
