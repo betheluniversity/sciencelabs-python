@@ -5,7 +5,7 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <div class="header card" style="margin-bottom: 10px;">
+            <div class="header card margin-bottom-10">
                 <div class="card-body">
                     <p class="card-text">Enter your final comments to close {{ session_info.name }}
                         session held on {{ session_info.date.strftime('%m/%d/%Y') }}.</p>
@@ -17,12 +17,12 @@
                 <input type="hidden" name="session-id" value="{{ session_info.id }}">
                 <label for="comments">Comments</label>
                 <textarea class="form-control" id="comments" name="comments"></textarea>
-                <div style="text-align: right;">
+                <div class="text-right">
                     <button type="submit" class="big-button delete btn btn-primary" style="margin: 10px 0px;">Close</button>
                 </div>
             </form>
 
-            <table id="course-info" class="table table-striped table-bordered" style="width:100%">
+            <table id="course-info" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Course</th>

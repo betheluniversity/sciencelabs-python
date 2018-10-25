@@ -29,7 +29,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {% for course in student_courses %}
-                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                            <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
                                         {{ 'checked' if course in session_courses }} value="{{ course.id }}" name="course">
                                 <label class="custom-control-label" for="{{ course.id }}">{{ course.courseName }}</label>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <div class="custom-control custom-checkbox" style="display:inline-block;">
+                        <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="other"
                                     {{ 'checked' if other_course.otherCourse == 1 }} name="other-check">
                             <label class="custom-control-label" for="other">Other</label>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button id="save-student" type="submit" class="btn btn-primary">Save</button>
+                        <button id="save-student" type="submit" class="btn blue btn-primary">Save</button>
                     </div>
                 </div>
             </form>

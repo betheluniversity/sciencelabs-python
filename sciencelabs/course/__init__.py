@@ -7,6 +7,8 @@ from sciencelabs.course.course_controller import CourseController
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
+from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs.alerts.alerts import *
 
 
 class CourseView(FlaskView):
@@ -17,13 +19,20 @@ class CourseView(FlaskView):
         self.course = Course()
         self.schedule = Schedule()
         self.wsapi = WSAPIController()
+        self.slc = ScienceLabsController()
+
 
     @route('/admin/')
     def index(self):
+        current_alert = get_alert()
+        self.slc.check_roles_and_route(['Administrator'])
+
         return render_template('course/base.html', **locals())
 
     @route('<int:course_id>')
     def view_course(self, course_id):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
 
@@ -39,6 +48,8 @@ class CourseView(FlaskView):
 
     @route("/submit/", methods=['POST'])
     def submit(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
         form = request.form
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
@@ -66,16 +77,23 @@ class CourseView(FlaskView):
         does_exist = self.course.check_for_existing_coursecode(info)
         if does_exist:
             self.course.check_if_existing_coursecode_is_active(info)
+            set_alert('success', 'Existing Course Code activated!')
         else:
             self.course.create_coursecode(info)
+            set_alert('success', 'Course Code created successfully!')
 
     def handle_course(self, info):
         does_exist = self.course.check_for_existing_course(info)
         if not does_exist:
             self.course.create_course(info)
+            set_alert('success', 'Course created successfully!')
+        else:
+            set_alert('danger', 'Course already exists so doing nothing.')
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
+        self.slc.check_roles_and_route(['Administrator'])
+
         course_table, user_table, semester_table = self.course.get_course(course_id)
         if course_table:
             course_info = self.course.get_course_info()
@@ -85,5 +103,6 @@ class CourseView(FlaskView):
                     count += 1
                 self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
             self.course.delete_course(course_table, user_table)
+        set_alert('success', 'Course deleted successfully!')
 
         return redirect(url_for('CourseView:index'))

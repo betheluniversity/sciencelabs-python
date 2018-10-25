@@ -10,6 +10,7 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.alerts.alerts import *
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class ScheduleView(FlaskView):
@@ -18,8 +19,11 @@ class ScheduleView(FlaskView):
         self.schedule = Schedule()
         self.course = Course()
         self.session = Session()
+        self.slc = ScienceLabsController()
 
     def index(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule_info = self.schedule.get_schedule_tab_info()
@@ -29,6 +33,8 @@ class ScheduleView(FlaskView):
 
     @route('/create')
     def create_new_schedule(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses(active_semester.id)
@@ -36,6 +42,8 @@ class ScheduleView(FlaskView):
         return render_template('schedule/create_new_schedule.html', **locals())
 
     def edit_schedule(self, schedule_id):
+        self.slc.check_roles_and_route(['Administrator'])
+
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         schedule = Schedule().get_schedule(schedule_id)
@@ -46,6 +54,8 @@ class ScheduleView(FlaskView):
         return render_template('schedule/edit_schedule.html', **locals())
 
     def delete_schedule(self, schedule_id):
+        self.slc.check_roles_and_route(['Administrator'])
+
         try:
             self.schedule.delete_schedule(schedule_id)
             set_alert('success', 'Deleted schedule successfully!')
@@ -55,6 +65,8 @@ class ScheduleView(FlaskView):
 
     @route("/save_schedule_edits", methods=['post'])
     def save_schedule_edits(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
         try:
             active_semester = self.schedule.get_active_semester()
             term_start_date = active_semester.startDate
@@ -84,6 +96,8 @@ class ScheduleView(FlaskView):
 
     @route('/create_schedule_submit', methods=['post'])
     def create_schedule_submit(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
         try:
             active_semester = self.schedule.get_active_semester()
             term = active_semester.term

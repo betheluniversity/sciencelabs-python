@@ -3,16 +3,16 @@
     {% block header %}
         <div class="header card">
             <div class="card-body btn-group">
-                <p class="col-sm-12" style="padding: 0px; margin: 0px">Attendance for {{ app_settings['LAB_TITLE'] }}</p>
+                <p class="col-sm-12 no-margin-padding">Attendance for {{ lab_title }}</p>
                 <a href="{{ url_for('ReportView:export_cumulative_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
             </div>
             <div class="card-body">
-                <p style="padding: 0px; margin: 0px;"><strong>Fall 2014 - Present:</strong> Records in this current
+                <p class="no-margin-padding"><strong>Fall 2014 - Present:</strong> Records in this current
                     attendance application include professor, course, student, and tutor information. </p>
-                <p style="padding: 0px; margin: 0px;"><strong>Spring 2004 - Spring 2014 *:</strong> Records for this
+                <p class="no-margin-padding"><strong>Spring 2004 - Spring 2014 *:</strong> Records for this
                     time period were imported from an old web based attendance application and do not include professor
-                    or tutor information. These session are titled, “Old {{ app_settings['LAB_TITLE'] }}”.</p>
-                <p style="padding: 0px; margin: 0px;"><strong>Fall 1992 - Fall 2003:</strong> Records from this time
+                    or tutor information. These session are titled, “Old {{ lab_title }}”.</p>
+                <p class="no-margin-padding"><strong>Fall 1992 - Fall 2003:</strong> Records from this time
                     period were transcribed from paper sign ins and only include monthly attendance totals.</p>
             </div>
         </div>
@@ -21,7 +21,7 @@
 {% block semester_switch %}{% endblock %}
 
 {% block body_content %}
-    <table id="table"  class="table table-striped table-bordered" style="width:100%">
+    <table id="table"  class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>Year</th>
@@ -70,9 +70,9 @@
                     {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                 {% endfor %}
                 {% if total_attendance[0] %}
-                    <td style="border-right: 2px solid #000000"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
+                    <td class="right-side-borders"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
                 {% else %}
-                    <td style="border-right: 2px solid #000000">{{ total_attendance[0] }}</td>
+                    <td class="right-side-borders">{{ total_attendance[0] }}</td>
                 {% endif %}
                 {% set interimTotal = total_attendance[0] %}
 
@@ -110,7 +110,7 @@
                 {% endfor %}
                 <td class="side-borders"><b>{{ summer_total[0] }}</b></td>
 
-                <td style="border-right: 2px solid #000000"><b>{{ fall_total[0] + spring_total[0] + summer_total[0] + interimTotal }}</b></td>
+                <td class="right-side-borders"><b>{{ fall_total[0] + spring_total[0] + summer_total[0] + interimTotal }}</b></td>
             </tr>
         {% endfor %}
         {% for info in cumulative %}
@@ -121,7 +121,7 @@
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    <td class="right-side-borders"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
                     {% for month in range(2, 6) %}
                         <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
                     {% endfor %}
@@ -130,7 +130,7 @@
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                    <td class="right-side-borders"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
                 </tr>
             {% else %}
                 <tr>
@@ -139,7 +139,7 @@
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
+                    <td class="right-side-borders"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
                     {% for month in range(2, 6) %}
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
@@ -148,7 +148,7 @@
                         <td>{{ cumulative[info]['monthly'][month] }}</td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['summerTotal'] }}</b></td>
-                    <td style="border-right: 2px solid #000000;"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
+                    <td class="right-side-borders"><b>{{ cumulative[info]['yearTotal'] }}</b></td>
                 </tr>
             {% endif %}
         {% endfor %}

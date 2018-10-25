@@ -9,7 +9,7 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">Edit {{ user.firstName }} {{ user.lastName }} ({{ user.username }})</p>
+                                <p class="no-margin-padding">Edit {{ user.firstName }} {{ user.lastName }} ({{ user.username }})</p>
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                     <div class="form-group col-md-12">
                         <label for="roles">Roles</label>
                         {% for role in roles %}
-                            <div class="custom-control custom-checkbox" style="display:inline-block;">
+                            <div class="custom-control custom-checkbox display-inl-b">
                                 <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}"
                                         {{ 'checked' if role in user_roles }} value="{{ role.id }}" name="roles">
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
@@ -69,7 +69,7 @@
                         <label for="user-courses">Additional Viewable Courses for the Current Term</label>
                         <div id="user-courses">
                             {% for course in course_list %}
-                                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                                <div class="custom-control custom-checkbox display-inl-b">
                                     <input type="checkbox" class="custom-control-input" id="{{ course.id }}">
                                     <label class="custom-control-label" for="{{ course.id }}">
                                         {{ course.title }} (Section {{ course.section }})</label>
@@ -80,11 +80,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <a href="{{ url_for('UsersView:deactivate_single_user', user_id=user.id) }}" id="deactivate-user"
-                           class="delete btn btn-primary">Deactivate</a>
+                        <a id="delete" href="{{ url_for('UsersView:deactivate_single_user', user_id=user.id) }}" id="deactivate-user"
+                           class="btn btn-primary">Deactivate</a>
                     </div>
                     <div class="form-group">
-                        <button id="save-user" type="submit" class="btn btn-primary">Save</button>
+                        <button id="save-user" type="submit" class="btn blue btn-primary">Save</button>
                     </div>
                 </div>
             </form>

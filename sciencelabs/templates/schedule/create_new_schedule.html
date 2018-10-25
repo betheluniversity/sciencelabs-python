@@ -8,7 +8,7 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">Create New Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
+                                <p class="no-margin-padding">Create New Schedule for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                 {{ macros.select_courses(course_list) }}
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary" id="save-schedule">Save</button>
+                        <button type="submit" class="btn blue btn-primary" id="save-schedule">Save</button>
                     </div>
                 </div>
             </form>

@@ -8,12 +8,12 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
+                                <p class="no-margin-padding">Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <table id="table" class="table table-striped table-bordered" style="width:100%">
+                <table id="table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -41,8 +41,8 @@
                                     {{ schedule.room }}
                                 </td>
                                 <td>
-                                    <button id="show-courses" type="button" class="show-courses btn btn-primary">Show</button>
-                                    <div style="display:none;margin-top:10px" class="text-left">
+                                    <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
+                                    <div style="display: none;" class="text-left margin-top-10">
                                         {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
                                         <ul>
                                             {% for course in courses %}
@@ -54,8 +54,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button id="show-tutors" type="button" class="show-tutors btn btn-primary">Show</button>
-                                    <div style="display:none;margin-top:10px" class="text-left">
+                                    <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
+                                    <div style="display: none;" class="text-left margin-top-10">
                                         {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
                                         {% for tutor in tutors %}
                                         {% if tutor.isLead %}
@@ -66,11 +66,11 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td style="text-align: center;">
-                                    <a href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
-                                       class="edit btn btn-primary">Edit</a>
-                                    <a href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
-                                       class="delete btn btn-primary">Delete</a>
+                                <td class="text-center">
+                                    <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
+                                       class="btn btn-primary">Edit</a>
+                                    <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
+                                       class="btn btn-primary">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

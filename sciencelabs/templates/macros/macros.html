@@ -1,6 +1,6 @@
 {% macro semester_selector() %}
     <form class="form-inline">
-        <button id="set-semester" type="button" class="btn btn-primary button-border">Set</button>
+        <button id="set-semester" type="button" class="btn blue btn-primary button-border">Set</button>
         <select id="semester-select" class="custom-select">
             {% for semester in session['SEMESTER-LIST'] %}
                 {% if semester['id'] == session['SELECTED-SEMESTER'] %}
@@ -66,13 +66,13 @@
 {% macro select_courses(course_list) %}
     <div class="form-row">
         <div class="form-group col-md-12">
-            <button type="button" class="all btn btn-primary" id="all-courses">Select No Courses</button>
+            <button type="button" class="all blue btn btn-primary" id="all-courses">Select No Courses</button>
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-12">
             {% for course in course_list %}
-                <div class="custom-control custom-checkbox" style="display:inline-block;">
+                <div class="custom-control custom-checkbox display-inl-b">
                     <input type="checkbox" class="custom-control-input" id="{{ course.courseName }}" checked>
                     <label class="custom-control-label" for="{{ course.courseName }}">
                         {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>

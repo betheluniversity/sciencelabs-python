@@ -6,13 +6,13 @@ import csv
 from datetime import datetime
 
 # Local
-from sciencelabs import app_settings
 from sciencelabs import app
 from sciencelabs.reports.reports_controller import ReportController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.session_functions import Session
+from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
 class ReportView(FlaskView):
@@ -22,8 +22,11 @@ class ReportView(FlaskView):
         self.courses = Course()
         self.user = User()
         self.session_ = Session()
+        self.slc = ScienceLabsController()
 
     def index(self):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -31,6 +34,8 @@ class ReportView(FlaskView):
         return render_template('reports/base.html', **locals())
 
     def student(self):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -39,6 +44,8 @@ class ReportView(FlaskView):
 
     @route('/student/<int:student_id>')
     def view_student(self, student_id):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -52,11 +59,13 @@ class ReportView(FlaskView):
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
@@ -69,6 +78,8 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def semester(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -96,12 +107,12 @@ class ReportView(FlaskView):
         avg_total_time = 0
         for ss in avg_total:
             if ss.timeIn and ss.timeOut:
-                avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds()/3600)
+                avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds() / 3600)
 
-        for sessions in self.session_.get_unscheduled_sessions(sem.year, sem.term):
-            for studentsession in self.session_.get_studentsession_from_session(sessions.id):
-                if studentsession[1].timeIn and studentsession[1].timeOut:
-                    avg_total_time += ((studentsession[1].timeOut - studentsession[1].timeIn).total_seconds()/3600)
+        for unscheduled_session in self.session_.get_unscheduled_sessions(sem.year, sem.term):
+            for user, studentsession in self.session_.get_studentsession_from_session(unscheduled_session.id):
+                if studentsession.timeIn and studentsession.timeOut:
+                    avg_total_time += ((studentsession.timeOut - studentsession.timeIn).total_seconds() / 3600)
 
         unique_attendance = 0
         unique_attendance_list = []
@@ -116,11 +127,13 @@ class ReportView(FlaskView):
 
     # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_TermReport' % (term, year, lab)
@@ -131,28 +144,54 @@ class ReportView(FlaskView):
 
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         total_attendance = 0
+        unique_attendance = 0
         attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
             attendance_list += [sessions[1]]
 
+        unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
+        unique_attendance_list = []
+        for attendance_data in unique_attendance_info:
+            unique_attendance += attendance_data[1]
+            unique_attendance_list += [attendance_data[0].id]
+
+        all_total_attendance = total_attendance
+        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
+        for sessions in unscheduled_sessions:
+            for unscheduled_attendance in self.session_.get_unscheduled_unique_attendance(sessions.id):
+                if unscheduled_attendance[0].id not in unique_attendance_list:
+                    all_total_attendance += unscheduled_attendance[1]
+
+        term_info = self.schedule.get_term_report(session['SELECTED-SEMESTER'])
+        anon_attendance = self.schedule.get_anon_student_attendance_info(session['SELECTED-SEMESTER'])
+
+        for schedule, sessions in term_info:
+            for sess, sched in anon_attendance:
+                if sched.id == schedule.id:
+                    all_total_attendance += sess.anonStudents
+
         index = 0
         session_count = 0
-        for schedule, sessions in self.schedule.get_term_report(session['SELECTED-SEMESTER']):
+        total_anon = 0
+        for schedule, sessions in term_info:
+            anonStudents = 0
+            for sess, sched in anon_attendance:
+                if schedule.id == sched.id:
+                    anonStudents += sess.anonStudents
+            total_anon += anonStudents
             session_count += sessions
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
                             sessions,
-                            attendance_list[index],
-                            str(round(((attendance_list[index] / total_attendance) * 100))) + '%'])
+                            attendance_list[index] + anonStudents,
+                            str(round((((attendance_list[index] + anonStudents) / all_total_attendance) * 100))) + '%'])
             index += 1
 
-        my_list.append(['', '', '', 'Total:', session_count, total_attendance, '100%'])
+        my_list.append(['', '', '', 'Total:', session_count, total_attendance + total_anon, '100%'])
         my_list.append([])
         my_list.append(['Unscheduled Sessions', 'Date', 'Start Time', 'Stop Time', 'Attendance'])
 
-        sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
         total_unscheduled = 0
         for sessions in unscheduled_sessions:
             my_list.append(['', sessions.date.strftime('%m/%d/%Y'), self.datetimeformatter(sessions.startTime),
@@ -166,6 +205,9 @@ class ReportView(FlaskView):
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        self.set_semester_selector(year, month)
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = month
         year = sem.year
@@ -193,6 +235,8 @@ class ReportView(FlaskView):
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         month = int(month)
         if month == 1:
             term = 'Interim'
@@ -204,7 +248,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -219,21 +263,21 @@ class ReportView(FlaskView):
 
         total_attendance = 0
         for schedule in schedule_info:
-            for session in monthly_sessions:
-                session_schedule = self.schedule.get_schedule_from_session(session.id)
-                attendance = self.session_.get_session_attendees(session.id)
+            for session_info in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session_info.id)
+                attendance = self.session_.get_session_attendees(session_info.id)
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
-                        total_attendance += attendance.count() + session.anonStudents
+                        total_attendance += attendance.count() + session_info.anonStudents
 
         for schedule in schedule_info:
             total_attendance_per_schedule = 0
-            for session in monthly_sessions:
-                session_schedule = self.schedule.get_schedule_from_session(session.id)
-                attendance = self.session_.get_session_attendees(session.id)
+            for session_info in monthly_sessions:
+                session_schedule = self.schedule.get_schedule_from_session(session_info.id)
+                attendance = self.session_.get_session_attendees(session_info.id)
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
-                        total_attendance_per_schedule += attendance.count() + session.anonStudents
+                        total_attendance_per_schedule += attendance.count() + session_info.anonStudents
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime) + ' - ' +
                             self.datetimeformatter(schedule.endTime),
@@ -243,8 +287,8 @@ class ReportView(FlaskView):
         unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
         total_unscheduled = 0
         if unscheduled_sessions:
-            for session in unscheduled_sessions:
-                total_unscheduled += (len(self.user.get_session_students(session.id))) + session.anonStudents
+            for session_info in unscheduled_sessions:
+                total_unscheduled += (len(self.user.get_session_students(session_info.id))) + session_info.anonStudents
             total_attendance += total_unscheduled
 
         my_list.append(['Unscheduled Sessions', '', '', total_unscheduled,
@@ -255,6 +299,8 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_monthly_detail_csv(self, year, month):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         month = int(month)
         if month == 1:
             term = 'Interim'
@@ -266,7 +312,7 @@ class ReportView(FlaskView):
             term = 'Summer'
         term_abbr = term[:2].upper()
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
@@ -280,21 +326,23 @@ class ReportView(FlaskView):
                                                                                                        str(month) +
                                                                                                        '-31'))
         total_attendance = 0
-        for session in monthly_sessions:
-            attendance = self.session_.get_session_attendees(session.id)
-            total_attendance += attendance.count() + session.anonStudents
-            sel_year, sel_month, sel_day = str(session.date).split('-')
-            my_list.append([session.name, session.date.strftime('%m/%d/%Y'),
+        for session_info in monthly_sessions:
+            attendance = self.session_.get_session_attendees(session_info.id)
+            total_attendance += attendance.count() + session_info.anonStudents
+            sel_year, sel_month, sel_day = str(session_info.date).split('-')
+            my_list.append([session_info.name, session_info.date.strftime('%m/%d/%Y'),
                             (self.get_dayofweek((cal.weekday(int(sel_year), int(sel_month), int(sel_day)) + 1) % 7)),
-                            self.datetimeformatter(session.schedStartTime) +
-                            ' - ' + self.datetimeformatter(session.schedStartTime), attendance.count() +
-                            session.anonStudents])
+                            self.datetimeformatter(session_info.schedStartTime) +
+                            ' - ' + self.datetimeformatter(session_info.schedStartTime), attendance.count() +
+                            session_info.anonStudents])
 
         my_list.append(['', '', 'Total:', total_attendance])
 
         return self.export_csv(my_list, csv_name)
 
     def annual(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -305,8 +353,10 @@ class ReportView(FlaskView):
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s_CumulativeAttendance' % lab
@@ -428,6 +478,8 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def session(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -438,6 +490,8 @@ class ReportView(FlaskView):
 
     @route('/session/<int:session_id>')
     def view_session(self, session_id):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -453,11 +507,13 @@ class ReportView(FlaskView):
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
@@ -467,13 +523,13 @@ class ReportView(FlaskView):
         sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         dates = []
         for session_info in sessions:
-            if (str(session_info.date)[5:7]) not in dates:
-                dates.append(str(session_info.date)[5:7])
+            if (str(session_info.date.strftime('%m'))) not in dates:
+                dates.append(str(session_info.date.strftime('%m')))
 
         total_attendance = 0
         for date in dates:
             for session_info in sessions:
-                if (str(session_info.date)[5:7]) == date:
+                if (str(session_info.date.strftime('%m'))) == date:
                     attendance = len(self.session_.get_session_students(session_info.id))
                     my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
                                     self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek,
@@ -486,6 +542,8 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def course(self):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -496,6 +554,8 @@ class ReportView(FlaskView):
 
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         month = self.get_selected_month()
         year = sem.year
@@ -508,11 +568,13 @@ class ReportView(FlaskView):
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
@@ -538,11 +600,13 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_course_session_attendance_csv(self, course_id):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
         lab = ''
-        for letter in app_settings['LAB_TITLE'].split():
+        for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
         csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)
@@ -612,3 +676,26 @@ class ReportView(FlaskView):
             return (datetime.min + value).strftime(custom_format)
         else:
             return '???'
+
+    def set_semester_selector(self, year, month):
+        if month == 1:
+            term = 'Interim'
+        elif month in (2, 3, 4, 5):
+            term = 'Spring'
+        elif month in (8, 9, 10, 11, 12):
+            term = 'Fall'
+        else:
+            term = 'Summer'
+        sem = self.schedule.get_semester_by_year(year, term)
+
+        # Sets the attribute 'active' of all the semesters to 0 so none are active
+        for semester in session['SEMESTER-LIST']:
+            if semester['id'] == sem.id:
+                semester['active'] = 1  # activates the semester chosen
+            else:
+                semester['active'] = 0  # deactivates all others
+        # Sets the SELECTED-SEMESTER
+        session['SELECTED-SEMESTER'] = int(sem.id)
+        # Lets the session know it was modified
+        session.modified = True
+

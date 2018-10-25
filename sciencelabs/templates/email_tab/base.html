@@ -34,8 +34,8 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3 btn-group">
-                        <button type="button" class="button-curved btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
-                        <button style="left: 10px;" type="button" class="button-curved btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
+                        <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
+                        <button style="left: 10px;" type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
                     </div>
                 </div>
                 {# TODO NEED TO FIX THIS SO THE DIVS ARE PROPERLY SIZED #}
@@ -67,7 +67,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary" id="send-email">Send</button>
+                        <button type="submit" class="btn blue btn-primary" id="send-email">Send</button>
                     </div>
                 </div>
             </form>
@@ -76,7 +76,7 @@
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        This section gives you the option to email {{ app_settings['LAB_TITLE'] }} users. These
+                        This section gives you the option to email {{ lab_title }} users. These
                         emails are only sent to users who are set to active in the system. See the
                         <span class="button-labels">Users</span> tab for more information on the users currently in
                         the system. When the email is sent, all users will be BCC’d, so that Bethel username

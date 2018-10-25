@@ -1,3 +1,5 @@
+from flask import session, abort
+
 import random
 import string
 
@@ -41,4 +43,10 @@ class ScienceLabsController(object):
     # This code is only valid in Python 3.6.2 or higher (currently on 3.6.5)
     def get_hash(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=13))
+
+    def check_roles_and_route(self, allowed_roles):
+        for role in allowed_roles:
+            if role in session['USER-ROLES']:
+                return True
+        abort(403)
 

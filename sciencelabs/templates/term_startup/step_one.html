@@ -8,13 +8,13 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p style="padding: 0px; margin: 0px">Step 1: Set Term</p>
+                                <p class="no-margin-padding">Step 1: Set Term</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div style="text-align: center;" class="form-group col-md-12">
+                    <div class="form-group col-md-12 text-center">
                         <h3>Current Term: {{ semester.term }} {{ semester.year }}</h3>
                         <p>{{ semester.startDate.strftime('%m/%d/%Y') }}-{{ semester.endDate.strftime('%m/%d/%Y') }}</p>
                     </div>
@@ -55,9 +55,9 @@
                     <input type="text" class="form-control" id="end-date" name="end-date" required autocomplete="off">
                     </div>
                 </div>
-                <div style="text-align: right;" class="form-row">
+                <div class="form-row text-right">
                     <div class="form-group col-md-12">
-                        <button type="submit" class="btn btn-primary" id="set-term">Set Term</button>
+                        <button type="submit" class="btn blue btn-primary" id="set-term">Set Term</button>
                     </div>
                 </div>
             </form>

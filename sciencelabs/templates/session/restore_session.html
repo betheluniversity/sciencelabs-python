@@ -38,8 +38,8 @@
                     <td></td>
                 {% endif %}
                 <td>
-                    <button type="button" class="show-tutors btn btn-primary">Show</button>
-                    <div style="display:none;margin-top:10px" class="text-left">
+                    <button type="button" class="show-tutors blue btn btn-primary">Show</button>
+                    <div style="display: none;" class="text-left margin-top-10">
                         {% set tutors = session_tutors.get_session_tutors(session.id) %}
                         {% for tutor in tutors %}
                             {{ tutor.firstName }} {{ tutor.lastName }}
@@ -52,8 +52,8 @@
                 </td>
                 <td>
                     <div class="btn-group">
-                        <a style="border-color: white;" href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View/Edit Session</a>
-                        <a style="border-color: white; "href='' id="darkblue" class="btn btn-primary">Restore</a>
+                        <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">View/Edit Session</a>
+                        <a href='{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">Restore</a>
                     </div>
                 </td>
             </tr>

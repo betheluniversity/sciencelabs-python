@@ -12,7 +12,7 @@
             <meta charset="utf-8"/>
             <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 
-            <title>{% block title %}{{ app_settings['LAB_TITLE'] }} | Welcome{% endblock %}</title>
+            <title>{% block title %}{{ lab_title }} | Welcome{% endblock %}</title>
 
             <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
             <meta name="viewport" content="width=device-width"/>
@@ -56,7 +56,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 
-        {{ nav.render(app_settings['LAB_TITLE']) }}
+        {{ nav.render(lab_title) }}
 
         {# SHOWS ALERTS #}
         {% if current_alert %}
@@ -76,13 +76,15 @@
 
         <div class="margins">{% block body_content %}{% endblock %}</div>
         {% block scripts %}{% endblock %}
-        {% block footer %}
-            <div class="footer card margins">
-                <div class="card-body">
+
+        <div class="footer container card margins">
+            <div class="card-body">
+                {% block footer %}
                     <p class="card-text">&copy; 2004-{{ now.strftime('%Y') }} Bethel University</p>
-                </div>
+                {% endblock %}
             </div>
-        {% endblock %}
+        </div>
+
     </body>
 
 {% endblock %}
