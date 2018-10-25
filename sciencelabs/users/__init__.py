@@ -9,7 +9,7 @@ from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.oracle_procs.db_functions import get_username_from_name
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 
@@ -22,6 +22,7 @@ class UsersView(FlaskView):
         self.user = User()
         self.course = Course()
         self.schedule = Schedule()
+        self.wsapi = WSAPIController()
 
     def index(self):
         current_alert = get_alert()
@@ -60,7 +61,7 @@ class UsersView(FlaskView):
         form = request.form
         first_name = form.get('firstName')
         last_name = form.get('lastName')
-        results = get_username_from_name(first_name, last_name)
+        results = self.wsapi.get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate_single_user/<int:user_id>")

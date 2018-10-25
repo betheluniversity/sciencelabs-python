@@ -12,7 +12,6 @@ from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 
 
-
 class SessionView(FlaskView):
     def __init__(self):
         self.user = User()

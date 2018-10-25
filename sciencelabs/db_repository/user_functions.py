@@ -1,14 +1,16 @@
-from datetime import datetime, time
+from datetime import datetime
 from sqlalchemy import func, distinct, orm
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
-    SessionCourseCodes_Table, CourseViewer_Table, SessionCourses_Table, CourseProfessors_Table
-from sciencelabs.oracle_procs.db_functions import student_course_list, get_info_for_course, get_course_is_valid
+    SessionCourses_Table, CourseProfessors_Table
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
 class User:
+    def __init__(self):
+        self.wsapi = WSAPIController()
 
     def get_session_students(self, session_id):
         return session.query(User_Table, StudentSession_Table) \
@@ -269,36 +271,28 @@ class User:
 
         for student in active_students:
             # Get courses from banner
-            student_banner_courses = student_course_list(student.username)
+            student_banner_courses = self.wsapi.get_student_courses(student.username)
             message += student.firstName + ' ' + student.lastName + ' ' + 'Courses:\n'
 
             # Check if courseCode exists (yes = move on, no = quit)
             for key, course in student_banner_courses.items():
-                if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['crse_numb'])\
-                        .filter(CourseCode_Table.dept == course['subj_code'])\
+                if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                        .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
-                    message += course['subj_code'] + ' ' + course['crse_numb'] + '\n'
-
-                    # For this valid lab course we need to get it's full info now
-                    possible_courses = get_info_for_course(course['subj_code'], course['crse_numb'])
-
-                    # Get right section for the student
-                    for key, possible_course in possible_courses.items():
-                        if possible_course['section'] == course['section']:
-                            student_course = possible_course
+                    message += course['subject'] + ' ' + course['cNumber'] + '\n'
 
                     # Check if semester exists (yes = move on, no = throw exception)
                     try:
-                        semester = self.check_semester_exists(student_course)
+                        semester = self.check_semester_exists(course)
                     except:
                         message += "Error: Semester not Found"
                         return message
 
                     # Check if professor exists (yes = move on, no = create professor and move on)
-                    professor = self.get_or_create_professor(student_course)
+                    professor = self.get_or_create_professor(course)
 
                     # Check that entry in Course table exists (yes = move on, no = create course and move on)
-                    course_entry = self.get_or_create_course(student_course, semester)
+                    course_entry = self.get_or_create_course(course, semester)
 
                     # Create a professor_course table entry if needed
                     self.check_or_create_professor_course(professor, course_entry)
@@ -323,22 +317,22 @@ class User:
         active_courses = session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
         for course in active_courses:
             # verify that the course code is valid with banner
-            if get_course_is_valid(course.dept, course.courseNum):
+            if self.wsapi.validate_course(course.dept, course.courseNum):
                 message += "Valid Course Code\n"
 
                 # For each active courseCode get courses (banner):
-                banner_courses = get_info_for_course(course.dept, course.courseNum)
+                banner_courses = self.wsapi.get_course_info(course.dept, course.courseNum)
 
                 # Check to make sure banner_courses isn't None - if it is then the course isn't offered this semester
                 # even though is has a valid course code. This check should be redundant in most cases, but potentially
                 # not all, which is why I included it.
                 if banner_courses:
                     # Update courseCode info
-                    course.dept = banner_courses[0]['subject']
-                    course.courseNum = banner_courses[0]['cNumber']
-                    course.underived = banner_courses[0]['subject'] + banner_courses[0]['cNumber']
+                    course.dept = banner_courses['0']['subject']
+                    course.courseNum = banner_courses['0']['cNumber']
+                    course.underived = banner_courses['0']['subject'] + banner_courses['0']['cNumber']
                     course.active = 1
-                    course.courseName = banner_courses[0]['title']
+                    course.courseName = banner_courses['0']['title']
                     session.commit()
                     message += "Course Code edited\n"
                     message += course.underived + " (" + course.courseName + ")\n"
@@ -366,18 +360,5 @@ class User:
 
         # return message for logging purposes
         return message
-
-    def test(self):
-        # TODO: WSAPI stuff that I can't figure out...
-        # url = 'https://wsapi.bethel.edu/course/info/%s/%s' % (course.dept, course.courseNum)
-        # request = requests.Request('GET', url)
-        # prepped = request.prepare()
-        # signature = hmac.new(bytes(app.config['WSAPI_SECRET'], 'utf-8'), prepped.body, digestmod=hashlib.sha512)
-        # prepped.headers['Sign'] = signature.hexdigest()
-        # with requests.Session() as s:
-        #     r = s.send(prepped)
-        # course_info = json.loads(r.content)
-        # print(course_info)
-        print("This is a test:")
 
 ##########################################################################################################
