@@ -231,7 +231,7 @@ class ReportView(FlaskView):
             selected_months = fall_list
         else:
             term = 'Summer'
-            selected_months = fall_list
+            selected_months = summer_list
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         unscheduled_sessions = self.session_.get_unscheduled_sessions(selected_year, term)
