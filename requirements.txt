@@ -7,3 +7,4 @@ Flask-Classy
 blinker
 mysqlclient
 cx_Oracle
+requests
