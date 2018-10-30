@@ -325,7 +325,7 @@ class SessionView(FlaskView):
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
@@ -334,31 +334,31 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_attendance(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         return render_template('session/student_attendance.html', **locals())
 
     def tutor_attendance(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info()
+        course_info = self.course.get_active_course_info(session_info.semester_id)
         tutors = self.session.get_session_tutors(session_id)
         return render_template('session/tutor_attendance.html', **locals())
 
     def close_open_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info()
+        course_info = self.course.get_active_course_info(session_info.semester_id)
         return render_template('session/close_open_session.html', **locals())
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         try:
             form = request.form
