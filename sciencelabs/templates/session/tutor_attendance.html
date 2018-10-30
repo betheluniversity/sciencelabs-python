@@ -3,8 +3,10 @@
 {# TODO: ADD Tutors, put in start time #}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link disabled" href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}">Student</a>
-    <a id="tutor" class="nav-item nav-link active" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
+    <a id="student" class="nav-item nav-link disabled"
+       href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+    <a id="tutor" class="nav-item nav-link active"
+       href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
@@ -19,7 +21,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="centered margin-bottom-10">
-                <a href='{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id) }}'
+                <a href='{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}'
                    class="big-button btn btn-primary sign-in">Sign in as a Tutor</a>
             </div>
 
@@ -40,7 +42,7 @@
                             <td>{{ tutor.timeOut|datetimeformat }}</td>
                         {% else %}
                             <td>
-                                <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id) }}"
+                                <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
                                    class="delete btn btn-primary">Sign Out</a>
                             </td>
                         {% endif %}
@@ -118,7 +120,7 @@
             </table>
 
             <div class="centered">
-                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id) }}"
+                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                    class="big-button btn btn-primary">Lead Tutor Close Session</a>
             </div>
         </div>

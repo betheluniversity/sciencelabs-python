@@ -58,12 +58,12 @@
                                        class="delete btn btn-primary">Delete</a>
                                 {% endif %}
                                 {% if session_info.open == 0 %}
-                                    <a href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}"
+                                    <a href="{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                                        class="btn btn-primary">Start</a>
                                 {% else %}
-                                    <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}"
+                                    <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}"
                                        class="btn btn-primary">Enter</a>
-                                    <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id) }}"
+                                    <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                                        class="delete btn btn-primary">Close</a>
                                 {% endif %}
                             </div>

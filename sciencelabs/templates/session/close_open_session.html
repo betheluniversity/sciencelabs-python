@@ -15,6 +15,7 @@
 
             <form action="{{ url_for('SessionView:confirm_close') }}" method="post">
                 <input type="hidden" name="session-id" value="{{ session_info.id }}">
+                <input type="hidden" name="session-hash" value="{{ session_info.hash }}">
                 <label for="comments">Comments</label>
                 <textarea class="form-control" id="comments" name="comments"></textarea>
                 <div class="text-right">

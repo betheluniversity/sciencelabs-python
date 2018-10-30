@@ -324,23 +324,25 @@ class SessionView(FlaskView):
 
     # TODO: hash and CAS authentications
 
-    def open_session(self, session_id):
+    def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         opener_username = session['USERNAME']
         opener_user = self.user.get_user_by_username(opener_username)
         self.session.start_open_session(session_id, opener_user.id)
         self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    def student_attendance(self, session_id):
+    @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def student_attendance(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         return render_template('session/student_attendance.html', **locals())
 
-    def tutor_attendance(self, session_id):
+    @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def tutor_attendance(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
@@ -348,7 +350,8 @@ class SessionView(FlaskView):
         tutors = self.session.get_session_tutors(session_id)
         return render_template('session/tutor_attendance.html', **locals())
 
-    def close_open_session(self, session_id):
+    @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def close_open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         current_alert = get_alert()
@@ -363,13 +366,14 @@ class SessionView(FlaskView):
         try:
             form = request.form
             session_id = form.get('session-id')
+            session_hash = form.get('session-hash')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
             set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
             set_alert('danger', 'Failed to close session: ' + str(error))
-            return redirect(url_for('SessionView:close_open_session', session_id=session_id))
+            return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -382,22 +386,22 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    def student_sign_in(self, session_id):
+    def student_sign_in(self, session_id, session_hash):
         self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Authentication)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    def student_sign_out(self, session_id, student_id):
+    def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    def tutor_sign_in(self, session_id):
+    def tutor_sign_in(self, session_id, session_hash):
         # TODO: Update with actual sign in (CAS Authentication)
         self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    def tutor_sign_out(self, session_id, tutor_id):
+    def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     @requires_auth
     @route('/cron_close_sessions', methods=['get'])
