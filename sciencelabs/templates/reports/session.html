@@ -32,7 +32,7 @@
                         <p>
                             {% set dates = [] %}
                             {% for session in sessions %}
-                                {% if (session.date.strftime('%m')) not in dates %}
+                                {% if session.date and (session.date.strftime('%m')) not in dates %}
                                     <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
                                 {% endif %}
                             {% endfor %}
@@ -61,7 +61,7 @@
                         <tbody>
                         {% set total_attendance = [0] %}
                         {% for session in sessions %}
-                            {% if (session.date.strftime('%m')) == date %}
+                            {% if session.date and (session.date.strftime('%m')) == date %}
                                 <tr>
                                     <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                                     <td>{{ session.name }}</td>
