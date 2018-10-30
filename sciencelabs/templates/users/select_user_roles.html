@@ -66,28 +66,4 @@
             </div>
         </div>
     </div>
-{#    <script>#}
-{#        $(document).ready(function(){#}
-{##}
-{#           $('#create-user').click(function(){#}
-{#                var userRoles = [];#}
-{#                $(".role-checkbox:checked").each(function(){#}
-{#                    userRoles.push($(this).val());#}
-{#                });#}
-{#                var jsonUserRoles = JSON.stringify(userRoles);#}
-{#               var user = {#}
-{#                   'firstName': '{{ first_name }}',#}
-{#                   'lastName': '{{ last_name }}',#}
-{#                   'username': '{{ username }}',#}
-{#                   'roles': jsonUserRoles#}
-{#               };#}
-{#               var url = '{{ url_for('UsersView:create_user') }}';#}
-{#                $.post(url, user, function(message){#}
-{#                    window.location.replace('{{ url_for('UsersView:index') }}');#}
-{#                    alert(message);#}
-{#                });#}
-{#           });#}
-{##}
-{#        });#}
-{#    </script>#}
 {% endblock %}

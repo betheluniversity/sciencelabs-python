@@ -117,30 +117,4 @@
             </div>
         </div>
    </div>
-{#    <script>#}
-{#        $(document).ready(function(){#}
-{##}
-{#            $('#save-user').click(function(){#}
-{#                var userRoles = [];#}
-{#                $(".role-checkbox:checked").each(function(){#}
-{#                    userRoles.push($(this).val());#}
-{#                });#}
-{#                var jsonUserRoles = JSON.stringify(userRoles);#}
-{#               var user = {#}
-{#                   'userId': {{ user.id }},#}
-{#                   'firstName': $('#user-first-name').val(),#}
-{#                   'lastName': $('#user-last-name').val(),#}
-{#                   'email': $('#user-email').val(),#}
-{#                   'username': $('#user-username').val(),#}
-{#                   'roles': jsonUserRoles#}
-{#               };#}
-{#               var url = '{{ url_for('UsersView:save_user_edits') }}';#}
-{#               $.post(url, user, function(message){#}
-{#                   window.location.replace('{{ url_for('UsersView:index') }}');#}
-{#                   alert(message);#}
-{#               });#}
-{#            });#}
-{##}
-{#        });#}
-{#    </script>#}
 {% endblock %}

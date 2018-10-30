@@ -335,16 +335,6 @@
                     $('#view-by-name').show();
                 }
             });
-
-            {#$('#save-session').click(function(){#}
-            {#   var session = {#}
-            {#       'sessionID': {{ session_info.id }}#}
-            {#   };#}
-            {#   var url = '{{ url_for('SessionView:save_session_edits') }}';#}
-            {#   $.post(url, session, function(){#}
-            {#       window.location.replace('{{ url_for('SessionView:closed') }}')#}
-            {#   });#}
-            {# });#}
           
             $(".chosen").chosen({
                 display_disabled_options: true

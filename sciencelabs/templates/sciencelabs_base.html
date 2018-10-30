@@ -56,6 +56,9 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 
+        <!-- Shared JS file for sciencelabs file -->
+        <script type="text/javascript" src="{{ url_for('static', filename='assets/js/sciencelabs.js') }}"></script>
+
         {{ nav.render(lab_title) }}
 
         {# SHOWS ALERTS #}

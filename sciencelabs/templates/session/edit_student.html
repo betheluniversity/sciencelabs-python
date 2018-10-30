@@ -72,38 +72,5 @@
             </div>
         </div>
     </div>
-
-{#    <script>#}
-{#        $(document).ready(function(){#}
-{##}
-            {#$('#save-student').click(function(){#}
-            {#    var studentCourses = [];#}
-            {#    $(".course-checkbox:checked").each(function(){#}
-            {#        studentCourses.push($(this).val());#}
-            {#    });#}
-            {#    var jsonStudentCourses = JSON.stringify(studentCourses);#}
-            {##}
-            {#    var otherCourse = null;#}
-            {#    if($('#other').prop('checked')){#}
-            {#        otherCourse = $('#course-name').val();#}
-            {#    }#}
-            {##}
-            {#    var student = {#}
-            {#        'sessionId': {{ session_id }},#}
-            {#        'studentId': {{ student.id }},#}
-            {#        'timeIn': $('#time-in').val(),#}
-            {#        'timeOut': $('#time-out').val(),#}
-            {#        'courses': jsonStudentCourses,#}
-            {#        'otherCourse': otherCourse#}
-            {#    };#}
-            {#    var url = '{{ url_for('SessionView:save_student_edits') }}';#}
-            {#    $.post(url, student, function(message){#}
-            {#        window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
-            {#        alert(message);#}
-            {#    });#}
-            {# });#}
-{##}
-{#        });#}
-{#    </script>#}
 {% endblock %}
 

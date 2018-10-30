@@ -38,22 +38,4 @@
             </div>
         </div>
     </div>
-
-{#    <script>#}
-{#        $(document).ready(function(){#}
-{##}
-{#            $('#add-student').click(function(){#}
-{#                var student = {#}
-{#                    'sessionId': {{ session_id }},#}
-{#                    'studentId': $('#choose-student :selected').val()#}
-{#                };#}
-{#                var url = '{{ url_for('SessionView:add_student_submit') }}';#}
-{#                $.post(url, student, function(message){#}
-{#                    window.location.replace('{{ url_for('SessionView:edit_session', session_id=session_id) }}');#}
-{#                    alert(message);#}
-{#                });#}
-{#            });#}
-{##}
-{#        });#}
-{#    </script>#}
 {% endblock %}
