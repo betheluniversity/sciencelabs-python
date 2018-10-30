@@ -15,8 +15,12 @@
                     {# at isn't already in the array #}
                     {% if session.date and (session.date.strftime('%m')) not in dates %}
                         {% if (session.date.strftime('%m')) %}
+                            {% if ((session.date.strftime('%m')|int) in selected_months) %}
+                                {# here we add the month to the list in order to create the month buttons sometimes #}
+                                {# extra months are in the specified term so we remove those with this if statement #}
+                                <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
+                            {% endif %}
                             {# here we add the month to the list in order to create the month buttons #}
-                            <p class="no-display">{{ dates.append(session.date.strftime('%m')) }}</p>
                             {# here we grab the year so we can set the month/year route #}
                             {# we only grab the first year since there has been a case where the third or fourth time #}
                             {# the year showed up it was an invalid year #}
