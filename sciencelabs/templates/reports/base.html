@@ -1,7 +1,6 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        {# TODO: Update with roles and permissions #}
         {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
         <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
            href="{{ url_for('ReportView:student') }}">Student</a>

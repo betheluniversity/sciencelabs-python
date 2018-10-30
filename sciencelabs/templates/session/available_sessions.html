@@ -1,7 +1,5 @@
 {% extends 'session/base.html' %}
 
-{# TODO: Update 'start' to 'close' or 'enter'?? #}
-
 {% block header %}
     <div class="header card">
         <div class="card-body">
@@ -54,10 +52,20 @@
                         <td>
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
-                                    <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}' class="edit btn btn-primary">Edit</a>
-                                    <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}' class="delete btn btn-primary">Delete</a>
+                                    <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}'
+                                       class="edit btn btn-primary">Edit</a>
+                                    <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}'
+                                       class="delete btn btn-primary">Delete</a>
                                 {% endif %}
-                                <a href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}" class="btn btn-primary">Start</a>
+                                {% if session_info.open == 0 %}
+                                    <a href="{{ url_for('SessionView:open_session', session_id=session_info.id) }}"
+                                       class="btn btn-primary">Start</a>
+                                {% else %}
+                                    <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}"
+                                       class="btn btn-primary">Enter</a>
+                                    <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id) }}"
+                                       class="delete btn btn-primary">Close</a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
