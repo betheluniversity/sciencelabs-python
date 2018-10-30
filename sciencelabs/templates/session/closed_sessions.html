@@ -78,6 +78,7 @@
 
     <script>
          $(document).ready( function () {
+
             $.extend($.fn.dataTableExt.oStdClasses, {
                 // give some foundation classes to our controls
                 sWrapper: 'large-12 columns ',
@@ -89,6 +90,7 @@
                 sPageButtonDisabled: 'disabled',
                 sPageButtonActive: 'success'
             });
+
             var closedSessionTable = $('#closed-table').dataTable({
                "order": [[1, 'asc'],[2, 'asc']],
                  "bPaginate": false,
@@ -96,13 +98,7 @@
                     "sSearch": "Search:"
                 }
              });
-             $(".show-tutors").click(function() {
-                 $(this).next().toggle();
-                 if($(this).text() !== 'Show')
-                     $(this).text('Show');
-                 else
-                     $(this).text('Hide');
-             });
+
          });
     </script>
 

@@ -62,13 +62,6 @@
     </table>
     <script>
         $(document).ready( function () {
-            $(".show-tutors").click(function() {
-                $(this).next().toggle();
-                if($(this).text() !== 'Show')
-                    $(this).text('Show');
-                else
-                    $(this).text('Hide');
-            });
 
             var table = $('#table').DataTable( {
                 "aaSorting": [1, 'asc'],

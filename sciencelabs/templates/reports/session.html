@@ -141,6 +141,7 @@
     </div>
     <script>
         $(document).ready( function () {
+
             {% for date in dates %}
                 var table = $('#{{ date|int }}').DataTable( {
                     "bPaginate": false,
@@ -150,13 +151,6 @@
                 });
             {% endfor %}
 
-            $(".show-tutors").click(function() {
-                $(this).next().toggle();
-                if($(this).text() !== 'Show')
-                    $(this).text('Show');
-                else
-                    $(this).text('Hide');
-            });
         });
     </script>
 {% endblock %}
