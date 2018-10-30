@@ -75,7 +75,6 @@ class SessionView(FlaskView):
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_closed_session.html', **locals())
 
-    # TODO FIX ROUTE
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -103,7 +102,6 @@ class SessionView(FlaskView):
         session = self.session.get_session(session_id)
         return render_template('session/add_anonymous.html', **locals())
 
-    # TODO FIX ROUTE
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -385,7 +383,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:deleted'))
 
     def student_sign_in(self, session_id):
-        self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in
+        self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Authentication)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def student_sign_out(self, session_id, student_id):
@@ -393,7 +391,8 @@ class SessionView(FlaskView):
         return redirect(url_for('SessionView:student_attendance', session_id=session_id))
 
     def tutor_sign_in(self, session_id):
-        self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)  # TODO: Update with actual sign in
+        # TODO: Update with actual sign in (CAS Authentication)
+        self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
 
     def tutor_sign_out(self, session_id, tutor_id):

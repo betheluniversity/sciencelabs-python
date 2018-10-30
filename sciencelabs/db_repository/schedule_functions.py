@@ -257,7 +257,7 @@ class Schedule:
 
     def get_first_session_date(self, week_day, semester_start):
         first_date = semester_start
-        today = date(2018, 1, 1)  # TODO: date.today() so schedules start either at term start or today going forward
+        today = date.today()
         if today > first_date:
             first_date = today
         while True:
