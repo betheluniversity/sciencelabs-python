@@ -1,14 +1,75 @@
 {% extends 'session/base.html' %}
 
-{% block header %}
-    <div class="header card">
+{% block body_content %}
+    {% if open_sessions %}
+        <div class="header card">
+            <div class="card-body">
+                <p class="card-text">Open Sessions</p>
+            </div>
+        </div>
+        <table id="open-table"  class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Room</th>
+                    <th>Tutors</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session_info in open_sessions %}
+                    <tr>
+                        <td>
+                            {{ session_info.name }}
+                        </td>
+                        <td>
+                            {{ session_info.date.strftime('%m/%d/%Y') }}
+                        </td>
+                        <td>
+                            {{ session_info.schedStartTime|datetimeformat + ' - ' + session_info.schedEndTime|datetimeformat }}
+                        </td>
+                        <td>
+                            {{ session_info.room }}
+                        </td>
+                        <td>
+                            <button type="button" class="show-tutors blue btn btn-primary">Show</button>
+                            <div style="display: none;" class="text-left margin-top-10">
+                            {% set tutors = session_tutors.get_session_tutors(session_info.id) %}
+                            {% for tutor in tutors %}
+                                {{ tutor.firstName }} {{ tutor.lastName }}
+                                {% if tutor.isLead %}
+                                    <span class="button-labels">Lead</span>
+                                {% endif %}
+                                <br />
+                            {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                {% if 'Administrator' in session['USER-ROLES'] %}
+                                    <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}'
+                                       id="edit" class="btn btn-primary">Edit</a>
+                                    <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}'
+                                       id="delete" class="btn btn-primary">Delete</a>
+                                {% endif %}
+                                <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                   class="btn blue btn-primary">Enter</a>
+                                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                   id="delete" class="btn btn-primary">Close</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <div class="header card" style="margin-top:20px;">
         <div class="card-body">
             <p class="card-text">Remaining Scheduled Sessions for {{ semester.term }} {{ semester.year }}</p>
         </div>
     </div>
-{% endblock %}
-
-{% block body_content %}
     {% if sessions %}
         <table id="available-table"  class="table table-striped table-bordered">
             <thead>
@@ -53,19 +114,12 @@
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
                                     <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}'
-                                       class="edit btn btn-primary">Edit</a>
+                                       id="edit" class="btn btn-primary">Edit</a>
                                     <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}'
-                                       class="delete btn btn-primary">Delete</a>
+                                       id="delete" class="btn btn-primary">Delete</a>
                                 {% endif %}
-                                {% if session_info.open == 0 %}
-                                    <a href="{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                       class="btn btn-primary">Start</a>
-                                {% else %}
-                                    <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                       class="btn btn-primary">Enter</a>
-                                    <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                       class="delete btn btn-primary">Close</a>
-                                {% endif %}
+                                <a href="{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                   class="btn blue btn-primary">Start</a>
                             </div>
                         </td>
                     </tr>
@@ -92,6 +146,14 @@
             });
 
             var availableSessionTable = $('#available-table').dataTable({
+               "order": [[1, 'asc'],[2, 'asc']],
+                 "bPaginate": false,
+                "oLanguage": {
+                    "sSearch": "Search:"
+                }
+             });
+
+            var openSessionTable = $('#open-table').dataTable({
                "order": [[1, 'asc'],[2, 'asc']],
                  "bPaginate": false,
                 "oLanguage": {

@@ -38,6 +38,9 @@ class Session:
             .filter(Session_Table.id == session_id)\
             .one()
 
+    def get_open_sessions(self):
+        return session.query(Session_Table).filter(Session_Table.open == 1).all()
+
     def get_session_tutors(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
                              TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
@@ -439,7 +442,7 @@ class Session:
         session.commit()
 
     def close_open_sessions_cron(self):
-        open_sessions = session.query(Session_Table).filter(Session_Table.open == 1).all()
+        open_sessions = self.get_open_sessions()
         for open_session in open_sessions:
             self.close_open_session(open_session.id, None)
         session.commit()

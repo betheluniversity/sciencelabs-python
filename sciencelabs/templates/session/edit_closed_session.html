@@ -23,8 +23,8 @@
                        name="room" autocomplete="off">
             </div>
             <div class="form-group col-md-3">
-                <label for="">Semester</label>
-                <select id="semester-select" class="custom-select">
+                <label for="semester-select">Semester</label>
+                <select id="semester-select" class="custom-select" name="semester-select">
                     {% for semester in session['SEMESTER-LIST'] %}
                         <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
                     {% endfor %}

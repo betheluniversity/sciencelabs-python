@@ -27,6 +27,7 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
+        open_sessions = self.session.get_open_sessions()
         session_tutors = self.session
         return render_template('session/available_sessions.html', **locals())
 
@@ -145,7 +146,7 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             name = form.get('name')
             room = form.get('room')
-            semester_id = form.get('semester')
+            semester_id = form.get('semester-select')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start') or None
@@ -297,7 +298,7 @@ class SessionView(FlaskView):
             form = request.form
             name = form.get('name')
             room = form.get('room')
-            semester_id = form.get('semester')
+            semester_id = form.get('semester-select')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start') or None
