@@ -444,6 +444,9 @@ class Session:
     def close_open_sessions_cron(self):
         open_sessions = self.get_open_sessions()
         for open_session in open_sessions:
-            self.close_open_session(open_session.id, None)
+            message = 'Closed by the system on ' + datetime.now().strftime('%m/%d/%Y')
+            if open_session.comments:
+                message += ' with message ' + open_session.comments
+            self.close_open_session(open_session.id, message)
         session.commit()
         return "All open sessions closed"

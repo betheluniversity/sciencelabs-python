@@ -74,7 +74,7 @@ class SessionView(FlaskView):
         student_courses = self.session
         course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
-        return render_template('session/edit_closed_session.html', **locals())
+        return render_template('session/edit_session.html', **locals())
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
@@ -328,10 +328,9 @@ class SessionView(FlaskView):
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        opener_username = session['USERNAME']
-        opener_user = self.user.get_user_by_username(opener_username)
-        self.session.start_open_session(session_id, opener_user.id)
-        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
+        opener = self.user.get_user_by_username(session['USERNAME'])
+        self.session.start_open_session(session_id, opener.id)
+        self.session.add_tutor_to_session(session_id, opener.id, datetime.now().strftime('%H:%M:%S'), None, 1)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
