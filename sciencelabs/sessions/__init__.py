@@ -1,6 +1,6 @@
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session, json
 from flask_classy import FlaskView, route
 
 # Local
@@ -386,16 +386,34 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
+    @route('/checkin/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash):
-        self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Authentication)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        user = self.user.get_user(40729)
+        student_courses = self.user.get_student_courses(40729, 40013)  # TODO: Update with actual sign in (CAS Auth)
+        time_in = datetime.now().strftime("%I:%M%p")
+        return render_template('session/student_sign_in.html', **locals())
+
+    @route('/checkin/confirm', methods=['post'])
+    def student_sign_in_confirm(self):
+        form = request.form
+        session_id = form.get('sessionID')
+        session_hash = form.get('sessionHash')
+        json_courses = form.get('jsonCourseIDs')
+        student_courses = json.loads(json_courses)
+        other_course_check = True if form.get('otherCourseCheck') == 'true' else False
+        other_course_name = form.get('otherCourseName')
+        time_in = form.get('timeIn')
+        print('success')
+        return 'done'
+        # self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Auth)
+        # return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_in(self, session_id, session_hash):
-        # TODO: Update with actual sign in (CAS Authentication)
+        # TODO: Update with actual sign in (CAS Auth)
         self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
