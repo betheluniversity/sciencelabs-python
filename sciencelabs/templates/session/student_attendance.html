@@ -30,10 +30,19 @@
             <th>Time In</th>
             <th>Time Out</th>
         </tr>
-        {% for student in students %}
+        {% for student, courses in students_and_courses.items() %}
             <tr>
                 <td>{{ student.firstName }} {{ student.lastName }}</td>
-                <td>Courses TO DO</td>
+                <td>
+                    <ul>
+                        {% for course in courses %}
+                            <li>{{ course.dept }}{{ course.course_num }}</li>
+                        {% endfor %}
+                        {% if student.otherCourse and student.otherCourseName %}
+                            <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                        {% endif %}
+                    </ul>
+                </td>
                 <td>{{ student.timeIn|datetimeformat }}</td>
                 <td>
                     {% if student.timeOut %}

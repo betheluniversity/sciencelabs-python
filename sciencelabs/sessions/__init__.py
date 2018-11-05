@@ -339,6 +339,9 @@ class SessionView(FlaskView):
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
+        students_and_courses = {}
+        for student in students:
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         return render_template('session/student_attendance.html', **locals())
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -403,10 +406,9 @@ class SessionView(FlaskView):
         other_course_check = True if form.get('otherCourseCheck') == 'true' else False
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        print('success')
-        return 'done'
-        # self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Auth)
-        # return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        # TODO: Update with actual sign in (CAS Auth)
+        self.session.student_sign_in(session_id, 40729, student_courses, other_course_check, other_course_name, time_in)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
