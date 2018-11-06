@@ -365,6 +365,17 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
+            # Send the email here?
+            # Use these variables to do so
+            ##################
+            # user = self.user
+            # session_ = self.session
+            # courses = self.course
+            # tutors = session_.get_session_tutors(session_id)
+            # session_students = session_.get_session_students(session_id)
+            # session_courses = session_.get_session_courses(session_id)
+            # sess = session_.get_session(session_id)
+            ##################
             set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
