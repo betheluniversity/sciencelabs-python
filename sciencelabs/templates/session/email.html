@@ -178,8 +178,7 @@
         {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
         {% set course_info = courses.get_course(course.id) %}
         <tr>
-            {# TODO FIX ANCHOR TAG TO LINK TO SOMETHING #}
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px"><a href="/report/session/{{ course.id }}">{{ course_info[0].title }} (Section {{ course_info[0].section }}) ({{ course.dept }}{{ course.course_num }})</a></td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px"><a href="/report/course/{{ course.id }}">{{ course_info[0].title }} (Section {{ course_info[0].section }}) ({{ course.dept }}{{ course.course_num }})</a></td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">{{ course_info[1].firstName }} {{ course_info[1].lastName }}</td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ attendance[0] }}</td>
         </tr>
