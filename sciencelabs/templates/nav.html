@@ -64,7 +64,7 @@
     {% if session['ADMIN-VIEWER'] %}
         <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0px 10px; background-color: tomato; text-align: center;">
             <div style="color: white; display: inline-block !important;" class="collapse navbar-collapse" id="navbarSupportedContent">
-                <p>Viewing
+                <p style="margin: 10px 0px;">Viewing
                     {% if session['ADMIN-USERNAME'] %}
                         user: [{{ session['USERNAME'] }}]
                     {% endif %}
