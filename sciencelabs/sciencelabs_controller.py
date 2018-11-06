@@ -44,9 +44,15 @@ class ScienceLabsController(object):
     def get_hash(self):
         return ''.join(random.choices(string.ascii_letters + string.digits, k=13))
 
-    def check_roles_and_route(self, allowed_roles):
-        for role in allowed_roles:
-            if role in session['USER-ROLES']:
-                return True
-        abort(403)
+    def check_roles_and_route(self, allowed_roles, admin=False):
+        if not admin:
+            for role in allowed_roles:
+                if role in session['USER-ROLES']:
+                    return True
+            abort(403)
+        else:
+            for role in allowed_roles:
+                if role in session['ADMIN-ROLES']:
+                    return True
+            abort(403)
 

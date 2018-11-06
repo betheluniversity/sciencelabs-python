@@ -223,6 +223,25 @@ ul.no-margin {
    border-color: #0c2342;
 }
 
+.custom-user-a {
+    color: #0F2C52;
+}
+
+.custom-user-div {
+    color: white;
+    display: inline-block !important;
+}
+
+.custom-user-p {
+    margin: 10px 0px;
+}
+
+.custom-user-nav {
+    padding: 0px 10px;
+    background-color: tomato;
+    /*text-align: center;*/
+}
+
 .dd-background:hover {
     background-color: #0F2C52;
 }

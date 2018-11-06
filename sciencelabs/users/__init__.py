@@ -1,7 +1,7 @@
 import json
 
 # Packages
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from flask_classy import FlaskView, route
 
 # Local
@@ -144,6 +144,21 @@ class UsersView(FlaskView):
         except Exception as error:
             set_alert('danger', 'Failed to add user: ' + str(error))
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
+
+    def act_as_user(self, user_id):
+        if not session['ADMIN-VIEWER']:
+            self.slc.check_roles_and_route(['Administrator'])
+            user_info = self.user.get_user(user_id)
+            session['ADMIN-VIEWER'] = True
+            session['ADMIN-USERNAME'] = session['USERNAME']
+            session['ADMIN-ROLES'] = session['USER-ROLES']
+            session['USERNAME'] = user_info.username
+            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            session['USER-ROLES'] = []
+            user_roles = User().get_user_roles(user_id)
+            for role in user_roles:
+                session['USER-ROLES'].append(role.name)
+        return redirect("/")
 
     @requires_auth
     @route('/cron_populate_user_courses', methods=['get'])
