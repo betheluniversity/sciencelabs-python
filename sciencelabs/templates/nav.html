@@ -61,5 +61,37 @@
             </div>
         </div>
     </nav>
+    {% if session['ADMIN-VIEWER'] %}
+        <nav class="navbar navbar-expand-lg navbar-dark" style="padding: 0px 10px; background-color: tomato; text-align: center;">
+            <div style="color: white; display: inline-block !important;" class="collapse navbar-collapse" id="navbarSupportedContent">
+                <p>Viewing
+                    {% if session['ADMIN-USERNAME'] %}
+                        user: [{{ session['USERNAME'] }}]
+                    {% endif %}
+                    | Return to your <a id="reset" href="" style="color: #0F2C52; text-decoration: none;" href="">account</a>.
+                </p>
+            </div>
+        </nav>
+
+        <script>
+            $(document).ready(function(){
+                $('#reset').click(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/reset-act-as",
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function (response) {
+                            window.location.assign('/')
+                            console.log(response);
+                            },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+        </script>
+
+    {% endif %}
 
 {% endmacro %}
