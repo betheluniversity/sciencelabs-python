@@ -365,6 +365,7 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
+            # TODO STILL HAVE TO CONNECT THIS, BUT EVERYTHING SHOULD BE SETUP
             # Send the email here?
             # Use these variables to do so
             ##################
