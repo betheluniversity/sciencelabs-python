@@ -26,6 +26,7 @@ from sciencelabs.email_tab import EmailView
 from sciencelabs.course import CourseView
 from sciencelabs.schedule import ScheduleView
 from sciencelabs.profile import ProfileView
+from sciencelabs.sciencelabs_controller import ScienceLabsController as slc
 View.register(app)
 SessionView.register(app)
 ReportView.register(app)
@@ -82,6 +83,20 @@ def set_semester_selector():
         session['SELECTED-SEMESTER'] = int(semester_id)
         # Lets the session know it was modified
         session.modified = True
+        return 'success'
+    except Exception as error:
+        return error
+
+
+@app.route("/reset-act-as", methods=["POST"])
+def reset_act_as():
+    slc().check_roles_and_route(['Administrator'], True)
+    try:
+        session['USERNAME'] = session['ADMIN-USERNAME']
+        user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
+        session['ADMIN-VIEWER'] = False
+        session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+        session['USER-ROLES'] = session['ADMIN-ROLES']
         return 'success'
     except Exception as error:
         return error
