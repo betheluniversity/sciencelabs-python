@@ -176,7 +176,7 @@ class User:
         session.commit()
 
     def get_user_by_username(self, username):
-        return session.query(User_Table).filter(User_Table.username == username).one()
+        return session.query(User_Table).filter(User_Table.username == username).one_or_none()
 
     def edit_user(self, first_name,last_name, username, email_pref):
         user_to_edit = self.get_user_by_username(username)
@@ -362,3 +362,23 @@ class User:
         return message
 
 ##########################################################################################################
+    def create_user_at_sign_in(self, username, semester):
+        names = self.wsapi.get_names_from_username(username)
+        first_name = names['0']['firstName']
+        if names['0']['prefFirstName']:
+            first_name = names['0']['prefFirstName']
+        last_name = names['0']['lastName']
+        student = self.create_user(first_name, last_name, username, 0)
+        self.set_user_roles(username, [40002])  # 40002 is the role id for student
+        user_courses = self.wsapi.get_student_courses(username)
+        for key, course in user_courses.items():
+            if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                    .filter(CourseCode_Table.dept == course['subject'])\
+                    .filter(CourseCode_Table.active == 1).one_or_none():
+                course_entry = session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                    .filter(Course_Table.semester_id == semester.id).one_or_none()
+                if course_entry:
+                    new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                    session.add(new_user_course)
+                    session.commit()
+        return student

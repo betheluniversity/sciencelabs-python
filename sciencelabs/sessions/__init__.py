@@ -339,6 +339,7 @@ class SessionView(FlaskView):
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
+        # TODO: Talk to Caleb - this is not how we do it in other places, but this is probably better (preserves MVC)
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
@@ -391,8 +392,13 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash):
-        user = self.user.get_user(40729)
-        student_courses = self.user.get_student_courses(40729, 40013)  # TODO: Update with actual sign in (CAS Auth)
+        user = self.user.get_user(40729)  # TODO: Update with CAS Auth
+        # This is pointless now, but once we are using CAS Auth we need to check if the user exists:
+        username = 'paa57639'
+        if not self.user.get_user_by_username(username):
+            semester = self.schedule.get_active_semester()
+            user = self.user.create_user_at_sign_in(username, semester)
+        student_courses = self.user.get_student_courses(user.id, 40013)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('session/student_sign_in.html', **locals())
 
