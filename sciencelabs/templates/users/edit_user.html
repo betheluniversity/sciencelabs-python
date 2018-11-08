@@ -38,6 +38,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
+                    {% if session['USERNAME'] != user.username and session['ADMIN-USERNAME'] != user.username %}
                         <label for="roles">Roles</label>
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox display-inl-b">
@@ -46,6 +47,7 @@
                                 <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                             </div>
                         {% endfor %}
+                    {% endif %}
                     </div>
                 </div>
                 <div class="form-row">
