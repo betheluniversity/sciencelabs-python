@@ -56,6 +56,9 @@
                     {{ session['NAME'] }}</a>
                 <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
+                    {% if 'Administrator' in session['USER-ROLES'] %}
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
+                    {% endif %}
                     <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
                 </div>
             </div>
@@ -82,10 +85,8 @@
                         contentType: 'application/json;charset=UTF-8',
                         success: function (response) {
                             window.location.assign('/')
-                            console.log(response);
                             },
                         error: function (error) {
-                            console.log(error);
                         }
                     });
                 });
