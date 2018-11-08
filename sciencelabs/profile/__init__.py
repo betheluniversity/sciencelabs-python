@@ -52,6 +52,6 @@ class ProfileView(FlaskView):
             session['ADMIN-USERNAME'] = session['USERNAME']
             session['ADMIN-ROLES'] = session['USER-ROLES']
             session['USERNAME'] = role
-            session['NAME'] = role
+            session['NAME'] = ""
             session['USER-ROLES'] = role
         return redirect(url_for('ProfileView:role_viewer'))

@@ -51,16 +51,26 @@
                 {% endif %}
             </ul>
             <div class="form-inline nav-item dropdown">
-                <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    {{ session['NAME'] }}</a>
-                <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
-                    {% if 'Administrator' in session['USER-ROLES'] %}
-                        <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
-                    {% endif %}
-                    <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
-                </div>
+                {% if session['NAME'] %}
+                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        {{ session['NAME'] }}</a>
+                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
+                        {% if 'Administrator' in session['USER-ROLES'] %}
+                            <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
+                        {% endif %}
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
+                    </div>
+                {% else %}
+                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        {{ session['USERNAME'] }}</a>
+                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </nav>
