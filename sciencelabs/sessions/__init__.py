@@ -11,6 +11,7 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs import app
 
 
 class SessionView(FlaskView):
@@ -337,12 +338,15 @@ class SessionView(FlaskView):
     def student_attendance(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
+        current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         # TODO: Talk to Caleb - this is not how we do it in other places, but this is probably better (preserves MVC)
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        all_students = self.user.get_all_current_students()
+        env = app.config['ENVIRON']
         return render_template('session/student_attendance.html', **locals())
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -392,13 +396,22 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash):
-        user = self.user.get_user(40729)  # TODO: Update with CAS Auth
-        # This is pointless now, but once we are using CAS Auth we need to check if the user exists:
-        username = 'paa57639'
-        if not self.user.get_user_by_username(username):
-            semester = self.schedule.get_active_semester()
-            user = self.user.create_user_at_sign_in(username, semester)
-        student_courses = self.user.get_student_courses(user.id, 40013)
+        semester = self.schedule.get_active_semester()
+        if app.config['ENVIRON'] == 'prod':
+            # TODO: UPDATE with CAS Auth
+            username = 'joj28267'  # Get this from CAS
+            user = self.user.get_user_by_username(username)
+            if not user:
+                user = self.user.create_user_at_sign_in(username, semester)
+        else:
+            form = request.form
+            student = form.get('selected-student')
+            if student == '-1':
+                set_alert('danger', 'Invalid Student')
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+            else:
+                user = self.user.get_user(student)
+        student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('session/student_sign_in.html', **locals())
 

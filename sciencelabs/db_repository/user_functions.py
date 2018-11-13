@@ -120,6 +120,11 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
 
+    def get_all_current_students(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student').order_by(User_Table.lastName.asc()).all()
+
     def delete_user(self, user_id):
         user_to_delete = self.get_user(user_id)
         user_to_delete.deletedAt = datetime.now()
@@ -264,10 +269,7 @@ class User:
         message = ''
 
         # get all active students
-        active_students = session.query(User_Table).filter(User_Table.deletedAt == None)\
-            .filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == Role_Table.id)\
-            .filter(Role_Table.name == 'Student').all()
+        active_students = self.get_all_current_students()
 
         for student in active_students:
             # Get courses from banner
