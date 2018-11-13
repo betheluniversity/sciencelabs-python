@@ -98,11 +98,8 @@ class ReportView(FlaskView):
             total_sessions += sessions[1]
 
         total_attendance = 0
-        unique_attendance = 0
-        attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
-            attendance_list += [sessions[1]]
 
         avg_total = self.session_.get_avg_total_time_per_student(session['SELECTED-SEMESTER'])
         avg_total_time = 0
@@ -145,10 +142,8 @@ class ReportView(FlaskView):
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         total_attendance = 0
         unique_attendance = 0
-        attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
-            attendance_list += [sessions[1]]
 
         unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
         unique_attendance_list = []
@@ -176,16 +171,18 @@ class ReportView(FlaskView):
         total_anon = 0
         for schedule, sessions in term_info:
             anonStudents = 0
+            attendance = 0
             for sess, sched in anon_attendance:
                 if schedule.id == sched.id:
                     anonStudents += sess.anonStudents
+                    attendance += len(self.session_.get_number_of_sessions(sess.id))
             total_anon += anonStudents
             session_count += sessions
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
                             sessions,
-                            attendance_list[index] + anonStudents,
-                            str(round((((attendance_list[index] + anonStudents) / all_total_attendance) * 100))) + '%'])
+                            attendance + anonStudents,
+                            str(round((((attendance + anonStudents) / all_total_attendance) * 100))) + '%'])
             index += 1
 
         my_list.append(['', '', '', 'Total:', session_count, total_attendance + total_anon, '100%'])
