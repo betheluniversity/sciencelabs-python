@@ -40,6 +40,7 @@ class ReportView(FlaskView):
         month = self.get_selected_month()
         year = sem.year
         student_info = self.user.get_student_info(session['SELECTED-SEMESTER'])
+        user = self.user
         return render_template('reports/student.html', **locals())
 
     @route('/student/<int:student_id>')
