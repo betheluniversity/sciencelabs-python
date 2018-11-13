@@ -175,7 +175,7 @@ class ReportView(FlaskView):
             for sess, sched in anon_attendance:
                 if schedule.id == sched.id:
                     anonStudents += sess.anonStudents
-                    attendance += len(self.session_.get_number_of_sessions(sess.id))
+                    attendance += len(self.session_.get_number_of_student_sessions(sess.id))
             total_anon += anonStudents
             session_count += sessions
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
@@ -539,7 +539,7 @@ class ReportView(FlaskView):
         for date in dates:
             for session_info in sessions:
                 if (str(session_info.date.strftime('%m'))) == date:
-                    attendance = len(self.session_.get_number_of_sessions(session_info.id))
+                    attendance = len(self.session_.get_number_of_student_sessions(session_info.id))
                     my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
                                     days[self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek],
                                     session_info.startTime, session_info.endTime, session_info.room, attendance,

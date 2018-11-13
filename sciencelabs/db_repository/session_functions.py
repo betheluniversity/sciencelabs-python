@@ -76,7 +76,7 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
-    def get_number_of_sessions(self, session_id):
+    def get_number_of_student_sessions(self, session_id):
         return session.query(func.count(StudentSession_Table.sessionId))\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.id == session_id)\

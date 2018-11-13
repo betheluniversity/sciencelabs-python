@@ -128,7 +128,7 @@
                                 {% set attendance = [0] %}
                                 {% for sess, sched in anon_attendance %}
                                     {% if sched.id == schedule.id %}
-                                        {% if attendance.append(attendance.pop() + (session_.get_number_of_sessions(sess.id)|length)) %}{% endif %}
+                                        {% if attendance.append(attendance.pop() + (session_.get_number_of_student_sessions(sess.id)|length)) %}{% endif %}
                                     {% endif %}
                                 {% endfor %}
                                 {{ attendance[0] + anonStudents[0] }}
