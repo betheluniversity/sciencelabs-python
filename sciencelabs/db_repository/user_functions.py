@@ -125,6 +125,11 @@ class User:
             .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
             .filter(Role_Table.name == 'Student').order_by(User_Table.lastName.asc()).all()
 
+    def get_all_current_tutors(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Tutor').order_by(User_Table.lastName.asc()).all()
+
     def delete_user(self, user_id):
         user_to_delete = self.get_user(user_id)
         user_to_delete.deletedAt = datetime.now()

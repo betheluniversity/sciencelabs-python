@@ -75,6 +75,7 @@
                 var signInInfo = {
                     'sessionID': {{ session_id }},
                     'sessionHash': '{{ session_hash }}',
+                    'studentID': {{ user.id }},
                     'jsonCourseIDs': jsonCourseIDs,
                     'otherCourseCheck': otherCourseCheck,
                     'otherCourseName': $('#course-name').val(),
@@ -82,7 +83,7 @@
                 };
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
                 $.post(url, signInInfo, function(){
-                    alert('completed');
+                    window.location.replace("{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash) }}");
                 });
             });
 

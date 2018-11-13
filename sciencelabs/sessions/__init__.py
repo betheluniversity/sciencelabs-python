@@ -353,9 +353,12 @@ class SessionView(FlaskView):
     def tutor_attendance(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
+        current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info(session_info.semester_id)
         tutors = self.session.get_session_tutors(session_id)
+        all_tutors = self.user.get_all_current_tutors()
+        env = app.config['ENVIRON']
         return render_template('session/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -409,8 +412,7 @@ class SessionView(FlaskView):
             if student == '-1':
                 set_alert('danger', 'Invalid Student')
                 return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-            else:
-                user = self.user.get_user(student)
+            user = self.user.get_user(student)
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('session/student_sign_in.html', **locals())
@@ -420,22 +422,31 @@ class SessionView(FlaskView):
         form = request.form
         session_id = form.get('sessionID')
         session_hash = form.get('sessionHash')
+        student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
         other_course_check = True if form.get('otherCourseCheck') == 'true' else False
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        # TODO: Update with actual sign in (CAS Auth)
-        self.session.student_sign_in(session_id, 40729, student_courses, other_course_check, other_course_name, time_in)
+        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
+    @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
     def tutor_sign_in(self, session_id, session_hash):
-        # TODO: Update with actual sign in (CAS Auth)
-        self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)
+        if app.config['ENVIRON'] == 'prod':
+            user = self.user.get_user(40476)  # TODO: Update with actual sign in (CAS Auth)
+        else:
+            form = request.form
+            tutor_id = form.get('selected-tutor')
+            if tutor_id == '-1':
+                set_alert('danger', 'Invalid Tutor')
+                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+            user = self.user.get_user(tutor_id)
+        self.session.add_tutor_to_session(session_id, user.id, datetime.now().strftime('%H:%M:%S'), None, 1)  # TODO: Passing in all as lead tutors currently
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):

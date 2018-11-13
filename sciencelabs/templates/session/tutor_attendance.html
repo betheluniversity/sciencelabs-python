@@ -20,10 +20,23 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <div class="centered margin-bottom-10">
-                <a href='{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}'
-                   class="big-button btn btn-primary sign-in">Sign in as a Tutor</a>
-            </div>
+            <form action="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+                {% if env != 'prod' %}
+                    <div>
+                        <label for="tutor-select">Select a tutor to sign in:</label>
+                        <select id="tutor-select" name="selected-tutor">
+                            <option value="-1">Choose a Tutor</option>
+                            {% for tutor in all_tutors %}
+                                <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+                {% endif %}
+                <div class="centered margin-bottom-10">
+                    <button type="submit" class="big-button btn btn-primary sign-in">Sign in as a Tutor</button>
+                </div>
+            </form>
 
             <table id="tutor-attendance" class="table table-striped table-bordered">
                 <tr>

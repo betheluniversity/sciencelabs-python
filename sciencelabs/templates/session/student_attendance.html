@@ -19,7 +19,7 @@
     <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
         {% if env != 'prod' %}
             <div>
-                <label for="student-select">Select a Student to sign in:</label>
+                <label for="student-select">Select a student to sign in:</label>
                 <select id="student-select" name="selected-student">
                     <option value="-1">Choose a Student</option>
                     {% for student in all_students %}
