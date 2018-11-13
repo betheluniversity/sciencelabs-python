@@ -76,6 +76,13 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
+    def get_number_of_sessions(self, session_id):
+        return session.query(func.count(StudentSession_Table.sessionId))\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.id == session_id)\
+            .group_by(StudentSession_Table.studentId)\
+            .all()
+
     # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
         return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\

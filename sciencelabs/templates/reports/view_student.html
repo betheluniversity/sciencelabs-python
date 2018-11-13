@@ -47,7 +47,7 @@
                     <thead>
                     <tr>
                         <td><b>Sessions Attended</b></td>
-                        <td>{{ attendance }}</td>
+                        <td>{{ user.get_unique_sessions_attended(student_id, session['SELECTED-SEMESTER'])|length }}</td>
                     </tr>
                     </thead>
                     <tbody>

@@ -69,6 +69,16 @@ class User:
                 .group_by(User_Table.id) \
                 .one()
 
+    def get_unique_sessions_attended(self, student_id, semester_id):
+        return session.query(func.count(StudentSession_Table.sessionId))\
+            .filter(student_id == User_Table.id)\
+            .filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.id == semester_id)\
+            .group_by(StudentSession_Table.sessionId)\
+            .all()
+
     def get_student_courses(self, student_id, semester_id):
         return session.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\

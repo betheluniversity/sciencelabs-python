@@ -40,6 +40,7 @@ class ReportView(FlaskView):
         month = self.get_selected_month()
         year = sem.year
         student_info = self.user.get_student_info(session['SELECTED-SEMESTER'])
+        user = self.user
         return render_template('reports/student.html', **locals())
 
     @route('/student/<int:student_id>')
@@ -73,7 +74,7 @@ class ReportView(FlaskView):
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
         for student, attendance in self.user.get_student_info(session['SELECTED-SEMESTER']):
-            my_list.append([student.lastName, student.firstName, student.email, attendance])
+            my_list.append([student.lastName, student.firstName, student.email, len(self.user.get_unique_sessions_attended(student.id, session['SELECTED-SEMESTER']))])
 
         return self.export_csv(my_list, csv_name)
 
@@ -97,11 +98,8 @@ class ReportView(FlaskView):
             total_sessions += sessions[1]
 
         total_attendance = 0
-        unique_attendance = 0
-        attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
-            attendance_list += [sessions[1]]
 
         avg_total = self.session_.get_avg_total_time_per_student(session['SELECTED-SEMESTER'])
         avg_total_time = 0
@@ -125,7 +123,6 @@ class ReportView(FlaskView):
 
         return render_template('reports/term.html', **locals())
 
-    # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
@@ -145,10 +142,8 @@ class ReportView(FlaskView):
         term_attendance = self.schedule.get_session_attendance(session['SELECTED-SEMESTER'])
         total_attendance = 0
         unique_attendance = 0
-        attendance_list = []
         for sessions in term_attendance:
             total_attendance += sessions[1]
-            attendance_list += [sessions[1]]
 
         unique_attendance_info = self.user.get_unique_session_attendance(session['SELECTED-SEMESTER'])
         unique_attendance_list = []
@@ -176,16 +171,18 @@ class ReportView(FlaskView):
         total_anon = 0
         for schedule, sessions in term_info:
             anonStudents = 0
+            attendance = 0
             for sess, sched in anon_attendance:
                 if schedule.id == sched.id:
                     anonStudents += sess.anonStudents
+                    attendance += len(self.session_.get_number_of_sessions(sess.id))
             total_anon += anonStudents
             session_count += sessions
             my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
                             self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
                             sessions,
-                            attendance_list[index] + anonStudents,
-                            str(round((((attendance_list[index] + anonStudents) / all_total_attendance) * 100))) + '%'])
+                            attendance + anonStudents,
+                            str(round((((attendance + anonStudents) / all_total_attendance) * 100))) + '%'])
             index += 1
 
         my_list.append(['', '', '', 'Total:', session_count, total_attendance + total_anon, '100%'])
@@ -495,6 +492,7 @@ class ReportView(FlaskView):
         months = self.base.months
         sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_ = self.session_
+
         return render_template('reports/session.html', **locals())
 
     @route('/session/<int:session_id>')
@@ -535,13 +533,15 @@ class ReportView(FlaskView):
             if (str(session_info.date.strftime('%m'))) not in dates:
                 dates.append(str(session_info.date.strftime('%m')))
 
+        days = self.base.days
+
         total_attendance = 0
         for date in dates:
             for session_info in sessions:
                 if (str(session_info.date.strftime('%m'))) == date:
-                    attendance = len(self.session_.get_session_students(session_info.id))
+                    attendance = len(self.session_.get_number_of_sessions(session_info.id))
                     my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
-                                    self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek,
+                                    days[self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek],
                                     session_info.startTime, session_info.endTime, session_info.room, attendance,
                                     session_info.comments])
                     total_attendance += attendance

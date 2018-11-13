@@ -52,7 +52,7 @@
                                         {{ student.email }}
                                     </td>
                                     <td>
-                                        {{ attendance }}
+                                        {{ user.get_unique_sessions_attended(student.id, session['SELECTED-SEMESTER'])|length }}
                                     </td>
                                     <td>
                                         <a href='{{ url_for('ReportView:view_student', student_id=student.id) }}' id="darkblue" class="btn btn-primary">View</a>

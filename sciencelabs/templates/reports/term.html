@@ -125,10 +125,16 @@
                                 {% endif %}
                             {% endfor %}
                             <td>
-                                 {{ attendance_list[loop.index0] + anonStudents[0] }}
+                                {% set attendance = [0] %}
+                                {% for sess, sched in anon_attendance %}
+                                    {% if sched.id == schedule.id %}
+                                        {% if attendance.append(attendance.pop() + (session_.get_number_of_sessions(sess.id)|length)) %}{% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ attendance[0] + anonStudents[0] }}
                             </td>
                             <td>
-                                {{ ((attendance_list[loop.index0] + anonStudents[0]) / all_total_attendance * 100)|round|int  }}%
+                                {{ ((attendance[0] + anonStudents[0]) / all_total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
                         {% if total_anon_attendance.append(total_anon_attendance.pop() + anonStudents[0]) %}{% endif %}
