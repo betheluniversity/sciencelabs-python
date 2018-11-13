@@ -74,7 +74,7 @@ class ReportView(FlaskView):
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
         for student, attendance in self.user.get_student_info(session['SELECTED-SEMESTER']):
-            my_list.append([student.lastName, student.firstName, student.email, attendance])
+            my_list.append([student.lastName, student.firstName, student.email, len(self.user.get_unique_sessions_attended(student.id, session['SELECTED-SEMESTER']))])
 
         return self.export_csv(my_list, csv_name)
 
@@ -126,7 +126,6 @@ class ReportView(FlaskView):
 
         return render_template('reports/term.html', **locals())
 
-    # TODO NEED TO FIX THESE NUMBERS
     def export_semester_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
@@ -496,6 +495,7 @@ class ReportView(FlaskView):
         months = self.base.months
         sessions = self.session_.get_closed_sessions(session['SELECTED-SEMESTER'])
         session_ = self.session_
+
         return render_template('reports/session.html', **locals())
 
     @route('/session/<int:session_id>')
@@ -536,13 +536,15 @@ class ReportView(FlaskView):
             if (str(session_info.date.strftime('%m'))) not in dates:
                 dates.append(str(session_info.date.strftime('%m')))
 
+        days = self.base.days
+
         total_attendance = 0
         for date in dates:
             for session_info in sessions:
                 if (str(session_info.date.strftime('%m'))) == date:
-                    attendance = len(self.session_.get_session_students(session_info.id))
+                    attendance = len(self.session_.get_number_of_sessions(session_info.id))
                     my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
-                                    self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek,
+                                    days[self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek],
                                     session_info.startTime, session_info.endTime, session_info.room, attendance,
                                     session_info.comments])
                     total_attendance += attendance
