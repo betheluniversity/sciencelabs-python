@@ -56,7 +56,7 @@
                         </td>
                         <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                         {% set attendance_per_session = session_.get_session_attendees_with_dup(course[0].id, session.id) %}
-                        <td><a href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ attendance_per_session|length }}</a></td>
+                        <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ attendance_per_session|length }}</a></td>
                     {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
                     </tr>
                     {% endfor %}
@@ -84,8 +84,8 @@
                     <tbody>
                     {% for student, attendance in students %}
                         <tr>
-                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
-                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
+                            <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
+                            <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
                             <td>{{ attendance }}</td>
                         {% set time = user.get_average_time_in_course(student.id, course[0].id) %}
                         {% set avg_time = [0] %}

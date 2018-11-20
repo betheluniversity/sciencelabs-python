@@ -38,7 +38,7 @@
                                 Username: {{ student.username }}
                             </li>
                             <li>
-                                Email: <a href="mailto:{{ student.email }}">{{ student.email }}</a>
+                                Email: <a class="no-decoration" href="mailto:{{ student.email }}">{{ student.email }}</a>
                             </li>
                         </ul>
                     </li>
@@ -112,7 +112,7 @@
                             {% set time = user.get_average_time_in_course(student.id, course.id) %}
                             <li>
                                 {% if time|length != 0 %}
-                                    <a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
+                                    <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
                                     {{ ' (' + course.dept + course.course_num + ')' }}
                                 {% endif %}
                             </li>
@@ -145,7 +145,7 @@
                     {% for studentsession, session in sessions %}
                         <tr>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                            <td><a href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ session.name }}</a></td>
+                            <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ session.name }}</a></td>
                             <td>
                                 {% for course in session_.get_report_student_session_courses(session.id, student.id) %}
                                     <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
