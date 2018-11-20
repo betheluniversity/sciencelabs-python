@@ -37,7 +37,7 @@ class Session:
     def get_session(self, session_id):
         return session.query(Session_Table)\
             .filter(Session_Table.id == session_id)\
-            .one()
+            .first()
 
     def get_open_sessions(self):
         return session.query(Session_Table).filter(Session_Table.open == 1).all()
@@ -80,6 +80,13 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
+    def get_number_of_student_sessions(self, session_id):
+        return session.query(func.count(StudentSession_Table.sessionId))\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.id == session_id)\
+            .group_by(StudentSession_Table.studentId)\
+            .all()
+
     # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
         return session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
@@ -99,6 +106,12 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .distinct()
 
+    def get_course_email_info(self, course_id):
+        return session.query(Course_Table.title, Course_Table.section)\
+            .filter(Course_Table.id == course_id)\
+            .all()
+
+
     def get_other_course(self, session_id, student_id):
         return session.query(StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
@@ -112,6 +125,16 @@ class Session:
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(Course_Table.id == course_id)\
+            .all()
+
+    def get_course_session(self, course_id, session_id):
+        return session.query(Session_Table, Schedule_Table)\
+            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+            .filter(Session_Table.id == StudentSession_Table.sessionId)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(Course_Table.id == course_id)\
+            .filter(Session_Table.id == session_id) \
             .all()
 
     def get_session_attendees(self, session_id):

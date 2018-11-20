@@ -202,8 +202,22 @@ ul.no-margin {
     white-space: nowrap;
 }
 
+.chosen-comments {
+    border: 1px solid #aaa !important;
+    border-radius: 0px !important;
+    padding: 0px 5px;
+}
+
 .chosen-container {
     min-width: 100%;
+}
+
+.chosen-format {
+    border: 1px solid #aaa !important;
+    border-radius: 0px !important;
+    padding: 0px 5px;
+    height: 29px;
+    font-size: .875rem !important;
 }
 
 .col-group {
@@ -221,6 +235,25 @@ ul.no-margin {
    right: 10px;
    background-color: #0F2C52;
    border-color: #0c2342;
+}
+
+.custom-user-a {
+    color: #0F2C52;
+}
+
+.custom-user-div {
+    color: white;
+    display: inline-block !important;
+}
+
+.custom-user-p {
+    margin: 10px 0px;
+}
+
+.custom-user-nav {
+    padding: 0px 10px;
+    background-color: tomato;
+    /*text-align: center;*/
 }
 
 .dd-background:hover {

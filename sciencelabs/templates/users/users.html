@@ -19,11 +19,12 @@
                             <th>First</th>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Change User</th>
                             <th>Edit</th>
                             <th>✓</th>
                         </tr>
                         <tr>
-                            <th colspan="4"></th>
+                            <th colspan="5"></th>
                             <th colspan="2">
                                 <button id="deactivate-users" type="button" class="btn btn-primary">Deactivate</button>
                             </th>
@@ -43,6 +44,9 @@
                                 </td>
                                 <td>
                                     {{ role.name }}
+                                </td>
+                                <td>
+                                    <a id="darkblue" href='{{ url_for('UsersView:act_as_user', user_id=user.id) }}' class="btn btn-primary">Act As User</a>
                                 </td>
                                 <td>
                                     <a id="darkblue" href='{{ url_for('UsersView:edit_user', user_id=user.id) }}' class="btn btn-primary">Edit</a>
@@ -106,6 +110,7 @@
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                 ],

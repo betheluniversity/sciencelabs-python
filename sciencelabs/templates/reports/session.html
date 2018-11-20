@@ -71,7 +71,7 @@
                                     </td>
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                                     <td>
-                                        {% set attendance = session_.get_session_students(session.id) %}
+                                        {% set attendance = session_.get_number_of_student_sessions(session.id) %}
                                         {{ attendance|length + session.anonStudents }}
                                         {% if total_attendance.append(total_attendance.pop() + (attendance|length) + session.anonStudents) %}{% endif %}
                                     </td>

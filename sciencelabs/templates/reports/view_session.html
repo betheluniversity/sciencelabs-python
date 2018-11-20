@@ -139,12 +139,12 @@
                                 <tbody>
                                     {% for student in session_students %}
                                         <tr>
-                                            <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                            <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td>
                                                 <ul>
                                                     {% set courses = session_.get_report_student_session_courses(session_info.id, student.id) %}
                                                     {% for course in courses %}
-                                                        <li><a href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
+                                                        <li><a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
                                                     {% if student.otherCourse or student.otherCourseName %}
                                                         <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
@@ -185,7 +185,7 @@
                                     {% for student in session_students %}
                                         {% if course in session_.get_student_session_courses(session_info.id, student.id) %}
                                             <tr>
-                                                <td><a href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                                <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                                 <td>
                                                     {{ student.timeIn|datetimeformat }}
                                                 </td>

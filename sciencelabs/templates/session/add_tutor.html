@@ -16,7 +16,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="choose-tutor">Registered Tutors</label>
-                        <select id="choose-tutor" class="custom-select" name="choose-tutor" required>
+                        <select id="choose-tutor" class="custom-select chosen-container chosen-format" name="choose-tutor" required>
                            <option disabled selected value="">Choose tutor...</option>
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
@@ -27,11 +27,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
-                        <input type="time" class="form-control" id="time-in" name="time-in">
+                        <input type="time" class="form-control chosen-container chosen-format" id="time-in" name="time-in">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="time-out">Time Out</label>
-                        <input type="time" class="form-control" id="time-out" name="time-out">
+                        <input type="time" class="form-control chosen-container chosen-format" id="time-out" name="time-out">
                     </div>
                 </div>
                 <div class="form-row">

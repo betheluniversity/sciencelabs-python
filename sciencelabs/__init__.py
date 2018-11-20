@@ -26,6 +26,7 @@ from sciencelabs.email_tab import EmailView
 from sciencelabs.course import CourseView
 from sciencelabs.schedule import ScheduleView
 from sciencelabs.profile import ProfileView
+from sciencelabs.sciencelabs_controller import ScienceLabsController as slc
 View.register(app)
 SessionView.register(app)
 ReportView.register(app)
@@ -55,6 +56,7 @@ def create_semester_selector():
     user_roles = User().get_user_roles(current_user.id)
     session['USERNAME'] = current_user.username
     session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+    session['ADMIN-VIEWER'] = False
     session['USER-ROLES'] = []
     for role in user_roles:
         session['USER-ROLES'].append(role.name)
@@ -85,6 +87,20 @@ def set_semester_selector():
         return 'success'
     except Exception as error:
         return error
+
+
+@app.route("/reset-act-as", methods=["POST"])
+def reset_act_as():
+    if session['ADMIN-VIEWER']:
+        try:
+            session['USERNAME'] = session['ADMIN-USERNAME']
+            user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
+            session['ADMIN-VIEWER'] = False
+            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            session['USER-ROLES'] = session['ADMIN-ROLES']
+            return 'success'
+        except Exception as error:
+            return error
 
 
 # TODO IN PROGRESS LOGOUT METHOD

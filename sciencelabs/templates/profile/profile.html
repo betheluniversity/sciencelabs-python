@@ -1,8 +1,4 @@
-{% extends 'sciencelabs_base.html' %}
-
-{% block subnav %}
-    <a id="profile" class="nav-link active" href="{{ url_for('ProfileView:index') }}">Profile</a>
-{% endblock %}
+{% extends 'profile/base.html' %}
 
 {% block body_content %}
     <div class="custom row">
@@ -20,24 +16,24 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="first-name">First name</label>
-                        <input value="{{ user.firstName }}" type="text" class="form-control"
+                        <input value="{{ user.firstName }}" type="text" class="form-control chosen-container chosen-format"
                                id="first-name" name="first-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="last-name">Last name</label>
-                        <input value="{{ user.lastName }}" type="text" class="form-control"
+                        <input value="{{ user.lastName }}" type="text" class="form-control chosen-container chosen-format"
                                id="last-name" name="last-name">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="username">Username</label>
-                        <input value="{{ user.username }}" readonly type="text" class="form-control"
+                        <input value="{{ user.username }}" readonly type="text" class="form-control chosen-container chosen-format"
                                id="username" name="username">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="email">Email</label>
-                        <input value="{{ user.email }}" readonly type="text" class="form-control" id="email">
+                        <input value="{{ user.email }}" readonly type="text" class="form-control chosen-container chosen-format" id="email">
                     </div>
                     {% if 'Administrator' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
                     <div class="form-group col-md-6">

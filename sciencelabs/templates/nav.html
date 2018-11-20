@@ -51,15 +51,58 @@
                 {% endif %}
             </ul>
             <div class="form-inline nav-item dropdown">
-                <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    {{ session['NAME'] }}</a>
-                <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
-                    <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
-                </div>
+                {% if session['NAME'] %}
+                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        {{ session['NAME'] }}</a>
+                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:index') }}">My Profile</a>
+                        {% if 'Administrator' in session['USER-ROLES'] %}
+                            <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
+                        {% endif %}
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
+                    </div>
+                {% else %}
+                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        {{ session['USERNAME'] }}</a>
+                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </nav>
+    {% if session['ADMIN-VIEWER'] %}
+        <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav">
+            <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">
+                <p class="custom-user-p">Viewing
+                    {% if session['ADMIN-USERNAME'] %}
+                        user: [{{ session['USERNAME'] }}]
+                    {% endif %}
+                    | Return to your <a id="reset" href="" class="no-decoration custom-user-a">account</a>.
+                </p>
+            </div>
+        </nav>
+
+        <script>
+            $(document).ready(function(){
+                $('#reset').click(function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "/reset-act-as",
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function (response) {
+                            window.location.assign('/')
+                            },
+                        error: function (error) {
+                        }
+                    });
+                });
+            });
+        </script>
+
+    {% endif %}
 
 {% endmacro %}

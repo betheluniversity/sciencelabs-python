@@ -15,15 +15,15 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="session-name">Name of Session</label>
-                        <input type="text" class="form-control" id="session-name" name="name" required autocomplete="off">
+                        <input type="text" class="form-control chosen-container chosen-format" id="session-name" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="room-number">Room Number</label>
-                        <input type="text" class="form-control" id="room-number" name="room" autocomplete="off">
+                        <input type="text" class="form-control chosen-container chosen-format" id="room-number" name="room" autocomplete="off">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="semester-select">Semester</label>
-                        <select id="semester-select" class="custom-select" name="semester-select">
+                        <select id="semester-select" class="custom-select chosen-container chosen-format" name="semester-select">
                             {% for semester in session['SEMESTER-LIST'] %}
                                 <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
                             {% endfor %}
@@ -33,15 +33,15 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="session-date">Date (click to select)</label>
-                        <input type="text" class="form-control" id="session-date" name="date" required autocomplete="off">
+                        <input type="text" class="form-control chosen-container chosen-format" id="session-date" name="date" required autocomplete="off">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="scheduled-start">Scheduled Start Time</label>
-                        <input type="time" class="form-control" id="scheduled-start" name="scheduled-start">
+                        <input type="time" class="form-control chosen-container chosen-format" id="scheduled-start" name="scheduled-start">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="scheduled-end">Scheduled End Time</label>
-                        <input type="time" class="form-control" id="scheduled-end" name="scheduled-end">
+                        <input type="time" class="form-control chosen-container chosen-format" id="scheduled-end" name="scheduled-end">
                     </div>
                 </div>
                 <div class="form-row">
@@ -69,24 +69,24 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="actual-start">Actual Start Time</label>
-                        <input type="time" class="form-control" id="actual-start" name="actual-start">
+                        <input type="time" class="form-control chosen-container chosen-format" id="actual-start" name="actual-start">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="actual-end">Actual End Time</label>
-                        <input type="time" class="form-control" id="actual-end" name="actual-end">
+                        <input type="time" class="form-control chosen-container chosen-format" id="actual-end" name="actual-end">
                     </div>
                 </div>
                 {{ macros.select_courses(course_list) }}
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="comments">Comments</label>
-                        <textarea class="form-control" id="comments" name="comments"></textarea>
+                        <textarea class="form-control chosen-container chosen-comments" id="comments" name="comments"></textarea>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="anon-students">Anonymous Students</label>
-                        <input type="text" class="form-control" id="anon-students" name="anon-students" value="0" required>
+                        <input type="text" class="form-control chosen-container chosen-format" id="anon-students" name="anon-students" value="0" required>
                     </div>
                 </div>
                 <div class="form-row">

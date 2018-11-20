@@ -17,29 +17,29 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
-                        <input type="text" class="form-control" id="schedule-name" value="{{ schedule.name }}"
+                        <input type="text" class="form-control chosen-container chosen-format" id="schedule-name" value="{{ schedule.name }}"
                                name="name" required autocomplete="off">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="room">Room</label>
-                        <input type="text" class="form-control" id="room" value="{{ schedule.room }}"
+                        <input type="text" class="form-control chosen-container chosen-format" id="room" value="{{ schedule.room }}"
                                name="room" required autocomplete="off">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="start-time">Start Time</label>
-                        <input type="time" class="form-control" id="start-time" name="start-time"
+                        <input type="time" class="form-control chosen-container chosen-format" id="start-time" name="start-time"
                                value="{{ schedule.startTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="end-time">End Time</label>
-                        <input type="time" class="form-control" id="end-time" name="end-time"
+                        <input type="time" class="form-control chosen-container chosen-format" id="end-time" name="end-time"
                                value="{{ schedule.endTime|datetimeformat('%H:%M') }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="day-of-week">Day of week</label>
-                        <select id="day-of-week" class="custom-select" name="day-of-week" required>
+                        <select id="day-of-week" class="custom-select chosen-container chosen-format" name="day-of-week" required>
                             <option {% if schedule.dayofWeek == 0 %} selected="selected"{% endif %} value="0">Sunday</option>
                             <option {% if schedule.dayofWeek == 1 %} selected="selected"{% endif %} value="1">Monday</option>
                             <option {% if schedule.dayofWeek == 2 %} selected="selected"{% endif %} value="2">Tuesday</option>
@@ -108,7 +108,6 @@
             $(".chosen").chosen({
                 display_disabled_options: true
             });
-
         });
     </script>
 {% endblock %}
