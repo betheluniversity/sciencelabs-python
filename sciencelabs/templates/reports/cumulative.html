@@ -56,7 +56,7 @@
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}
-                        <td><a href="{{ url_for('ReportView:month', year=semester.year, month=month) }}">{{ total_attendance[0] }}</a></td>
+                        <td><a class="no-decoration" href="{{ url_for('ReportView:month', year=semester.year, month=month) }}">{{ total_attendance[0] }}</a></td>
                     {% else %}
                         <td>{{ total_attendance[0] }}</td>
                     {% endif %}
@@ -70,7 +70,7 @@
                     {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                 {% endfor %}
                 {% if total_attendance[0] %}
-                    <td class="right-side-borders"><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
+                    <td class="right-side-borders"><a class="no-decoration" href="{{ url_for('ReportView:month', year=(semester.year + 1), month=1) }}">{{ total_attendance[0] }}</a></td>
                 {% else %}
                     <td class="right-side-borders">{{ total_attendance[0] }}</td>
                 {% endif %}
@@ -85,7 +85,7 @@
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}
-                        <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
+                        <td><a class="no-decoration" href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
                     {% else %}
                         <td>{{ total_attendance[0] }}</td>
                     {% endif %}
@@ -102,7 +102,7 @@
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}
-                        <td><a href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
+                        <td><a class="no-decoration" href="{{ url_for('ReportView:month', year=(semester.year + 1), month=month) }}">{{ total_attendance[0] }}</a></td>
                     {% else %}
                         <td>{{ total_attendance[0] }}</td>
                     {% endif %}
@@ -123,7 +123,7 @@
                     <td class="side-borders"><b>{{ cumulative[info]['fallTotal'] }}</b></td>
                     <td class="right-side-borders"><b>{{ cumulative[info]['monthly'][1] }}</b></td>
                     {% for month in range(2, 6) %}
-                        <td><a href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
+                        <td><a class="no-decoration" href="{{ url_for('ReportView:month', year=2004, month=month) }}">{{ cumulative[info]['monthly'][month] }}</a></td>
                     {% endfor %}
                     <td class="side-borders"><b>{{ cumulative[info]['springTotal'] }}</b></td>
                     {% for month in range(6, 8) %}
