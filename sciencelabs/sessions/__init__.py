@@ -73,7 +73,7 @@ class SessionView(FlaskView):
         student_courses = self.session
         course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
-        return render_template('session/edit_closed_session.html', **locals())
+        return render_template('session/edit_session.html', **locals())
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
