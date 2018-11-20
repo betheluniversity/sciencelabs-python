@@ -39,6 +39,7 @@ class UsersView(FlaskView):
 
         return render_template('users/add_user.html')
 
+    @route("/admin/<int:user_id>")
     def edit_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
 
