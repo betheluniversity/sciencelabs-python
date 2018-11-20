@@ -472,12 +472,7 @@ class Session:
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         session.commit()
 
-    def student_sign_in(self, session_id, student_id, student_course_ids, other_course_check, other_course_name, time_in):
-        other_course = 0
-        other_name = None
-        if other_course_check and other_course_name is not None:
-            other_course = 1
-            other_name = other_course_name
+    def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
         # Create student session
         new_student_session = StudentSession_Table(timeIn=db_time, studentId=student_id,

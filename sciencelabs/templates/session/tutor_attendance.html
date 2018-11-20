@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-md-8">
             <form action="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
-                {% if env != 'prod' %}
+                {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
                     <div>
                         <label for="tutor-select">Select a tutor to sign in:</label>
                         <select id="tutor-select" name="selected-tutor">

@@ -168,13 +168,15 @@ class User:
         session.commit()
         return new_user
 
+    def get_role_by_name(self, role_name):
+        return session.query(Role_Table).filter(Role_Table.name == role_name).one()
+
     def set_user_roles(self, username, roles):
-        user = session.query(User_Table)\
-            .filter(User_Table.username == username)\
-            .one()
+        user = self.get_user_by_username(username)
         user_id = user.id
         for role in roles:
-            user_role = user_role_Table(user_id=user_id, role_id=role)
+            role_entry = self.get_role_by_name(role)
+            user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
             session.add(user_role)
         session.commit()
 
@@ -267,7 +269,7 @@ class User:
             first_name = name_info[0]
             last_name = name_info[2]
             professor = self.create_user(first_name, last_name, course['instructorUsername'], 1)
-            self.set_user_roles(professor.username, [40005])  # 40005 is the role id for professor
+            self.set_user_roles(professor.username, ['Professor'])
         return professor
 
     def check_or_create_professor_course(self, professor, course):
@@ -380,13 +382,14 @@ class User:
 
 ##########################################################################################################
     def create_user_at_sign_in(self, username, semester):
-        names = self.wsapi.get_names_from_username(username)
-        first_name = names['0']['firstName']
-        if names['0']['prefFirstName']:
-            first_name = names['0']['prefFirstName']
-        last_name = names['0']['lastName']
+        wsapi_names = self.wsapi.get_names_from_username(username)
+        names = wsapi_names['0']
+        first_name = names['firstName']
+        if names['prefFirstName']:
+            first_name = names['prefFirstName']
+        last_name = names['lastName']
         student = self.create_user(first_name, last_name, username, 0)
-        self.set_user_roles(username, [40002])  # 40002 is the role id for student
+        self.set_user_roles(username, ['Student'])
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
             if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\

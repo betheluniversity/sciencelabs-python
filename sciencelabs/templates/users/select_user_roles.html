@@ -27,7 +27,7 @@
                             {% for role in roles %}
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="{{ role.id }}"
-                                           value="{{ role.id }}" name="roles">
+                                           value="{{ role.name }}" name="roles">
                                     <label class="custom-control-label" for="{{ role.id }}">{{ role.name }}</label>
                                 </div>
                             {% endfor %}

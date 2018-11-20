@@ -17,7 +17,7 @@
 
 {% block body_content %}
     <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
-        {% if env != 'prod' %}
+        {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
             <div>
                 <label for="student-select">Select a student to sign in:</label>
                 <select id="student-select" name="selected-student">

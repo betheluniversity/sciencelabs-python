@@ -425,13 +425,11 @@ class SessionView(FlaskView):
     def student_sign_in(self, session_id, session_hash):
         semester = self.schedule.get_active_semester()
         if app.config['ENVIRON'] == 'prod':
-            # TODO: UPDATE with CAS Auth
-            # login
-            username = 'joj28267'  # Get this from CAS
+            username = session['USERNAME']
             user = self.user.get_user_by_username(username)
             if not user:
                 user = self.user.create_user_at_sign_in(username, semester)
-        else:
+        else:  # If we are in dev env we grab the student selected from the dropdown.
             form = request.form
             student = form.get('selected-student')
             if student == '-1':
@@ -453,7 +451,7 @@ class SessionView(FlaskView):
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
-        other_course_check = True if form.get('otherCourseCheck') == 'true' else False
+        other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
@@ -466,8 +464,8 @@ class SessionView(FlaskView):
     @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
     def tutor_sign_in(self, session_id, session_hash):
         if app.config['ENVIRON'] == 'prod':
-            # login
-            user = self.user.get_user(40476)  # TODO: Update with actual sign in (CAS Auth)
+            username = session['USERNAME']
+            user = self.user.get_user_by_username(username)
         else:
             form = request.form
             tutor_id = form.get('selected-tutor')
