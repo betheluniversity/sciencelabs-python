@@ -311,6 +311,9 @@ class SessionView(FlaskView):
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
+            if leads == []:
+                set_alert('danger', 'You must choose a Lead Tutor')
+                return redirect(url_for('SessionView:create'))
             # Returns True if successful
             success = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
@@ -324,6 +327,15 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
 
+    @route('/view/<int:session_id>')
+    def view_session(self, session_id):
+        session_students = self.session.get_session_students(session_id)
+        students_and_courses = {}
+        for student in session_students:
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        session_tutors = self.session.get_session_tutors(session_id)
+        return render_template('session/view_session.html', **locals())
+
     # TODO: hash and CAS authentications
 
     def open_session(self, session_id, session_hash):
@@ -331,7 +343,7 @@ class SessionView(FlaskView):
 
         opener = self.user.get_user_by_username(session['USERNAME'])
         self.session.start_open_session(session_id, opener.id)
-        self.session.add_tutor_to_session(session_id, opener.id, datetime.now().strftime('%H:%M:%S'), None, 1)
+        self.session.tutor_sign_in(session_id, opener.id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -402,6 +414,7 @@ class SessionView(FlaskView):
         semester = self.schedule.get_active_semester()
         if app.config['ENVIRON'] == 'prod':
             # TODO: UPDATE with CAS Auth
+            # login
             username = 'joj28267'  # Get this from CAS
             user = self.user.get_user_by_username(username)
             if not user:
@@ -413,6 +426,9 @@ class SessionView(FlaskView):
                 set_alert('danger', 'Invalid Student')
                 return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user(student)
+        if self.session.student_currently_signed_in(session_id, user.id):
+            set_alert('danger', 'Student currently signed in')
+            return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('session/student_sign_in.html', **locals())
@@ -438,6 +454,7 @@ class SessionView(FlaskView):
     @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
     def tutor_sign_in(self, session_id, session_hash):
         if app.config['ENVIRON'] == 'prod':
+            # login
             user = self.user.get_user(40476)  # TODO: Update with actual sign in (CAS Auth)
         else:
             form = request.form
@@ -446,7 +463,10 @@ class SessionView(FlaskView):
                 set_alert('danger', 'Invalid Tutor')
                 return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user(tutor_id)
-        self.session.add_tutor_to_session(session_id, user.id, datetime.now().strftime('%H:%M:%S'), None, 1)  # TODO: Passing in all as lead tutors currently
+        if self.session.tutor_currently_signed_in(session_id, user.id):
+            set_alert('danger', 'Tutor currently signed in')
+            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+        self.session.tutor_sign_in(session_id, user.id)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):

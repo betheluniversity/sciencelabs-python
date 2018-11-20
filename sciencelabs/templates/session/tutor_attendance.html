@@ -48,18 +48,20 @@
                     <th>Time Out</th>
                 </tr>
                 {% for tutor in tutors %}
-                    <tr>
-                        <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                        <td>{{ tutor.timeIn|datetimeformat }}</td>
-                        {% if tutor.timeOut %}
-                            <td>{{ tutor.timeOut|datetimeformat }}</td>
-                        {% else %}
-                            <td>
-                                <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
-                                   class="delete btn btn-primary">Sign Out</a>
-                            </td>
-                        {% endif %}
-                    </tr>
+                    {% if tutor.timeIn != None %}
+                        <tr>
+                            <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
+                            <td>{{ tutor.timeIn|datetimeformat }}</td>
+                            {% if tutor.timeOut %}
+                                <td>{{ tutor.timeOut|datetimeformat }}</td>
+                            {% else %}
+                                <td>
+                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
+                                       class="delete btn btn-primary">Sign Out</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </table>
 
@@ -103,6 +105,7 @@
                             {% if tutor.isLead %}
                                 <span class="button-labels">Lead</span>
                             {% endif %}
+                            <br />
                         {% endfor %}
                     </td>
                 </tr>

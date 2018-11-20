@@ -3,7 +3,8 @@ from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
-    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, SessionCourseCodes_Table
+    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
+    SessionCourseCodes_Table, user_role_Table, Role_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -260,6 +261,16 @@ class Session:
             .group_by(User_Table.id)\
             .all()
 
+    def tutor_currently_signed_in(self, session_id, tutor_id):
+        return session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeIn != None)\
+            .filter(TutorSession_Table.timeOut == None).one_or_none()
+
+    def student_currently_signed_in(self, session_id, student_id):
+        return session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None)\
+            .filter(StudentSession_Table.timeOut == None).one_or_none()
+
     ######################### EDIT STUDENT METHODS #########################
 
     def edit_student_session(self, session_id, student_id, time_in, time_out, other_course, student_courses):
@@ -422,6 +433,15 @@ class Session:
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
         session.commit()
+
+    def tutor_sign_in(self, session_id, tutor_id):
+        tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).one_or_none()
+        if tutor_session:
+            tutor_session.timeIn = datetime.now().strftime("%H:%M:%S")
+            session.commit()
+        else:
+            self.add_tutor_to_session(session_id, tutor_id, datetime.now().strftime("%H:%M:%S"), None, 0)
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
