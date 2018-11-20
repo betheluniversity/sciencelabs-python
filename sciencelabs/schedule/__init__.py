@@ -41,6 +41,7 @@ class ScheduleView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/create_new_schedule.html', **locals())
 
+    @route("/edit/<int:schedule_id>")
     def edit_schedule(self, schedule_id):
         self.slc.check_roles_and_route(['Administrator'])
 
