@@ -3,7 +3,8 @@ from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
-    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, SessionCourseCodes_Table
+    Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
+    SessionCourseCodes_Table, user_role_Table, Role_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -37,6 +38,9 @@ class Session:
         return session.query(Session_Table)\
             .filter(Session_Table.id == session_id)\
             .first()
+
+    def get_open_sessions(self):
+        return session.query(Session_Table).filter(Session_Table.open == 1).all()
 
     def get_session_tutors(self, session_id):
         return session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
@@ -280,6 +284,16 @@ class Session:
             .group_by(User_Table.id)\
             .all()
 
+    def tutor_currently_signed_in(self, session_id, tutor_id):
+        return session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeIn != None)\
+            .filter(TutorSession_Table.timeOut == None).one_or_none()
+
+    def student_currently_signed_in(self, session_id, student_id):
+        return session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None)\
+            .filter(StudentSession_Table.timeOut == None).one_or_none()
+
     ######################### EDIT STUDENT METHODS #########################
 
     def edit_student_session(self, session_id, student_id, time_in, time_out, other_course, student_courses):
@@ -443,16 +457,33 @@ class Session:
         session_to_close.comments = comments
         session.commit()
 
+    def tutor_sign_in(self, session_id, tutor_id):
+        tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.tutorId == tutor_id).one_or_none()
+        if tutor_session:
+            tutor_session.timeIn = datetime.now().strftime("%H:%M:%S")
+            session.commit()
+        else:
+            self.add_tutor_to_session(session_id, tutor_id, datetime.now().strftime("%H:%M:%S"), None, 0)
+
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id).one()
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         session.commit()
 
-    def student_sign_in(self, session_id, student_id):
-        new_student_session = StudentSession_Table(timeIn=datetime.now().strftime('%H:%M:%S'), studentId=student_id,
-                                                   sessionId=session_id)  # TODO: course stuff
+    def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
+        db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
+        # Create student session
+        new_student_session = StudentSession_Table(timeIn=db_time, studentId=student_id,
+                                                   sessionId=session_id, otherCourse=other_course,
+                                                   otherCourseName=other_name)
         session.add(new_student_session)
+        session.commit()
+        # Create student session courses
+        for course_id in student_course_ids:
+            new_student_course = SessionCourses_Table(studentsession_id=new_student_session.id, course_id=course_id)
+            session.add(new_student_course)
         session.commit()
 
     def student_sign_out(self, session_id, student_id):
@@ -462,8 +493,11 @@ class Session:
         session.commit()
 
     def close_open_sessions_cron(self):
-        open_sessions = session.query(Session_Table).filter(Session_Table.open == 1).all()
+        open_sessions = self.get_open_sessions()
         for open_session in open_sessions:
-            self.close_open_session(open_session.id, None)
+            message = 'Closed by the system on ' + datetime.now().strftime('%m/%d/%Y')
+            if open_session.comments:
+                message += ' with message ' + open_session.comments
+            self.close_open_session(open_session.id, message)
         session.commit()
         return "All open sessions closed"

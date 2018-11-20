@@ -3,8 +3,10 @@
 {# TODO: ADD Tutors, put in start time #}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link disabled" href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}">Student</a>
-    <a id="tutor" class="nav-item nav-link active" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
+    <a id="student" class="nav-item nav-link disabled"
+       href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+    <a id="tutor" class="nav-item nav-link active"
+       href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
@@ -18,10 +20,23 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <div class="centered margin-bottom-10">
-                <a href='{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id) }}'
-                   class="big-button btn btn-primary sign-in">Sign in as a Tutor</a>
-            </div>
+            <form action="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+                {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
+                    <div>
+                        <label for="tutor-select">Select a tutor to sign in:</label>
+                        <select id="tutor-select" name="selected-tutor">
+                            <option value="-1">Choose a Tutor</option>
+                            {% for tutor in all_tutors %}
+                                <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+                {% endif %}
+                <div class="centered margin-bottom-10">
+                    <button type="submit" class="big-button btn btn-primary sign-in">Sign in as a Tutor</button>
+                </div>
+            </form>
 
             <table id="tutor-attendance" class="table table-striped table-bordered">
                 <tr>
@@ -33,18 +48,20 @@
                     <th>Time Out</th>
                 </tr>
                 {% for tutor in tutors %}
-                    <tr>
-                        <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                        <td>{{ tutor.timeIn|datetimeformat }}</td>
-                        {% if tutor.timeOut %}
-                            <td>{{ tutor.timeOut|datetimeformat }}</td>
-                        {% else %}
-                            <td>
-                                <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id) }}"
-                                   class="delete btn btn-primary">Sign Out</a>
-                            </td>
-                        {% endif %}
-                    </tr>
+                    {% if tutor.timeIn != None %}
+                        <tr>
+                            <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
+                            <td>{{ tutor.timeIn|datetimeformat }}</td>
+                            {% if tutor.timeOut %}
+                                <td>{{ tutor.timeOut|datetimeformat }}</td>
+                            {% else %}
+                                <td>
+                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
+                                       class="delete btn btn-primary">Sign Out</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </table>
 
@@ -88,6 +105,7 @@
                             {% if tutor.isLead %}
                                 <span class="button-labels">Lead</span>
                             {% endif %}
+                            <br />
                         {% endfor %}
                     </td>
                 </tr>
@@ -118,7 +136,7 @@
             </table>
 
             <div class="centered">
-                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id) }}"
+                <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                    class="big-button btn btn-primary">Lead Tutor Close Session</a>
             </div>
         </div>

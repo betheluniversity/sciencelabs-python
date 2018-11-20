@@ -130,6 +130,16 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
 
+    def get_all_current_students(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student').order_by(User_Table.lastName.asc()).all()
+
+    def get_all_current_tutors(self):
+        return session.query(User_Table).filter(User_Table.deletedAt == None)\
+            .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Tutor').order_by(User_Table.lastName.asc()).all()
+
     def delete_user(self, user_id):
         user_to_delete = self.get_user(user_id)
         user_to_delete.deletedAt = datetime.now()
@@ -158,13 +168,15 @@ class User:
         session.commit()
         return new_user
 
+    def get_role_by_name(self, role_name):
+        return session.query(Role_Table).filter(Role_Table.name == role_name).one()
+
     def set_user_roles(self, username, roles):
-        user = session.query(User_Table)\
-            .filter(User_Table.username == username)\
-            .one()
+        user = self.get_user_by_username(username)
         user_id = user.id
         for role in roles:
-            user_role = user_role_Table(user_id=user_id, role_id=role)
+            role_entry = self.get_role_by_name(role)
+            user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
             session.add(user_role)
         session.commit()
 
@@ -186,7 +198,7 @@ class User:
         session.commit()
 
     def get_user_by_username(self, username):
-        return session.query(User_Table).filter(User_Table.username == username).one()
+        return session.query(User_Table).filter(User_Table.username == username).one_or_none()
 
     def edit_user(self, first_name,last_name, username, email_pref):
         user_to_edit = self.get_user_by_username(username)
@@ -257,7 +269,7 @@ class User:
             first_name = name_info[0]
             last_name = name_info[2]
             professor = self.create_user(first_name, last_name, course['instructorUsername'], 1)
-            self.set_user_roles(professor.username, [40005])  # 40005 is the role id for professor
+            self.set_user_roles(professor.username, ['Professor'])
         return professor
 
     def check_or_create_professor_course(self, professor, course):
@@ -274,10 +286,7 @@ class User:
         message = ''
 
         # get all active students
-        active_students = session.query(User_Table).filter(User_Table.deletedAt == None)\
-            .filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == Role_Table.id)\
-            .filter(Role_Table.name == 'Student').all()
+        active_students = self.get_all_current_students()
 
         for student in active_students:
             # Get courses from banner
@@ -372,3 +381,24 @@ class User:
         return message
 
 ##########################################################################################################
+    def create_user_at_sign_in(self, username, semester):
+        wsapi_names = self.wsapi.get_names_from_username(username)
+        names = wsapi_names['0']
+        first_name = names['firstName']
+        if names['prefFirstName']:
+            first_name = names['prefFirstName']
+        last_name = names['lastName']
+        student = self.create_user(first_name, last_name, username, 0)
+        self.set_user_roles(username, ['Student'])
+        user_courses = self.wsapi.get_student_courses(username)
+        for key, course in user_courses.items():
+            if session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                    .filter(CourseCode_Table.dept == course['subject'])\
+                    .filter(CourseCode_Table.active == 1).one_or_none():
+                course_entry = session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                    .filter(Course_Table.semester_id == semester.id).one_or_none()
+                if course_entry:
+                    new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                    session.add(new_user_course)
+                    session.commit()
+        return student

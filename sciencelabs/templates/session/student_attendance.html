@@ -1,8 +1,10 @@
 {% extends 'session/base.html' %}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link active" href="{{ url_for('SessionView:student_attendance', session_id=session_info.id) }}">Student</a>
-    <a id="tutor" class="nav-item nav-link disabled" href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id) }}">Tutor</a>
+    <a id="student" class="nav-item nav-link active"
+       href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+    <a id="tutor" class="nav-item nav-link disabled"
+       href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
@@ -14,9 +16,24 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="centered margin-bottom-10">
-        <a href='{{ url_for('SessionView:student_sign_in', session_id=session_info.id) }}' class="big-button btn btn-primary sign-in">Please Sign In Here</a>
-    </div>
+    <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+        {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
+            <div>
+                <label for="student-select">Select a student to sign in:</label>
+                <select id="student-select" name="selected-student">
+                    <option value="-1">Choose a Student</option>
+                    {% for student in all_students %}
+                        <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+        {% endif %}
+        <div class="centered margin-bottom-10">
+            <button type="submit" class="big-button btn btn-primary sign-in">Please Sign In Here</button>
+        </div>
+    </form>
+
     <table id="student-attendance" class="table table-striped table-bordered">
         <tr>
             <th class="text-center" colspan="4">Attendance</th>
@@ -27,16 +44,25 @@
             <th>Time In</th>
             <th>Time Out</th>
         </tr>
-        {% for student in students %}
+        {% for student, courses in students_and_courses.items() %}
             <tr>
                 <td>{{ student.firstName }} {{ student.lastName }}</td>
-                <td>Courses TO DO</td>
+                <td>
+                    <ul>
+                        {% for course in courses %}
+                            <li>{{ course.dept }}{{ course.course_num }}</li>
+                        {% endfor %}
+                        {% if student.otherCourse and student.otherCourseName %}
+                            <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                        {% endif %}
+                    </ul>
+                </td>
                 <td>{{ student.timeIn|datetimeformat }}</td>
                 <td>
                     {% if student.timeOut %}
                         {{ student.timeOut|datetimeformat}}
                     {% else %}
-                        <a href="{{ url_for('SessionView:student_sign_out', session_id=session_info.id, student_id=student.id) }}"
+                        <a href="{{ url_for('SessionView:student_sign_out', session_id=session_info.id, student_id=student.id, session_hash=session_info.hash) }}"
                                    class="delete btn btn-primary">Sign Out</a>
                     {% endif %}
                 </td>

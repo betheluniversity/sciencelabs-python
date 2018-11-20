@@ -37,3 +37,7 @@ class WSAPIController:
         last_name = urllib.parse.quote('%' + last_name + '%')
         path = '/username/find/{0}/{1}'.format(first_name, last_name)
         return self.get_hmac_request(path)
+
+    def get_names_from_username(self, username):
+        path = '/username/{0}/names'.format(username)
+        return self.get_hmac_request(path)

@@ -1,0 +1,92 @@
+{% extends 'session/base.html' %}
+
+{% block subnav %}{% endblock %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Welcome, {{ user.firstName }} {{ user.lastName }}, please sign in.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-7">
+            <p>Check the class(es) you are here for today, or check "Other" if no classes are listed or apply to this
+                visit. When you are finished in this help session, don't forget to sign out or your time will be
+                recorded as 0 minutes.</p>
+        </div>
+        <div class="col-md-5">
+            <div class="info card">
+                <div class="card-body">
+                    <h3 class="card-text text-center">{{ time_in }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="custom-default row">
+        <div class="col-md-12">
+            {% for course in student_courses %}
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
+                           value="{{ course.id }}" name="course">
+                    <label class="custom-control-label" for="{{ course.id }}">
+                        {{ course.title }} (Section {{ course.section }})</label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="custom-default row">
+        <div class="col-md-7">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="other" name="other-check">
+                <label class="custom-control-label" for="other">Other</label>
+            </div>
+            <label class="hidden" id="other-label" for="course-name">Course Name or Reason</label>
+            <input type="text" class="form-control hidden" id="course-name" name="other-name" autocomplete="off">
+        </div>
+        <div class="col-md-5 text-right">
+            <button type="button" id="sign-in" class="big-button btn btn-primary sign-in">Sign In</button>
+        </div>
+    </div>
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <a href="{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash) }}">
+                Return to the open session</a>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#other').change(function(){
+                $('#other-label').toggleClass('hidden');
+                $('#course-name').toggleClass('hidden');
+            });
+
+            $('#sign-in').click(function(){
+                var courseIDs = [];
+                $('.course-checkbox:checked').each(function(){
+                    courseIDs.push($(this).val());
+                });
+                var jsonCourseIDs = JSON.stringify(courseIDs);
+                var otherCourseCheck = $('#other').prop('checked');
+                var signInInfo = {
+                    'sessionID': {{ session_id }},
+                    'sessionHash': '{{ session_hash }}',
+                    'studentID': {{ user.id }},
+                    'jsonCourseIDs': jsonCourseIDs,
+                    'otherCourseCheck': otherCourseCheck,
+                    'otherCourseName': $('#course-name').val(),
+                    'timeIn': '{{ time_in }}'
+                };
+                var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
+                $.post(url, signInInfo, function(){
+                    window.location.replace("{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash) }}");
+                });
+            });
+
+        });
+    </script>
+{% endblock %}

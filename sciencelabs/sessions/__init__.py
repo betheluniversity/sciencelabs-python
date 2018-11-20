@@ -1,6 +1,6 @@
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session, json
 from flask_classy import FlaskView, route
 
 # Local
@@ -11,6 +11,7 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs import app
 
 
 class SessionView(FlaskView):
@@ -27,6 +28,7 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
+        open_sessions = self.session.get_open_sessions()
         session_tutors = self.session
         return render_template('session/available_sessions.html', **locals())
 
@@ -145,7 +147,7 @@ class SessionView(FlaskView):
             session_id = form.get('session-id')
             name = form.get('name')
             room = form.get('room')
-            semester_id = form.get('semester')
+            semester_id = form.get('semester-select')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start') or None
@@ -297,7 +299,7 @@ class SessionView(FlaskView):
             form = request.form
             name = form.get('name')
             room = form.get('room')
-            semester_id = form.get('semester')
+            semester_id = form.get('semester-select')
             date = form.get('date')
             db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
             scheduled_start = form.get('scheduled-start') or None
@@ -309,6 +311,9 @@ class SessionView(FlaskView):
             courses = form.getlist('courses')
             comments = form.get('comments')
             anon_students = form.get('anon-students')
+            if leads == []:
+                set_alert('danger', 'You must choose a Lead Tutor')
+                return redirect(url_for('SessionView:create'))
             # Returns True if successful
             success = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
@@ -322,47 +327,69 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))
 
+    @route('/view/<int:session_id>')
+    def view_session(self, session_id):
+        session_students = self.session.get_session_students(session_id)
+        students_and_courses = {}
+        for student in session_students:
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        session_tutors = self.session.get_session_tutors(session_id)
+        return render_template('session/view_session.html', **locals())
+
     # TODO: hash and CAS authentications
 
-    def open_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+    def open_session(self, session_id, session_hash):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        opener_username = session['USERNAME']
-        opener_user = self.user.get_user_by_username(opener_username)
-        self.session.start_open_session(session_id, opener_user.id)
-        self.session.add_tutor_to_session(session_id, opener_user.id, datetime.now().strftime('%H:%M:%S'), None, 1)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+        opener = self.user.get_user_by_username(session['USERNAME'])
+        self.session.start_open_session(session_id, opener.id)
+        self.session.tutor_sign_in(session_id, opener.id)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    def student_attendance(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
-
-        session_info = self.session.get_session(session_id)
-        students = self.session.get_session_students(session_id)
-        return render_template('session/student_attendance.html', **locals())
-
-    def tutor_attendance(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
-
-        session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info()
-        tutors = self.session.get_session_tutors(session_id)
-        return render_template('session/tutor_attendance.html', **locals())
-
-    def close_open_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+    @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def student_attendance(self, session_id, session_hash):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info()
+        students = self.session.get_session_students(session_id)
+        # TODO: Talk to Caleb - this is not how we do it in other places, but this is probably better (preserves MVC)
+        students_and_courses = {}
+        for student in students:
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        all_students = self.user.get_all_current_students()
+        env = app.config['ENVIRON']
+        return render_template('session/student_attendance.html', **locals())
+
+    @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def tutor_attendance(self, session_id, session_hash):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+
+        current_alert = get_alert()
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info(session_info.semester_id)
+        tutors = self.session.get_session_tutors(session_id)
+        all_tutors = self.user.get_all_current_tutors()
+        env = app.config['ENVIRON']
+        return render_template('session/tutor_attendance.html', **locals())
+
+    @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def close_open_session(self, session_id, session_hash):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+
+        current_alert = get_alert()
+        session_info = self.session.get_session(session_id)
+        course_info = self.course.get_active_course_info(session_info.semester_id)
         return render_template('session/close_open_session.html', **locals())
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         try:
             form = request.form
             session_id = form.get('session-id')
+            session_hash = form.get('session-hash')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
             # TODO STILL HAVE TO CONNECT THIS, BUT EVERYTHING SHOULD BE SETUP
@@ -381,7 +408,7 @@ class SessionView(FlaskView):
             return redirect(url_for("SessionView:index"))
         except Exception as error:
             set_alert('danger', 'Failed to close session: ' + str(error))
-            return redirect(url_for('SessionView:close_open_session', session_id=session_id))
+            return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -394,22 +421,67 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    def student_sign_in(self, session_id):
-        self.session.student_sign_in(session_id, 40476)  # TODO: Update with actual sign in (CAS Authentication)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+    @route('/checkin/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def student_sign_in(self, session_id, session_hash):
+        semester = self.schedule.get_active_semester()
+        if app.config['ENVIRON'] == 'prod':
+            username = session['USERNAME']
+            user = self.user.get_user_by_username(username)
+            if not user:
+                user = self.user.create_user_at_sign_in(username, semester)
+        else:  # If we are in dev env we grab the student selected from the dropdown.
+            form = request.form
+            student = form.get('selected-student')
+            if student == '-1':
+                set_alert('danger', 'Invalid Student')
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+            user = self.user.get_user(student)
+        if self.session.student_currently_signed_in(session_id, user.id):
+            set_alert('danger', 'Student currently signed in')
+            return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        student_courses = self.user.get_student_courses(user.id, semester.id)
+        time_in = datetime.now().strftime("%I:%M%p")
+        return render_template('session/student_sign_in.html', **locals())
 
-    def student_sign_out(self, session_id, student_id):
+    @route('/checkin/confirm', methods=['post'])
+    def student_sign_in_confirm(self):
+        form = request.form
+        session_id = form.get('sessionID')
+        session_hash = form.get('sessionHash')
+        student_id = form.get('studentID')
+        json_courses = form.get('jsonCourseIDs')
+        student_courses = json.loads(json_courses)
+        other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
+        other_course_name = form.get('otherCourseName')
+        time_in = form.get('timeIn')
+        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+
+    def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    def tutor_sign_in(self, session_id):
-        # TODO: Update with actual sign in (CAS Authentication)
-        self.session.add_tutor_to_session(session_id, 40476, datetime.now().strftime('%H:%M:%S'), None, 1)
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+    @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
+    def tutor_sign_in(self, session_id, session_hash):
+        if app.config['ENVIRON'] == 'prod':
+            username = session['USERNAME']
+            user = self.user.get_user_by_username(username)
+        else:
+            form = request.form
+            tutor_id = form.get('selected-tutor')
+            if tutor_id == '-1':
+                set_alert('danger', 'Invalid Tutor')
+                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+            user = self.user.get_user(tutor_id)
+        if self.session.tutor_currently_signed_in(session_id, user.id):
+            set_alert('danger', 'Tutor currently signed in')
+            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+        self.session.tutor_sign_in(session_id, user.id)
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    def tutor_sign_out(self, session_id, tutor_id):
+    def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id))
+        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     @requires_auth
     @route('/cron_close_sessions', methods=['get'])

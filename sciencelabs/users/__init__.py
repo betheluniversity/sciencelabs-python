@@ -136,10 +136,10 @@ class UsersView(FlaskView):
             username = form.get('username')
             roles = form.getlist('roles')
             email_pref = 0  # Default sending emails to No
-            if '40001' in roles or '40005' in roles:  # If the user is a administrator or a professor, they get emails.
+            if 'Administrator' in roles or 'Professor' in roles:  # If the user is a administrator or a professor, they get emails.
                 email_pref = 1
             self.user.create_user(first_name, last_name, username, email_pref)
-            self.user.set_user_roles(username, roles)
+            self.user. set_user_roles(username, roles)
             set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:

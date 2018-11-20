@@ -356,6 +356,12 @@ ul.no-margin {
     color: black;
 }
 
+.sign-in:hover{
+    background-color: #ffae1f;
+    border-color: #ffae1f;
+    color: black;
+}
+
 .user-search-result {
     border: 1px dotted grey;
     padding: 10px;
@@ -403,6 +409,7 @@ ul.no-margin {
 #gray {
     color: #333333;
     background-color: #BDBCB0;
+    border-color: #BDBCB0;
 }
 
 #red {
