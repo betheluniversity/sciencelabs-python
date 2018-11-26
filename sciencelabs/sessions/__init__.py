@@ -29,16 +29,20 @@ class SessionView(FlaskView):
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
         open_sessions = self.session.get_open_sessions()
-        session_tutors = self.session
+        sessions_and_tutors = {}
+        for available_session in sessions:
+            sessions_and_tutors[available_session] = self.session.get_session_tutors(available_session.id)
         return render_template('session/available_sessions.html', **locals())
 
     @route('/closed')
     def closed(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
         current_alert = get_alert()
-        session_tutors = self.session
+        sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
+        sessions_and_tutors = {}
+        for closed_session in sessions:
+            sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
         return render_template('session/closed_sessions.html', **locals())
 
@@ -55,10 +59,12 @@ class SessionView(FlaskView):
     def deleted(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        current_alert = get_alert()
         sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        current_alert = get_alert()
-        session_tutors = self.session
+        sessions_and_tutors = {}
+        for closed_session in sessions:
+            sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
         return render_template('session/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -72,7 +78,9 @@ class SessionView(FlaskView):
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)
-        student_courses = self.session
+        students_and_courses = {}
+        for student in session_students:
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_session.html', **locals())
