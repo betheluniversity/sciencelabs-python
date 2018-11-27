@@ -26,9 +26,12 @@ class ScheduleView(FlaskView):
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
-        schedule_info = self.schedule.get_schedule_tab_info()
-        schedule_tutors = self.schedule
-        schedule_courses = self.schedule
+        schedules = self.schedule.get_schedule_tab_info()
+        schedule_tutors_and_courses = {}
+        for schedule in schedules:
+            schedule_tutors_and_courses[schedule] = {}
+            schedule_tutors_and_courses[schedule]['tutors'] = self.schedule.get_schedule_tutors(schedule.id)
+            schedule_tutors_and_courses[schedule]['courses'] = self.schedule.get_schedule_courses(schedule.id)
         return render_template('schedule/schedules.html', **locals())
 
     @route('/create')
