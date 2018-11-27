@@ -436,6 +436,18 @@ class SessionView(FlaskView):
                 set_alert('danger', 'Invalid Student')
                 return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user(student)
+            session['STUDENT-SIGN-IN-TEST'] = True
+            session['PREVIOUS-USERNAME'] = session['USERNAME']
+            session['PREVIOUS-ROLES'] = session['USER-ROLES']
+            session['PREVIOUS-NAME'] = session['NAME']
+
+            session['USERNAME'] = user.username
+            session['NAME'] = user.firstName + ' ' + user.lastName
+            session['USER-ROLES'] = []
+            user_roles = User().get_user_roles(user.id)
+            for role in user_roles:
+                session['USER-ROLES'].append(role.name)
+
         if self.session.student_currently_signed_in(session_id, user.id):
             set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
@@ -454,6 +466,15 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        if session['STUDENT-SIGN-IN-TEST']:
+            session['STUDENT-SIGN-IN-TEST'] = False
+            session['USERNAME'] = session['PREVIOUS-USERNAME']
+            session['USER-ROLES'] = session['PREVIOUS-ROLES']
+            session['NAME'] = session['PREVIOUS-NAME']
+        else:
+            # TODO MIGHT HAVE TO CHANGE THIS FROM CLEARED TO ONLY CLEARING SPECIFIC THINGS?
+            session.clear()
+
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
