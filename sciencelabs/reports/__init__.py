@@ -378,10 +378,6 @@ class ReportView(FlaskView):
 
         session_ = self.session_  # TODO
         semesters = self.session_.get_years()
-        semesters_and_info = {}
-        for semester in semesters:
-            semesters_and_info[semester] = {}
-            semesters_and_info[semester]['']
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
