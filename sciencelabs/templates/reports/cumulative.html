@@ -49,10 +49,10 @@
                 <td>{{ semester.year }}-{{ semester.year + 1 }}</td>
                 {% set fall_total = [0] %}
                 {% for month in range(8, 13) %}
-                    {% set monthly_sessions = session_.get_monthly_sessions((semester.year|string + '-' + month|string + '-1'), (semester.year|string + '-' + month|string + '-31')) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions((semester.year|string + '-' + month|string + '-1'), (semester.year|string + '-' + month|string + '-31')) %} {# TODO #}
                     {% set total_attendance = [0] %}
                     {% for sessions in monthly_sessions %}
-                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %} {# TODO #}
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}
@@ -63,10 +63,10 @@
                     {% if fall_total.append(fall_total.pop() + total_attendance[0]) %}{% endif %}
                 {% endfor %}
                 <td class="side-borders"><b>{{ fall_total[0] }}</b></td>
-                {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + 1|string + '-1'), ((semester.year + 1)|string + '-' + 1|string + '-31')) %}
+                {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + 1|string + '-1'), ((semester.year + 1)|string + '-' + 1|string + '-31')) %} {# TODO #}
                 {% set total_attendance = [0] %}
                 {% for sessions in monthly_sessions %}
-                    {% set attendance = session_.get_session_attendees(sessions.id) %}
+                    {% set attendance = session_.get_session_attendees(sessions.id) %} {# TODO #}
                     {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                 {% endfor %}
                 {% if total_attendance[0] %}
@@ -78,10 +78,10 @@
 
                 {% set spring_total = [0] %}
                 {% for month in range(2, 6) %}
-                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %} {# TODO #}
                     {% set total_attendance = [0] %}
                     {% for sessions in monthly_sessions %}
-                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %} {# TODO #}
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}
@@ -95,10 +95,10 @@
 
                 {% set summer_total = [0] %}
                 {% for month in range(6, 8) %}
-                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %}
+                    {% set monthly_sessions = session_.get_monthly_sessions(((semester.year + 1)|string + '-' + month|string + '-1'), ((semester.year + 1)|string + '-' + month|string + '-31')) %} {# TODO #}
                     {% set total_attendance = [0] %}
                     {% for sessions in monthly_sessions %}
-                        {% set attendance = session_.get_session_attendees(sessions.id) %}
+                        {% set attendance = session_.get_session_attendees(sessions.id) %} {# TODO #}
                         {% if total_attendance.append(total_attendance.pop() + (attendance.count()) + sessions.anonStudents) %}{% endif %}
                     {% endfor %}
                     {% if total_attendance[0] %}

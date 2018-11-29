@@ -47,7 +47,7 @@
                     <thead>
                     <tr>
                         <td><b>Sessions Attended</b></td>
-                        <td>{{ user.get_unique_sessions_attended(student_id, session['SELECTED-SEMESTER'])|length }}</td>
+                        <td>{{ sessions_attended }}</td>
                     </tr>
                     </thead>
                     <tbody>
@@ -63,8 +63,8 @@
                         <td><b>Average Time per Session</b></td>
 
                         {% set avg_time = [0] %}
-                        {% for course in courses %}
-                            {% set time = user.get_average_time_in_course(student.id, course.id) %}
+                        {% for course, average_time in course_and_avg_time.items() %}
+                            {% set time = average_time %}
                             {% set avg_time_per_course = [0] %}
                             {% for times, user in time %}
 
@@ -108,8 +108,8 @@
                         <b>{{ lab_title }} Course(s) Attendend during {{ sem.term }} {{ sem.year }}</b>
                     </li>
                     <ul class="no-bullet">
-                        {% for course in courses %}
-                            {% set time = user.get_average_time_in_course(student.id, course.id) %}
+                        {% for course, average_time in course_and_avg_time.items() %}
+                            {% set time = average_time %}
                             <li>
                                 {% if time|length != 0 %}
                                     <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
@@ -142,12 +142,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for studentsession, session in sessions %}
+                    {% for studentsession, info in sessions_and_courses.items() %}
                         <tr>
-                            <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                            <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ session.name }}</a></td>
+                            <td>{{ info['session'].date.strftime('%m/%d/%Y') }}</td>
+                            <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=info['session'].id) }}">{{ info['session'].name }}</a></td>
                             <td>
-                                {% for course in session_.get_report_student_session_courses(session.id, student.id) %}
+                                {% for course in info['courses'] %}
                                     <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
                                 {% endfor %}
                             </td>

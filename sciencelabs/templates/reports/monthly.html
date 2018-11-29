@@ -82,9 +82,9 @@
                     <tbody>
                     {% set total_attendance = [0] %}
                     {% for schedule in schedule_info %}
-                        {% for session in monthly_sessions %}
-                            {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
-                            {% set attendance = session_.get_session_attendees(session.id) %}
+                        {% for session, info in monthly_sessions_schedule_and_attendance.items() %}
+                            {% set session_schedule = info['schedule'] %}
+                            {% set attendance = info['attendance'] %}
                             {% if schedule.id == session_schedule.id %}
                                 {% if total_attendance.append(total_attendance.pop() + attendance.count() + session.anonStudents) %}{% endif %}
                             {% endif %}
@@ -94,9 +94,9 @@
                     {% set total_attendance_per_schedule = [0] %}
                     {% for schedule in schedule_info %}
                         {% set total_attendance_per_schedule = [0] %}
-                        {% for session in monthly_sessions %}
-                            {% set session_schedule = schedule_.get_schedule_from_session(session.id) %}
-                            {% set attendance = session_.get_session_attendees(session.id) %}
+                        {% for session, info in monthly_sessions_schedule_and_attendance.items() %}
+                            {% set session_schedule = info['schedule'] %}
+                            {% set attendance = info['attendance'] %}
                             {% if schedule.id == session_schedule.id %}
                                 {% if total_attendance_per_schedule.append(total_attendance_per_schedule.pop() + attendance.count() + session.anonStudents) %}{% endif %}
                             {% endif %}
@@ -118,8 +118,8 @@
                     <tfoot>
                         {% if unscheduled_sessions %}
                         {% set total_unscheduled = [0] %}
-                        {% for sessions in unscheduled_sessions %}
-                            {% if total_unscheduled.append(total_unscheduled.pop() + (user_.get_session_students(sessions.id)|length) + sessions.anonStudents) %}{% endif %}
+                        {% for sessions, attendance in unscheduled_sessions_and_attendance.items() %}
+                            {% if total_unscheduled.append(total_unscheduled.pop() + attendance + sessions.anonStudents) %}{% endif %}
                         {% endfor %}
                         {% if total_attendance.append(total_attendance.pop() + total_unscheduled[0]) %}{% endif %}
                         <tr>
@@ -160,14 +160,14 @@
                     </thead>
                     <tbody>
                     {% set total_attendance = [0] %}
-                    {% for session in monthly_sessions %}
+                    {% for session, info in monthly_sessions_schedule_and_attendance.items() %}
                         <tr>
                             <td>{{ session.name }}</td>
                             <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                             <td>{{ macros.day_abbr((cal.weekday((session.date.strftime('%Y'))|int, (session.date.strftime('%m'))|int, (session.date.strftime('%d'))|int) + 1) % 7) }}</td>
                             <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
                             <td>
-                                {% set attendance = session_.get_session_attendees(session.id) %}
+                                {% set attendance = info['attendance'] %}
                                 {% if total_attendance.append(total_attendance.pop() + (attendance.count() + session.anonStudents)) %}{% endif %}
                                 {{ attendance.count() + session.anonStudents }}
                             </td>

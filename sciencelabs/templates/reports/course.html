@@ -37,19 +37,19 @@
                     </thead>
                     <tbody>
                     {% set total_attendance = [0] %}
-                    {% for course, user in course_info %}
-                        {% set attendance = user_.get_students_in_course(course.id) %}
-                    {% set course_attendees = [0] %}
-                    {% for attendees, attend in attendance %}
-                        {% if course_attendees.append(course_attendees.pop() + (attend)) %}{% endif %}
-                    {% endfor %}
-                    {% if total_attendance.append(total_attendance.pop() + (course_attendees[0])) %}{% endif %}
+                    {% for course, info in courses_and_attendance.items() %}
 
+                        {% set attendance = info['attendance'] %}
+                        {% set course_attendees = [0] %}
+                        {% for attendees, attend in attendance %}
+                            {% if course_attendees.append(course_attendees.pop() + (attend)) %}{% endif %}
+                        {% endfor %}
+                        {% if total_attendance.append(total_attendance.pop() + (course_attendees[0])) %}{% endif %}
 
                     {% endfor %}
 
                         {% set total_unique_attendance = [0] %}
-                        {% for course, user in course_info %}
+                        {% for course, info in courses_and_attendance.items() %}
                             <tr>
                                 <td>
                                     {{ course.dept + course.course_num }}
@@ -61,11 +61,11 @@
                                     {{ course.section }}
                                 </td>
                                 <td>
-                                    {{ user.firstName }}
-                                    {{ user.lastName }}
+                                    {{ info['user'].firstName }}
+                                    {{ info['user'].lastName }}
                                 </td>
                                 <td>
-                                    {% set attendance = user_.get_students_in_course(course.id) %}
+                                    {% set attendance = info['attendance'] %}
                                     {% set total_attendees = [0] %}
                                     {% for attendees, attend in attendance %}
                                         {% if total_attendees.append(total_attendees.pop() + (attend)) %}{% endif %}
