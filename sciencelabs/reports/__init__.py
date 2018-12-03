@@ -372,12 +372,13 @@ class ReportView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
-        year = sem.year
-        cumulative = self.base.cumulative
-
-        session_ = self.session_  # TODO
+        month = self.get_selected_month()  # Needed for subnav
+        year = sem.year  # Needed for subnav
         semesters = self.session_.get_years()
+        cumulative_list = self.build_cumulative_list()
+        semesters_and_info = {}
+        for i in range(len(semesters)):
+            semesters_and_info[semesters[i]] = cumulative_list[i+1]
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
@@ -389,6 +390,11 @@ class ReportView(FlaskView):
 
         csv_name = '%s_CumulativeAttendance' % lab
 
+        my_list = self.build_cumulative_list()
+
+        return self.export_csv(my_list, csv_name)
+
+    def build_cumulative_list(self):
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring',
                     'Jun', 'Jul', 'Summer', 'Total']]
 
@@ -400,7 +406,7 @@ class ReportView(FlaskView):
             sub_list = [str(semester.year) + '-' + str(semester.year + 1)]
             fall_total = 0
             for month in range(8, 13):
-                monthly_sessions = self.session_.get_monthly_sessions((str(semester.year)+ '-' + str(month) + '-1'),
+                monthly_sessions = self.session_.get_monthly_sessions((str(semester.year) + '-' + str(month) + '-1'),
                                                                       (str(semester.year) + '-' + str(month) + '-31'))
                 total_attendance = 0
                 for sessions in monthly_sessions:
@@ -503,7 +509,7 @@ class ReportView(FlaskView):
 
         my_list.append(sub_list)
 
-        return self.export_csv(my_list, csv_name)
+        return my_list
 
     def session(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
