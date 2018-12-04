@@ -51,35 +51,35 @@
                     {% if row[1] <= 0 %}
                         {{ row[1] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=8) }}">{{ row[1] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=8) }}">{{ row[1] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[2] <= 0 %}
                         {{ row[2] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=9) }}">{{ row[2] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=9) }}">{{ row[2] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[3] <= 0 %}
                         {{ row[3] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=10) }}">{{ row[3] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=10) }}">{{ row[3] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[4] <= 0 %}
                         {{ row[4] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=11) }}">{{ row[4] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=11) }}">{{ row[4] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[5] <= 0 %}
                         {{ row[5] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=12) }}">{{ row[5] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=12) }}">{{ row[5] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[6] }}</b></td>
@@ -87,35 +87,35 @@
                     {% if row[7] <= 0 %}
                         {{ row[7] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=1) }}">{{ row[7] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=1) }}">{{ row[7] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[8] <= 0 %}
                         {{ row[8] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=2) }}">{{ row[8] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=2) }}">{{ row[8] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[9] <= 0 %}
                         {{ row[9] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=3) }}">{{ row[9] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=3) }}">{{ row[9] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[10] <= 0 %}
                         {{ row[10] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=4) }}">{{ row[10] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=4) }}">{{ row[10] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[11] <= 0 %}
                         {{ row[11] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=5) }}">{{ row[11] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=5) }}">{{ row[11] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[12] }}</b></td>
@@ -123,14 +123,14 @@
                     {% if row[13] <= 0 %}
                         {{ row[13] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=6) }}">{{ row[13] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=6) }}">{{ row[13] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[14] <= 0 %}
                         {{ row[14] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=2017, month=7) }}">{{ row[14] }}</a>
+                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=7) }}">{{ row[14] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[15] }}</b></td>
