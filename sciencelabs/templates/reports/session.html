@@ -60,26 +60,25 @@
                         </thead>
                         <tbody>
                         {% set total_attendance = [0] %}
-                        {% for session in sessions %}
+                        {% for session, info in sessions_info.items() %}
                             {% if session.date and (session.date.strftime('%m')) == date %}
                                 <tr>
                                     <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                                     <td>{{ session.name }}</td>
                                     <td>
-                                        {% set schedule = session_.get_dayofWeek_from_session(session.id) %}
+                                        {% set schedule = info['DOW'] %}
                                         {{ macros.day_abbr(schedule.dayofWeek) }}
                                     </td>
                                     <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                                     <td>
-                                        {% set attendance = session_.get_number_of_student_sessions(session.id) %}
+                                        {% set attendance = info['attendance'] %}
                                         {{ attendance|length + session.anonStudents }}
                                         {% if total_attendance.append(total_attendance.pop() + (attendance|length) + session.anonStudents) %}{% endif %}
                                     </td>
                                     <td>
                                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                                         <div style="display: none;" class="text-left margin-top-10">
-                                            {% set tutors = session_.get_session_tutors(session.id) %}
-                                            {% for tutor in tutors %}
+                                            {% for tutor in info['tutors'] %}
                                                 {{ tutor.firstName }} {{ tutor.lastName }}
                                                 {% if tutor.isLead %}
                                                     <span class="button-labels">Lead</span>

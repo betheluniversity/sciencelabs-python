@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for session in sessions %}
+        {% for session, tutors in sessions_and_tutors.items() %}
             <tr>
                 <td>{{ session.name }}</td>
                 <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
@@ -40,7 +40,6 @@
                 <td>
                     <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                     <div style="display: none;" class="text-left margin-top-10">
-                        {% set tutors = session_tutors.get_session_tutors(session.id) %}
                         {% for tutor in tutors %}
                             {{ tutor.firstName }} {{ tutor.lastName }}
                             {% if tutor.isLead %}

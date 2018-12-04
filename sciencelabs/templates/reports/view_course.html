@@ -48,14 +48,14 @@
                     </thead>
                     <tbody>
                     {% set total_attendees = [0] %}
-                    {% for session, schedule in sessions %}
+                    {% for session, info in sessions_and_attendance.items() %}
                     <tr>
                         <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
                         <td>
-                            {{ macros.day_abbr(schedule.dayofWeek) }}
+                            {{ macros.day_abbr(info['schedule'].dayofWeek) }}
                         </td>
                         <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
-                        {% set attendance_per_session = session_.get_session_attendees_with_dup(course[0].id, session.id) %}
+                        {% set attendance_per_session = info['attendance'] %}
                         <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ attendance_per_session|length }}</a></td>
                     {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
                     </tr>
@@ -82,12 +82,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for student, attendance in students %}
+                    {% for student, info in students_and_time.items() %}
                         <tr>
                             <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
                             <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
-                            <td>{{ attendance }}</td>
-                        {% set time = user.get_average_time_in_course(student.id, course[0].id) %}
+                            <td>{{ info['attendance'] }}</td>
+                        {% set time = info['time'] %}
                         {% set avg_time = [0] %}
                         {% for times, user in time %}
                             {% if times.timeOut and times.timeIn %}{% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}{% endif %}

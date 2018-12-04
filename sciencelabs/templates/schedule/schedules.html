@@ -26,7 +26,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for schedule in schedule_info %}
+                        {% for schedule, tutors_and_courses in schedule_tutors_and_courses.items() %}
                             <tr>
                                 <td>
                                     {{ schedule.name }}
@@ -43,9 +43,8 @@
                                 <td>
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
                                     <div style="display: none;" class="text-left margin-top-10">
-                                        {% set courses = schedule_courses.get_schedule_courses(schedule.id) %}
                                         <ul>
-                                            {% for course in courses %}
+                                            {% for course in tutors_and_courses['courses'] %}
                                                 <li>
                                                     {{ course }}
                                                 </li>
@@ -56,8 +55,7 @@
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
                                     <div style="display: none;" class="text-left margin-top-10">
-                                        {% set tutors = schedule_tutors.get_schedule_tutors(schedule.id) %}
-                                        {% for tutor in tutors %}
+                                        {% for tutor in tutors_and_courses['tutors'] %}
                                         {% if tutor.isLead %}
                                             {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
                                         {% else %}

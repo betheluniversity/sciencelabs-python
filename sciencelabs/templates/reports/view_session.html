@@ -47,12 +47,11 @@
                                 </ul>
                             </li>
                         </ul>
-                        {% if session_info.openerId %}
+                        {% if opener %}
                             <ul class="no-bullet">
                                 <li><b>Opened By:</b></li>
                                 <li>
                                     <ul class="no-bullet">
-                                        {% set opener = user.get_user(session_info.openerId) %}
                                         <li>{{ opener.firstName }} {{ opener.lastName }}</li>
                                     </ul>
                                 </li>
@@ -137,12 +136,11 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {% for student in session_students %}
+                                    {% for student, courses in students_and_report_courses.items() %}
                                         <tr>
                                             <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                             <td>
                                                 <ul>
-                                                    {% set courses = session_.get_report_student_session_courses(session_info.id, student.id) %}
                                                     {% for course in courses %}
                                                         <li><a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
                                                     {% endfor %}
@@ -182,8 +180,8 @@
                                     <th></th>
                                     </thead>
                                     <tbody>
-                                    {% for student in session_students %}
-                                        {% if course in session_.get_student_session_courses(session_info.id, student.id) %}
+                                    {% for student, courses in students_and_courses.items() %}
+                                        {% if course in courses %}
                                             <tr>
                                                 <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
                                                 <td>
