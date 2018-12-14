@@ -2,7 +2,7 @@
 import logging
 
 # Packages
-from flask import Flask, session, request, render_template
+from flask import Flask, session, request, redirect, url_for
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
 from datetime import datetime
@@ -53,6 +53,7 @@ def utility_processor():
 def create_semester_selector():
     semester_list = Schedule().get_semesters()
     current_user = User().get_user_by_username(app.config['TEST_USERNAME'])  # TODO: Update with CAS Authentication
+    session['ALERT'] = None
     user_roles = User().get_user_roles(current_user.id)
     session['USERNAME'] = current_user.username
     session['NAME'] = current_user.firstName + ' ' + current_user.lastName
@@ -93,6 +94,7 @@ def set_semester_selector():
 def reset_act_as():
     if session['ADMIN-VIEWER']:
         try:
+            session['ALERT'] = None
             session['USERNAME'] = session['ADMIN-USERNAME']
             user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
             session['ADMIN-VIEWER'] = False
@@ -107,7 +109,7 @@ def reset_act_as():
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    return render_template('index.html')  # TODO: CAS AUTHENTICATION
+    return redirect(url_for('View:index'))  # TODO: CAS AUTHENTICATION
 # (it's just rendering the main page again right now to show that the flask session is cleared)
 
 

@@ -1,21 +1,18 @@
 #######################################################################################################################
 # Alert stuff helps give user info on changes they make
-
-alert = None  # Default alert to nothing
+from flask import session
 
 
 # This method get's the current alert (if there is one) and then resets alert to nothing
 def get_alert():
-    global alert
-    alert_return = alert
-    alert = None
+    alert_return = session['ALERT']
+    session['ALERT'] = None
     return alert_return
 
 
 # This method sets the alert for when one is needed next
 def set_alert(message_type, message):
-    global alert
-    alert = {
+    session['ALERT'] = {
         'type': message_type,
         'message': message
     }
