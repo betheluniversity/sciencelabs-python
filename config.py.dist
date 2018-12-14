@@ -1,0 +1,18 @@
+import os
+_basedir = os.path.abspath(os.path.dirname(__file__))
+
+SENTRY_URL = ''
+
+secret_key = ""
+SECRET_KEY = ""
+
+LAB_LOGIN = {'username': "", 'password': ""}
+LAB_TITLE = ''
+DATABASE_KEY = ''
+
+API_USERNAME = ''
+API_PASSWORD = ''
+
+WSAPI_SECRET = ''
+
+ENVIRON = ''
