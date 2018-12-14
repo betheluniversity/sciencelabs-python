@@ -109,7 +109,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
-        session = self.session.get_session(session_id)
+        session_info = self.session.get_session(session_id)
         return render_template('session/add_anonymous.html', **locals())
 
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
@@ -132,7 +132,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
-        session = self.session.get_session(session_id)
+        session_info = self.session.get_session(session_id)
         return render_template('session/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
