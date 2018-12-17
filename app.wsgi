@@ -1,6 +1,6 @@
 #log to stderr instead of stdout
 activate_this = '/var/www/tutorlabs/env/bin/activate_this.py'
-execfile(activate_this, dict(__file__=activate_this))
+exec(compile(open(activate_this).read(), activate_this, 'exec'), dict(__file__=activate_this))
 
 import logging, sys
 logging.basicConfig(stream=sys.stderr)
