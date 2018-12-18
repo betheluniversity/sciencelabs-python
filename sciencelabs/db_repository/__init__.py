@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 # Local
 from sciencelabs import app
 
-db = create_engine(app.config['DATABASE_KEY'])
+db = create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
 Base = declarative_base()
 Session = sessionmaker(bind=db)
 session = Session()
