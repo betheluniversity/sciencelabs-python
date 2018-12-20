@@ -4,6 +4,7 @@ SQLAlchemy-migrate
 Flask
 raven
 Flask-Classy
+Flask-Mail
 blinker
 mysqlclient
 cx_Oracle

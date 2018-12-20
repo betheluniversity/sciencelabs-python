@@ -210,19 +210,6 @@ class User:
     def get_role_by_role_id(self, role_id):
         return session.query(Role_Table).filter(Role_Table.id == role_id).one()
 
-    def get_users_to_email(self, groups, cc, bcc):
-        users_to_email = []
-        for group in groups:
-            role = self.get_role_by_role_id(group)
-            users_to_email.append(role.name)
-        for user_id in cc:
-            current_user = self.get_user(user_id)
-            users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
-        for user_id in bcc:
-            current_user = self.get_user(user_id)
-            users_to_email.append(current_user.firstName + ' ' + current_user.lastName)
-        return users_to_email
-
 # ################### The following methods are all for the cron jobs for this project ################### #
 
     def get_or_create_course(self, course, semester):
@@ -402,3 +389,9 @@ class User:
                     session.add(new_user_course)
                     session.commit()
         return student
+
+    def get_recipient_emails(self, groups, cc_ids):
+        return 'joj28267@bethel.edu'
+
+    def get_bcc_emails(self, bcc_ids):
+        return None
