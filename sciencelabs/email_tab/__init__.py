@@ -53,24 +53,27 @@ class EmailView(FlaskView):
     def send(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        try:
-            # TODO: actually send email
-            form = request.form
-            group_id_strings = form.getlist('groups')
-            groups = []
-            for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)
-                groups.append(int(group))
-            cc_ids = form.getlist('cc')
-            cc = []
-            for cc_id in cc_ids:
-                cc.append(int(cc_id))
-            bcc_ids = form.getlist('bcc')
-            bcc = []
-            for bcc_id in bcc_ids:
-                bcc.append(int(bcc_id))
-            user_names = self.user.get_users_to_email(groups, cc, bcc)
-            users_string = ', '.join(user_names)
-            set_alert('success', 'Email sent successfully to the following users: ' + users_string)
-        except Exception as error:
-            set_alert('danger', 'Failed to send email: ' + str(error))
+        # TODO: actually send email
+        form = request.form
+        message = form.get('message')
+        subject = form.get('subject')
+        group_id_strings = form.getlist('groups')
+        groups = []
+        for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)
+            groups.append(int(group))
+        cc_ids = form.getlist('cc')
+        cc = []
+        for cc_id in cc_ids:
+            cc.append(int(cc_id))
+        recipients = self.user.get_recipient_emails(groups, cc)
+        bcc_ids = form.getlist('bcc')
+        bcc = []
+        for bcc_id in bcc_ids:
+            bcc.append(int(bcc_id))
+        bcc_emails = self.user.get_bcc_emails(bcc)
+        success = self.base.send_message(subject, message, recipients, bcc, False)  # subject, body, recipients, bcc, html
+        if success:
+            set_alert('success', 'Email sent successfully')
+        else:
+            set_alert('danger', 'Failed to send email')
         return redirect(url_for('EmailView:index'))
