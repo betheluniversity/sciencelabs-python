@@ -7,6 +7,7 @@ from sciencelabs.email_tab.email_controller import EmailController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs import app
 
 
 class EmailView(FlaskView):
@@ -56,7 +57,7 @@ class EmailView(FlaskView):
         # TODO: actually send email
         form = request.form
         message = form.get('message')
-        subject = form.get('subject')
+        subject = "{" + app.config['LAB_TITLE'] + "}" + form.get('subject')
         group_id_strings = form.getlist('groups')
         groups = []
         for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)
@@ -71,7 +72,7 @@ class EmailView(FlaskView):
         for bcc_id in bcc_ids:
             bcc.append(int(bcc_id))
         bcc_emails = self.user.get_bcc_emails(bcc)
-        success = self.base.send_message(subject, message, recipients, bcc, False)  # subject, body, recipients, bcc, html
+        success = self.base.send_message(subject, message, recipients, bcc_emails, False)  # subject, body, recipients, bcc, html
         if success:
             set_alert('success', 'Email sent successfully')
         else:

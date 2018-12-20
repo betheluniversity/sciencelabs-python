@@ -390,8 +390,26 @@ class User:
                     session.commit()
         return student
 
+    def get_users_in_group(self, role_id):
+        return session.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == role_id).all()
+
+    def get_email_from_id(self, user_id):
+        user = self.get_user(user_id)
+        return user.email
+
     def get_recipient_emails(self, groups, cc_ids):
-        return 'joj28267@bethel.edu'
+        emails = []
+        for cc in cc_ids:
+            emails.append(self.get_email_from_id(cc))
+        for group in groups:
+            group_users = self.get_users_in_group(group)
+            for user in group_users:
+                emails.append(self.get_email_from_id(user.id))
+        return emails
 
     def get_bcc_emails(self, bcc_ids):
-        return None
+        emails = []
+        for bcc in bcc_ids:
+            emails.append(self.get_email_from_id(bcc))
+        return emails
