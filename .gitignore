@@ -1,15 +1,6 @@
 config.py
 *.pyc
 .DS_Store
-.idea
-.idea/tinker.iml
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/modules.xml
-.idea/misc.xml
+.idea*
 config/*.py
 *.csv
-test_images/calendar.svg
-test_images/drawer.svg
-test_images/report_card.svg
-test_images/session.svg
-test_images/teacher.svg
