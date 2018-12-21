@@ -31,7 +31,6 @@ class User:
     def get_user_info(self):
         return session.query(User_Table, Role_Table)\
             .filter(User_Table.id == user_role_Table.user_id) \
-            .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
             .filter(User_Table.deletedAt == None) \
             .all()

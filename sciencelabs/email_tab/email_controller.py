@@ -8,6 +8,8 @@ class EmailController():
         super(EmailController, self).__init__
 
     def send_message(self, subject, body, recipients, bcc, html=False):
+        if app.config['ENVIRON'] != 'prod':
+            recipients = app.config['TEST_EMAILS']
         mail = Mail(app)
         msg = Message(subject=subject,
                       sender='noreply@bethel.edu',

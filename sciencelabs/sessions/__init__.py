@@ -11,6 +11,7 @@ from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs.email_tab import EmailController
 from sciencelabs import app
 
 
@@ -21,6 +22,7 @@ class SessionView(FlaskView):
         self.schedule = Schedule()
         self.course = Course()
         self.slc = ScienceLabsController()
+        self.email = EmailController()
 
     def index(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
@@ -404,14 +406,17 @@ class SessionView(FlaskView):
             # Send the email here?
             # Use these variables to do so
             ##################
-            # user = self.user
-            # session_ = self.session
-            # courses = self.course
-            # tutors = session_.get_session_tutors(session_id)
-            # session_students = session_.get_session_students(session_id)
-            # session_courses = session_.get_session_courses(session_id)
-            # sess = session_.get_session(session_id)
+            user = self.user
+            session_ = self.session
+            courses = self.course
+            tutors = session_.get_session_tutors(session_id)
+            session_students = session_.get_session_students(session_id)
+            session_courses = session_.get_session_courses(session_id)
+            sess = session_.get_session(session_id)
             ##################
+            subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
+            recipients = app.config['TEST_EMAILS'] # TODO update with lab admins and profs
+            self.email.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
             set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
@@ -516,6 +521,7 @@ class SessionView(FlaskView):
     @route('/cron_close_sessions', methods=['get'])
     def cron_close_sessions(self):
         try:
+            # TODO: Email here too
             return self.session.close_open_sessions_cron()
         except Exception as error:
             return 'failed: ' + str(error)

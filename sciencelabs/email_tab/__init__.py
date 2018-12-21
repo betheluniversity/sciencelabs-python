@@ -53,11 +53,9 @@ class EmailView(FlaskView):
     @route('/send', methods=['post'])
     def send(self):
         self.slc.check_roles_and_route(['Administrator'])
-
-        # TODO: actually send email
         form = request.form
         message = form.get('message')
-        subject = "{" + app.config['LAB_TITLE'] + "}" + form.get('subject')
+        subject = "{" + app.config['LAB_TITLE'] + "} " + form.get('subject')
         group_id_strings = form.getlist('groups')
         groups = []
         for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)
