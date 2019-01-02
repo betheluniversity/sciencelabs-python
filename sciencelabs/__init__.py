@@ -51,8 +51,12 @@ def utility_processor():
 
 @app.before_first_request
 def create_semester_selector():
+    if app.config["ENVIRON"] == 'prod':
+        username = request.environ.get('REMOTE_USER')
+    else:
+        username = app.config['TEST_USERNAME']
     semester_list = Schedule().get_semesters()
-    current_user = User().get_user_by_username(app.config['TEST_USERNAME'])  # TODO: Update with CAS Authentication
+    current_user = User().get_user_by_username(username)  # TODO: Update with CAS Authentication
     session['ALERT'] = None
     user_roles = User().get_user_roles(current_user.id)
     session['USERNAME'] = current_user.username
