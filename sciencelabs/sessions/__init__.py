@@ -401,32 +401,36 @@ class SessionView(FlaskView):
             session_hash = form.get('session-hash')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
-            # Email stuff
-            ##################
-            tutors = self.session.get_session_tutors(session_id)
-            session_students = self.session.get_session_students(session_id)
-            students_and_courses_report = {}
-            students_and_courses = {}
-            for student in session_students:
-                students_and_courses_report[student] = self.session.get_report_student_session_courses(session_id, student.id)
-                students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
-            session_courses = self.session.get_session_courses(session_id)
-            courses_and_info = {}
-            courses_and_email_info = {}
-            for course in session_courses:
-                courses_and_info[course] = self.course.get_course(course.id)
-                courses_and_email_info[course] = self.session.get_course_email_info(course.id)
-            sess = self.session.get_session(session_id)
-            opener = self.user.get_user(sess.openerId)
-            ##################
-            subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
-            recipients = self.user.get_end_of_session_emails(session_courses)
-            self.email.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
+            self.close_session_email(session_id)
             set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
             set_alert('danger', 'Failed to close session: ' + str(error))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
+
+    def close_session_email(self, session_id):
+        # Email stuff
+        ##################
+        tutors = self.session.get_session_tutors(session_id)
+        session_students = self.session.get_session_students(session_id)
+        students_and_courses_report = {}
+        students_and_courses = {}
+        for student in session_students:
+            students_and_courses_report[student] = self.session.get_report_student_session_courses(session_id,
+                                                                                                   student.id)
+            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        session_courses = self.session.get_session_courses(session_id)
+        courses_and_info = {}
+        courses_and_email_info = {}
+        for course in session_courses:
+            courses_and_info[course] = self.course.get_course(course.id)
+            courses_and_email_info[course] = self.session.get_course_email_info(course.id)
+        sess = self.session.get_session(session_id)
+        opener = self.user.get_user(sess.openerId)
+        ##################
+        subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
+        recipients = self.user.get_end_of_session_emails(session_courses)
+        self.email.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -526,7 +530,8 @@ class SessionView(FlaskView):
     @route('/cron_close_sessions', methods=['get'])
     def cron_close_sessions(self):
         try:
-            # TODO: Email here too
-            return self.session.close_open_sessions_cron()
+            sessions_closed = self.session.close_open_sessions_cron()
+            for session_closed in sessions_closed:
+                self.close_session_email(session_closed.id)
         except Exception as error:
             return 'failed: ' + str(error)

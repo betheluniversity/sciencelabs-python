@@ -500,4 +500,4 @@ class Session:
                 message += ' with message ' + open_session.comments
             self.close_open_session(open_session.id, message)
         session.commit()
-        return "All open sessions closed"
+        return open_sessions
