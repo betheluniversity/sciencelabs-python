@@ -9,6 +9,7 @@ class EmailController():
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
+            print('Would have sent email to: ' + str(recipients))
             recipients = app.config['TEST_EMAILS']
         mail = Mail(app)
         msg = Message(subject=subject,

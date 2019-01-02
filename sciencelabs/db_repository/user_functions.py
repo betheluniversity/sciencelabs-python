@@ -56,7 +56,7 @@ class User:
     def get_user(self, user_id):
         return session.query(User_Table)\
             .filter(User_Table.id == user_id)\
-            .one()
+            .one_or_none()
 
     def get_student_attendance(self, student_id, semester_id):
             return session.query(User_Table, func.count(User_Table.id)) \
@@ -411,4 +411,17 @@ class User:
         emails = []
         for bcc in bcc_ids:
             emails.append(self.get_email_from_id(bcc))
+        return emails
+
+    def get_end_of_session_emails(self, session_courses):
+        admins = self.get_users_in_group(40001)  # Id for admins
+        profs = self.get_users_in_group(40005)  # Id for profs
+        emails = []
+        for admin in admins:
+            if admin.send_email == 1:
+                emails.append(admin.email)
+        for prof in profs:
+            if prof.send_email == 1:
+                emails.append(prof.email)
+        emails = list(set(emails))  # converting to a set and then right back to a list removes duplicates
         return emails

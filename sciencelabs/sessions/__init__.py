@@ -346,7 +346,7 @@ class SessionView(FlaskView):
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('session/view_session.html', **locals())
 
-    # TODO: hash and CAS authentications
+    # TODO: CAS authentications
 
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
@@ -363,7 +363,6 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
-        # TODO: Talk to Caleb - this is not how we do it in other places, but this is probably better (preserves MVC)
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
@@ -402,20 +401,26 @@ class SessionView(FlaskView):
             session_hash = form.get('session-hash')
             comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
-            # TODO STILL HAVE TO CONNECT THIS, BUT EVERYTHING SHOULD BE SETUP
-            # Send the email here?
-            # Use these variables to do so
+            # Email stuff
             ##################
-            user = self.user
-            session_ = self.session
-            courses = self.course
-            tutors = session_.get_session_tutors(session_id)
-            session_students = session_.get_session_students(session_id)
-            session_courses = session_.get_session_courses(session_id)
-            sess = session_.get_session(session_id)
+            tutors = self.session.get_session_tutors(session_id)
+            session_students = self.session.get_session_students(session_id)
+            students_and_courses_report = {}
+            students_and_courses = {}
+            for student in session_students:
+                students_and_courses_report[student] = self.session.get_report_student_session_courses(session_id, student.id)
+                students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+            session_courses = self.session.get_session_courses(session_id)
+            courses_and_info = {}
+            courses_and_email_info = {}
+            for course in session_courses:
+                courses_and_info[course] = self.course.get_course(course.id)
+                courses_and_email_info[course] = self.session.get_course_email_info(course.id)
+            sess = self.session.get_session(session_id)
+            opener = self.user.get_user(sess.openerId)
             ##################
             subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
-            recipients = app.config['TEST_EMAILS'] # TODO update with lab admins and profs
+            recipients = self.user.get_end_of_session_emails(session_courses)
             self.email.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
             set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
