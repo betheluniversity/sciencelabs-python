@@ -113,8 +113,7 @@ def reset_act_as():
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    return redirect(url_for('View:index'))  # TODO: CAS AUTHENTICATION
-# (it's just rendering the main page again right now to show that the flask session is cleared)
+    return redirect(app.config['LOGOUT_URL'])  # TODO: CAS AUTHENTICATION
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):
