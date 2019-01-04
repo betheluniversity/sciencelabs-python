@@ -6,11 +6,11 @@ from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import create_engine
 
 # Local
-from sciencelabs import app
+from sciencelabs import app, db
 
-db = create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
+database = db.create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
 Base = declarative_base()
-Session = sessionmaker(bind=db)
+Session = sessionmaker(bind=database)
 session = Session()
 
 
