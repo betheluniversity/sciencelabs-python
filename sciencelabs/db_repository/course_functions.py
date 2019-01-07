@@ -7,11 +7,8 @@ from sciencelabs.db_repository.db_tables import User_Table, Course_Table, Course
 
 
 class Course:
-    def __init__(self):
-        self.sess = db_session()
-
     def get_course_info(self):
-        return (self.sess.query(Course_Table, User_Table)
+        return (db_session.query(Course_Table, User_Table)
                 .filter(Course_Table.num_attendees)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id)
                 .filter(CourseProfessors_Table.course_id == Course_Table.id)
@@ -20,7 +17,7 @@ class Course:
                 .all())
 
     def get_active_course_info(self, semester_id):
-        return (self.sess.query(Course_Table, User_Table)
+        return (db_session.query(Course_Table, User_Table)
                 .filter(Course_Table.num_attendees)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id)
                 .filter(CourseProfessors_Table.course_id == Course_Table.id)
@@ -29,7 +26,7 @@ class Course:
                 .all())
 
     def get_selected_course_info(self, semester_id):
-        return (self.sess.query(Course_Table, User_Table)
+        return (db_session.query(Course_Table, User_Table)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id)
                 .filter(CourseProfessors_Table.course_id == Course_Table.id)
                 .filter(Course_Table.semester_id == Semester_Table.id)
@@ -37,12 +34,12 @@ class Course:
                 .all())
 
     def get_semester_courses(self, semester_id):
-        return self.sess.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName, CourseCode_Table.id)\
+        return db_session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName, CourseCode_Table.id)\
             .filter(Course_Table.semester_id == semester_id)\
             .filter(Course_Table.course_code_id == CourseCode_Table.id).distinct()
 
     def get_student_courses(self, student_id, semester_id):
-        return self.sess.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
@@ -53,7 +50,7 @@ class Course:
             .distinct()
 
     def get_course(self, course_id):
-        return self.sess.query(Course_Table, User_Table, Semester_Table)\
+        return db_session.query(Course_Table, User_Table, Semester_Table)\
             .filter(Course_Table.id == course_id)\
             .filter(CourseProfessors_Table.course_id == course_id)\
             .filter(CourseProfessors_Table.professor_id == User_Table.id)\
@@ -61,14 +58,14 @@ class Course:
             .one()
 
     def get_courses_for_session(self, session_id):
-        return self.sess.query(Course_Table)\
+        return db_session.query(Course_Table)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .all()
 
     def get_professor_courses(self, prof_id):
-        return self.sess.query(Course_Table)\
+        return db_session.query(Course_Table)\
             .filter(CourseProfessors_Table.course_id == Course_Table.id)\
             .filter(CourseProfessors_Table.professor_id == prof_id) \
             .filter(Course_Table.semester_id == Semester_Table.id)\
@@ -76,18 +73,18 @@ class Course:
             .all()
 
     def get_semester_courses_with_section(self, semester_id):
-        return self.sess.query(Course_Table)\
+        return db_session.query(Course_Table)\
             .filter(Course_Table.semester_id == semester_id)\
             .all()
 
     def get_active_coursecode(self):
-        return self.sess.query(CourseCode_Table)\
+        return db_session.query(CourseCode_Table)\
             .filter(CourseCode_Table.active == 1)\
             .all()
 
     def check_for_existing_coursecode(self, cc_info):
         try:
-            coursecode = self.sess.query(CourseCode_Table)\
+            coursecode = db_session.query(CourseCode_Table)\
                 .filter(cc_info['subject'] == CourseCode_Table.dept)\
                 .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
                 .filter(cc_info['title'] == CourseCode_Table.courseName)\
@@ -97,7 +94,7 @@ class Course:
             return False
 
     def check_if_existing_coursecode_is_active(self, cc_info):
-        coursecode = self.sess.query(CourseCode_Table)\
+        coursecode = db_session.query(CourseCode_Table)\
                 .filter(cc_info['subject'] == CourseCode_Table.dept)\
                 .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
                 .filter(cc_info['title'] == CourseCode_Table.courseName)\
@@ -106,24 +103,24 @@ class Course:
             self.activate_existing_coursecode(cc_info)
 
     def activate_existing_coursecode(self, cc_info):
-        coursecode = self.sess.query(CourseCode_Table)\
+        coursecode = db_session.query(CourseCode_Table)\
             .filter(cc_info['subject'] == CourseCode_Table.dept)\
             .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
             .filter(cc_info['title'] == CourseCode_Table.courseName)\
             .one()
         coursecode.active = 1
-        self.sess.commit()
+        db_session.commit()
 
     def create_coursecode(self, cc_info):
         new_coursecode = CourseCode_Table(dept=cc_info['subject'], courseNum=cc_info['cNumber'],
                                           underived=(cc_info['subject'] + cc_info['cNumber']), active=1,
                                           courseName=cc_info['title'])
-        self.sess.add(new_coursecode)
-        self.sess.commit()
+        db_session.add(new_coursecode)
+        db_session.commit()
 
     def check_for_existing_course(self, c_info):
         try:
-            course = self.sess.query(Course_Table)\
+            course = db_session.query(Course_Table)\
                 .filter(c_info['crn'] == Course_Table.crn)\
                 .filter(c_info['subject'] == Course_Table.dept)\
                 .filter(c_info['cNumber'] == Course_Table.course_num)\
@@ -138,7 +135,7 @@ class Course:
             return False
 
     def get_coursecode(self, cc_info):
-        return self.sess.query(CourseCode_Table)\
+        return db_session.query(CourseCode_Table)\
             .filter(cc_info['subject'] == CourseCode_Table.dept)\
             .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
             .filter(cc_info['title'] == CourseCode_Table.courseName)\
@@ -180,23 +177,23 @@ class Course:
                                   end_date=end_date, end_time=end_time,
                                   meeting_day=c_info['meetingDay'], title=c_info['title'], course_code_id=coursecode.id,
                                   num_attendees=c_info['enrolled'], room=c_info['room'])
-        self.sess.add(new_course)
-        self.sess.commit()
+        db_session.add(new_course)
+        db_session.commit()
 
-        user = self.sess.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
+        user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
 
         if user:
             new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
-            self.sess.add(new_courseprofessor)
-            self.sess.commit()
+            db_session.add(new_courseprofessor)
+            db_session.commit()
 
     def deactivate_coursecode(self, dept, course_num):
-        coursecode = self.sess.query(CourseCode_Table) \
+        coursecode = db_session.query(CourseCode_Table) \
             .filter(dept == CourseCode_Table.dept) \
             .filter(course_num == CourseCode_Table.courseNum) \
             .one()
         coursecode.active = 0
-        self.sess.commit()
+        db_session.commit()
 
     def delete_course(self, course, user):
 
@@ -204,20 +201,20 @@ class Course:
         if does_exist:
             self.delete_courseviewer(course.id)
 
-        courseprofessor = self.sess.query(CourseProfessors_Table)\
+        courseprofessor = db_session.query(CourseProfessors_Table)\
             .filter(CourseProfessors_Table.course_id == course.id)\
             .filter(CourseProfessors_Table.professor_id == user.id)\
             .one()
 
-        self.sess.delete(courseprofessor)
-        self.sess.commit()
+        db_session.delete(courseprofessor)
+        db_session.commit()
 
-        self.sess.delete(course)
-        self.sess.commit()
+        db_session.delete(course)
+        db_session.commit()
 
     def check_for_existing_courseviewer(self, course_id):
         try:
-            courseviewer = self.sess.query(CourseViewer_Table)\
+            courseviewer = db_session.query(CourseViewer_Table)\
                 .filter(CourseViewer_Table.course_id == course_id)\
                 .one()
             return True
@@ -225,12 +222,12 @@ class Course:
             return False
 
     def delete_courseviewer(self, course_id):
-        courseviewers = self.sess.query(CourseViewer_Table)\
+        courseviewers = db_session.query(CourseViewer_Table)\
             .filter(CourseViewer_Table.course_id == course_id)\
             .all()
 
         if courseviewers:
             for courseviewer in courseviewers:
-                self.sess.delete(courseviewer)
-                self.sess.commit()
+                db_session.delete(courseviewer)
+                db_session.commit()
 

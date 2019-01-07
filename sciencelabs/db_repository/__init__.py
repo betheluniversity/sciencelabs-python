@@ -10,7 +10,8 @@ from sciencelabs import app
 
 db = create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
 base = declarative_base()
-db_session = sessionmaker(bind=db, autoflush=False)
+session_maker = sessionmaker(bind=db)
+db_session = session_maker()
 
 
 
