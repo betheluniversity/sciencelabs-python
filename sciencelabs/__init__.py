@@ -3,7 +3,6 @@ import logging
 
 # Packages
 from flask import Flask, session, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
 from sqlalchemy import create_engine
 from datetime import datetime
@@ -11,8 +10,6 @@ import json
 
 app = Flask(__name__)
 app.config.from_object('config')
-
-db = SQLAlchemy(app)
 
 # Local
 from sciencelabs.db_repository.user_functions import User
