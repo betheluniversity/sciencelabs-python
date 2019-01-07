@@ -205,6 +205,7 @@ class User:
         user_to_edit.lastName = last_name
         user_to_edit.send_email = email_pref
         db_session.commit()
+        db_session.refresh(user_to_edit)
 
     def get_role_by_role_id(self, role_id):
         return db_session.query(Role_Table).filter(Role_Table.id == role_id).one()
