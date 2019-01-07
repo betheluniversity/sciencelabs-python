@@ -11,15 +11,16 @@ from sciencelabs.wsapi.wsapi_controller import WSAPIController
 class User:
     def __init__(self):
         self.wsapi = WSAPIController()
+        self.sess = db_session()
 
     def get_session_students(self, session_id):
-        return db_session.query(User_Table, StudentSession_Table) \
+        return self.sess.query(User_Table, StudentSession_Table) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
     def get_student_info(self, semester_id):
-        return db_session.query(User_Table) \
+        return self.sess.query(User_Table) \
             .filter(User_Table.id == StudentSession_Table.studentId) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
@@ -29,14 +30,14 @@ class User:
             .all()
 
     def get_user_info(self):
-        return db_session.query(User_Table, Role_Table)\
+        return self.sess.query(User_Table, Role_Table)\
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
             .filter(User_Table.deletedAt == None) \
             .all()
 
     def get_unique_session_attendance(self, semester_id):
-        return db_session.query(User_Table, func.count(distinct(User_Table.id))) \
+        return self.sess.query(User_Table, func.count(distinct(User_Table.id))) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(Session_Table.semester_id == Semester_Table.id) \
             .filter(Semester_Table.id == semester_id) \
@@ -46,7 +47,7 @@ class User:
             .all()
 
     def get_studentsession(self, student_id, semester_id):
-        return db_session.query(StudentSession_Table, Session_Table)\
+        return self.sess.query(StudentSession_Table, Session_Table)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == Semester_Table.id)\
@@ -54,12 +55,12 @@ class User:
             .all()
 
     def get_user(self, user_id):
-        return db_session.query(User_Table)\
+        return self.sess.query(User_Table)\
             .filter(User_Table.id == user_id)\
             .one_or_none()
 
     def get_student_attendance(self, student_id, semester_id):
-            return db_session.query(User_Table, func.count(User_Table.id)) \
+            return self.sess.query(User_Table, func.count(User_Table.id)) \
                 .filter(student_id == User_Table.id)\
                 .filter(User_Table.id == StudentSession_Table.studentId) \
                 .filter(StudentSession_Table.sessionId == Session_Table.id) \
@@ -69,7 +70,7 @@ class User:
                 .one()
 
     def get_unique_sessions_attended(self, student_id, semester_id):
-        return db_session.query(func.count(StudentSession_Table.sessionId))\
+        return self.sess.query(func.count(StudentSession_Table.sessionId))\
             .filter(student_id == User_Table.id)\
             .filter(User_Table.id == StudentSession_Table.studentId)\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
@@ -79,7 +80,7 @@ class User:
             .all()
 
     def get_student_courses(self, student_id, semester_id):
-        return db_session.query(Course_Table)\
+        return self.sess.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
@@ -87,7 +88,7 @@ class User:
             .all()
 
     def get_students_in_course(self, course_id):
-        return db_session.query(User_Table, func.count(User_Table.id))\
+        return self.sess.query(User_Table, func.count(User_Table.id))\
             .filter(Course_Table.id == course_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
@@ -96,7 +97,7 @@ class User:
             .all()
 
     def get_average_time_in_course(self, student_id, course_id):
-        return db_session.query(StudentSession_Table, User_Table) \
+        return self.sess.query(StudentSession_Table, User_Table) \
             .filter(Course_Table.id == course_id) \
             .filter(SessionCourses_Table.course_id == course_id) \
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
@@ -105,48 +106,48 @@ class User:
             .all()
 
     def get_student_from_studentsession(self, student_id):
-        return db_session.query(User_Table)\
+        return self.sess.query(User_Table)\
             .filter(User_Table.id == student_id)
 
     def get_all_roles(self):
-        return db_session.query(Role_Table)\
+        return self.sess.query(Role_Table)\
             .all()
 
     def get_user_roles(self, user_id):
-        return db_session.query(Role_Table)\
+        return self.sess.query(Role_Table)\
             .filter(Role_Table.id == user_role_Table.role_id)\
             .filter(user_role_Table.user_id == User_Table.id)\
             .filter(User_Table.id == user_id)\
             .all()
 
     def get_professor_role(self):
-        return db_session.query(Role_Table)\
+        return self.sess.query(Role_Table)\
             .filter(Role_Table.name == "Professor")\
             .one()
 
     def get_all_current_users(self):
-        return db_session.query(User_Table)\
+        return self.sess.query(User_Table)\
             .filter(User_Table.deletedAt == None)\
             .all()
 
     def get_all_current_students(self):
-        return db_session.query(User_Table).filter(User_Table.deletedAt == None)\
+        return self.sess.query(User_Table).filter(User_Table.deletedAt == None)\
             .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
             .filter(Role_Table.name == 'Student').order_by(User_Table.lastName.asc()).all()
 
     def get_all_current_tutors(self):
-        return db_session.query(User_Table).filter(User_Table.deletedAt == None)\
+        return self.sess.query(User_Table).filter(User_Table.deletedAt == None)\
             .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
             .filter(Role_Table.name == 'Tutor').order_by(User_Table.lastName.asc()).all()
 
     def delete_user(self, user_id):
         user_to_delete = self.get_user(user_id)
         user_to_delete.deletedAt = datetime.now()
-        db_session.commit()
+        self.sess.commit()
 
     def check_for_existing_user(self, username):
         try:  # return true if there is an existing user
-            user = db_session.query(User_Table)\
+            user = self.sess.query(User_Table)\
                 .filter(User_Table.username == username)\
                 .one()
             return True
@@ -154,21 +155,21 @@ class User:
             return False
 
     def activate_existing_user(self, username):
-        user = db_session.query(User_Table)\
+        user = self.sess.query(User_Table)\
             .filter(User_Table.username == username)\
             .one()
         user.deletedAt = None
-        db_session.commit()
+        self.sess.commit()
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
                               email=username+'@bethel.edu', send_email=send_email, deletedAt=None)
-        db_session.add(new_user)
-        db_session.commit()
+        self.sess.add(new_user)
+        self.sess.commit()
         return new_user
 
     def get_role_by_name(self, role_name):
-        return db_session.query(Role_Table).filter(Role_Table.name == role_name).one()
+        return self.sess.query(Role_Table).filter(Role_Table.name == role_name).one()
 
     def set_user_roles(self, username, roles):
         user = self.get_user_by_username(username)
@@ -176,43 +177,44 @@ class User:
         for role in roles:
             role_entry = self.get_role_by_name(role)
             user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
-            db_session.add(user_role)
-        db_session.commit()
+            self.sess.add(user_role)
+        self.sess.commit()
 
     def update_user_info(self, user_id, first_name, last_name, email):
-        user = db_session.query(User_Table)\
+        user = self.sess.query(User_Table)\
             .filter(User_Table.id == user_id)\
             .one()
         user.firstName = first_name
         user.lastName = last_name
         user.email = email
-        db_session.commit()
+        self.sess.commit()
 
     def clear_current_roles(self, user_id):
-        roles = db_session.query(user_role_Table)\
+        roles = self.sess.query(user_role_Table)\
             .filter(user_role_Table.user_id == user_id)\
             .all()
         for role in roles:
-            db_session.delete(role)
-        db_session.commit()
+            self.sess.delete(role)
+        self.sess.commit()
 
     def get_user_by_username(self, username):
-        return db_session.query(User_Table).filter(User_Table.username == username).one_or_none()
+        return self.sess.query(User_Table).filter(User_Table.username == username).one_or_none()
 
     def edit_user(self, first_name,last_name, username, email_pref):
         user_to_edit = self.get_user_by_username(username)
         user_to_edit.firstName = first_name
         user_to_edit.lastName = last_name
         user_to_edit.send_email = email_pref
-        db_session.commit()
+        self.sess.commit()
+        self.sess.refresh()
 
     def get_role_by_role_id(self, role_id):
-        return db_session.query(Role_Table).filter(Role_Table.id == role_id).one()
+        return self.sess.query(Role_Table).filter(Role_Table.id == role_id).one()
 
 # ################### The following methods are all for the cron jobs for this project ################### #
 
     def get_or_create_course(self, course, semester):
-        course_entry = db_session.query(Course_Table).filter(Course_Table.crn == course['crn']) \
+        course_entry = self.sess.query(Course_Table).filter(Course_Table.crn == course['crn']) \
             .filter(Course_Table.semester_id == semester.id).one_or_none()
         if not course_entry:
             db_start_date = datetime.strptime(course['beginDate'], "%m/%d/%Y").strftime("%Y-%m-%d")
@@ -223,7 +225,7 @@ class User:
             db_end_time = None
             if course['endTime']:
                 db_end_time = datetime.strptime(course['endTime'], "%I:%M%p").strftime("%H:%M:%S")
-            course_code = db_session.query(CourseCode_Table) \
+            course_code = self.sess.query(CourseCode_Table) \
                 .filter(CourseCode_Table.courseNum == course['cNumber']) \
                 .filter(CourseCode_Table.dept == course['subject']).one()
             course_entry = Course_Table(semester_id=semester.id, begin_date=db_start_date,
@@ -233,13 +235,13 @@ class User:
                                         end_time=db_end_time, meeting_day=course['meetingDay'],
                                         title=course['title'], course_code_id=course_code.id,
                                         num_attendees=course['enrolled'], room=course['room'])
-            db_session.add(course_entry)
-            db_session.commit()
+            self.sess.add(course_entry)
+            self.sess.commit()
         return course_entry
 
     def check_semester_exists(self, course):
         semester_info = course['term'].split()  # Returns in form ['term', 'year', '-', 'CAS']
-        semester = db_session.query(Semester_Table).filter(Semester_Table.term == semester_info[0]) \
+        semester = self.sess.query(Semester_Table).filter(Semester_Table.term == semester_info[0]) \
             .filter(Semester_Table.year == semester_info[1]).one_or_none()
         if not semester:
             raise Exception
@@ -247,7 +249,7 @@ class User:
             return semester
 
     def get_or_create_professor(self, course):
-        professor = db_session.query(User_Table) \
+        professor = self.sess.query(User_Table) \
             .filter(User_Table.username == course['instructorUsername']).one_or_none()
         if not professor:
             # Name comes in form 'First M. Last'
@@ -259,13 +261,13 @@ class User:
         return professor
 
     def check_or_create_professor_course(self, professor, course):
-        professor_course = db_session.query(CourseProfessors_Table) \
+        professor_course = self.sess.query(CourseProfessors_Table) \
             .filter(CourseProfessors_Table.professor_id == professor.id) \
             .filter(CourseProfessors_Table.course_id == course.id).one_or_none()
         if not professor_course:
             new_professor_course = CourseProfessors_Table(professor_id=professor.id, course_id=course.id)
-            db_session.add(new_professor_course)
-            db_session.commit()
+            self.sess.add(new_professor_course)
+            self.sess.commit()
 
     def populate_user_courses_cron(self):
         # We will be creating a message as we go to be logged at the end
@@ -281,7 +283,7 @@ class User:
 
             # Check if courseCode exists (yes = move on, no = quit)
             for key, course in student_banner_courses.items():
-                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                if self.sess.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
                         .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
                     message += course['subject'] + ' ' + course['cNumber'] + '\n'
@@ -303,12 +305,12 @@ class User:
                     self.check_or_create_professor_course(professor, course_entry)
 
                     # Create user_course table entry if needed
-                    user_course = db_session.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
+                    user_course = self.sess.query(user_course_Table).filter(user_course_Table.user_id == student.id)\
                         .filter(user_course_Table.course_id == course_entry.id).one_or_none()
                     if not user_course:
                         new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
-                        db_session.add(new_user_course)
-                        db_session.commit()
+                        self.sess.add(new_user_course)
+                        self.sess.commit()
 
         # return message for logging purposes
         return message
@@ -319,7 +321,7 @@ class User:
         message = ''
 
         # Get all active courseCodes from lab database
-        active_courses = db_session.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
+        active_courses = self.sess.query(CourseCode_Table).filter(CourseCode_Table.active == 1).all()
         for course in active_courses:
             # verify that the course code is valid with banner
             if self.wsapi.validate_course(course.dept, course.courseNum):
@@ -338,7 +340,7 @@ class User:
                     course.underived = banner_courses['0']['subject'] + banner_courses['0']['cNumber']
                     course.active = 1
                     course.courseName = banner_courses['0']['title']
-                    db_session.commit()
+                    self.sess.commit()
                     message += "Course Code edited\n"
                     message += course.underived + " (" + course.courseName + ")\n"
 
@@ -378,19 +380,19 @@ class User:
         self.set_user_roles(username, ['Student'])
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+            if self.sess.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
                     .filter(CourseCode_Table.dept == course['subject'])\
                     .filter(CourseCode_Table.active == 1).one_or_none():
-                course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                course_entry = self.sess.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
                     .filter(Course_Table.semester_id == semester.id).one_or_none()
                 if course_entry:
                     new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
-                    db_session.add(new_user_course)
-                    db_session.commit()
+                    self.sess.add(new_user_course)
+                    self.sess.commit()
         return student
 
     def get_users_in_group(self, role_id):
-        return db_session.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\
+        return self.sess.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\
             .filter(user_role_Table.role_id == role_id).all()
 
     def get_email_from_id(self, user_id):
