@@ -1,5 +1,3 @@
-import urllib.parse
-# Packages
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import create_engine
@@ -10,27 +8,34 @@ from sciencelabs import app
 
 db = create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
 base = declarative_base()
-db_session = sessionmaker(bind=db, autoflush=False)
+session_maker = sessionmaker(bind=db, autoflush=False)
+db_session = session_maker()
 
-# def try_db_method_twice(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         return_value = False
-#         # try 2 times
-#         for i in [0, 1]:
-#             try:
-#                 # if you get a non abort(503) value, return
-#                 return_value = f(*args, **kwargs)
-#                 break
-#             except:
-#                 continue
-#
-#         if return_value is not None:
-#             return return_value
-#         else:
-#             return abort(503)
-#
-#     return decorated
 
+# This allows me to decorate all functions in a class
+def decorate_all_functions(function_decorator):
+    def decorator(cls):
+        for name, obj in vars(cls).items():
+            if callable(obj):
+                try:
+                    obj = obj.__func__  # unwrap Python 2 unbound method
+                except AttributeError:
+                    pass  # not needed in Python 3
+                setattr(cls, name, function_decorator(obj))
+        return cls
+    return decorator
+
+
+# This decorator closes the db session after every call to ensure the data propagates.
+def close_session(func):
+    @wraps(func)
+    def wrapper(*args, **kw):
+        try:
+            res = func(*args, **kw)
+        finally:
+            db_session.close()
+        return res
+
+    return wrapper
 
 
