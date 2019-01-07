@@ -30,12 +30,13 @@ class User:
             .all()
 
     def get_user_info(self):
-        sess = db_session()
-        return sess.query(User_Table, Role_Table)\
+        info = self.sess.query(User_Table, Role_Table)\
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
             .filter(User_Table.deletedAt == None) \
             .all()
+        self.sess.close()
+        return info
 
     def get_unique_session_attendance(self, semester_id):
         return self.sess.query(User_Table, func.count(distinct(User_Table.id))) \
@@ -202,12 +203,12 @@ class User:
         return self.sess.query(User_Table).filter(User_Table.username == username).one_or_none()
 
     def edit_user(self, first_name,last_name, username, email_pref):
-        sess = db_session()
         user_to_edit = self.get_user_by_username(username)
         user_to_edit.firstName = first_name
         user_to_edit.lastName = last_name
         user_to_edit.send_email = email_pref
-        sess.commit()
+        self.sess.commit()
+        self.sess.close()
 
     def get_role_by_role_id(self, role_id):
         return self.sess.query(Role_Table).filter(Role_Table.id == role_id).one()
