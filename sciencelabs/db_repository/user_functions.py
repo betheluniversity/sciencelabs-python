@@ -2,14 +2,14 @@ from datetime import datetime
 from sqlalchemy import func, distinct, orm
 from functools import wraps
 
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_session
+from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
     SessionCourses_Table, CourseProfessors_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
-@decorate_all_functions(close_session)
+@decorate_all_functions(close_db_session)
 class User:
     def __init__(self):
         self.wsapi = WSAPIController()
@@ -120,6 +120,17 @@ class User:
             .filter(user_role_Table.user_id == User_Table.id)\
             .filter(User_Table.id == user_id)\
             .all()
+
+    def get_user_role_ids(self, user_id):
+        user_roles = db_session.query(Role_Table)\
+            .filter(Role_Table.id == user_role_Table.role_id)\
+            .filter(user_role_Table.user_id == User_Table.id)\
+            .filter(User_Table.id == user_id)\
+            .all()
+        user_role_ids = []
+        for role in user_roles:
+            user_role_ids.append(role.id)
+        return user_role_ids
 
     def get_professor_role(self):
         return db_session.query(Role_Table)\

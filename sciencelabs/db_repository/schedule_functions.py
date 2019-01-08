@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta, date
 from sqlalchemy import func, or_
 
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_session
+from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
     ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table, \
     TutorSession_Table, SessionCourseCodes_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
-@decorate_all_functions(close_session)
+@decorate_all_functions(close_db_session)
 class Schedule:
 
     def __init__(self):
@@ -169,33 +169,34 @@ class Schedule:
 
     def create_schedule(self, term, term_start_date, term_end_date, term_id, name, room, start_time, end_time,
                         day_of_week, leads, tutors, courses):
-        try:
+        # try:
             # Creates the schedule and returns it
-            new_schedule = self.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
-            # Creates the recurring sessions for the schedule and returns them in an array
-            scheduled_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                                new_schedule.id, start_time, end_time, room, name)
-            # Creates leads tutor schedules
-            self.create_new_lead_schedules(new_schedule.id, start_time, end_time, leads)
-            # Creates leads recurring tutor sessions
-            self.create_lead_scheduled_sessions(leads, start_time, end_time, scheduled_sessions)
-            # Creates tutors tutor schedules
-            self.create_new_tutor_schedules(new_schedule.id, start_time, end_time, tutors)
-            # Creates tutors recurring tutor sessions
-            self.create_tutor_scheduled_sessions(tutors, start_time, end_time, scheduled_sessions)
-            # Creates schedule courses
-            self.create_new_schedule_courses(new_schedule.id, courses)
-            # Creates recurring session courses
-            self.create_scheduled_session_courses(scheduled_sessions, courses)
-            return True
-        except:
-            return False
+        new_schedule = self.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
+        # Creates the recurring sessions for the schedule and returns them in an array
+        scheduled_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
+                                                            new_schedule.id, start_time, end_time, room, name)
+        # Creates leads tutor schedules
+        self.create_new_lead_schedules(new_schedule.id, start_time, end_time, leads)
+        # Creates leads recurring tutor sessions
+        self.create_lead_scheduled_sessions(leads, start_time, end_time, scheduled_sessions)
+        # Creates tutors tutor schedules
+        self.create_new_tutor_schedules(new_schedule.id, start_time, end_time, tutors)
+        # Creates tutors recurring tutor sessions
+        self.create_tutor_scheduled_sessions(tutors, start_time, end_time, scheduled_sessions)
+        # Creates schedule courses
+        self.create_new_schedule_courses(new_schedule.id, courses)
+        # Creates recurring session courses
+        self.create_scheduled_session_courses(scheduled_sessions, courses)
+        return True
+        # except:
+        #     return False
 
     def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
         new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time,
                                       dayofWeek=day_of_week, term=term)
         db_session.add(new_schedule)
         db_session.commit()
+        db_session.expunge_all()
         return new_schedule
 
     def create_new_lead_schedules(self, schedule_id, time_in, time_out, leads):

@@ -94,7 +94,7 @@
                         url: "/reset-act-as",
                         contentType: 'application/json;charset=UTF-8',
                         success: function (response) {
-                            window.location.assign('/')
+                            window.location.replace('{{ url_for('View:index') }}')
                             },
                         error: function (error) {
                         }

@@ -47,11 +47,11 @@ class UsersView(FlaskView):
         professor = False
         user = self.user.get_user(user_id)
         roles = self.user.get_all_roles()
-        user_roles = self.user.get_user_roles(user_id)
+        user_role_ids = self.user.get_user_role_ids(user_id)
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses_with_section(active_semester.id)
         professor_role = self.user.get_professor_role()
-        if professor_role in user_roles:
+        if professor_role.id in user_role_ids:
             professor = True
             professor_courses = self.course.get_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())

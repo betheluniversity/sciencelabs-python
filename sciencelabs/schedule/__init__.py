@@ -41,6 +41,7 @@ class ScheduleView(FlaskView):
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses(active_semester.id)
+        lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/create_new_schedule.html', **locals())
 

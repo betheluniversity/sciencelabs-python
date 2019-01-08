@@ -27,7 +27,7 @@ def decorate_all_functions(function_decorator):
 
 
 # This decorator closes the db session after every call to ensure the data propagates.
-def close_session(func):
+def close_db_session(func):
     @wraps(func)
     def wrapper(*args, **kw):
         try:
