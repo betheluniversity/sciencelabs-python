@@ -1,14 +1,13 @@
 from datetime import datetime, timedelta, date
 from sqlalchemy import func, or_
 
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
     ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table, \
     TutorSession_Table, SessionCourseCodes_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
-@decorate_all_functions(close_db_session)
 class Schedule:
 
     def __init__(self):
@@ -196,7 +195,6 @@ class Schedule:
                                       dayofWeek=day_of_week, term=term)
         db_session.add(new_schedule)
         db_session.commit()
-        db_session.expunge_all()
         return new_schedule
 
     def create_new_lead_schedules(self, schedule_id, time_in, time_out, leads):
@@ -229,9 +227,9 @@ class Schedule:
                                              schedEndTime=end_time, room=room, open=0, hash=self.base.get_hash(),
                                              anonStudents=0, name=name)
             db_session.add(schedule_session)
+            db_session.commit()
             sessions.append(schedule_session)
             session_date += timedelta(weeks=1)  # Add a week for next session
-        db_session.commit()
         return sessions
 
     def create_lead_scheduled_sessions(self, leads, start_time, end_time, scheduled_sessions):

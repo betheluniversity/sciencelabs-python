@@ -1,14 +1,13 @@
 from datetime import datetime
 from sqlalchemy import func, distinct
 
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table, user_role_Table, Role_Table
+    SessionCourseCodes_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
-@decorate_all_functions(close_db_session)
 class Session:
     def __init__(self):
         self.base = ScienceLabsController()

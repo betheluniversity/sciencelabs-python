@@ -2,9 +2,8 @@
 import logging
 
 # Packages
-from flask import Flask, session, request, redirect, url_for
+from flask import Flask, session, request, redirect
 from raven.contrib.flask import Sentry
-from sqlalchemy import create_engine
 from datetime import datetime
 import json
 
@@ -12,6 +11,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 # Local
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
@@ -109,11 +109,16 @@ def reset_act_as():
             return error
 
 
-# TODO IN PROGRESS LOGOUT METHOD
+@app.after_request
+def close_db_session(response):
+    db_session.close()
+    return response
+
+
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    return redirect(app.config['LOGOUT_URL'])  # TODO: CAS AUTHENTICATION
+    return redirect(app.config['LOGOUT_URL'])
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):

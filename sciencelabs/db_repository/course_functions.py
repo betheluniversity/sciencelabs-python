@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from sqlalchemy import orm
 from flask import session
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
 
 
-@decorate_all_functions(close_db_session)
 class Course:
     def get_course_info(self):
         return (db_session.query(Course_Table, User_Table)

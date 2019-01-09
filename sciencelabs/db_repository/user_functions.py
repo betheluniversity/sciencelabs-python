@@ -1,15 +1,13 @@
 from datetime import datetime
 from sqlalchemy import func, distinct, orm
-from functools import wraps
 
-from sciencelabs.db_repository import db_session, decorate_all_functions, close_db_session
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
     SessionCourses_Table, CourseProfessors_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
-@decorate_all_functions(close_db_session)
 class User:
     def __init__(self):
         self.wsapi = WSAPIController()
