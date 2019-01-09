@@ -152,32 +152,29 @@ class SessionView(FlaskView):
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        name = form.get('name')
+        room = form.get('room')
+        semester_id = form.get('semester-select')
+        date = form.get('date')
+        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        scheduled_start = form.get('scheduled-start') or None
+        scheduled_end = form.get('scheduled-end') or None
+        leads = form.getlist('leads')
+        tutors = form.getlist('tutors')
+        actual_start = form.get('actual-start') or None
+        actual_end = form.get('actual-end') or None
+        courses = form.getlist('courses')
+        comments = form.get('comments')
+        anon_students = form.get('anon-students')
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            name = form.get('name')
-            room = form.get('room')
-            semester_id = form.get('semester-select')
-            date = form.get('date')
-            db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
-            scheduled_start = form.get('scheduled-start') or None
-            scheduled_end = form.get('scheduled-end') or None
-            leads = form.getlist('leads')
-            tutors = form.getlist('tutors')
-            actual_start = form.get('actual-start') or None
-            actual_end = form.get('actual-end') or None
-            courses = form.getlist('courses')
-            comments = form.get('comments')
-            anon_students = form.get('anon-students')
             # Returns True if successful
-            success = self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
+            self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
                                                 tutors, courses)
-            if success:
-                set_alert('success', 'Session edited successfully!')
-                return redirect(url_for('SessionView:closed'))
-            else:
-                raise Exception
+            set_alert('success', 'Session edited successfully!')
+            return redirect(url_for('SessionView:closed'))
         except Exception as error:
             set_alert('danger', 'Failed to edit session: ' + str(error))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -187,24 +184,21 @@ class SessionView(FlaskView):
     def save_student_edits(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        student_id = form.get('student-id')
+        time_in = form.get('time-in') or None
+        time_out = form.get('time-out') or None
+        student_courses = form.getlist('course')
+        other_check = form.get('other-check')
+        other_course = form.get('other-name')
+        if not other_check:
+            other_course = None
         try:
-            form = request.form
-            student_id = form.get('student-id')
-            time_in = form.get('time-in') or None
-            time_out = form.get('time-out') or None
-            student_courses = form.getlist('course')
-            other_check = form.get('other-check')
-            other_course = form.get('other-name')
-            if not other_check:
-                other_course = None
             # Returns True if successful
-            success = self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course,
+            self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course,
                                                         student_courses)
-            if success:
-                set_alert('success', 'Edited student successfully!')
-                return redirect(url_for('SessionView:edit_session', session_id=session_id))
-            else:
-                raise Exception
+            set_alert('success', 'Edited student successfully!')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
             set_alert('danger', 'Failed to edit student: ' + str(error))
             return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
@@ -305,34 +299,31 @@ class SessionView(FlaskView):
     def create_session_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        name = form.get('name')
+        room = form.get('room')
+        semester_id = form.get('semester-select')
+        date = form.get('date')
+        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        scheduled_start = form.get('scheduled-start') or None
+        scheduled_end = form.get('scheduled-end') or None
+        leads = form.getlist('choose-leads')
+        tutors = form.getlist('choose-tutors')
+        actual_start = form.get('actual-start') or None
+        actual_end = form.get('actual-end') or None
+        courses = form.getlist('courses')
+        comments = form.get('comments')
+        anon_students = form.get('anon-students')
+        if leads == []:
+            set_alert('danger', 'You must choose a Lead Tutor')
+            return redirect(url_for('SessionView:create'))
         try:
-            form = request.form
-            name = form.get('name')
-            room = form.get('room')
-            semester_id = form.get('semester-select')
-            date = form.get('date')
-            db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
-            scheduled_start = form.get('scheduled-start') or None
-            scheduled_end = form.get('scheduled-end') or None
-            leads = form.getlist('choose-leads')
-            tutors = form.getlist('choose-tutors')
-            actual_start = form.get('actual-start') or None
-            actual_end = form.get('actual-end') or None
-            courses = form.getlist('courses')
-            comments = form.get('comments')
-            anon_students = form.get('anon-students')
-            if leads == []:
-                set_alert('danger', 'You must choose a Lead Tutor')
-                return redirect(url_for('SessionView:create'))
             # Returns True if successful
-            success = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
+            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
-            if success:
-                set_alert('success', 'Session created successfully!')
-                return redirect(url_for('SessionView:closed'))
-            else:
-                raise Exception
+            set_alert('success', 'Session created successfully!')
+            return redirect(url_for('SessionView:closed'))
         except Exception as error:
             set_alert('danger', 'Failed to create session: ' + str(error))
             return redirect(url_for('SessionView:create'))

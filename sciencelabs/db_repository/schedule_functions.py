@@ -168,8 +168,7 @@ class Schedule:
 
     def create_schedule(self, term, term_start_date, term_end_date, term_id, name, room, start_time, end_time,
                         day_of_week, leads, tutors, courses):
-        # try:
-            # Creates the schedule and returns it
+        # Creates the schedule and returns it
         new_schedule = self.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
         # Creates the recurring sessions for the schedule and returns them in an array
         scheduled_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
@@ -186,9 +185,6 @@ class Schedule:
         self.create_new_schedule_courses(new_schedule.id, courses)
         # Creates recurring session courses
         self.create_scheduled_session_courses(scheduled_sessions, courses)
-        return True
-        # except:
-        #     return False
 
     def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
         new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time,
@@ -271,33 +267,29 @@ class Schedule:
 
     def edit_schedule(self, term_start_date, term_end_date, term_id, schedule_id, name, room, start_time,
                       end_time, day_of_week, leads, tutors, courses):
-        try:
-            # Gets an array of sessions based on the schedule id
-            scheduled_sessions = self.get_sessions_by_schedule(schedule_id)
-            # Deletes the old sessions so we can create new sessions
-            self.delete_old_scheduled_sessions(scheduled_sessions)
-            # Deletes the old TutorSchedule and ScheduleCourseCodes entries
-            self.delete_old_schedule_tutors_and_courses(schedule_id)
-            # Edits the schedule
-            self.edit_schedule_info(schedule_id, name, room, start_time, end_time, day_of_week)
-            # Creates the new recurring sessions for the schedule
-            new_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                          schedule_id, start_time, end_time, room, name)
-            # Edits the lead's schedule
-            self.create_new_lead_schedules(schedule_id, start_time, end_time, leads)
-            # Creates the new recurring sessions for the lead
-            self.create_lead_scheduled_sessions(leads, start_time, end_time, new_sessions)
-            # Edits the tutor's schedule
-            self.create_new_tutor_schedules(schedule_id, start_time, end_time, tutors)
-            # Creates the new recurring sessions for the tutor
-            self.create_tutor_scheduled_sessions(tutors, start_time, end_time, new_sessions)
-            # Edits the schedules courses
-            self.create_new_schedule_courses(schedule_id, courses)
-            # Creates the new recurring session's courses
-            self.create_scheduled_session_courses(new_sessions, courses)
-            return True
-        except:
-            return False
+        # Gets an array of sessions based on the schedule id
+        scheduled_sessions = self.get_sessions_by_schedule(schedule_id)
+        # Deletes the old sessions so we can create new sessions
+        self.delete_old_scheduled_sessions(scheduled_sessions)
+        # Deletes the old TutorSchedule and ScheduleCourseCodes entries
+        self.delete_old_schedule_tutors_and_courses(schedule_id)
+        # Edits the schedule
+        self.edit_schedule_info(schedule_id, name, room, start_time, end_time, day_of_week)
+        # Creates the new recurring sessions for the schedule
+        new_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
+                                                      schedule_id, start_time, end_time, room, name)
+        # Edits the lead's schedule
+        self.create_new_lead_schedules(schedule_id, start_time, end_time, leads)
+        # Creates the new recurring sessions for the lead
+        self.create_lead_scheduled_sessions(leads, start_time, end_time, new_sessions)
+        # Edits the tutor's schedule
+        self.create_new_tutor_schedules(schedule_id, start_time, end_time, tutors)
+        # Creates the new recurring sessions for the tutor
+        self.create_tutor_scheduled_sessions(tutors, start_time, end_time, new_sessions)
+        # Edits the schedules courses
+        self.create_new_schedule_courses(schedule_id, courses)
+        # Creates the new recurring session's courses
+        self.create_scheduled_session_courses(new_sessions, courses)
 
     def delete_old_scheduled_sessions(self, scheduled_sessions):
         # In here we want to check that we're not deleting sessions that have already happened, so check for a startTime

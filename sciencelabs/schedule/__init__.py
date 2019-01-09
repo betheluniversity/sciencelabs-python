@@ -70,29 +70,26 @@ class ScheduleView(FlaskView):
     def save_schedule_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        active_semester = self.schedule.get_active_semester()
+        term_start_date = active_semester.startDate
+        term_end_date = active_semester.endDate
+        term_id = active_semester.id
+        form = request.form
+        schedule_id = form.get('schedule-id')
+        name = form.get('name')
+        room = form.get('room')
+        start_time = form.get('start-time')
+        end_time = form.get('end-time')
+        day_of_week = int(form.get('day-of-week'))
+        leads = form.getlist('leads')
+        tutors = form.getlist('tutors')
+        courses = form.getlist('courses')
         try:
-            active_semester = self.schedule.get_active_semester()
-            term_start_date = active_semester.startDate
-            term_end_date = active_semester.endDate
-            term_id = active_semester.id
-            form = request.form
-            schedule_id = form.get('schedule-id')
-            name = form.get('name')
-            room = form.get('room')
-            start_time = form.get('start-time')
-            end_time = form.get('end-time')
-            day_of_week = int(form.get('day-of-week'))
-            leads = form.getlist('leads')
-            tutors = form.getlist('tutors')
-            courses = form.getlist('courses')
             # This returns True if it executes successfully
-            success = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                                  start_time, end_time, day_of_week, leads, tutors, courses)
-            if success:
-                set_alert('success', 'Schedule edited successfully!')
-                return redirect(url_for('ScheduleView:index'))
-            else:
-                raise Exception
+            self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
+                                        start_time, end_time, day_of_week, leads, tutors, courses)
+            set_alert('success', 'Schedule edited successfully!')
+            return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             set_alert('danger', 'Failed to edit schedule: ' + str(error))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
@@ -116,13 +113,10 @@ class ScheduleView(FlaskView):
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
-            success = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+            self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                     start_time, end_time, day_of_week, leads, tutors, courses)
-            if success:
-                set_alert('success', 'Schedule created successfully!')
-                return redirect(url_for('ScheduleView:index'))
-            else:
-                raise Exception
+            set_alert('success', 'Schedule created successfully!')
+            return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             set_alert('danger', 'Failed to create schedule: ' + str(error))
             return redirect(url_for('ScheduleView:create_new_schedule'))
