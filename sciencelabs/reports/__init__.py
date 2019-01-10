@@ -539,7 +539,7 @@ class ReportView(FlaskView):
         session_courses_and_attendance = {}
         for course in session_courses:
             session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
-        course_list = self.courses.get_semester_courses(session['SELECTED-SEMESTER'])
+        # course_list = self.courses.get_semester_courses(session['SELECTED-SEMESTER'])
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)

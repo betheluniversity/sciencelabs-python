@@ -151,8 +151,11 @@ class UsersView(FlaskView):
             self.slc.check_roles_and_route(['Administrator'])
             user_info = self.user.get_user(user_id)
             session['ADMIN-VIEWER'] = True
+            # Saving old info to return to
             session['ADMIN-USERNAME'] = session['USERNAME']
             session['ADMIN-ROLES'] = session['USER-ROLES']
+            session['ADMIN-NAME'] = session['NAME']
+            # Setting up viewing role
             session['USERNAME'] = user_info.username
             session['NAME'] = user_info.firstName + ' ' + user_info.lastName
             session['USER-ROLES'] = []

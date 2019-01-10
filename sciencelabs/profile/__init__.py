@@ -49,8 +49,11 @@ class ProfileView(FlaskView):
         if not session['ADMIN-VIEWER']:
             role = str(json.loads(request.data).get('chosen-role'))
             session['ADMIN-VIEWER'] = True
+            # Saving old info to return too
             session['ADMIN-USERNAME'] = session['USERNAME']
             session['ADMIN-ROLES'] = session['USER-ROLES']
+            session['ADMIN-NAME'] = session['NAME']
+            # Setting up viewing role
             session['USERNAME'] = role
             session['NAME'] = ""
             session['USER-ROLES'] = role

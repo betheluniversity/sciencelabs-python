@@ -50,7 +50,7 @@
 
         $(document).ready(function () {
            $('#change-role').click(function (){
-               var chosen_role = $('#choose-role option:selected').text()
+               var chosen_role = $('#choose-role option:selected').text();
                $.ajax({
                    type: "POST",
                    url: "change-role",

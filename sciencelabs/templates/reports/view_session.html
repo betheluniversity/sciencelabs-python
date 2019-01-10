@@ -62,9 +62,9 @@
                             <li>
                                 <ul class="no-bullet">
                                     <li>
-                                        {% if course_list %}
-                                            {% for course in course_list %}
-                                                <span class="button-labels">{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</span>
+                                        {% if session_courses %}
+                                            {% for course in session_courses %}
+                                                <span class="button-labels">{{ course.underived }} ({{ course.courseName }})</span>
                                             {% endfor %}
                                         {% endif %}
                                     </li>

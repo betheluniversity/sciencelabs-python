@@ -98,15 +98,17 @@ def set_semester_selector():
 def reset_act_as():
     if session['ADMIN-VIEWER']:
         try:
-            session['ALERT'] = None
+            # Resetting info
             session['USERNAME'] = session['ADMIN-USERNAME']
-            user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
+            # user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
             session['ADMIN-VIEWER'] = False
-            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            session['NAME'] = session['ADMIN-NAME']
             session['USER-ROLES'] = session['ADMIN-ROLES']
             return 'success'
         except Exception as error:
             return error
+    else:
+        return 'You do not have access to this function'
 
 
 @app.after_request
