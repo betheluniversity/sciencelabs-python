@@ -54,8 +54,9 @@ class CourseView(FlaskView):
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
         for course in course_list:
-            number = self.dept_length(course)
-            cc_info = self.wsapi.validate_course(course[:number], course[number:])
+            course_code = course.split(" ")[0]
+            number = self.dept_length(course_code)
+            cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
             course_info = self.wsapi.get_course_info(course[:number], course[number:])
             if cc_info and course_info:
                 self.handle_coursecode(cc_info[0])

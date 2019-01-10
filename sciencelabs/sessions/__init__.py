@@ -76,7 +76,8 @@ class SessionView(FlaskView):
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
-        tutor_names = self.session.get_session_tutor_names(session_id)  # used for a logic check in template
+        lead_ids = self.session.get_session_lead_ids(session_id)
+        tutor_ids = self.session.get_session_tutor_ids(session_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
         session_students = self.session.get_session_students(session_id)

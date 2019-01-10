@@ -50,11 +50,21 @@ class Session:
             .filter(User_Table.id == TutorSession_Table.tutorId)\
             .order_by(TutorSession_Table.isLead.desc())
 
-    def get_session_tutor_names(self, session_id):
-        return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName)\
-            .filter(TutorSession_Table.sessionId == session_id)\
-            .filter(User_Table.id == TutorSession_Table.tutorId)\
-            .order_by(TutorSession_Table.isLead.desc())
+    def get_session_lead_ids(self, session_id):
+        lead_ids = []
+        leads = db_session.query(User_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.isLead == 1).filter(TutorSession_Table.tutorId == User_Table.id).all()
+        for lead in leads:
+            lead_ids.append(lead.id)
+        return lead_ids
+
+    def get_session_tutor_ids(self, session_id):
+        tutor_ids = []
+        tutors = db_session.query(User_Table).filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.isLead == 0).filter(TutorSession_Table.tutorId == User_Table.id).all()
+        for tutor in tutors:
+            tutor_ids.append(tutor.id)
+        return tutor_ids
 
     def get_tutor_session_info(self, tutor_id, session_id):
         return db_session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,

@@ -139,12 +139,21 @@ class Schedule:
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
             .order_by(TutorSchedule_Table.isLead.desc())
 
-    def get_schedule_tutor_names(self, schedule_id):
-        return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
-            .filter(TutorSchedule_Table.scheduleId == schedule_id)\
-            .filter(User_Table.id == TutorSchedule_Table.tutorId)\
-            .order_by(TutorSchedule_Table.isLead.desc())\
-            .all()
+    def get_scheduled_lead_ids(self, schedule_id):
+        lead_ids = []
+        leads = db_session.query(User_Table).filter(TutorSchedule_Table.scheduleId == schedule_id)\
+            .filter(TutorSchedule_Table.isLead == 1).filter(TutorSchedule_Table.tutorId == User_Table.id).all()
+        for lead in leads:
+            lead_ids.append(lead.id)
+        return lead_ids
+
+    def get_scheduled_tutor_ids(self, schedule_id):
+        tutor_ids = []
+        tutors = db_session.query(User_Table).filter(TutorSchedule_Table.scheduleId == schedule_id) \
+            .filter(TutorSchedule_Table.isLead == 0).filter(TutorSchedule_Table.tutorId == User_Table.id).all()
+        for tutor in tutors:
+            tutor_ids.append(tutor.id)
+        return tutor_ids
 
     def delete_schedule(self, schedule_id):
         schedule_to_delete = self.get_schedule(schedule_id)

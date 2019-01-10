@@ -49,9 +49,10 @@ class ScheduleView(FlaskView):
 
         current_alert = get_alert()
         active_semester = self.schedule.get_active_semester()
-        schedule = Schedule().get_schedule(schedule_id)
+        schedule = self.schedule.get_schedule(schedule_id)
         course_list = self.course.get_semester_courses(active_semester.id)
-        tutor_names = self.schedule.get_schedule_tutor_names(schedule_id)  # used for a logic check in template
+        lead_ids = self.schedule.get_scheduled_lead_ids(schedule_id)
+        tutor_ids = self.schedule.get_scheduled_tutor_ids(schedule_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/edit_schedule.html', **locals())
