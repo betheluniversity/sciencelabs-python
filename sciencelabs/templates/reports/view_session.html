@@ -170,35 +170,37 @@
                                 </tr>
                                 </tfoot>
                             </table>
-                            {% for course in session_courses %}
-                                <p class="display-p hidden"><b>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</b></p>
-                                <table id="{{ course.course_num }}" class="course-tables hidden table table-striped table-bordered">
-                                    <thead>
-                                    <th>Name</th>
-                                    <th>Time In</th>
-                                    <th>Time Out</th>
-                                    <th></th>
-                                    </thead>
-                                    <tbody>
-                                    {% for student, courses in students_and_courses.items() %}
-                                        {% if course in courses %}
-                                            <tr>
-                                                <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
-                                                <td>
-                                                    {{ student.timeIn|datetimeformat }}
-                                                </td>
-                                                <td>
-                                                    {{ student.timeOut|datetimeformat }}
-                                                </td>
-                                                {% if student.timeOut and student.timeIn %}<td>{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
-                                                {% else %}<td>0 min</td>
-                                                {% endif %}
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                                <br>
+                            {% for course, attendance in session_courses_and_attendance.items() %}
+                                {% if attendance|length > 0 %}
+                                    <p class="display-p hidden"><b>{{ course.underived }} ({{ course.courseName }})</b></p>
+                                    <table id="{{ course.id }}" class="course-tables hidden table table-striped table-bordered">
+                                        <thead>
+                                        <th>Name</th>
+                                        <th>Time In</th>
+                                        <th>Time Out</th>
+                                        <th></th>
+                                        </thead>
+                                        <tbody>
+                                        {% for student, course_ids in students_and_courses.items() %}
+                                            {% if course.id in course_ids %}
+                                                <tr>
+                                                    <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                                    <td>
+                                                        {{ student.timeIn|datetimeformat }}
+                                                    </td>
+                                                    <td>
+                                                        {{ student.timeOut|datetimeformat }}
+                                                    </td>
+                                                    {% if student.timeOut and student.timeIn %}<td>{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
+                                                    {% else %}<td>0 min</td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <br>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>
@@ -221,7 +223,7 @@
                 "bPaginate": false,
                 "bLengthChange": false,
                 "bInfo": false,
-                "bFilter": false
+                "bFilter": false,
             });
 
             $('#show-hide').click(function(){

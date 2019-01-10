@@ -106,11 +106,29 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .distinct()
 
+    def get_session_course_codes(self, session_id):
+        return db_session.query(CourseCode_Table).filter(SessionCourseCodes_Table.session_id == session_id)\
+            .filter(SessionCourseCodes_Table.coursecode_id == CourseCode_Table.id).all()
+
+    def get_student_session_course_ids(self, session_id, student_id):
+        course_ids = []
+        courses = self.get_student_session_courses(session_id, student_id)
+        for course in courses:
+            course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
+                .filter(CourseCode_Table.active == 1).one()
+            course_ids.append(course_code.id)
+        return course_ids
+
+    def get_course_code_attendance(self, session_id, course_id):
+        return db_session.query(User_Table).filter(StudentSession_Table.sessionId == session_id)\
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(Course_Table.course_code_id == course_id).all()
+
     def get_course_email_info(self, course_id):
         return db_session.query(Course_Table.title, Course_Table.section)\
             .filter(Course_Table.id == course_id)\
             .all()
-
 
     def get_other_course(self, session_id, student_id):
         return db_session.query(StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\

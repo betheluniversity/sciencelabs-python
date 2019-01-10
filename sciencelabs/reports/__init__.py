@@ -535,7 +535,10 @@ class ReportView(FlaskView):
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
         session_students = self.session_.get_session_students(session_id)
-        session_courses = self.session_.get_session_courses(session_id)
+        session_courses = self.session_.get_session_course_codes(session_id)
+        session_courses_and_attendance = {}
+        for course in session_courses:
+            session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
         course_list = self.courses.get_semester_courses(session['SELECTED-SEMESTER'])
         opener = None
         if session_info.openerId:
@@ -544,7 +547,7 @@ class ReportView(FlaskView):
         students_and_courses = {}
         for student in session_students:
             students_and_report_courses[student] = self.session_.get_report_student_session_courses(session_info.id, student.id)
-            students_and_courses[student] = self.session_.get_student_session_courses(session_info.id, student.id)
+            students_and_courses[student] = self.session_.get_student_session_course_ids(session_info.id, student.id)
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
