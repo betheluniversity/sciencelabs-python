@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 
 {% block body_content %}
-    <div class="custom-large row">
+    <div class="custom-default row">
         <div class="col-md-8">
             <form>
                 <div class="form-row">
@@ -74,13 +74,19 @@
                             <h3><br></h3>
                             <ul class="no-bullet">
                                 <li>
-                                    <b>Average total time spent per student:</b> {{ (avg_total_time / (total_unique_attendance))|round(2) }} hours
+                                    {% if total_unique_attendance != 0 %}
+                                        <b>Average total time spent per student:</b> {{ (avg_total_time / (total_unique_attendance))|round(2) }} hours
+                                    {% endif %}
                                 </li>
                                 <li>
-                                    <b>Average student attendance per session:</b> {{ ((all_total_attendance) / (total_sessions + unscheduled_sessions|length))|round(2) }}
+                                    {% if total_sessions + unscheduled_sessions|length != 0 %}
+                                        <b>Average student attendance per session:</b> {{ ((all_total_attendance) / (total_sessions + unscheduled_sessions|length))|round(2) }}
+                                    {% endif %}
                                 </li>
                                 <li>
-                                    <b>Average number of visits per student:</b> {{ ((all_total_attendance) / total_unique_attendance)|round(2) }}
+                                    {% if total_unique_attendance != 0 %}
+                                        <b>Average number of visits per student:</b> {{ ((all_total_attendance) / total_unique_attendance)|round(2) }}
+                                    {% endif %}
                                 </li>
                             </ul>
                         </p>
