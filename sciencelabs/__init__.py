@@ -2,9 +2,8 @@
 import logging
 
 # Packages
-from flask import Flask, session, request, redirect, url_for
+from flask import Flask, session, request, redirect
 from raven.contrib.flask import Sentry
-from sqlalchemy import create_engine
 from datetime import datetime
 import json
 
@@ -12,6 +11,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 # Local
+from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
@@ -98,22 +98,29 @@ def set_semester_selector():
 def reset_act_as():
     if session['ADMIN-VIEWER']:
         try:
-            session['ALERT'] = None
+            # Resetting info
             session['USERNAME'] = session['ADMIN-USERNAME']
-            user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
+            # user_info = User().get_user_by_username(session['ADMIN-USERNAME'])
             session['ADMIN-VIEWER'] = False
-            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            session['NAME'] = session['ADMIN-NAME']
             session['USER-ROLES'] = session['ADMIN-ROLES']
             return 'success'
         except Exception as error:
             return error
+    else:
+        return 'You do not have access to this function'
 
 
-# TODO IN PROGRESS LOGOUT METHOD
+@app.after_request
+def close_db_session(response):
+    db_session.close()
+    return response
+
+
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    return redirect(app.config['LOGOUT_URL'])  # TODO: CAS AUTHENTICATION
+    return redirect(app.config['LOGOUT_URL'])
 
 
 def datetimeformat(value, custom_format='%l:%M%p'):

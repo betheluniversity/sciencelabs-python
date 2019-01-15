@@ -1,6 +1,3 @@
-import urllib.parse
-
-# Packages
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import create_engine
@@ -9,9 +6,8 @@ from sqlalchemy import create_engine
 from sciencelabs import app
 
 db = create_engine(app.config['DATABASE_KEY'], convert_unicode=True)
-Base = declarative_base()
-Session = sessionmaker(bind=db)
-session = Session()
-
+base = declarative_base()
+session_maker = sessionmaker(bind=db, autoflush=False)
+db_session = session_maker()
 
 

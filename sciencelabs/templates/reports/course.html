@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 
 {% block body_content %}
-   <div class="custom-medium row">
+   <div class="custom-default row">
         <div class="col-md-8">
             <form>
                 <div class="form-row">
@@ -77,7 +77,9 @@
                                     {% if total_unique_attendance.append(total_unique_attendance.pop() + (attendance|length)) %}{% endif %}
                                 </td>
                                 <td>
-                                    {{ ((total_attendees[0]/total_attendance[0])*100)|round(2) }}%
+                                    {% if total_attendance[0] != 0 %}
+                                        {{ ((total_attendees[0]/total_attendance[0])*100)|round(2) }}%
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' id="darkblue" class="btn btn-primary">View</a>
