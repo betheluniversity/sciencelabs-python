@@ -6,7 +6,7 @@ from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, U
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
     SessionCourseCodes_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
-
+from sciencelabs import app
 
 class Session:
     def __init__(self):
@@ -465,6 +465,7 @@ class Session:
         session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
         session_to_open.openerId = opener_id
         db_session.commit()
+        self.log_session(session_to_open.name + ' (' + session_to_open.date + ') opened at ' + session_to_open.startTime)
 
     def close_open_session(self, session_id, comments):
         session_to_close = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
@@ -472,6 +473,7 @@ class Session:
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
         db_session.commit()
+        self.log_session(session_to_close.name + ' (' + session_to_close.date + ') closed at ' + session_to_close.endTime)
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -517,3 +519,8 @@ class Session:
             self.close_open_session(open_session.id, message)
         db_session.commit()
         return open_sessions
+
+    def log_session(self, message):
+        session_log = open(app.config['INSTALL_LOCATION'] + '/session_info.log', 'a')
+        session_log.write(message + '\n')
+        session_log.close()
