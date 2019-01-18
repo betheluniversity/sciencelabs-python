@@ -465,7 +465,7 @@ class Session:
         session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
         session_to_open.openerId = opener_id
         db_session.commit()
-        self.log_session(session_to_open.name + ' (' + session_to_open.date + ') opened at ' + session_to_open.startTime)
+        self.log_session(session_to_open.name + ' (' + session_to_open.date.strftime("%m/%d/%Y") + ') opened at ' + datetime.now().strftime("%H:%M:%S"))
 
     def close_open_session(self, session_id, comments):
         session_to_close = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
@@ -473,7 +473,7 @@ class Session:
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
         db_session.commit()
-        self.log_session(session_to_close.name + ' (' + session_to_close.date + ') closed at ' + session_to_close.endTime)
+        self.log_session(session_to_close.name + ' (' + session_to_close.date.strftime("%m/%d/%Y") + ') closed at ' + datetime.now().strftime("%H:%M:%S"))
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -483,12 +483,16 @@ class Session:
             db_session.commit()
         else:
             self.add_tutor_to_session(session_id, tutor_id, datetime.now().strftime("%H:%M:%S"), None, 0)
+        tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
+        self.log_session(tutor.firstName + " " + tutor.lastName + " signed in as a tutor at " + datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id).one()
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
+        tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
+        self.log_session(tutor.firstName + " " + tutor.lastName + " signed out as a tutor at " + datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
 
     def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
@@ -503,12 +507,16 @@ class Session:
             new_student_course = SessionCourses_Table(studentsession_id=new_student_session.id, course_id=course_id)
             db_session.add(new_student_course)
         db_session.commit()
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session(student.firstName + " " + student.lastName + " signed in as a student at " + datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id).one()
         student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session(student.firstName + " " + student.lastName + " signed out as a student at " + datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
 
     def close_open_sessions_cron(self):
         open_sessions = self.get_open_sessions()
