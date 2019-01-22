@@ -31,6 +31,7 @@
         {% endif %}
         <div class="centered margin-bottom-10">
             <button type="submit" class="big-button btn btn-primary sign-in">Please Sign In Here</button>
+            <input type="text" hidden onkeydown="rfidRead">
         </div>
     </form>
 
@@ -69,4 +70,18 @@
             </tr>
         {% endfor %}
     </table>
+    <script>
+        $(document).ready(function(){
+
+            $(document).on('keydown', function(input){
+                input = input.key;
+                if(input.length == 1){
+                    alert("Success: " + input);
+                }else{
+                    alert("Failed: " + input);
+                }
+            });
+
+        });
+    </script>
 {% endblock %}
