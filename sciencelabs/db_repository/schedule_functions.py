@@ -134,7 +134,7 @@ class Schedule:
 
     def get_schedule_tutors(self, schedule_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.isLead,
-                             TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
+                                TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
             .order_by(TutorSchedule_Table.isLead.desc())
@@ -204,6 +204,7 @@ class Schedule:
 
     def create_new_lead_schedules(self, schedule_id, time_in, time_out, leads):
         for lead in leads:
+            db_session.execute("INSERT INTO TutorSchedule (schedTimeIn, schedTimeOut, `lead`, tutorId, scheduleID) VALUES ({}, {}. {}, {}. {});".format(time_in, time_out, 1, lead, schedule_id))
             new_lead_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=1,
                                                     tutorId=lead, scheduleId=schedule_id)
             db_session.add(new_lead_schedule)

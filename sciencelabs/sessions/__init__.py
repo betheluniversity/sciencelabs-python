@@ -338,8 +338,6 @@ class SessionView(FlaskView):
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('session/view_session.html', **locals())
 
-    # TODO: CAS authentications
-
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 

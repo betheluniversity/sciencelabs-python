@@ -13,19 +13,20 @@ class Session:
         self.base = ScienceLabsController()
 
     def get_closed_sessions(self, semester_id):
-        return (db_session.query(Session_Table)
-                .filter(Session_Table.semester_id == Semester_Table.id)
-                .filter(Semester_Table.id == semester_id)
-                .filter(Session_Table.startTime)
-                .filter(Session_Table.deletedAt == None)
-                .filter(Session_Table.date)
-                .order_by(Session_Table.date.asc())
-                .all())
+        return db_session.query(Session_Table)\
+                .filter(Session_Table.semester_id == Semester_Table.id)\
+                .filter(Semester_Table.id == semester_id)\
+                .filter(Session_Table.startTime)\
+                .filter(Session_Table.deletedAt == None)\
+                .filter(Session_Table.date)\
+                .order_by(Session_Table.date.asc())\
+                .all()
 
     def get_available_sessions(self, semester_id):
         return db_session.query(Session_Table).filter(Session_Table.semester_id == semester_id)\
             .filter(Session_Table.deletedAt == None).filter(Session_Table.startTime == None).all()
 
+    # This gets all session that have been 'soft deleted'
     def get_deleted_sessions(self, semester_id):
         return db_session.query(Session_Table) \
             .filter(Session_Table.semester_id == semester_id) \
@@ -44,8 +45,8 @@ class Session:
 
     def get_session_tutors(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
-                             TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
-                             TutorSession_Table.schedTimeOut)\
+                                TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
+                                TutorSession_Table.schedTimeOut)\
             .filter(TutorSession_Table.sessionId == session_id)\
             .filter(User_Table.id == TutorSession_Table.tutorId)\
             .order_by(TutorSession_Table.isLead.desc())
@@ -68,7 +69,7 @@ class Session:
 
     def get_tutor_session_info(self, tutor_id, session_id):
         return db_session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
-                             TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
+                                TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
             .filter(TutorSession_Table.sessionId == session_id)\
             .filter(TutorSession_Table.tutorId == tutor_id)\
             .filter(User_Table.id == tutor_id)\

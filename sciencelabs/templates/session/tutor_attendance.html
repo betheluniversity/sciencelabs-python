@@ -1,7 +1,5 @@
 {% extends 'session/base.html' %}
 
-{# TODO: ADD Tutors, put in start time #}
-
 {% block subnav %}
     <a id="student" class="nav-item nav-link disabled"
        href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>

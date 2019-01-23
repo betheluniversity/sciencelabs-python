@@ -5,7 +5,7 @@ from sciencelabs import app
 
 class EmailController():
     def __init__(self):
-        super(EmailController, self).__init__
+        super(EmailController, self).__init__()
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':

@@ -15,7 +15,7 @@ from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
-sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+# sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
 from sciencelabs.views import View
 from sciencelabs.sessions import SessionView
@@ -38,6 +38,7 @@ ScheduleView.register(app)
 ProfileView.register(app)
 
 
+# This makes these variables open to use everywhere
 @app.context_processor
 def utility_processor():
     to_return = {}
@@ -50,13 +51,13 @@ def utility_processor():
 
 
 @app.before_first_request
-def create_semester_selector():
+def before_request():
     if app.config["ENVIRON"] == 'prod':
         username = request.environ.get('REMOTE_USER')
     else:
         username = app.config['TEST_USERNAME']
     semester_list = Schedule().get_semesters()
-    current_user = User().get_user_by_username(username)  # TODO: Update with CAS Authentication
+    current_user = User().get_user_by_username(username)
     session['ALERT'] = None
     user_roles = User().get_user_roles(current_user.id)
     session['USERNAME'] = current_user.username
@@ -113,6 +114,7 @@ def reset_act_as():
 
 @app.after_request
 def close_db_session(response):
+    # This closes the db session to allow the data to propogate to all threads. It's available for use again right away.
     db_session.close()
     return response
 
