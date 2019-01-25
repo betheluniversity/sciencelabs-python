@@ -73,12 +73,16 @@
     <script>
         $(document).ready(function(){
 
-            $(document).on('keydown', function(input){
-                input = input.key;
-                if(input.length == 1){
-                    alert("Success: " + input);
-                }else{
-                    alert("Failed: " + input);
+            var keyCount = 0;
+            var input = "";
+
+            $(document).on('keydown', function(key){
+                keyCount++;
+                input = input + key.key;
+                if(keyCount == 5){
+                    alert(input);
+                    keyCount = 0;
+                    input = '';
                 }
             });
 

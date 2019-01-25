@@ -348,8 +348,11 @@ class SessionView(FlaskView):
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
+        session['USERNAME'] = None
+        session['USER-ROLES'] = []
+        session['NAME'] = None
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
@@ -362,7 +365,7 @@ class SessionView(FlaskView):
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)

@@ -63,12 +63,8 @@
                         <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>
                     </div>
                 {% else %}
-                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        {{ session['USERNAME'] }}</a>
-                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>
-                    </div>
+                     <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">
+                        Login</a>
                 {% endif %}
 
             </div>
