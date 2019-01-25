@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block body_content %}
-    <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+    <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='none') }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
             <div>
                 <label for="student-select">Select a student to sign in:</label>
@@ -30,8 +30,7 @@
             <br>
         {% endif %}
         <div class="centered margin-bottom-10">
-            <button type="submit" class="big-button btn btn-primary sign-in">Please Sign In Here</button>
-            <input type="text" hidden onkeydown="rfidRead">
+            <button type="submit" class="big-button btn btn-primary sign-in">Scan Card or Click Here to Sign In</button>
         </div>
     </form>
 
@@ -73,16 +72,23 @@
     <script>
         $(document).ready(function(){
 
-            var keyCount = 0;
             var input = "";
 
             $(document).on('keydown', function(key){
-                keyCount++;
-                input = input + key.key;
-                if(keyCount == 5){
-                    alert(input);
-                    keyCount = 0;
-                    input = '';
+                if(key.keyCode == 13){
+                    var url = "{{ url_for('SessionView:verify_scanner') }}";
+                    var scannedInput = {
+                        'scan': input
+                    };
+                    $.post(url, scannedInput, function(success){
+                        if(success != 'failed'){
+                           window.location.replace("{{ url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=success) }}");
+                        }else{
+                            input = "";
+                        }
+                    });
+                }else{
+                    input = input + key.key;
                 }
             });
 

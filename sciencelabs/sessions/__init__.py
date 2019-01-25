@@ -1,6 +1,9 @@
+import re
+
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request, session, json
+from flask import render_template, redirect, url_for, request, json
+from flask import session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
@@ -12,6 +15,7 @@ from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs.email_tab import EmailController
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 from sciencelabs import app
 
 
@@ -23,6 +27,7 @@ class SessionView(FlaskView):
         self.course = Course()
         self.slc = ScienceLabsController()
         self.email = EmailController()
+        self.wsapi = WSAPIController()
 
     def index(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
@@ -41,11 +46,11 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
-        sessions = self.session.get_closed_sessions(session['SELECTED-SEMESTER'])
+        sessions = self.session.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
         sessions_and_tutors = {}
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
-        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         return render_template('session/closed_sessions.html', **locals())
 
     def create(self):
@@ -62,8 +67,8 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         current_alert = get_alert()
-        sessions = self.session.get_deleted_sessions(session['SELECTED-SEMESTER'])
-        semester = self.schedule.get_semester(session['SELECTED-SEMESTER'])
+        sessions = self.session.get_deleted_sessions(flask_session['SELECTED-SEMESTER'])
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         sessions_and_tutors = {}
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
@@ -84,7 +89,7 @@ class SessionView(FlaskView):
         students_and_courses = {}
         for student in session_students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
-        course_list = self.course.get_semester_courses(session['SELECTED-SEMESTER'])
+        course_list = self.course.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
         return render_template('session/edit_session.html', **locals())
 
@@ -93,7 +98,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, session['SELECTED-SEMESTER'])
+        student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
         current_alert = get_alert()
@@ -341,7 +346,7 @@ class SessionView(FlaskView):
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        opener = self.user.get_user_by_username(session['USERNAME'])
+        opener = self.user.get_user_by_username(flask_session['USERNAME'])
         self.session.start_open_session(session_id, opener.id)
         self.session.tutor_sign_in(session_id, opener.id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
@@ -350,9 +355,9 @@ class SessionView(FlaskView):
     def student_attendance(self, session_id, session_hash):
         # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        session['USERNAME'] = None
-        session['USER-ROLES'] = []
-        session['NAME'] = None
+        flask_session['USERNAME'] = None
+        flask_session['USER-ROLES'] = []
+        flask_session['NAME'] = None
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
@@ -436,12 +441,17 @@ class SessionView(FlaskView):
             set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/checkin/<int:session_id>/<session_hash>', methods=['get', 'post'])
-    def student_sign_in(self, session_id, session_hash):
+    @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         if app.config['ENVIRON'] == 'prod':
-            username = session['USERNAME']
+            if card_id != 'none':
+                user_info = self.wsapi.get_user_from_prox(card_id)
+                username = user_info['username']
+            else:
+                username = request.environ.get('REMOTE_USER')
             user = self.user.get_user_by_username(username)
+            flask_session['USERNAME'] = username
             if not user:
                 user = self.user.create_user_at_sign_in(username, semester)
         else:  # If we are in dev env we grab the student selected from the dropdown.
@@ -451,17 +461,17 @@ class SessionView(FlaskView):
                 set_alert('danger', 'Invalid Student')
                 return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user(student)
-            session['STUDENT-SIGN-IN-TEST'] = True
-            session['PREVIOUS-USERNAME'] = session['USERNAME']
-            session['PREVIOUS-ROLES'] = session['USER-ROLES']
-            session['PREVIOUS-NAME'] = session['NAME']
+            flask_session['STUDENT-SIGN-IN-TEST'] = True
+            flask_session['PREVIOUS-USERNAME'] = flask_session['USERNAME']
+            flask_session['PREVIOUS-ROLES'] = flask_session['USER-ROLES']
+            flask_session['PREVIOUS-NAME'] = flask_session['NAME']
 
-            session['USERNAME'] = user.username
-            session['NAME'] = user.firstName + ' ' + user.lastName
-            session['USER-ROLES'] = []
+            flask_session['USERNAME'] = user.username
+            flask_session['NAME'] = user.firstName + ' ' + user.lastName
+            flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(user.id)
             for role in user_roles:
-                session['USER-ROLES'].append(role.name)
+                flask_session['USER-ROLES'].append(role.name)
 
         if self.session.student_currently_signed_in(session_id, user.id):
             set_alert('danger', 'Student currently signed in')
@@ -481,11 +491,11 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        if session['STUDENT-SIGN-IN-TEST']:
-            session['STUDENT-SIGN-IN-TEST'] = False
-            session['USERNAME'] = session['PREVIOUS-USERNAME']
-            session['USER-ROLES'] = session['PREVIOUS-ROLES']
-            session['NAME'] = session['PREVIOUS-NAME']
+        if flask_session['STUDENT-SIGN-IN-TEST']:
+            flask_session['STUDENT-SIGN-IN-TEST'] = False
+            flask_session['USERNAME'] = flask_session['PREVIOUS-USERNAME']
+            flask_session['USER-ROLES'] = flask_session['PREVIOUS-ROLES']
+            flask_session['NAME'] = flask_session['PREVIOUS-NAME']
         else:
             # TODO MIGHT HAVE TO CHANGE THIS FROM CLEARED TO ONLY CLEARING SPECIFIC THINGS?
             session.clear()
@@ -500,7 +510,7 @@ class SessionView(FlaskView):
     @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
     def tutor_sign_in(self, session_id, session_hash):
         if app.config['ENVIRON'] == 'prod':
-            username = session['USERNAME']
+            username = flask_session['USERNAME']
             user = self.user.get_user_by_username(username)
         else:
             form = request.form
@@ -528,3 +538,13 @@ class SessionView(FlaskView):
                 self.close_session_email(session_closed.id)
         except Exception as error:
             return 'failed: ' + str(error)
+
+    @route('/verify_scanner', methods=['post'])
+    def verify_scanner(self):
+        form = request.form
+        scan = form.get("scan")
+        card_id = re.search("\[\[(.+?)\]\]", scan)
+        if card_id:
+            return card_id.group(1)
+        else:
+            return 'failed'
