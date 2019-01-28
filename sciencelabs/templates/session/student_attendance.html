@@ -82,7 +82,7 @@
                     };
                     $.post(url, scannedInput, function(success){
                         if(success != 'failed'){
-                           window.location.replace("/session/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                           window.location.replace("{{ lab_url }}/session/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
                             input = "";
                         }
