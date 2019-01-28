@@ -458,6 +458,8 @@ class SessionView(FlaskView):
         if card_id != 'none':  # This is the same regardless of prod/dev
             user_info = self.wsapi.get_user_from_prox(card_id)
             user = self.user.get_user_by_username(user_info['username'])
+            if not user:
+                user = self.user.create_user_at_sign_in(user_info['username'], semester)
         else:
             if app.config['ENVIRON'] == 'prod':
                 username = request.environ.get('REMOTE_USER')
