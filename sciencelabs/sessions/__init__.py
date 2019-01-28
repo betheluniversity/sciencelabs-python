@@ -213,16 +213,16 @@ class SessionView(FlaskView):
     def save_tutor_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        tutor_id = form.get('tutor-id')
+        time_in = form.get('time-in') or None
+        time_out = form.get('time-out') or None
+        lead_check = form.get('lead')
+        lead = 0
+        if lead_check:
+            lead = 1
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            tutor_id = form.get('tutor-id')
-            time_in = form.get('time-in') or None
-            time_out = form.get('time-out') or None
-            lead_check = form.get('lead')
-            lead = 0
-            if lead_check:
-                lead = 1
             self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
             set_alert('success', 'Tutor edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -254,10 +254,10 @@ class SessionView(FlaskView):
     def add_student_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        student_id = form.get('choose-student')
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            student_id = form.get('choose-student')
             self.session.add_student_to_session(session_id, student_id)
             set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -269,10 +269,10 @@ class SessionView(FlaskView):
     def add_anon_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        anon_students = form.get('anon-students')
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            anon_students = form.get('anon-students')
             self.session.add_anonymous_to_session(session_id, anon_students)
             set_alert('success', 'Anonymous students edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -284,16 +284,16 @@ class SessionView(FlaskView):
     def add_tutor_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        tutor_id = form.get('choose-tutor')
+        time_in = form.get('time-in') or None
+        time_out = form.get('time-out') or None
+        lead_check = form.get('lead')
+        lead = 0
+        if lead_check:
+            lead = 1
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            tutor_id = form.get('choose-tutor')
-            time_in = form.get('time-in') or None
-            time_out = form.get('time-out') or None
-            lead_check = form.get('lead')
-            lead = 0
-            if lead_check:
-                lead = 1
             self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
             set_alert('success', 'Tutor added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -382,7 +382,6 @@ class SessionView(FlaskView):
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
         if app.config['ENVIRON'] != 'prod':
             user = self.user.get_user_by_username(app.config['TEST_USERNAME'])
         else:
@@ -402,11 +401,11 @@ class SessionView(FlaskView):
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
+        form = request.form
+        session_id = form.get('session-id')
+        session_hash = form.get('session-hash')
+        comments = form.get('comments')
         try:
-            form = request.form
-            session_id = form.get('session-id')
-            session_hash = form.get('session-hash')
-            comments = form.get('comments')
             self.session.close_open_session(session_id, comments)
             self.close_session_email(session_id)
             set_alert('success', 'Session closed successfully!')
