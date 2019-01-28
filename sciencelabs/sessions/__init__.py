@@ -355,7 +355,7 @@ class SessionView(FlaskView):
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
         # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
-
+        redirect(app.config['LAB_BASE_URL'] + '/logout')
         flask_session['USERNAME'] = None
         flask_session['USER-ROLES'] = []
         flask_session['NAME'] = None
@@ -373,7 +373,7 @@ class SessionView(FlaskView):
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
         # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
-
+        redirect(app.config['LAB_BASE_URL'] + '/logout')
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info(session_info.semester_id)
