@@ -1,5 +1,5 @@
 # Global
-import logging
+import time
 
 # Packages
 from flask import Flask, session, request, redirect, make_response
@@ -48,31 +48,6 @@ def utility_processor():
     })
 
     return to_return
-
-
-@app.before_first_request
-def before_request():
-    if app.config["ENVIRON"] == 'prod':
-        username = request.environ.get('REMOTE_USER')
-    else:
-        username = app.config['TEST_USERNAME']
-    semester_list = Schedule().get_semesters()
-    current_user = User().get_user_by_username(username)
-    session['ALERT'] = None
-    user_roles = User().get_user_roles(current_user.id)
-    session['USERNAME'] = current_user.username
-    session['NAME'] = current_user.firstName + ' ' + current_user.lastName
-    session['ADMIN-VIEWER'] = False
-    session['USER-ROLES'] = []
-    for role in user_roles:
-        session['USER-ROLES'].append(role.name)
-    session['SEMESTER-LIST'] = []
-    # Adds all semesters to a dictionary
-    for semester in semester_list:
-        session['SEMESTER-LIST'].append({'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
-        # Sets the current active semester to 'SELECTED-SEMESTER'
-        if semester.active == 1:
-            session['SELECTED-SEMESTER'] = semester.id
 
 
 @app.route("/set-semester", methods=["POST"])
@@ -136,6 +111,57 @@ def datetimeformat(value, custom_format='%l:%M%p'):
 
 
 app.jinja_env.filters['datetimeformat'] = datetimeformat
+
+
+def before_request():
+    dev = app.config['ENVIRON'] != 'prod'
+
+    # reset session if it has been more than 24 hours
+    if 'SESSION_TIME' in session.keys():
+        seconds_in_day = 60 * 60 * 24
+        day_is_passed = time.time() - session['SESSION_TIME'] >= seconds_in_day
+    else:
+        day_is_passed = True
+        session['SESSION_TIME'] = time.time()
+
+    # if not production, then clear some of our session variables on each call
+    if (not session.get('ADMIN-VIEWER', False)) and (dev or day_is_passed):
+        for key in ['USERNAME', 'NAME', 'USER-ROLES', 'SEMESTER-LIST', 'SELECTED-SEMESTER']:
+            if key in session.keys():
+                session.pop(key, None)
+
+    if 'USERNAME' not in session.keys():
+        if app.config['ENVIRON'] == 'prod':
+            username = request.environ.get('REMOTE_USER')
+        else:
+            username = app.config['TEST_USERNAME']
+        current_user = User().get_user_by_username(username)
+        session['USERNAME'] = current_user.username
+        session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+        session['USER-ROLES'] = []
+        user_roles = User().get_user_roles(current_user.id)
+        for role in user_roles:
+            session['USER-ROLES'].append(role.name)
+    if 'NAME' not in session.keys():
+        session['NAME'] = session['USERNAME']
+    if 'USER-ROLES' not in session.keys():
+        session['USER-ROLES'] = ['STUDENT']
+    if 'ADMIN-VIEWER' not in session.keys():
+        session['ADMIN-VIEWER'] = False
+    if 'SEMESTER-LIST' not in session.keys():
+        semester_list = Schedule().get_semesters()
+        session['SEMESTER-LIST'] = []
+        # Adds all semesters to a dictionary
+        for semester in semester_list:
+            session['SEMESTER-LIST'].append(
+                {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
+            # Sets the current active semester to 'SELECTED-SEMESTER'
+            if semester.active == 1:
+                session['SELECTED-SEMESTER'] = semester.id
+    if 'SELECTED-SEMESTER' not in session.keys():
+        active_semester = Schedule().get_active_semester()
+        session['SELECTED-SEMESTER'] = active_semester.id
+
 
 if __name__ == "__main__":
     app.run()

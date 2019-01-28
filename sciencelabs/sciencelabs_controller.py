@@ -49,4 +49,3 @@ class ScienceLabsController(object):
             if role in session['USER-ROLES']:
                 return True
         abort(403)
-
