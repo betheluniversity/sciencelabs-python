@@ -383,7 +383,16 @@ class SessionView(FlaskView):
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
-
+        if app.config['ENVIRON'] != 'prod':
+            user = self.user.get_user_by_username(app.config['TEST_USERNAME'])
+        else:
+            user = self.user.get_user_by_username(request.environ.get('REMOTE_USER'))
+        flask_session['USERNAME'] = user.username
+        flask_session['NAME'] = user.firstName + ' ' + user.lastName
+        flask_session['USER-ROLES'] = []
+        user_roles = self.user.get_user_roles(user.id)
+        for role in user_roles:
+            flask_session['USER-ROLES'].append(role.name)
         current_alert = get_alert()
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info(session_info.semester_id)
@@ -447,24 +456,12 @@ class SessionView(FlaskView):
         if card_id != 'none':  # This is the same regardless of prod/dev
             user_info = self.wsapi.get_user_from_prox(card_id)
             user = self.user.get_user_by_username(user_info['username'])
-            flask_session['USERNAME'] = user.username
-            flask_session['NAME'] = user.firstName + ' ' + user.lastName
-            flask_session['USER-ROLES'] = []
-            user_roles = self.user.get_user_roles(user.id)
-            for role in user_roles:
-                flask_session['USER-ROLES'].append(role.name)
         else:
             if app.config['ENVIRON'] == 'prod':
                 username = request.environ.get('REMOTE_USER')
                 user = self.user.get_user_by_username(username)
                 if not user:
                     user = self.user.create_user_at_sign_in(username, semester)
-                flask_session['USERNAME'] = user.username
-                flask_session['NAME'] = user.firstName + ' ' + user.lastName
-                flask_session['USER-ROLES'] = []
-                user_roles = self.user.get_user_roles(user.id)
-                for role in user_roles:
-                    flask_session['USER-ROLES'].append(role.name)
             else:  # If we are in dev env we grab the student selected from the dropdown.
                 form = request.form
                 student = form.get('selected-student')
@@ -472,13 +469,12 @@ class SessionView(FlaskView):
                     set_alert('danger', 'Invalid Student')
                     return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
                 user = self.user.get_user(student)
-                flask_session['USERNAME'] = user.username
-                flask_session['NAME'] = user.firstName + ' ' + user.lastName
-                flask_session['USER-ROLES'] = []
-                user_roles = self.user.get_user_roles(user.id)
-                for role in user_roles:
-                    flask_session['USER-ROLES'].append(role.name)
-
+        flask_session['USERNAME'] = user.username
+        flask_session['NAME'] = user.firstName + ' ' + user.lastName
+        flask_session['USER-ROLES'] = []
+        user_roles = self.user.get_user_roles(user.id)
+        for role in user_roles:
+            flask_session['USER-ROLES'].append(role.name)
         if self.session.student_currently_signed_in(session_id, user.id):
             set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
