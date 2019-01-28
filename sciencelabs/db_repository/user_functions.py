@@ -436,3 +436,10 @@ class User:
                 emails.append(prof.email)
         emails = list(set(emails))  # converting to a set and then right back to a list removes duplicates
         return emails
+
+    def user_is_tutor(self, user_id):
+        user_roles = self.get_user_roles(user_id)
+        for role in user_roles:
+            if role.name == 'Tutor' or role.name == 'Lead Tutor':
+                return True
+        return False

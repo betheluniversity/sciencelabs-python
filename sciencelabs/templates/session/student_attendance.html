@@ -82,7 +82,7 @@
                     };
                     $.post(url, scannedInput, function(success){
                         if(success != 'failed'){
-                           window.location.replace("{{ url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=success) }}");
+                           window.location.replace("/session/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
                             input = "";
                         }

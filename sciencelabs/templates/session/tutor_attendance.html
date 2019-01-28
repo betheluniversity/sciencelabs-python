@@ -18,7 +18,7 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form action="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+            <form action="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='none') }}" method="post">
                 {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
                     <div>
                         <label for="tutor-select">Select a tutor to sign in:</label>
@@ -32,7 +32,7 @@
                     <br>
                 {% endif %}
                 <div class="centered margin-bottom-10">
-                    <button type="submit" class="big-button btn btn-primary sign-in">Sign in as a Tutor</button>
+                    <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign in as a Tutor</button>
                 </div>
             </form>
 
@@ -187,4 +187,29 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function(){
+
+            var input = "";
+
+            $(document).on('keydown', function(key){
+                if(key.keyCode == 13){
+                    var url = "{{ url_for('SessionView:verify_scanner') }}";
+                    var scannedInput = {
+                        'scan': input
+                    };
+                    $.post(url, scannedInput, function(success){
+                        if(success != 'failed'){
+                           window.location.replace("/session/tutor_sign_in/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                        }else{
+                            input = "";
+                        }
+                    });
+                }else{
+                    input = input + key.key;
+                }
+            });
+
+        });
+    </script>
 {% endblock %}

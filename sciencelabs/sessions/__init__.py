@@ -444,34 +444,40 @@ class SessionView(FlaskView):
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
-        if app.config['ENVIRON'] == 'prod':
-            if card_id != 'none':
-                user_info = self.wsapi.get_user_from_prox(card_id)
-                username = user_info['username']
-            else:
-                username = request.environ.get('REMOTE_USER')
-            user = self.user.get_user_by_username(username)
-            flask_session['USERNAME'] = username
-            if not user:
-                user = self.user.create_user_at_sign_in(username, semester)
-        else:  # If we are in dev env we grab the student selected from the dropdown.
-            form = request.form
-            student = form.get('selected-student')
-            if student == '-1':
-                set_alert('danger', 'Invalid Student')
-                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-            user = self.user.get_user(student)
-            flask_session['STUDENT-SIGN-IN-TEST'] = True
-            flask_session['PREVIOUS-USERNAME'] = flask_session['USERNAME']
-            flask_session['PREVIOUS-ROLES'] = flask_session['USER-ROLES']
-            flask_session['PREVIOUS-NAME'] = flask_session['NAME']
-
+        if card_id != 'none':  # This is the same regardless of prod/dev
+            user_info = self.wsapi.get_user_from_prox(card_id)
+            user = self.user.get_user_by_username(user_info['username'])
             flask_session['USERNAME'] = user.username
             flask_session['NAME'] = user.firstName + ' ' + user.lastName
             flask_session['USER-ROLES'] = []
-            user_roles = User().get_user_roles(user.id)
+            user_roles = self.user.get_user_roles(user.id)
             for role in user_roles:
                 flask_session['USER-ROLES'].append(role.name)
+        else:
+            if app.config['ENVIRON'] == 'prod':
+                username = request.environ.get('REMOTE_USER')
+                user = self.user.get_user_by_username(username)
+                if not user:
+                    user = self.user.create_user_at_sign_in(username, semester)
+                flask_session['USERNAME'] = user.username
+                flask_session['NAME'] = user.firstName + ' ' + user.lastName
+                flask_session['USER-ROLES'] = []
+                user_roles = self.user.get_user_roles(user.id)
+                for role in user_roles:
+                    flask_session['USER-ROLES'].append(role.name)
+            else:  # If we are in dev env we grab the student selected from the dropdown.
+                form = request.form
+                student = form.get('selected-student')
+                if student == '-1':
+                    set_alert('danger', 'Invalid Student')
+                    return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+                user = self.user.get_user(student)
+                flask_session['USERNAME'] = user.username
+                flask_session['NAME'] = user.firstName + ' ' + user.lastName
+                flask_session['USER-ROLES'] = []
+                user_roles = self.user.get_user_roles(user.id)
+                for role in user_roles:
+                    flask_session['USER-ROLES'].append(role.name)
 
         if self.session.student_currently_signed_in(session_id, user.id):
             set_alert('danger', 'Student currently signed in')
@@ -491,15 +497,6 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        if flask_session['STUDENT-SIGN-IN-TEST']:
-            flask_session['STUDENT-SIGN-IN-TEST'] = False
-            flask_session['USERNAME'] = flask_session['PREVIOUS-USERNAME']
-            flask_session['USER-ROLES'] = flask_session['PREVIOUS-ROLES']
-            flask_session['NAME'] = flask_session['PREVIOUS-NAME']
-        else:
-            # TODO MIGHT HAVE TO CHANGE THIS FROM CLEARED TO ONLY CLEARING SPECIFIC THINGS?
-            session.clear()
-
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
@@ -507,18 +504,25 @@ class SessionView(FlaskView):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/tutor_sign_in/<int:session_id>/<session_hash>', methods=['post'])
-    def tutor_sign_in(self, session_id, session_hash):
-        if app.config['ENVIRON'] == 'prod':
-            username = flask_session['USERNAME']
-            user = self.user.get_user_by_username(username)
+    @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    def tutor_sign_in(self, session_id, session_hash, card_id):
+        if card_id != 'none':  # This is the same regardless of prod/dev
+            user_info = self.wsapi.get_user_from_prox(card_id)
+            user = self.user.get_user_by_username(user_info['username'])
         else:
-            form = request.form
-            tutor_id = form.get('selected-tutor')
-            if tutor_id == '-1':
-                set_alert('danger', 'Invalid Tutor')
-                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
-            user = self.user.get_user(tutor_id)
+            if app.config['ENVIRON'] == 'prod':
+                username = request.environ.get('REMOTE_USER')
+                user = self.user.get_user_by_username(username)
+            else:
+                form = request.form
+                tutor_id = form.get('selected-tutor')
+                if tutor_id == '-1':
+                    set_alert('danger', 'Invalid Tutor')
+                    return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+                user = self.user.get_user(tutor_id)
+        if not user or not self.user.user_is_tutor(user.id):
+            set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
+            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, user.id):
             set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
