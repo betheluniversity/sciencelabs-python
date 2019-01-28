@@ -367,6 +367,7 @@ class SessionView(FlaskView):
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
+        lab_url = app.config['LAB_BASE_URL']
         return render_template('session/student_attendance.html', **locals())
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -379,6 +380,7 @@ class SessionView(FlaskView):
         tutors = self.session.get_session_tutors(session_id)
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
+        lab_url = app.config['LAB_BASE_URL']
         return render_template('session/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
