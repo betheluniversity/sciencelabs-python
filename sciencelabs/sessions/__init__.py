@@ -349,6 +349,7 @@ class SessionView(FlaskView):
         opener = self.user.get_user_by_username(flask_session['USERNAME'])
         self.session.start_open_session(session_id, opener.id)
         self.session.tutor_sign_in(session_id, opener.id)
+        redirect(app.config['LOGOUT_URL'])
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -493,6 +494,7 @@ class SessionView(FlaskView):
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+        redirect(app.config['LOGOUT_URL'])
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -522,6 +524,7 @@ class SessionView(FlaskView):
             set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
+        redirect(app.config['LOGOUT_URL'])
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
