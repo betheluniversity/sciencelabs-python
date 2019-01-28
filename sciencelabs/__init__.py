@@ -114,21 +114,19 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 
 def before_request():
-    dev = app.config['ENVIRON'] != 'prod'
+    prod = app.config['ENVIRON'] == 'prod'
 
     # reset session if it has been more than 24 hours
     if 'SESSION_TIME' in session.keys():
         seconds_in_day = 60 * 60 * 24
-        day_is_passed = time.time() - session['SESSION_TIME'] >= seconds_in_day
+        reset_session = time.time() - session['SESSION_TIME'] >= seconds_in_day
     else:
-        day_is_passed = True
+        reset_session = True
         session['SESSION_TIME'] = time.time()
 
     # if not production, then clear some of our session variables on each call
-    if (not session.get('ADMIN-VIEWER', False)) and (dev or day_is_passed):
-        for key in ['USERNAME', 'NAME', 'USER-ROLES', 'SEMESTER-LIST', 'SELECTED-SEMESTER']:
-            if key in session.keys():
-                session.pop(key, None)
+    if (not session.get('ADMIN-VIEWER', False)) and (not prod or reset_session):
+        session.clear()
 
     if 'USERNAME' not in session.keys():
         if app.config['ENVIRON'] == 'prod':
