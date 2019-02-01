@@ -48,3 +48,16 @@ class ScienceLabsController(object):
             if role in flask_session['USER-ROLES']:
                 return True
         abort(403)
+
+    # This method get's the current alert (if there is one) and then resets alert to nothing
+    def get_alert(self):
+        alert_return = flask_session['ALERT']
+        flask_session['ALERT'] = None
+        return alert_return
+
+    # This method sets the alert for when one is needed next
+    def set_alert(self, message_type, message):
+        flask_session['ALERT'] = {
+            'type': message_type,
+            'message': message
+        }

@@ -8,7 +8,6 @@ import json
 from sciencelabs.profile.profile_controller import ProfileController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.sciencelabs_controller import ScienceLabsController
-from sciencelabs.alerts.alerts import *
 
 
 class ProfileView(FlaskView):
@@ -21,7 +20,6 @@ class ProfileView(FlaskView):
 
     @route('/edit')
     def index(self):
-        current_alert = get_alert()
         user = self.user.get_user_by_username(flask_session['USERNAME'])
         return render_template('profile/profile.html', **locals())
 
@@ -34,9 +32,9 @@ class ProfileView(FlaskView):
             username = form.get('username')
             email_pref = form.get('receive-email') or 0  # if User is not allowed to change email pref, set to 0
             self.user.edit_user(first_name,last_name, username, email_pref)
-            set_alert('success', 'User edited successfully!')
+            self.slc.set_alert('success', 'User edited successfully!')
         except Exception as error:
-            set_alert('danger', 'Failed to edit user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
         return redirect(url_for('ProfileView:index'))
 
     @route('/view-role')

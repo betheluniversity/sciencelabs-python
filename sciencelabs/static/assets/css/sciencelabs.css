@@ -412,6 +412,15 @@ ul.no-margin {
     background-color: #DA1736;
 }
 
+#reset-act-as-button{
+    background: none!important;
+    color: #005999;
+    border: none;
+    padding: 0!important;
+    font: inherit;
+    cursor: pointer;
+}
+
 #show-hide {
     background-color: #0F2C52;
     border-color: #0F2C52;
@@ -430,13 +439,4 @@ ul.no-margin {
 #yellow {
     color: black;
     background-color: #FFC600;
-}
-
-#reset-act-as-button{
-    background: none!important;
-    color: #005999;
-    border: none;
-    padding: 0!important;
-    font: inherit;
-    cursor: pointer;
 }

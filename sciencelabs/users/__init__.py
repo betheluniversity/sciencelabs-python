@@ -11,7 +11,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
-from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
@@ -30,7 +29,6 @@ class UsersView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         users_info = self.user.get_user_info()
         return render_template('users/users.html', **locals())
 
@@ -44,7 +42,6 @@ class UsersView(FlaskView):
     def edit_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         professor = False
         user = self.user.get_user(user_id)
         roles = self.user.get_all_roles()
@@ -61,7 +58,6 @@ class UsersView(FlaskView):
     def select_user_roles(self, username, first_name, last_name):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         roles = self.user.get_all_roles()
         existing_user = self.user.check_for_existing_user(username)
         if existing_user:
@@ -84,10 +80,10 @@ class UsersView(FlaskView):
 
         try:
             self.user.delete_user(user_id)
-            set_alert('success', 'User deactivated successfully!')
+            self.slc.set_alert('success', 'User deactivated successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to deactivate user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route("/deactivate_users", methods=['post'])
@@ -100,9 +96,9 @@ class UsersView(FlaskView):
             user_ids = json.loads(json_user_ids)
             for user in user_ids:
                 self.user.delete_user(user)
-            set_alert('success', 'User(s) deactivated successfully!')
+            self.slc.set_alert('success', 'User(s) deactivated successfully!')
         except Exception as error:
-            set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
         return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
     @route("/save_user_edits", methods=['post'])
@@ -120,10 +116,10 @@ class UsersView(FlaskView):
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
-            set_alert('success', 'Edited user successfully!')
+            self.slc.set_alert('success', 'Edited user successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to edit user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route('/create_user', methods=['post'])
@@ -141,10 +137,10 @@ class UsersView(FlaskView):
         try:
             self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
-            set_alert('success', 'User added successfully!')
+            self.slc.set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to add user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add user: ' + str(error))
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
 
     def act_as_user(self, user_id):
@@ -180,10 +176,10 @@ class UsersView(FlaskView):
                 flask_session.pop('ADMIN-NAME')
                 return redirect(url_for('View:index'))
             except Exception as error:
-                set_alert('danger', 'An error occurred: ' + str(error))
+                self.slc.set_alert('danger', 'An error occurred: ' + str(error))
                 return redirect(url_for('View:index'))
         else:
-            set_alert('danger', 'You do not have permission to access this function')
+            self.slc.set_alert('danger', 'You do not have permission to access this function')
             return redirect(url_for('View:index'))
 
     @requires_auth

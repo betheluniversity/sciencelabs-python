@@ -62,10 +62,10 @@
         {{ nav.render(lab_title) }}
 
         {# SHOWS ALERTS #}
-        {% if current_alert %}
+        {% if alert %}
             <div class="margins">
-                <div class="alert alert-{{ current_alert.type }} alert-dismissible fade show" role="alert">
-                    {{ current_alert.message }}
+                <div class="alert alert-{{ alert.type }} alert-dismissible fade show" role="alert">
+                    {{ alert.message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

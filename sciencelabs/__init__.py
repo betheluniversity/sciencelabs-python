@@ -1,6 +1,3 @@
-# Global
-import time
-
 # Packages
 from flask import Flask, request, redirect, make_response
 from flask import session as flask_session
@@ -45,7 +42,8 @@ def utility_processor():
     to_return = {}
     to_return.update({
         'now': datetime.now(),
-        'lab_title': app.config['LAB_TITLE']
+        'lab_title': app.config['LAB_TITLE'],
+        'alert': slc().get_alert()
     })
 
     return to_return
@@ -60,6 +58,7 @@ def set_semester_selector():
         for semester in flask_session['SEMESTER-LIST']:
             if semester['id'] == semester_id:
                 semester['active'] = 1  # activates the semester chosen
+                slc().set_alert('success', 'Successfully set semester to ' + semester['term'] + ' ' + str(semester['year']))
             else:
                 semester['active'] = 0  # deactivates all others
         # Sets the SELECTED-SEMESTER
@@ -68,6 +67,7 @@ def set_semester_selector():
         flask_session.modified = True
         return 'success'
     except Exception as error:
+        slc().set_alert('danger', 'Failed to change semester: ' + str(error))
         return error
 
 
@@ -96,22 +96,9 @@ def datetimeformat(value, custom_format='%l:%M%p'):
 
 app.jinja_env.filters['datetimeformat'] = datetimeformat
 
+
 @app.before_request
 def before_request():
-    # prod = app.config['ENVIRON'] == 'prod'
-    #
-    # # reset session if it has been more than 24 hours
-    # if 'SESSION_TIME' in flask_session.keys():
-    #     seconds_in_day = 60 * 60 * 24
-    #     reset_session = time.time() - flask_session['SESSION_TIME'] >= seconds_in_day
-    # else:
-    #     reset_session = True
-    #     flask_session['SESSION_TIME'] = time.time()
-    #
-    # # if not production, then clear some of our session variables on each call
-    # if (not flask_session.get('ADMIN-VIEWER', False)) and (not prod or reset_session):
-    #     flask_session.clear()
-
     if 'USERNAME' not in flask_session.keys():
         if app.config['ENVIRON'] == 'prod':
             username = request.environ.get('REMOTE_USER')

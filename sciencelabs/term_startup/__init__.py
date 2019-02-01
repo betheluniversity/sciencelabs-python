@@ -5,7 +5,6 @@ from flask_classy import FlaskView, route
 # Local
 from sciencelabs.term_startup.term_startup_controller import TermStartupController
 from sciencelabs.db_repository.schedule_functions import Schedule
-from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -21,7 +20,6 @@ class TermStartupView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         semester = self.schedule.get_active_semester()
         return render_template('term_startup/step_one.html', **locals())
 
@@ -29,7 +27,6 @@ class TermStartupView(FlaskView):
     def step_two(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         return render_template('term_startup/step_two.html', **locals())
 
     @route('/3')
@@ -55,10 +52,8 @@ class TermStartupView(FlaskView):
             start_date = form.get('start-date')
             end_date = form.get('end-date')
             self.schedule.set_current_term(term, year, start_date, end_date)
-            set_alert('success', 'Term set successfully!')
+            self.slc.set_alert('success', 'Term set successfully!')
             return redirect(url_for('TermStartupView:step_two'))
         except Exception as error:
-            set_alert('danger', 'Failed to set term: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to set term: ' + str(error))
             return redirect(url_for('TermStartupView:index'))
-
-
