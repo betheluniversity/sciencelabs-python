@@ -237,10 +237,6 @@ ul.no-margin {
    border-color: #0c2342;
 }
 
-.custom-user-a {
-    color: #0F2C52;
-}
-
 .custom-user-div {
     color: white;
     display: inline-block !important;
@@ -434,4 +430,13 @@ ul.no-margin {
 #yellow {
     color: black;
     background-color: #FFC600;
+}
+
+#reset-act-as-button{
+    background: none!important;
+    color: #005999;
+    border: none;
+    padding: 0!important;
+    font: inherit;
+    cursor: pointer;
 }

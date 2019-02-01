@@ -2,6 +2,7 @@ import json
 
 # Packages
 from flask import render_template, request, redirect, url_for
+from flask import session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
@@ -108,14 +109,14 @@ class UsersView(FlaskView):
     def save_user_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        user_id = form.get('user-id')
+        first_name = form.get('first-name')
+        last_name = form.get('last-name')
+        email = form.get('email')
+        username = form.get('username')
+        roles = form.getlist('roles')
         try:
-            form = request.form
-            user_id = form.get('user-id')
-            first_name = form.get('first-name')
-            last_name = form.get('last-name')
-            email = form.get('email')
-            username = form.get('username')
-            roles = form.getlist('roles')
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
@@ -129,15 +130,15 @@ class UsersView(FlaskView):
     def create_user(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        first_name = form.get('first-name')
+        last_name = form.get('last-name')
+        username = form.get('username')
+        roles = form.getlist('roles')
+        email_pref = 0  # Default sending emails to No
+        if 'Administrator' in roles or 'Professor' in roles:  # If the user is a administrator or a professor, they get emails.
+            email_pref = 1
         try:
-            form = request.form
-            first_name = form.get('first-name')
-            last_name = form.get('last-name')
-            username = form.get('username')
-            roles = form.getlist('roles')
-            email_pref = 0  # Default sending emails to No
-            if 'Administrator' in roles or 'Professor' in roles:  # If the user is a administrator or a professor, they get emails.
-                email_pref = 1
             self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
             set_alert('success', 'User added successfully!')
@@ -147,22 +148,43 @@ class UsersView(FlaskView):
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
 
     def act_as_user(self, user_id):
-        if not session['ADMIN-VIEWER']:
+        if not flask_session['ADMIN-VIEWER']:
             self.slc.check_roles_and_route(['Administrator'])
             user_info = self.user.get_user(user_id)
-            session['ADMIN-VIEWER'] = True
+            flask_session['ADMIN-VIEWER'] = True
             # Saving old info to return to
-            session['ADMIN-USERNAME'] = session['USERNAME']
-            session['ADMIN-ROLES'] = session['USER-ROLES']
-            session['ADMIN-NAME'] = session['NAME']
+            flask_session['ADMIN-USERNAME'] = flask_session['USERNAME']
+            flask_session['ADMIN-ROLES'] = flask_session['USER-ROLES']
+            flask_session['ADMIN-NAME'] = flask_session['NAME']
             # Setting up viewing role
-            session['USERNAME'] = user_info.username
-            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
-            session['USER-ROLES'] = []
+            flask_session['USERNAME'] = user_info.username
+            flask_session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(user_id)
             for role in user_roles:
-                session['USER-ROLES'].append(role.name)
-        return redirect("/")
+                flask_session['USER-ROLES'].append(role.name)
+        return redirect(url_for('View:index'))
+
+    @route("/reset-act-as", methods=["POST"])
+    def reset_act_as(self):
+        if flask_session['ADMIN-VIEWER']:
+            try:
+                # Resetting info
+                flask_session['USERNAME'] = flask_session['ADMIN-USERNAME']
+                flask_session['ADMIN-VIEWER'] = False
+                flask_session['NAME'] = flask_session['ADMIN-NAME']
+                flask_session['USER-ROLES'] = flask_session['ADMIN-ROLES']
+                # Clearing out unneeded variables
+                flask_session.pop('ADMIN-USERNAME')
+                flask_session.pop('ADMIN-ROLES')
+                flask_session.pop('ADMIN-NAME')
+                return redirect(url_for('View:index'))
+            except Exception as error:
+                set_alert('danger', 'An error occurred: ' + str(error))
+                return redirect(url_for('View:index'))
+        else:
+            set_alert('danger', 'You do not have permission to access this function')
+            return redirect(url_for('View:index'))
 
     @requires_auth
     @route('/cron_populate_user_courses', methods=['get'])

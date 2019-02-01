@@ -71,23 +71,6 @@ def set_semester_selector():
         return error
 
 
-@app.route("/reset-act-as", methods=["POST"])
-def reset_act_as():
-    if flask_session['ADMIN-VIEWER']:
-        try:
-            # Resetting info
-            flask_session['USERNAME'] = flask_session['ADMIN-USERNAME']
-            # user_info = User().get_user_by_username(flask_session['ADMIN-USERNAME'])
-            flask_session['ADMIN-VIEWER'] = False
-            flask_session['NAME'] = flask_session['ADMIN-NAME']
-            flask_session['USER-ROLES'] = flask_session['ADMIN-ROLES']
-            return 'success'
-        except Exception as error:
-            return error
-    else:
-        return 'You do not have access to this function'
-
-
 @app.after_request
 def close_db_session(response):
     # This closes the db session to allow the data to propogate to all threads. It's available for use again right away.
@@ -115,19 +98,19 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    prod = app.config['ENVIRON'] == 'prod'
-
-    # reset session if it has been more than 24 hours
-    if 'SESSION_TIME' in flask_session.keys():
-        seconds_in_day = 60 * 60 * 24
-        reset_session = time.time() - flask_session['SESSION_TIME'] >= seconds_in_day
-    else:
-        reset_session = True
-        flask_session['SESSION_TIME'] = time.time()
-
-    # if not production, then clear some of our session variables on each call
-    if (not flask_session.get('ADMIN-VIEWER', False)) and (not prod or reset_session):
-        flask_session.clear()
+    # prod = app.config['ENVIRON'] == 'prod'
+    #
+    # # reset session if it has been more than 24 hours
+    # if 'SESSION_TIME' in flask_session.keys():
+    #     seconds_in_day = 60 * 60 * 24
+    #     reset_session = time.time() - flask_session['SESSION_TIME'] >= seconds_in_day
+    # else:
+    #     reset_session = True
+    #     flask_session['SESSION_TIME'] = time.time()
+    #
+    # # if not production, then clear some of our session variables on each call
+    # if (not flask_session.get('ADMIN-VIEWER', False)) and (not prod or reset_session):
+    #     flask_session.clear()
 
     if 'USERNAME' not in flask_session.keys():
         if app.config['ENVIRON'] == 'prod':
