@@ -1,9 +1,8 @@
-from flask import session, abort
-
 import random
 import string
 
-from flask import request, Response
+from flask import request, Response, abort
+from flask import session as flask_session
 from functools import wraps
 
 from sciencelabs import app
@@ -46,6 +45,6 @@ class ScienceLabsController(object):
 
     def check_roles_and_route(self, allowed_roles):
         for role in allowed_roles:
-            if role in session['USER-ROLES']:
+            if role in flask_session['USER-ROLES']:
                 return True
         abort(403)

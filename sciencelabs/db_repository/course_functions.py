@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import orm
-from flask import session
+from flask import session as flask_session
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
@@ -166,7 +166,7 @@ class Course:
         # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
 
         semester_id = None
-        semester_list = session['SEMESTER-LIST']
+        semester_list = flask_session['SEMESTER-LIST']
         for semesters in semester_list:
             if semesters.year == year and semesters.term == term:
                 semester_id = semesters.id

@@ -1,5 +1,6 @@
 # Packages
-from flask import render_template, session
+from flask import render_template
+from flask import session as flask_session
 
 # Local
 from sciencelabs import app, sentry
@@ -11,7 +12,7 @@ def error_render_template(template_path, error, code=None):
     if code:
         if code in [500, 503]:
             if not app.config['UNIT_TESTING']:
-                app.logger.error("%s -- %s" % session['username'], str(error))
+                app.logger.error("%s -- %s" % flask_session['username'], str(error))
 
     else:
         app.logger.error('Unhandled Exception: %s', str(error))

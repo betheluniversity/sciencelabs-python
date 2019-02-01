@@ -1,5 +1,6 @@
 # Packages
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request
+from flask import session as flask_session
 from flask_classy import FlaskView, route
 import json
 
@@ -21,7 +22,7 @@ class ProfileView(FlaskView):
     @route('/edit')
     def index(self):
         current_alert = get_alert()
-        user = self.user.get_user_by_username(session['USERNAME'])
+        user = self.user.get_user_by_username(flask_session['USERNAME'])
         return render_template('profile/profile.html', **locals())
 
     @route('/save_edits', methods=['post'])
@@ -46,15 +47,15 @@ class ProfileView(FlaskView):
     @route('/change-role', methods=['POST'])
     def change_role(self):
         self.slc.check_roles_and_route(['Administrator'])
-        if not session['ADMIN-VIEWER']:
+        if not flask_session['ADMIN-VIEWER']:
             role = str(json.loads(request.data).get('chosen-role'))
-            session['ADMIN-VIEWER'] = True
+            flask_session['ADMIN-VIEWER'] = True
             # Saving old info to return too
-            session['ADMIN-USERNAME'] = session['USERNAME']
-            session['ADMIN-ROLES'] = session['USER-ROLES']
-            session['ADMIN-NAME'] = session['NAME']
+            flask_session['ADMIN-USERNAME'] = flask_session['USERNAME']
+            flask_session['ADMIN-ROLES'] = flask_session['USER-ROLES']
+            flask_session['ADMIN-NAME'] = flask_session['NAME']
             # Setting up viewing role
-            session['USERNAME'] = role
-            session['NAME'] = ""
-            session['USER-ROLES'] = role
+            flask_session['USERNAME'] = role
+            flask_session['NAME'] = ""
+            flask_session['USER-ROLES'] = role
         return redirect(url_for('ProfileView:role_viewer'))
