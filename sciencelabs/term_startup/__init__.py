@@ -3,7 +3,6 @@ from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.term_startup.term_startup_controller import TermStartupController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
@@ -12,7 +11,6 @@ class TermStartupView(FlaskView):
     route_base = 'admin/transition/'
 
     def __init__(self):
-        self.base = TermStartupController()
         self.schedule = Schedule()
         self.slc = ScienceLabsController()
 

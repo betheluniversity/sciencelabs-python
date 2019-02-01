@@ -173,7 +173,6 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit session: ' + str(error))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-
     @route('/save_student_edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -360,7 +359,7 @@ class SessionView(FlaskView):
     def tutor_attendance(self, session_id, session_hash):
         redirect(app.config['LAB_BASE_URL'] + '/logout')
         session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info(session_info.semester_id)
+        course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
@@ -380,7 +379,7 @@ class SessionView(FlaskView):
         for role in user_roles:
             flask_session['USER-ROLES'].append(role.name)
         session_info = self.session.get_session(session_id)
-        course_info = self.course.get_active_course_info(session_info.semester_id)
+        course_info = self.course.get_active_course_info()
         return render_template('session/close_open_session.html', **locals())
 
     @route('/confirm_close', methods=['post'])

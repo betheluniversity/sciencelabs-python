@@ -68,7 +68,7 @@ class EmailView(FlaskView):
         for bcc_id in bcc_ids:
             bcc.append(int(bcc_id))
         bcc_emails = self.user.get_bcc_emails(bcc)
-        success = self.base.send_message(subject, message, recipients, bcc_emails, False)  # subject, body, recipients, bcc, html
+        success = self.base.send_message(subject, message, recipients, bcc_emails, False)
         if success:
             self.slc.set_alert('success', 'Email sent successfully')
         else:

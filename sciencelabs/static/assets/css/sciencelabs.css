@@ -58,7 +58,7 @@ div.header {
     background-color: #eaf1fb;
     text-align: left;
     border-color: #bdd4f3;
-    padding: 0px;
+    padding: 0;
 }
 
 div.info {
@@ -71,7 +71,7 @@ div.row-group {
     border-color: white;
     border-style: solid;
     height: 200px;
-    margin: 0px
+    margin: 0;
 }
 
 div.semester-selector {
@@ -120,7 +120,7 @@ span.tag {
 }
 
 ul.no-margin {
-    margin: 0px;
+    margin: 0;
 }
 
 @media only screen and (max-width: 767px) {
@@ -204,8 +204,8 @@ ul.no-margin {
 
 .chosen-comments {
     border: 1px solid #aaa !important;
-    border-radius: 0px !important;
-    padding: 0px 5px;
+    border-radius: 0 !important;
+    padding: 0 5px;
 }
 
 .chosen-container {
@@ -214,22 +214,22 @@ ul.no-margin {
 
 .chosen-format {
     border: 1px solid #aaa !important;
-    border-radius: 0px !important;
-    padding: 0px 5px;
+    border-radius: 0 !important;
+    padding: 0 5px;
     height: 29px;
     font-size: .875rem !important;
 }
 
 .col-group {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     text-align: center;
     color: white;
     top: 35%;
 }
 
 .csv-button.btn.btn-primary {
-   border-radius: 0px;
+   border-radius: 0;
    margin: -5px 0 0 0;
    position: absolute;
    right: 10px;
@@ -243,11 +243,11 @@ ul.no-margin {
 }
 
 .custom-user-p {
-    margin: 10px 0px;
+    margin: 10px 0;
 }
 
 .custom-user-nav {
-    padding: 0px 10px;
+    padding: 0 10px;
     background-color: tomato;
     /*text-align: center;*/
 }
@@ -284,7 +284,7 @@ ul.no-margin {
 }
 
 .margin-0 {
-    margin: 0px;
+    margin: 0;
 }
 
 .margin-bottom-10 {
@@ -328,12 +328,12 @@ ul.no-margin {
 }
 
 .no-margin-padding {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
 }
 
 .report-img {
-    top: 0px !important;
+    top: 0 !important;
 }
 
 .right-side-borders

@@ -6,7 +6,6 @@ from flask import session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -19,7 +18,6 @@ class UsersView(FlaskView):
     route_base = 'user'
 
     def __init__(self):
-        self.base = UsersController()
         self.user = User()
         self.course = Course()
         self.schedule = Schedule()
@@ -132,7 +130,8 @@ class UsersView(FlaskView):
         username = form.get('username')
         roles = form.getlist('roles')
         email_pref = 0  # Default sending emails to No
-        if 'Administrator' in roles or 'Professor' in roles:  # If the user is a administrator or a professor, they get emails.
+        # If the user is a administrator or a professor, they get emails.
+        if 'Administrator' in roles or 'Professor' in roles:
             email_pref = 1
         try:
             self.user.create_user(first_name, last_name, username, email_pref)
@@ -141,7 +140,8 @@ class UsersView(FlaskView):
             return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to add user: ' + str(error))
-            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
+            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name,
+                                    last_name=last_name))
 
     def act_as_user(self, user_id):
         if not flask_session['ADMIN-VIEWER']:

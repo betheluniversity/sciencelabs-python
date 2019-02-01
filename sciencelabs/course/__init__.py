@@ -3,7 +3,6 @@ from flask import render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.course.course_controller import CourseController
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
@@ -14,12 +13,10 @@ class CourseView(FlaskView):
     route_base = 'course'
 
     def __init__(self):
-        self.base = CourseController()
         self.course = Course()
         self.schedule = Schedule()
         self.wsapi = WSAPIController()
         self.slc = ScienceLabsController()
-
 
     @route('/admin/')
     def index(self):

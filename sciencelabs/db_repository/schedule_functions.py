@@ -204,7 +204,6 @@ class Schedule:
 
     def create_new_lead_schedules(self, schedule_id, time_in, time_out, leads):
         for lead in leads:
-            db_session.execute("INSERT INTO TutorSchedule (schedTimeIn, schedTimeOut, `lead`, tutorId, scheduleID) VALUES ({}, {}. {}, {}. {});".format(time_in, time_out, 1, lead, schedule_id))
             new_lead_schedule = TutorSchedule_Table(schedTimeIn=time_in, schedTimeOut=time_out, isLead=1,
                                                     tutorId=lead, scheduleId=schedule_id)
             db_session.add(new_lead_schedule)

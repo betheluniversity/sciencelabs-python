@@ -3,7 +3,6 @@ from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.schedule.schedule_controller import ScheduleController
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.session_functions import Session
@@ -12,7 +11,6 @@ from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 class ScheduleView(FlaskView):
     def __init__(self):
-        self.base = ScheduleController()
         self.schedule = Schedule()
         self.course = Course()
         self.session = Session()

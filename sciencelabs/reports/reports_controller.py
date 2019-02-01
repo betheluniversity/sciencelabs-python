@@ -1,7 +1,4 @@
 class ReportController:
-    def __init__(self):
-        super(ReportController, self).__init__
-
     cumulative = {
         '2004': {'academicYear': '2003-2004', 'monthly': (0, 28, 291, 328, 394, 196, 0, 0, 0, 379, 425, 346, 76, 28),
                  'springTotal': 1209, 'fallTotal': 1226, 'summerTotal': 0, 'yearTotal': 2463},

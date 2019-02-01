@@ -1,4 +1,4 @@
-from sqlalchemy import *
+from sqlalchemy import Column, Integer, String, DateTime
 
 from sciencelabs.db_repository import base
 

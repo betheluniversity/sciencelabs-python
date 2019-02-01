@@ -16,7 +16,7 @@ class Course:
                 .filter(Semester_Table.active == 1)
                 .all())
 
-    def get_active_course_info(self, semester_id):
+    def get_active_course_info(self):
         return (db_session.query(Course_Table, User_Table)
                 .filter(Course_Table.num_attendees)
                 .filter(User_Table.id == CourseProfessors_Table.professor_id)
@@ -34,12 +34,14 @@ class Course:
                 .all())
 
     def get_semester_courses(self, semester_id):
-        return db_session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName, CourseCode_Table.id)\
+        return db_session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName,
+                                CourseCode_Table.id)\
             .filter(Course_Table.semester_id == semester_id)\
             .filter(Course_Table.course_code_id == CourseCode_Table.id).distinct()
 
     def get_student_courses(self, student_id, semester_id):
-        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                CourseCode_Table.courseName)\
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
@@ -162,7 +164,7 @@ class Course:
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
-        # TODO DON'T REALLY KNOW WHETHER TO CREATE IT OR NOT WHEN TERM/YEAR DOESN'T EXIST, RIGHT NOW WE ARE JUST CREATING IT
+        # TODO DON'T KNOW WHETHER TO CREATE IT OR NOT WHEN TERM/YEAR DOESN'T EXIST, RIGHT NOW WE ARE JUST CREATING IT
         # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
 
         semester_id = None
@@ -230,4 +232,3 @@ class Course:
             for courseviewer in courseviewers:
                 db_session.delete(courseviewer)
                 db_session.commit()
-
