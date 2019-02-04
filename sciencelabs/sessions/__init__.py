@@ -336,15 +336,11 @@ class SessionView(FlaskView):
         opener = self.user.get_user_by_username(flask_session['USERNAME'])
         self.session.start_open_session(session_id, opener.id)
         self.session.tutor_sign_in(session_id, opener.id)
-        redirect(app.config['LAB_BASE_URL'] + '/logout')
+        redirect(url_for('View:logout'))
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
-        redirect(app.config['LAB_BASE_URL'] + '/logout')
-        flask_session['USERNAME'] = None
-        flask_session['USER-ROLES'] = []
-        flask_session['NAME'] = None
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         students_and_courses = {}
@@ -353,17 +349,18 @@ class SessionView(FlaskView):
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
+        self.slc.logout()
         return render_template('session/student_attendance.html', **locals())
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
-        redirect(app.config['LAB_BASE_URL'] + '/logout')
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
+        self.slc.logout()
         return render_template('session/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -480,7 +477,7 @@ class SessionView(FlaskView):
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        redirect(app.config['LAB_BASE_URL'] + '/logout')
+        self.slc.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -510,7 +507,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        redirect(app.config['LAB_BASE_URL'] + '/logout')
+        self.slc.logout()
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):

@@ -71,22 +71,6 @@ def set_semester_selector():
         return error
 
 
-@app.after_request
-def close_db_session(response):
-    # This closes the db session to allow the data to propogate to all threads. It's available for use again right away.
-    db_session.close()
-    return response
-
-
-@app.route("/logout", methods=["GET"])
-def logout():
-    flask_session.clear()
-    resp = make_response(redirect(app.config['LOGOUT_URL']))
-    resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-    resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-    return resp
-
-
 def datetimeformat(value, custom_format='%l:%M%p'):
     if value:
         return (datetime.min + value).strftime(custom_format)
@@ -99,6 +83,7 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
+
     if 'USERNAME' not in flask_session.keys():
         if app.config['ENVIRON'] == 'prod':
             username = request.environ.get('REMOTE_USER')
@@ -132,6 +117,13 @@ def before_request():
         flask_session['SELECTED-SEMESTER'] = active_semester.id
     if 'ALERT' not in flask_session.keys():
         flask_session['ALERT'] = None
+
+
+@app.after_request
+def close_db_session(response):
+    # This closes the db session to allow the data to propogate to all threads. It's available for use again right away.
+    db_session.close()
+    return response
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import random
 import string
 
-from flask import request, Response, abort
+from flask import request, Response, abort, make_response, redirect
 from flask import session as flask_session
 from functools import wraps
 
@@ -61,3 +61,10 @@ class ScienceLabsController(object):
             'type': message_type,
             'message': message
         }
+
+    def logout(self):
+        flask_session.clear()
+        flask_session['ALERT'] = None  # Need to set this right away or we'll get an error
+        resp = make_response(redirect(app.config['LOGOUT_URL']))
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)

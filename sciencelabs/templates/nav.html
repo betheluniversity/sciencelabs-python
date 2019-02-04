@@ -60,7 +60,7 @@
                         {% if 'Administrator' in session['USER-ROLES'] %}
                             <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
                         {% endif %}
-                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('View:logout') }}">Logout</a>
                     </div>
                 {% else %}
                      <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">
