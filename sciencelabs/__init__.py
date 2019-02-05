@@ -1,9 +1,8 @@
 # Packages
-from flask import Flask, request, redirect, make_response
+from flask import Flask, request
 from flask import session as flask_session
 from raven.contrib.flask import Sentry
 from datetime import datetime
-import json
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -49,28 +48,6 @@ def utility_processor():
     return to_return
 
 
-@app.route("/set-semester", methods=["POST"])
-def set_semester_selector():
-    semester_id = str(json.loads(request.data).get('id'))
-    # Makes sure that semester_id is valid (always should be but just in case)
-    try:
-        # Sets the attribute 'active' of all the semesters to 0 so none are active
-        for semester in flask_session['SEMESTER-LIST']:
-            if semester['id'] == semester_id:
-                semester['active'] = 1  # activates the semester chosen
-                slc().set_alert('success', 'Successfully set semester to ' + semester['term'] + ' ' + str(semester['year']))
-            else:
-                semester['active'] = 0  # deactivates all others
-        # Sets the SELECTED-SEMESTER
-        flask_session['SELECTED-SEMESTER'] = int(semester_id)
-        # Lets the session know it was modified
-        flask_session.modified = True
-        return 'success'
-    except Exception as error:
-        slc().set_alert('danger', 'Failed to change semester: ' + str(error))
-        return error
-
-
 def datetimeformat(value, custom_format='%l:%M%p'):
     if value:
         return (datetime.min + value).strftime(custom_format)
@@ -83,7 +60,6 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-
     if 'USERNAME' not in flask_session.keys():
         if app.config['ENVIRON'] == 'prod':
             username = request.environ.get('REMOTE_USER')

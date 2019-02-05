@@ -19,7 +19,7 @@
                 var semester_term_year = select_tag.options[select_tag.selectedIndex].text;
                 $.ajax({
                     type: "POST",
-                    url: "/set-semester",
+                    url: "{{ url_for('View:set_semester_selector') }}",
                     data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
