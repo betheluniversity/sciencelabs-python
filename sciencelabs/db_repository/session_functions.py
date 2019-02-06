@@ -483,7 +483,7 @@ class Session:
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
-            .filter(TutorSession_Table.tutorId == tutor_id).one_or_none()
+            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeIn == None).one_or_none()
         if tutor_session:
             tutor_session.timeIn = datetime.now().strftime("%H:%M:%S")
             db_session.commit()
@@ -521,7 +521,7 @@ class Session:
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id).one()
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeOut == None).one()
         student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()

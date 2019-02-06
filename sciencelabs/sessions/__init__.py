@@ -2,7 +2,7 @@ import re
 
 # Packages
 from datetime import datetime
-from flask import render_template, redirect, url_for, request, json
+from flask import render_template, redirect, url_for, request, json, make_response
 from flask import session as flask_session
 from flask_classy import FlaskView, route
 
@@ -333,10 +333,13 @@ class SessionView(FlaskView):
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
+        lab_session = self.session.get_session(session_id)
         opener = self.user.get_user_by_username(flask_session['USERNAME'])
         self.session.start_open_session(session_id, opener.id)
         self.session.tutor_sign_in(session_id, opener.id)
-        redirect(url_for('View:logout'))
+        self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
+                           ') opened successfully')
+        self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -349,7 +352,7 @@ class SessionView(FlaskView):
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
-        self.slc.logout()
+        self.logout()
         return render_template('session/student_attendance.html', **locals())
 
     @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -360,7 +363,7 @@ class SessionView(FlaskView):
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
-        self.slc.logout()
+        self.logout()
         return render_template('session/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -435,7 +438,11 @@ class SessionView(FlaskView):
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         if card_id != 'none':  # This is the same regardless of prod/dev
-            user_info = self.wsapi.get_user_from_prox(card_id)
+            try:
+                user_info = self.wsapi.get_user_from_prox(card_id)
+            except:
+                self.slc.set_alert('danger', 'Card not recognized')
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user_by_username(user_info['username'])
             if not user:
                 user = self.user.create_user_at_sign_in(user_info['username'], semester)
@@ -477,7 +484,7 @@ class SessionView(FlaskView):
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        self.slc.logout()
+        self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -487,7 +494,11 @@ class SessionView(FlaskView):
     @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'none':  # This is the same regardless of prod/dev
-            user_info = self.wsapi.get_user_from_prox(card_id)
+            try:
+                user_info = self.wsapi.get_user_from_prox(card_id)
+            except:
+                self.slc.set_alert('danger', 'Card not recognized')
+                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user_by_username(user_info['username'])
         else:
             if app.config['ENVIRON'] == 'prod':
@@ -507,7 +518,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        self.slc.logout()
+        self.logout()
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
@@ -533,3 +544,13 @@ class SessionView(FlaskView):
             return card_id.group(1)
         else:
             return 'failed'
+
+    # This logout method is specific to the open session
+    def logout(self):
+        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+        alert = flask_session['ALERT']
+        flask_session.clear()
+        flask_session['ALERT'] = alert  # Need to set this right away or we'll get an error
+        resp = make_response(redirect(app.config['LOGOUT_URL']))
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
