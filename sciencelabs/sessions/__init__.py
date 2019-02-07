@@ -342,7 +342,7 @@ class SessionView(FlaskView):
         self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/student_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
@@ -355,7 +355,7 @@ class SessionView(FlaskView):
         self.logout()
         return render_template('session/student_attendance.html', **locals())
 
-    @route('/tutor_attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
@@ -471,6 +471,14 @@ class SessionView(FlaskView):
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('session/student_sign_in.html', **locals())
+
+    # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
+    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['post'])
+    def authenticate_sign_in(self, session_id, session_hash, user):
+        if user == 'tutor':
+            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
+        else:
+            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
