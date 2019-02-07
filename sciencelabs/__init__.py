@@ -42,7 +42,8 @@ def utility_processor():
     to_return.update({
         'now': datetime.now(),
         'lab_title': app.config['LAB_TITLE'],
-        'alert': slc().get_alert()
+        'alert': slc().get_alert(),
+        'username': flask_session['USERNAME'] if 'USERNAME' in flask_session.keys() else 'No Username'
     })
 
     return to_return

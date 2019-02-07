@@ -60,6 +60,7 @@
         <script type="text/javascript" src="{{ url_for('static', filename='assets/js/sciencelabs.js') }}"></script>
 
         {{ nav.render(lab_title) }}
+        <p>{{ username }}</p>
 
         {# SHOWS ALERTS #}
         {% if alert %}
@@ -78,7 +79,6 @@
         <div class="margins">{% block header %}{% endblock %}</div>
 
         <div class="margins">{% block body_content %}{% endblock %}</div>
-        {% block scripts %}{% endblock %}
 
         <div class="footer container card margins">
             <div class="card-body">
