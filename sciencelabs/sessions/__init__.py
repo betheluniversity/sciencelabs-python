@@ -412,6 +412,7 @@ class SessionView(FlaskView):
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
+        # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'none':  # This is the same regardless of prod/dev
             try:
                 user_info = self.wsapi.get_user_from_prox(card_id)
@@ -421,25 +422,23 @@ class SessionView(FlaskView):
             user = self.user.get_user_by_username(user_info['username'])
             if not user:
                 user = self.user.create_user_at_sign_in(user_info['username'], semester)
+        # No card so now we get the user via CAS
         else:
-            if app.config['ENVIRON'] == 'prod':
-                username = request.environ.get('REMOTE_USER')
-                user = self.user.get_user_by_username(username)
-                if not user:
-                    user = self.user.create_user_at_sign_in(username, semester)
-            else:  # If we are in dev env we grab the student selected from the dropdown.
+            if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
                 form = request.form
                 student = form.get('selected-student')
                 if student == '-1':
                     self.slc.set_alert('danger', 'Invalid Student')
                     return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
                 user = self.user.get_user(student)
-        flask_session['USERNAME'] = user.username
-        flask_session['NAME'] = user.firstName + ' ' + user.lastName
-        flask_session['USER-ROLES'] = []
-        user_roles = self.user.get_user_roles(user.id)
-        for role in user_roles:
-            flask_session['USER-ROLES'].append(role.name)
+            else:
+                user = self.user.get_user_by_username(flask_session['USERNAME'])
+        # flask_session['USERNAME'] = user.username
+        # flask_session['NAME'] = user.firstName + ' ' + user.lastName
+        # flask_session['USER-ROLES'] = []
+        # user_roles = self.user.get_user_roles(user.id)
+        # for role in user_roles:
+        #     flask_session['USER-ROLES'].append(role.name)
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
