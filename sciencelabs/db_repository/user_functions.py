@@ -425,18 +425,20 @@ class User:
             emails.append(self.get_email_from_id(bcc))
         return emails
 
-    def get_end_of_session_emails(self, session_courses):
+    # todo: should we be using session_courses?
+    def get_end_of_session_recipients(self):  #, session_courses):
+        # todo: ideally we wouldn't use id's, we would use the name.
         admins = self.get_users_in_group(40001)  # Id for admins
         profs = self.get_users_in_group(40005)  # Id for profs
-        emails = []
+        recipients = []
         for admin in admins:
-            if admin.send_email == 1:
-                emails.append(admin.email)
+            if admin.send_email == 1 and admin not in recipients:
+                recipients.append(admin)
         for prof in profs:
-            if prof.send_email == 1:
-                emails.append(prof.email)
-        emails = list(set(emails))  # converting to a set and then right back to a list removes duplicates
-        return emails
+            if prof.send_email == 1 and prof not in recipients:
+                recipients.append(prof)
+
+        return recipients
 
     def user_is_tutor(self, user_id):
         user_roles = self.get_user_roles(user_id)
