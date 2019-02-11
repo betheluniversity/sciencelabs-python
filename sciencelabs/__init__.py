@@ -60,7 +60,7 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    if '/cron/' in request.path or '/checkin/' in request.path or '/student-attendance/' in request.path or '/tutor-attendance/' in request.path:
+    if '/static/' in request.path or '/cron/' in request.path or '/checkin/' in request.path or '/student-attendance/' in request.path or '/tutor-attendance/' in request.path:
         pass
     else:
         active_semester = Schedule().get_active_semester()
