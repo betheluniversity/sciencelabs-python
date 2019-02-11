@@ -495,7 +495,7 @@ class Session:
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
-            .filter(TutorSession_Table.tutorId == tutor_id).one()
+            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).one()
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
