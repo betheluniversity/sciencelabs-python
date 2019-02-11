@@ -520,9 +520,11 @@ class SessionView(FlaskView):
     # This logout method is specific to the open session
     def logout(self):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
+        if 'ALERT' in flask_session.keys():
+            alert = flask_session['ALERT']
+            flask_session['ALERT'] = alert
         flask_session.clear()
-        flask_session['ALERT'] = alert  # Need to set this right away or we'll get an error
+
         resp = make_response(redirect(app.config['LOGOUT_URL']))
         resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
         resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
