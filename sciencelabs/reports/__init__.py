@@ -455,7 +455,12 @@ class ReportView(FlaskView):
             sub_list.append(fall_total + spring_total + summer_total + interim_total)
             my_list.append(sub_list)
 
-        cumulative = self.base.cumulative
+        if app.config['LAB_TITLE'] == 'Math Lab':
+            cumulative = self.base.math_lab_cumulative
+        elif app.config['LAB_TITLE'] == 'Computer Science Lab':
+            cumulative = self.base.cs_lab_cumulative
+        else:
+            cumulative = []
         first = True
         for info in cumulative:
             if first:
