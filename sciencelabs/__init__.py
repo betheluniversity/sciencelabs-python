@@ -60,39 +60,42 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    if 'USERNAME' not in flask_session.keys():
-        if app.config['ENVIRON'] == 'prod':
-            username = request.environ.get('REMOTE_USER')
-        else:
-            username = app.config['TEST_USERNAME']
-        current_user = User().get_user_by_username(username)
-        flask_session['USERNAME'] = current_user.username
-        flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
-        flask_session['USER-ROLES'] = []
-        user_roles = User().get_user_roles(current_user.id)
-        for role in user_roles:
-            flask_session['USER-ROLES'].append(role.name)
-    if 'NAME' not in flask_session.keys():
-        flask_session['NAME'] = flask_session['USERNAME']
-    if 'USER-ROLES' not in flask_session.keys():
-        flask_session['USER-ROLES'] = ['STUDENT']
-    if 'ADMIN-VIEWER' not in flask_session.keys():
-        flask_session['ADMIN-VIEWER'] = False
-    if 'SEMESTER-LIST' not in flask_session.keys():
-        semester_list = Schedule().get_semesters()
-        flask_session['SEMESTER-LIST'] = []
-        # Adds all semesters to a dictionary
-        for semester in semester_list:
-            flask_session['SEMESTER-LIST'].append(
-                {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
-            # Sets the current active semester to 'SELECTED-SEMESTER'
-            if semester.active == 1:
-                flask_session['SELECTED-SEMESTER'] = semester.id
-    if 'SELECTED-SEMESTER' not in flask_session.keys():
-        active_semester = Schedule().get_active_semester()
-        flask_session['SELECTED-SEMESTER'] = active_semester.id
-    if 'ALERT' not in flask_session.keys():
-        flask_session['ALERT'] = None
+    if '/cron/' in request.path:
+        pass
+    else:
+        if 'USERNAME' not in flask_session.keys():
+            if app.config['ENVIRON'] == 'prod':
+                username = request.environ.get('REMOTE_USER')
+            else:
+                username = app.config['TEST_USERNAME']
+            current_user = User().get_user_by_username(username)
+            flask_session['USERNAME'] = current_user.username
+            flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+            flask_session['USER-ROLES'] = []
+            user_roles = User().get_user_roles(current_user.id)
+            for role in user_roles:
+                flask_session['USER-ROLES'].append(role.name)
+        if 'NAME' not in flask_session.keys():
+            flask_session['NAME'] = flask_session['USERNAME']
+        if 'USER-ROLES' not in flask_session.keys():
+            flask_session['USER-ROLES'] = ['STUDENT']
+        if 'ADMIN-VIEWER' not in flask_session.keys():
+            flask_session['ADMIN-VIEWER'] = False
+        if 'SEMESTER-LIST' not in flask_session.keys():
+            semester_list = Schedule().get_semesters()
+            flask_session['SEMESTER-LIST'] = []
+            # Adds all semesters to a dictionary
+            for semester in semester_list:
+                flask_session['SEMESTER-LIST'].append(
+                    {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
+                # Sets the current active semester to 'SELECTED-SEMESTER'
+                if semester.active == 1:
+                    flask_session['SELECTED-SEMESTER'] = semester.id
+        if 'SELECTED-SEMESTER' not in flask_session.keys():
+            active_semester = Schedule().get_active_semester()
+            flask_session['SELECTED-SEMESTER'] = active_semester.id
+        if 'ALERT' not in flask_session.keys():
+            flask_session['ALERT'] = None
 
 
 @app.after_request

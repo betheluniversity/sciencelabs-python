@@ -11,7 +11,6 @@ from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.course_functions import Course
-from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs.email_tab import EmailController
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
@@ -392,36 +391,12 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         try:
             self.session.close_open_session(session_id, comments)
-            self.close_session_email(session_id)
+            self.email.close_session_email(session_id)
             self.slc.set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to close session: ' + str(error))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
-
-    def close_session_email(self, session_id):
-        # Email stuff
-        ##################
-        tutors = self.session.get_session_tutors(session_id)
-        session_students = self.session.get_session_students(session_id)
-        students_and_courses_report = {}
-        students_and_courses = {}
-        for student in session_students:
-            students_and_courses_report[student] = self.session.get_report_student_session_courses(session_id,
-                                                                                                   student.id)
-            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
-        session_courses = self.session.get_session_courses(session_id)
-        courses_and_info = {}
-        courses_and_email_info = {}
-        for course in session_courses:
-            courses_and_info[course] = self.course.get_course(course.id)
-            courses_and_email_info[course] = self.session.get_course_email_info(course.id)
-        sess = self.session.get_session(session_id)
-        opener = self.user.get_user(sess.openerId)
-        ##################
-        subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
-        recipients = self.user.get_end_of_session_emails(session_courses)
-        self.email.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -532,16 +507,6 @@ class SessionView(FlaskView):
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
-
-    @requires_auth
-    @route('/cron_close_sessions', methods=['get'])
-    def cron_close_sessions(self):
-        try:
-            sessions_closed = self.session.close_open_sessions_cron()
-            for session_closed in sessions_closed:
-                self.close_session_email(session_closed.id)
-        except Exception as error:
-            return 'failed: ' + str(error)
 
     @route('/verify_scanner', methods=['post'])
     def verify_scanner(self):

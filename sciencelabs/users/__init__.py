@@ -10,7 +10,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
-from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -181,19 +180,3 @@ class UsersView(FlaskView):
         else:
             self.slc.set_alert('danger', 'You do not have permission to access this function')
             return redirect(url_for('View:index'))
-
-    @requires_auth
-    @route('/cron_populate_user_courses', methods=['get'])
-    def cron_populate_user_courses(self):
-        try:
-            return self.user.populate_user_courses_cron()
-        except Exception as error:
-            return 'failed: ' + str(error)
-
-    @requires_auth
-    @route('/cron_populate_courses', methods=['get'])
-    def cron_populate_courses(self):
-        try:
-            return self.user.populate_courses_cron()
-        except Exception as error:
-            return 'failed: ' + str(error)
