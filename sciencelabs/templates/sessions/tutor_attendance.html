@@ -1,4 +1,4 @@
-{% extends 'session/base.html' %}
+{% extends 'sessions/base.html' %}
 
 {% block subnav %}
     <a id="student" class="nav-item nav-link disabled"
@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-md-8">
             <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user='tutor')
-                    if env == 'prod' else url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='none') }}" method="post">
+                    if env == 'prod' else url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
                 {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
                     <div>
                         <label for="tutor-select">Select a tutor to sign in:</label>

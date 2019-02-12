@@ -35,7 +35,7 @@ class EmailController:
         ##################
         subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
         recipients = self.user.get_end_of_session_emails(session_courses)
-        self.send_message(subject, render_template('session/email.html', **locals()), recipients, None, True)
+        self.send_message(subject, render_template('sessions/email.html', **locals()), recipients, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':

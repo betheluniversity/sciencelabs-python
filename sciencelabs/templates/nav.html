@@ -63,8 +63,9 @@
                         <a class="dropdown-item dd-background yellow" href="{{ url_for('View:logout') }}">Logout</a>
                     </div>
                 {% else %}
-                     <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">
-                        Login</a>
+                    {% if 'student-attendance' not in request.path and 'tutor-attendance' not in request.path and '/checkin/' not in request.path %}
+                        <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
+                    {% endif %}
                 {% endif %}
 
             </div>

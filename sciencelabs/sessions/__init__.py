@@ -36,7 +36,7 @@ class SessionView(FlaskView):
         sessions_and_tutors = {}
         for available_session in sessions:
             sessions_and_tutors[available_session] = self.session.get_session_tutors(available_session.id)
-        return render_template('session/available_sessions.html', **locals())
+        return render_template('sessions/available_sessions.html', **locals())
 
     @route('/closed')
     def closed(self):
@@ -47,7 +47,7 @@ class SessionView(FlaskView):
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        return render_template('session/closed_sessions.html', **locals())
+        return render_template('sessions/closed_sessions.html', **locals())
 
     def create(self):
         self.slc.check_roles_and_route(['Administrator'])
@@ -56,7 +56,7 @@ class SessionView(FlaskView):
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
-        return render_template('session/create_session.html', **locals())
+        return render_template('sessions/create_session.html', **locals())
 
     def deleted(self):
         self.slc.check_roles_and_route(['Administrator'])
@@ -66,7 +66,7 @@ class SessionView(FlaskView):
         sessions_and_tutors = {}
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
-        return render_template('session/restore_session.html', **locals())
+        return render_template('sessions/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
@@ -84,7 +84,7 @@ class SessionView(FlaskView):
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         course_list = self.course.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
-        return render_template('session/edit_session.html', **locals())
+        return render_template('sessions/edit_session.html', **locals())
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
@@ -94,41 +94,41 @@ class SessionView(FlaskView):
         student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
-        return render_template('session/edit_student.html', **locals())
+        return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         student_list = self.schedule.get_registered_students()
-        return render_template('session/add_student.html', **locals())
+        return render_template('sessions/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
-        return render_template('session/add_anonymous.html', **locals())
+        return render_template('sessions/add_anonymous.html', **locals())
 
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
-        return render_template('session/edit_tutor.html', **locals())
+        return render_template('sessions/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         tutor_list = self.schedule.get_registered_tutors()
-        return render_template('session/add_tutor.html', **locals())
+        return render_template('sessions/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
-        return render_template('session/delete_session.html', **locals())
+        return render_template('sessions/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -327,7 +327,7 @@ class SessionView(FlaskView):
         for student in session_students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         session_tutors = self.session.get_session_tutors(session_id)
-        return render_template('session/view_session.html', **locals())
+        return render_template('sessions/view_session.html', **locals())
 
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
@@ -352,7 +352,7 @@ class SessionView(FlaskView):
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
         self.logout()
-        return render_template('session/student_attendance.html', **locals())
+        return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
@@ -363,7 +363,7 @@ class SessionView(FlaskView):
         env = app.config['ENVIRON']
         lab_url = app.config['LAB_BASE_URL']
         self.logout()
-        return render_template('session/tutor_attendance.html', **locals())
+        return render_template('sessions/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
@@ -379,7 +379,7 @@ class SessionView(FlaskView):
             flask_session['USER-ROLES'].append(role.name)
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
-        return render_template('session/close_open_session.html', **locals())
+        return render_template('sessions/close_open_session.html', **locals())
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
@@ -413,7 +413,7 @@ class SessionView(FlaskView):
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
-        if card_id != 'none':  # This is the same regardless of prod/dev
+        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
@@ -433,26 +433,20 @@ class SessionView(FlaskView):
                 user = self.user.get_user(student)
             else:
                 user = self.user.get_user_by_username(flask_session['USERNAME'])
-        # flask_session['USERNAME'] = user.username
-        # flask_session['NAME'] = user.firstName + ' ' + user.lastName
-        # flask_session['USER-ROLES'] = []
-        # user_roles = self.user.get_user_roles(user.id)
-        # for role in user_roles:
-        #     flask_session['USER-ROLES'].append(role.name)
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
-        return render_template('session/student_sign_in.html', **locals())
+        return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
         if user == 'tutor':
-            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
+            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
         else:
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
+            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
@@ -475,7 +469,7 @@ class SessionView(FlaskView):
 
     @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
-        if card_id != 'none':  # This is the same regardless of prod/dev
+        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
