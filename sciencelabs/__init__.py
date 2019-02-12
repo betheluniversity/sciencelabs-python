@@ -44,6 +44,7 @@ def utility_processor():
     to_return.update({
         'now': datetime.now(),
         'lab_title': app.config['LAB_TITLE'],
+        'lab_base_url': app.config['LAB_BASE_URL'],
         'alert': slc().get_alert()
     })
 
