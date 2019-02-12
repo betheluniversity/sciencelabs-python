@@ -15,6 +15,7 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 # sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 
 from sciencelabs.views import View
+from sciencelabs.cron import CronView
 from sciencelabs.sessions import SessionView
 from sciencelabs.reports import ReportView
 from sciencelabs.term_startup import TermStartupView
@@ -25,6 +26,7 @@ from sciencelabs.schedule import ScheduleView
 from sciencelabs.profile import ProfileView
 from sciencelabs.sciencelabs_controller import ScienceLabsController as slc
 View.register(app)
+CronView.register(app)
 SessionView.register(app)
 ReportView.register(app)
 TermStartupView.register(app)
