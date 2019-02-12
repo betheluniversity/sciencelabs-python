@@ -51,6 +51,7 @@ class CronView(FlaskView):
             sessions_closed = self.session.close_open_sessions_cron()
             for session_closed in sessions_closed:
                 self.email.close_session_email(session_closed.id)
+            return 'success'
         except Exception as error:
             return 'failed: ' + str(error)
 
