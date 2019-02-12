@@ -1,8 +1,5 @@
 class ReportController:
-    def __init__(self):
-        super(ReportController, self).__init__
-
-    cumulative = {
+    math_lab_cumulative = {
         '2004': {'academicYear': '2003-2004', 'monthly': (0, 28, 291, 328, 394, 196, 0, 0, 0, 379, 425, 346, 76, 28),
                  'springTotal': 1209, 'fallTotal': 1226, 'summerTotal': 0, 'yearTotal': 2463},
         '2003': {'academicYear': '2002-2003', 'monthly': (0, 19, 187, 234, 273, 155, 0, 0, 0, 167, 274, 215, 47),
@@ -27,6 +24,23 @@ class ReportController:
                  'springTotal': 307, 'fallTotal': 467, 'summerTotal': 0, 'yearTotal': 774},
         '1993': {'academicYear': '1992-1993', 'monthly': (0, 0, 90, 58, 80, 32, 0, 0, 0, 98, 99, 69, 14),
                  'springTotal': 260, 'fallTotal': 280, 'summerTotal': 0, 'yearTotal': 540}
+    }
+
+    cs_lab_cumulative = {
+        '2007': {'academicYear': '2006-2007', 'monthly': (0, 17, 40, 48, 28, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 133, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 133},
+        '2006': {'academicYear': '2005-2006', 'monthly': (0, 22, 43, 49, 68, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 182, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 182},
+        '2005': {'academicYear': '2004-2005', 'monthly': (0, 25, 36, 46, 26, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 133, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 133},
+        '2004': {'academicYear': '2003-2004', 'monthly': (0, 22, 29, 43, 16, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 110, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 110},
+        '2003': {'academicYear': '2002-2003', 'monthly': (0, 12, 16, 33, 4, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 65, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 65},
+        '2002': {'academicYear': '2001-2002', 'monthly': (0, 6, 9, 49, 20, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 84, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 84},
+        '2001': {'academicYear': '2000-2001', 'monthly': (0, 53, 13, 40, 12, 0, 0, 0, 0, 0, 0, 0, 0),
+                 'springTotal': 118, 'fallTotal': 0, 'summerTotal': 0, 'yearTotal': 118}
     }
 
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',

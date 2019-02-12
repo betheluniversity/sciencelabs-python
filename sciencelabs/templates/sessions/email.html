@@ -208,5 +208,5 @@
 <br />
 <span>*Students that sign in for multiple classes will be double counted in the class totals, but appear once in the student totals</span>
 <br />
-{# TODO FIX ANCHOR TAG TO LINK TO SOMETHING #}
-<span>View more detailed <a href="/report/course">{{ lab_title }}</a> reports</span>
+
+<span>View more detailed <a href="{{ url_for('ReportView:course') }}">{{ lab_title }}</a> reports</span>

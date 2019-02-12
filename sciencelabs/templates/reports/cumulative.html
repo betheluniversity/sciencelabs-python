@@ -4,16 +4,33 @@
         <div class="header card">
             <div class="card-body btn-group">
                 <p class="col-sm-12 no-margin-padding">Attendance for {{ lab_title }}</p>
-                <a href="{{ url_for('ReportView:export_cumulative_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+                <a href="{{ url_for('ReportView:export_cumulative_csv') }}"
+                   class="csv-button btn btn-primary">CSV Export</a>
             </div>
             <div class="card-body">
-                <p class="no-margin-padding"><strong>Fall 2014 - Present:</strong> Records in this current
-                    attendance application include professor, course, student, and tutor information. </p>
-                <p class="no-margin-padding"><strong>Spring 2004 - Spring 2014 *:</strong> Records for this
-                    time period were imported from an old web based attendance application and do not include professor
-                    or tutor information. These session are titled, “Old {{ lab_title }}”.</p>
-                <p class="no-margin-padding"><strong>Fall 1992 - Fall 2003:</strong> Records from this time
-                    period were transcribed from paper sign ins and only include monthly attendance totals.</p>
+                {% if lab_title ==  'Math Lab' %}
+                    <p class="no-margin-padding"><strong>Fall 2014 - Present:</strong> Records in this current
+                        attendance application include professor, course, student, and tutor information. </p>
+                    <p class="no-margin-padding"><strong>Spring 2004 - Spring 2014 *:</strong> Records for this
+                        time period were imported from an old web based attendance application and do not include
+                        professor or tutor information. These session are titled, “Old {{ lab_title }}”.</p>
+                    <p class="no-margin-padding"><strong>Fall 1992 - Fall 2003:</strong> Records from this time
+                        period were transcribed from paper sign ins and only include monthly attendance totals.</p>
+                {% elif lab_title == 'Computer Science Lab' %}
+                    <p class="no-margin-padding"><strong>Spring 2015 - Present:</strong> Records in this current
+                        attendance application include professor, course, student, and tutor information.</p>
+                    <p class="no-margin-padding"><strong>Spring 2008 - Fall 2014 *:</strong> Records for this time
+                        period were imported from an old web based attendance application and do not include professor
+                        or tutor information. These session are titled, "Old {{ config_title }}".</p>
+                    <p class="no-margin-padding"><strong>Spring 2001 - Spring 2007:</strong> Records from this time
+                        period were transcribed from paper sign ins  and only include monthly attendance totals.</p>
+                {% else %}
+                    <p><strong>Fall 2015 - Present:</strong> Records in this current attendance application include
+                        professor, course, student, and tutor information.</p>
+                    <p><strong>Prior to Fall 2015:</strong> Records for this time period were imported from an old web
+                        based attendance application and do not include professor or tutor information. These session
+                        are titled, "Old {{ config_title }}".</p>
+                {% endif %}
             </div>
         </div>
     {% endblock %}
@@ -51,35 +68,40 @@
                     {% if row[1] <= 0 %}
                         {{ row[1] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=8) }}">{{ row[1] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=8) }}">{{ row[1] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[2] <= 0 %}
                         {{ row[2] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=9) }}">{{ row[2] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=9) }}">{{ row[2] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[3] <= 0 %}
                         {{ row[3] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=10) }}">{{ row[3] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=10) }}">{{ row[3] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[4] <= 0 %}
                         {{ row[4] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=11) }}">{{ row[4] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=11) }}">{{ row[4] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[5] <= 0 %}
                         {{ row[5] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=12) }}">{{ row[5] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][:4]|int, month=12) }}">{{ row[5] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[6] }}</b></td>
@@ -87,35 +109,40 @@
                     {% if row[7] <= 0 %}
                         {{ row[7] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=1) }}">{{ row[7] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=1) }}">{{ row[7] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[8] <= 0 %}
                         {{ row[8] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=2) }}">{{ row[8] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=2) }}">{{ row[8] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[9] <= 0 %}
                         {{ row[9] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=3) }}">{{ row[9] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=3) }}">{{ row[9] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[10] <= 0 %}
                         {{ row[10] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=4) }}">{{ row[10] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=4) }}">{{ row[10] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[11] <= 0 %}
                         {{ row[11] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=5) }}">{{ row[11] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=5) }}">{{ row[11] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[12] }}</b></td>
@@ -123,14 +150,16 @@
                     {% if row[13] <= 0 %}
                         {{ row[13] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=6) }}">{{ row[13] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=6) }}">{{ row[13] }}</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if row[14] <= 0 %}
                         {{ row[14] }}
                     {% else %}
-                        <a class="no-decoration" href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=7) }}">{{ row[14] }}</a>
+                        <a class="no-decoration"
+                           href="{{ url_for('ReportView:month', year=row[0][5:]|int, month=7) }}">{{ row[14] }}</a>
                     {% endif %}
                 </td>
                 <td class="side-borders"><b>{{ row[15] }}</b></td>
@@ -139,8 +168,10 @@
         {% endfor %}
         </tbody>
     </table>
-    <p>*Previously Math & CS Lab attendance totals were combined on the old Math Lab system. These attendance totals
+    {% if lab_title == 'Math Lab' or lab_title == 'Computer Science Lab' %}
+        <p>*Previously Math & CS Lab attendance totals were combined on the old Math Lab system. These attendance totals
         have now been split between the two systems.</p>
+    {% endif %}
     <script>
         $(document).ready( function () {
             var table = $('#table').DataTable({

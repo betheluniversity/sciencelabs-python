@@ -2,16 +2,14 @@ import json
 
 # Packages
 from flask import render_template, request, redirect, url_for
+from flask import session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
-from sciencelabs.users.users_controller import UsersController
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.course_functions import Course
 from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
-from sciencelabs.alerts.alerts import *
-from sciencelabs.sciencelabs_controller import requires_auth
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -19,7 +17,6 @@ class UsersView(FlaskView):
     route_base = 'user'
 
     def __init__(self):
-        self.base = UsersController()
         self.user = User()
         self.course = Course()
         self.schedule = Schedule()
@@ -29,7 +26,6 @@ class UsersView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         users_info = self.user.get_user_info()
         return render_template('users/users.html', **locals())
 
@@ -43,7 +39,6 @@ class UsersView(FlaskView):
     def edit_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         professor = False
         user = self.user.get_user(user_id)
         roles = self.user.get_all_roles()
@@ -60,7 +55,6 @@ class UsersView(FlaskView):
     def select_user_roles(self, username, first_name, last_name):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         roles = self.user.get_all_roles()
         existing_user = self.user.check_for_existing_user(username)
         if existing_user:
@@ -83,10 +77,10 @@ class UsersView(FlaskView):
 
         try:
             self.user.delete_user(user_id)
-            set_alert('success', 'User deactivated successfully!')
+            self.slc.set_alert('success', 'User deactivated successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to deactivate user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route("/deactivate_users", methods=['post'])
@@ -99,83 +93,90 @@ class UsersView(FlaskView):
             user_ids = json.loads(json_user_ids)
             for user in user_ids:
                 self.user.delete_user(user)
-            set_alert('success', 'User(s) deactivated successfully!')
+            self.slc.set_alert('success', 'User(s) deactivated successfully!')
         except Exception as error:
-            set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
         return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
     @route("/save_user_edits", methods=['post'])
     def save_user_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        user_id = form.get('user-id')
+        first_name = form.get('first-name')
+        last_name = form.get('last-name')
+        email = form.get('email')
+        username = form.get('username')
+        roles = form.getlist('roles')
         try:
-            form = request.form
-            user_id = form.get('user-id')
-            first_name = form.get('first-name')
-            last_name = form.get('last-name')
-            email = form.get('email')
-            username = form.get('username')
-            roles = form.getlist('roles')
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
-            set_alert('success', 'Edited user successfully!')
+            self.slc.set_alert('success', 'Edited user successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to edit user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route('/create_user', methods=['post'])
     def create_user(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        first_name = form.get('first-name')
+        last_name = form.get('last-name')
+        username = form.get('username')
+        roles = form.getlist('roles')
+        email_pref = 0  # Default sending emails to No
+        # If the user is a administrator or a professor, they get emails.
+        if 'Administrator' in roles or 'Professor' in roles:
+            email_pref = 1
         try:
-            form = request.form
-            first_name = form.get('first-name')
-            last_name = form.get('last-name')
-            username = form.get('username')
-            roles = form.getlist('roles')
-            email_pref = 0  # Default sending emails to No
-            if 'Administrator' in roles or 'Professor' in roles:  # If the user is a administrator or a professor, they get emails.
-                email_pref = 1
             self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
-            set_alert('success', 'User added successfully!')
+            self.slc.set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            set_alert('danger', 'Failed to add user: ' + str(error))
-            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name, last_name=last_name))
+            self.slc.set_alert('danger', 'Failed to add user: ' + str(error))
+            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name,
+                                    last_name=last_name))
 
     def act_as_user(self, user_id):
-        if not session['ADMIN-VIEWER']:
+        if not flask_session['ADMIN-VIEWER']:
             self.slc.check_roles_and_route(['Administrator'])
             user_info = self.user.get_user(user_id)
-            session['ADMIN-VIEWER'] = True
+            flask_session['ADMIN-VIEWER'] = True
             # Saving old info to return to
-            session['ADMIN-USERNAME'] = session['USERNAME']
-            session['ADMIN-ROLES'] = session['USER-ROLES']
-            session['ADMIN-NAME'] = session['NAME']
+            flask_session['ADMIN-USERNAME'] = flask_session['USERNAME']
+            flask_session['ADMIN-ROLES'] = flask_session['USER-ROLES']
+            flask_session['ADMIN-NAME'] = flask_session['NAME']
             # Setting up viewing role
-            session['USERNAME'] = user_info.username
-            session['NAME'] = user_info.firstName + ' ' + user_info.lastName
-            session['USER-ROLES'] = []
+            flask_session['USERNAME'] = user_info.username
+            flask_session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(user_id)
             for role in user_roles:
-                session['USER-ROLES'].append(role.name)
-        return redirect("/")
+                flask_session['USER-ROLES'].append(role.name)
+        return redirect(url_for('View:index'))
 
-    @requires_auth
-    @route('/cron_populate_user_courses', methods=['get'])
-    def cron_populate_user_courses(self):
-        try:
-            return self.user.populate_user_courses_cron()
-        except Exception as error:
-            return 'failed: ' + str(error)
-
-    @requires_auth
-    @route('/cron_populate_courses', methods=['get'])
-    def cron_populate_courses(self):
-        try:
-            return self.user.populate_courses_cron()
-        except Exception as error:
-            return 'failed: ' + str(error)
+    @route("/reset-act-as", methods=["POST"])
+    def reset_act_as(self):
+        if flask_session['ADMIN-VIEWER']:
+            try:
+                # Resetting info
+                flask_session['USERNAME'] = flask_session['ADMIN-USERNAME']
+                flask_session['ADMIN-VIEWER'] = False
+                flask_session['NAME'] = flask_session['ADMIN-NAME']
+                flask_session['USER-ROLES'] = flask_session['ADMIN-ROLES']
+                # Clearing out unneeded variables
+                flask_session.pop('ADMIN-USERNAME')
+                flask_session.pop('ADMIN-ROLES')
+                flask_session.pop('ADMIN-NAME')
+                return redirect(url_for('View:index'))
+            except Exception as error:
+                self.slc.set_alert('danger', 'An error occurred: ' + str(error))
+                return redirect(url_for('View:index'))
+        else:
+            self.slc.set_alert('danger', 'You do not have permission to access this function')
+            return redirect(url_for('View:index'))

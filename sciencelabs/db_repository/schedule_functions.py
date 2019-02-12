@@ -134,7 +134,7 @@ class Schedule:
 
     def get_schedule_tutors(self, schedule_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSchedule_Table.isLead,
-                             TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
+                                TutorSchedule_Table.schedTimeIn, TutorSchedule_Table.schedTimeOut)\
             .filter(TutorSchedule_Table.scheduleId == schedule_id)\
             .filter(User_Table.id == TutorSchedule_Table.tutorId)\
             .order_by(TutorSchedule_Table.isLead.desc())

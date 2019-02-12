@@ -5,7 +5,6 @@ from flask_classy import FlaskView, route
 # Local
 from sciencelabs.email_tab.email_controller import EmailController
 from sciencelabs.db_repository.user_functions import User
-from sciencelabs.alerts.alerts import *
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -22,7 +21,6 @@ class EmailView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        current_alert = get_alert()
         role_list = self.user.get_all_roles()
         user_list = self.user.get_all_current_users()
         return render_template('email_tab/base.html', **locals())
@@ -70,9 +68,9 @@ class EmailView(FlaskView):
         for bcc_id in bcc_ids:
             bcc.append(int(bcc_id))
         bcc_emails = self.user.get_bcc_emails(bcc)
-        success = self.base.send_message(subject, message, recipients, bcc_emails, False)  # subject, body, recipients, bcc, html
+        success = self.base.send_message(subject, message, recipients, bcc_emails, False)
         if success:
-            set_alert('success', 'Email sent successfully')
+            self.slc.set_alert('success', 'Email sent successfully')
         else:
-            set_alert('danger', 'Failed to send email')
+            self.slc.set_alert('danger', 'Failed to send email')
         return redirect(url_for('EmailView:index'))

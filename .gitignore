@@ -4,3 +4,4 @@ config.py
 .idea*
 config/*.py
 *.csv
+*.log

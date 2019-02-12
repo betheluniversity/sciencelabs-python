@@ -1,38 +1,8 @@
-from flask import session, abort
-
 import random
 import string
 
-from flask import request, Response
-from functools import wraps
-
-from sciencelabs import app
-
-
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    return username == app.config['LAB_LOGIN']['username'] and password == app.config['LAB_LOGIN']['password']
-
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        'Could not verify your access level for that URL.\n'
-        'You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-
-    return decorated
+from flask import abort
+from flask import session as flask_session
 
 
 class ScienceLabsController(object):
@@ -46,7 +16,19 @@ class ScienceLabsController(object):
 
     def check_roles_and_route(self, allowed_roles):
         for role in allowed_roles:
-            if role in session['USER-ROLES']:
+            if role in flask_session['USER-ROLES']:
                 return True
         abort(403)
 
+    # This method get's the current alert (if there is one) and then resets alert to nothing
+    def get_alert(self):
+        alert_return = flask_session.get('ALERT', {})
+        flask_session['ALERT'] = None
+        return alert_return
+
+    # This method sets the alert for when one is needed next
+    def set_alert(self, message_type, message):
+        flask_session['ALERT'] = {
+            'type': message_type,
+            'message': message
+        }

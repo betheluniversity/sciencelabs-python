@@ -1,4 +1,4 @@
-{% extends 'session/base.html' %}
+{% extends 'sessions/base.html' %}
 
 {% block subnav %}
     <a id="student" class="nav-item nav-link active"
@@ -16,7 +16,9 @@
 {% endblock %}
 
 {% block body_content %}
-    <form action="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash) }}" method="post">
+    {# Two routes here, one for prod that gets cas auth, one for dev for testing purposes #}
+    <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user='student')
+            if env == 'prod' else url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
             <div>
                 <label for="student-select">Select a student to sign in:</label>
@@ -30,7 +32,7 @@
             <br>
         {% endif %}
         <div class="centered margin-bottom-10">
-            <button type="submit" class="big-button btn btn-primary sign-in">Please Sign In Here</button>
+            <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign In</button>
         </div>
     </form>
 
@@ -69,4 +71,29 @@
             </tr>
         {% endfor %}
     </table>
+    <script>
+        $(document).ready(function(){
+
+            var input = "";
+
+            $(document).on('keydown', function(key){
+                if(key.keyCode == 13){
+                    var url = "{{ url_for('SessionView:verify_scanner') }}";
+                    var scannedInput = {
+                        'scan': input
+                    };
+                    $.post(url, scannedInput, function(success){
+                        if(success != 'failed'){
+                            window.location.replace("{{ lab_url }}/session/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                        }else{
+                            input = "";
+                        }
+                    });
+                }else{
+                    input = input + key.key;
+                }
+            });
+
+        });
+    </script>
 {% endblock %}

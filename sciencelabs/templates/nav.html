@@ -1,6 +1,6 @@
 {% macro render(title) %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark background-blue" style="padding: 0px 10px;">
+    <nav class="navbar navbar-expand-lg navbar-dark background-blue" style="padding: 0 10px;">
         <a class="navbar-brand yellow" href="{{ url_for('View:index') }}">{{ title }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,15 +60,12 @@
                         {% if 'Administrator' in session['USER-ROLES'] %}
                             <a class="dropdown-item dd-background yellow" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
                         {% endif %}
-                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
+                        <a class="dropdown-item dd-background yellow" href="{{ url_for('View:logout') }}">Logout</a>
                     </div>
                 {% else %}
-                    <a class="nav-link dd-background dropdown-toggle yellow" id="navbarDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        {{ session['USERNAME'] }}</a>
-                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item dd-background yellow" href="{{ url_for('logout') }}">Logout</a>  {# TODO: CAS Authentication #}
-                    </div>
+                    {% if 'student-attendance' not in request.path and 'tutor-attendance' not in request.path and '/checkin/' not in request.path %}
+                        <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
+                    {% endif %}
                 {% endif %}
 
             </div>
@@ -77,32 +74,16 @@
     {% if session['ADMIN-VIEWER'] %}
         <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav">
             <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">
-                <p class="custom-user-p">Viewing
-                    {% if session['ADMIN-USERNAME'] %}
-                        user: [{{ session['USERNAME'] }}]
-                    {% endif %}
-                    | Return to your <a id="reset" href="" class="no-decoration custom-user-a">account</a>.
-                </p>
+                <form action="{{ url_for('UsersView:reset_act_as') }}" method="post">
+                    <p class="custom-user-p">Viewing
+                        {% if session['ADMIN-USERNAME'] %}
+                            user: [{{ session['USERNAME'] }}]
+                        {% endif %}
+                        | Return to your <button id="reset-act-as-button" type="submit">account</button>.
+                    </p>
+                </form>
             </div>
         </nav>
-
-        <script>
-            $(document).ready(function(){
-                $('#reset').click(function(){
-                    $.ajax({
-                        type: "POST",
-                        url: "/reset-act-as",
-                        contentType: 'application/json;charset=UTF-8',
-                        success: function (response) {
-                            window.location.assign('/')
-                            },
-                        error: function (error) {
-                        }
-                    });
-                });
-            });
-        </script>
-
     {% endif %}
 
 {% endmacro %}
