@@ -403,7 +403,7 @@ class User:
 
     def get_users_in_group(self, role_id):
         return db_session.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == role_id).all()
+            .filter(user_role_Table.role_id == role_id).filter(User_Table.deletedAt == None).all()
 
     def get_email_from_id(self, user_id):
         user = self.get_user(user_id)
