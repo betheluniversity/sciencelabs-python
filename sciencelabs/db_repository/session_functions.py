@@ -182,6 +182,26 @@ class Session:
             .group_by(StudentSession_Table.id)\
             .all()
 
+    def get_session_course_students(self, session_id, course_id):
+        return db_session.query(User_Table).filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .all()
+
+    def get_prof_session_students(self, session_id, prof_course_ids):
+        prof_students = []
+        for course_id in prof_course_ids:
+            course_students = db_session.query(User_Table)\
+                .filter(User_Table.id == StudentSession_Table.studentId)\
+                .filter(StudentSession_Table.sessionId == session_id)\
+                .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+                .filter(SessionCourses_Table.course_id == course_id)\
+                .all()
+            for student in course_students:
+                prof_students.append(student)
+        return prof_students
+
     def get_studentsession_from_session(self, session_id):
         return db_session.query(User_Table, StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\

@@ -425,8 +425,7 @@ class User:
             emails.append(self.get_email_from_id(bcc))
         return emails
 
-    # todo: should we be using session_courses?
-    def get_end_of_session_recipients(self):  #, session_courses):
+    def get_end_of_session_recipients(self):
         # todo: ideally we wouldn't use id's, we would use the name.
         admins = self.get_users_in_group(40001)  # Id for admins
         profs = self.get_users_in_group(40005)  # Id for profs
