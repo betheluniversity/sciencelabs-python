@@ -84,7 +84,7 @@ def before_request():
             flask_session['USER-ROLES'] = ['STUDENT']
         if 'ADMIN-VIEWER' not in flask_session.keys():
             flask_session['ADMIN-VIEWER'] = False
-        if 'SEMESTER-LIST' not in flask_session.keys():
+        if 'SEMESTER-LIST' not in flask_session.keys() or flask_session['SEMESTER-LIST'] is None:
             semester_list = Schedule().get_semesters()
             flask_session['SEMESTER-LIST'] = []
             # Adds all semesters to a dictionary
