@@ -541,8 +541,9 @@ class Session:
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeOut == None).one()
-        student_session.timeOut = datetime.now().strftime('%H:%M:%S')
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeOut == None).all()
+        for single_student_session in student_session:
+            single_student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
         self.log_session(student.firstName + " " + student.lastName + " signed out as a student at " +
