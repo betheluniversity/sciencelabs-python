@@ -440,6 +440,22 @@ class SessionView(FlaskView):
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('sessions/student_sign_in.html', **locals())
 
+    # todo: CLEAN THIS UP!!!!
+    # TODO: this is caleb's method to get this code working
+    # the assets in the url is to ensure that this route is NOT CAS Authenticated
+    # This method is NOT CAS authenticated. It is used as a pass through, to build a proper "logout" pathway
+    @route('/assets/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
+    def authenticate_pre_sign_in(self, session_id, session_hash, user):
+        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+        alert = flask_session['ALERT']
+        flask_session.clear()
+        flask_session['ALERT'] = alert
+
+        resp = make_response(redirect(app.config['LOGOUT_URL']) + '?service=' + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user))
+        resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
+        resp.set_cookie('MOD_AUTH_CAS', '', 0)
+        return resp
+
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
