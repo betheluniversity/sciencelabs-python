@@ -466,19 +466,19 @@ class SessionView(FlaskView):
         else:
             route_url = 'SessionView:student_sign_in'
 
-        # return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+        return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
-        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        username = flask_session['USERNAME']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
-        flask_session['USERNAME'] = username
-
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-        return resp
+        # # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+        # alert = flask_session['ALERT']
+        # username = flask_session['USERNAME']
+        # flask_session.clear()
+        # flask_session['ALERT'] = alert
+        # flask_session['USERNAME'] = username
+        #
+        # resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')))
+        # resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        # resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+        # return resp
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
