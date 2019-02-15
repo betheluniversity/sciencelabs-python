@@ -60,28 +60,6 @@
         <script type="text/javascript" src="{{ url_for('static', filename='assets/js/sciencelabs.js') }}"></script>
 
         {{ nav.render(lab_title) }}
-        {{ session.keys() }}
-        {% if 'USERNAME' in session.keys() %}
-            {{ session['USERNAME'] }}
-        {% endif %}
-        {% if 'NAME' in session.keys() %}
-            {{ session['NAME'] }}
-        {% endif %}
-        {% if 'USER-ROLES' in session.keys() %}
-            {{ session['USER-ROLES'] }}
-        {% endif %}
-        {% if 'ADMIN-VIEWER' in session.keys() %}
-            {{ session['ADMIN-VIEWER'] }}
-        {% endif %}
-        {% if 'SEMESTER-LIST' in session.keys() %}
-            {{ session['SEMESTER-LIST'] }}
-        {% endif %}
-        {% if 'SELECTED-SEMESTER' in session.keys() %}
-            {{ session['SELECTED-SEMESTER'] }}
-        {% endif %}
-        {% if 'ALERT' in session.keys() %}
-            {{ session['ALERT'] }}
-        {% endif %}
 
         {# SHOWS ALERTS #}
         {% if alert %}

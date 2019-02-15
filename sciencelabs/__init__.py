@@ -60,6 +60,7 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
+    flask_session.clear()
     if '/cron/' in request.path or '/checkin/' in request.path:
         pass
     else:
@@ -84,7 +85,7 @@ def before_request():
             flask_session['USER-ROLES'] = ['STUDENT']
         if 'ADMIN-VIEWER' not in flask_session.keys():
             flask_session['ADMIN-VIEWER'] = False
-        if 'SEMESTER-LIST' not in flask_session.keys() or flask_session['SEMESTER-LIST'] is None:
+        if 'SEMESTER-LIST' not in flask_session.keys():
             semester_list = Schedule().get_semesters()
             flask_session['SEMESTER-LIST'] = []
             # Adds all semesters to a dictionary
