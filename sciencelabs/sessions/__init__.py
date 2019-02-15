@@ -523,6 +523,6 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL']))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=datetime.now()+1)
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=datetime.now()+1)
         return resp
