@@ -1,7 +1,7 @@
 import re
 
 # Packages
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, json, make_response
 from flask import session as flask_session
 from flask_classy import FlaskView, route
@@ -523,6 +523,6 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL']))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=int(datetime.now())+1)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=int(datetime.now())+1)
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=datetime.now() - timedelta(seconds=1))
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=datetime.now() - timedelta(seconds=1))
         return resp

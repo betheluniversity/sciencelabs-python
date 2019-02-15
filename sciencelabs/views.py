@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 # Packages
@@ -21,8 +21,8 @@ class View(FlaskView):
     def logout(self):
         flask_session.clear()
         resp = make_response(redirect(app.config['LOGOUT_URL']))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=datetime.now()+1)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=datetime.now()+1)
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=datetime.now() - timedelta(seconds=1))
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=datetime.now() - timedelta(seconds=1))
         return resp
 
     @route("/set-semester", methods=["POST"])
