@@ -36,7 +36,7 @@ class SessionView(FlaskView):
         sessions_and_tutors = {}
         for available_session in sessions:
             sessions_and_tutors[available_session] = self.session.get_session_tutors(available_session.id)
-        return render_template('session/available_sessions.html', **locals())
+        return render_template('sessions/available_sessions.html', **locals())
 
     @route('/closed')
     def closed(self):
@@ -47,7 +47,7 @@ class SessionView(FlaskView):
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        return render_template('session/closed_sessions.html', **locals())
+        return render_template('sessions/closed_sessions.html', **locals())
 
     def create(self):
         self.slc.check_roles_and_route(['Administrator'])
@@ -56,7 +56,7 @@ class SessionView(FlaskView):
         lead_list = self.schedule.get_registered_leads()
         tutor_list = self.schedule.get_registered_tutors()
         course_list = self.course.get_semester_courses(active_semester.id)
-        return render_template('session/create_session.html', **locals())
+        return render_template('sessions/create_session.html', **locals())
 
     def deleted(self):
         self.slc.check_roles_and_route(['Administrator'])
@@ -66,7 +66,7 @@ class SessionView(FlaskView):
         sessions_and_tutors = {}
         for closed_session in sessions:
             sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
-        return render_template('session/restore_session.html', **locals())
+        return render_template('sessions/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
@@ -84,7 +84,7 @@ class SessionView(FlaskView):
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         course_list = self.course.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_session_courses(session_id)
-        return render_template('session/edit_session.html', **locals())
+        return render_template('sessions/edit_session.html', **locals())
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
@@ -94,41 +94,41 @@ class SessionView(FlaskView):
         student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_student_session_courses(session_id, student_id)
         other_course = self.session.get_other_course(session_id, student_id)
-        return render_template('session/edit_student.html', **locals())
+        return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         student_list = self.schedule.get_registered_students()
-        return render_template('session/add_student.html', **locals())
+        return render_template('sessions/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
-        return render_template('session/add_anonymous.html', **locals())
+        return render_template('sessions/add_anonymous.html', **locals())
 
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
-        return render_template('session/edit_tutor.html', **locals())
+        return render_template('sessions/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         tutor_list = self.schedule.get_registered_tutors()
-        return render_template('session/add_tutor.html', **locals())
+        return render_template('sessions/add_tutor.html', **locals())
 
     def delete_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         session_info = self.session.get_session(session_id)
-        return render_template('session/delete_session.html', **locals())
+        return render_template('sessions/delete_session.html', **locals())
 
     def delete_confirmed(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -327,7 +327,7 @@ class SessionView(FlaskView):
         for student in session_students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         session_tutors = self.session.get_session_tutors(session_id)
-        return render_template('session/view_session.html', **locals())
+        return render_template('sessions/view_session.html', **locals())
 
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
@@ -350,9 +350,8 @@ class SessionView(FlaskView):
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
-        lab_url = app.config['LAB_BASE_URL']
         self.logout()
-        return render_template('session/student_attendance.html', **locals())
+        return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
@@ -361,9 +360,8 @@ class SessionView(FlaskView):
         tutors = self.session.get_session_tutors(session_id)
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
-        lab_url = app.config['LAB_BASE_URL']
         self.logout()
-        return render_template('session/tutor_attendance.html', **locals())
+        return render_template('sessions/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
@@ -379,7 +377,7 @@ class SessionView(FlaskView):
             flask_session['USER-ROLES'].append(role.name)
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
-        return render_template('session/close_open_session.html', **locals())
+        return render_template('sessions/close_open_session.html', **locals())
 
     @route('/confirm_close', methods=['post'])
     def confirm_close(self):
@@ -444,7 +442,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
-        return render_template('session/student_sign_in.html', **locals())
+        return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['post'])
