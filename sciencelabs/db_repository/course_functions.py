@@ -232,3 +232,8 @@ class Course:
             for courseviewer in courseviewers:
                 db_session.delete(courseviewer)
                 db_session.commit()
+
+    def get_course_viewer_courses(self, user_id):
+        return db_session.query(Course_Table).filter(Course_Table.id == CourseViewer_Table.course_id)\
+            .filter(CourseViewer_Table.user_id == user_id)\
+            .all()

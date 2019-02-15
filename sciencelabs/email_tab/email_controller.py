@@ -58,7 +58,6 @@ class EmailController:
         sess = self.session.get_session(session_id)
         subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
         opener = self.user.get_user(sess.openerId)
-        lab_url = app.config['LAB_BASE_URL']
         tutors = self.session.get_session_tutors(session_id)
         recipients = self.user.get_end_of_session_recipients()
         for recipient in recipients:
@@ -91,7 +90,8 @@ class EmailController:
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above
             # send an email
-            self.send_message(subject, render_template('session/email.html', **locals()), recipient.email, None, True)
+            self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
