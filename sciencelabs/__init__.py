@@ -63,6 +63,7 @@ def before_request():
     if '/cron/' in request.path or '/checkin/' in request.path:
         pass
     else:
+        flask_session.clear()
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():
             if app.config['ENVIRON'] == 'prod':
