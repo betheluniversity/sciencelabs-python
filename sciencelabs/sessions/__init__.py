@@ -1,7 +1,7 @@
 import re
 
 # Packages
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, json, make_response
 from flask import session as flask_session
 from flask_classy import FlaskView, route
@@ -338,7 +338,7 @@ class SessionView(FlaskView):
         self.session.tutor_sign_in(session_id, opener.id)
         self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
                            ') opened successfully')
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -348,9 +348,10 @@ class SessionView(FlaskView):
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -358,9 +359,10 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
+        # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -437,28 +439,52 @@ class SessionView(FlaskView):
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('sessions/student_sign_in.html', **locals())
+    #
+    # # todo: CLEAN THIS UP!!!!
+    # # TODO: this is caleb's method to get this code working
+    # # the assets in the url is to ensure that this route is NOT CAS Authenticated
+    # # This method is NOT CAS authenticated. It is used as a pass through, to build a proper "logout" pathway
+    # @route('/assets/authenticate-pre-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
+    # def authenticate_pre_sign_in(self, session_id, session_hash, user):
+    #     # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+    #     alert = flask_session['ALERT']
+    #     username = flask_session['USERNAME']
+    #     flask_session.clear()
+    #     flask_session['ALERT'] = alert
+    #     flask_session['USERNAME'] = username
+    #
+    #     resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
+    #     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+    #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+    #     return resp
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
         if user == 'tutor':
-            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:tutor_sign_in'
         else:
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:student_sign_in'
+
+        return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
         session_hash = form.get('sessionHash')
+        card_id = form.get('cardID')
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        if student_courses == [] and other_course_name == '':
+            self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
+            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -492,7 +518,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
