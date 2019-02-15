@@ -42,6 +42,7 @@ def utility_processor():
     to_return.update({
         'now': datetime.now(),
         'lab_title': app.config['LAB_TITLE'],
+        'lab_base_url': app.config['LAB_BASE_URL'],
         'alert': slc().get_alert()
     })
 
@@ -60,7 +61,7 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    if '/cron/' in request.path or '/checkin/' in request.path or '/student-attendance/' in request.path or '/tutor-attendance/' in request.path:
+    if 'assets' in request.path or '/cron/' in request.path or '/checkin/' in request.path or '/student-attendance/' in request.path or '/tutor-attendance/' in request.path:
         pass
     else:
         active_semester = Schedule().get_active_semester()
