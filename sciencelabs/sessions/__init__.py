@@ -454,7 +454,6 @@ class SessionView(FlaskView):
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
         resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
         resp.set_cookie('MOD_AUTH_CAS', '', 0)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
@@ -481,19 +480,18 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        # self.logout()
-        # return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        self.logout()
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
-
-        resp = make_response(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
-        resp.set_cookie('MOD_AUTH_CAS', '', 0)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp
+        # # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+        # alert = flask_session['ALERT']
+        # flask_session.clear()
+        # flask_session['ALERT'] = alert
+        #
+        # resp = make_response(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        # resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
+        # resp.set_cookie('MOD_AUTH_CAS', '', 0)
+        # return resp
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
@@ -553,5 +551,4 @@ class SessionView(FlaskView):
         resp = make_response(redirect(app.config['LOGOUT_URL']))
         resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
         resp.set_cookie('MOD_AUTH_CAS', '', 0)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
