@@ -60,7 +60,6 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    flask_session.clear()
     if '/cron/' in request.path or '/checkin/' in request.path:
         pass
     else:
