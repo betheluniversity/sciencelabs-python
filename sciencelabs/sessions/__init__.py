@@ -348,6 +348,7 @@ class SessionView(FlaskView):
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
         self.logout()
@@ -358,6 +359,7 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
+        # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
         self.logout()
@@ -441,6 +443,9 @@ class SessionView(FlaskView):
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
+        username = flask_session['USERNAME']
+        self.logout()
+        flask_session['USERNAME'] = username
         if user == 'tutor':
             return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
         else:
