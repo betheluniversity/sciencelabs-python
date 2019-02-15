@@ -411,7 +411,7 @@ class SessionView(FlaskView):
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
-        if card_id != 'none':  # This is the same regardless of prod/dev
+        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
@@ -431,12 +431,6 @@ class SessionView(FlaskView):
                 user = self.user.get_user(student)
             else:
                 user = self.user.get_user_by_username(flask_session['USERNAME'])
-        # flask_session['USERNAME'] = user.username
-        # flask_session['NAME'] = user.firstName + ' ' + user.lastName
-        # flask_session['USER-ROLES'] = []
-        # user_roles = self.user.get_user_roles(user.id)
-        # for role in user_roles:
-        #     flask_session['USER-ROLES'].append(role.name)
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
@@ -445,12 +439,12 @@ class SessionView(FlaskView):
         return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
-    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['post'])
+    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
         if user == 'tutor':
-            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
+            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
         else:
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='none'))
+            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
@@ -473,7 +467,7 @@ class SessionView(FlaskView):
 
     @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
-        if card_id != 'none':  # This is the same regardless of prod/dev
+        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
@@ -518,9 +512,11 @@ class SessionView(FlaskView):
     # This logout method is specific to the open session
     def logout(self):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
+        if 'ALERT' in flask_session.keys():
+            alert = flask_session.get('ALERT', {})
+            flask_session['ALERT'] = alert
         flask_session.clear()
-        flask_session['ALERT'] = alert  # Need to set this right away or we'll get an error
+
         resp = make_response(redirect(app.config['LOGOUT_URL']))
         resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
         resp.set_cookie('MOD_AUTH_CAS', '', expires=0)

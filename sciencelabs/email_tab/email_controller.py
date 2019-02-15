@@ -92,6 +92,7 @@ class EmailController:
             # send an email
             self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
 
+
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
             print('Would have sent email to: ' + str(recipients))

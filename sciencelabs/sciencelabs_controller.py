@@ -22,7 +22,7 @@ class ScienceLabsController(object):
 
     # This method get's the current alert (if there is one) and then resets alert to nothing
     def get_alert(self):
-        alert_return = flask_session['ALERT']
+        alert_return = flask_session.get('ALERT', {})
         flask_session['ALERT'] = None
         return alert_return
 
