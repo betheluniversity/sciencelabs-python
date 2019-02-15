@@ -456,12 +456,16 @@ class SessionView(FlaskView):
         form = request.form
         session_id = form.get('sessionID')
         session_hash = form.get('sessionHash')
+        card_id = form.get('cardID')
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        if student_courses is None and other_course_check == 0 and other_course_name is None:
+            self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
+            redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
         self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
