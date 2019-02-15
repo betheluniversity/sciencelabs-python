@@ -68,8 +68,7 @@ def before_request():
             or '/cron/' in request.path \
             or '/checkin/' in request.path \
             or '/student-attendance/' in request.path \
-            or '/tutor-attendance/' in request.path \
-            or '/student_sign_in/' in request.path:
+            or '/tutor-attendance/' in request.path:
         flask_session['ALERT'] = None
     else:
         active_semester = Schedule().get_active_semester()
