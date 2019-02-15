@@ -444,7 +444,7 @@ class SessionView(FlaskView):
     # TODO: this is caleb's method to get this code working
     # the assets in the url is to ensure that this route is NOT CAS Authenticated
     # This method is NOT CAS authenticated. It is used as a pass through, to build a proper "logout" pathway
-    @route('/assets/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
+    @route('/assets/authenticate-pre-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_pre_sign_in(self, session_id, session_hash, user):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
