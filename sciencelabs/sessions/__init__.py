@@ -451,7 +451,7 @@ class SessionView(FlaskView):
         flask_session.clear()
         flask_session['ALERT'] = alert
 
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
+        resp = make_response(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user))
         resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
         resp.set_cookie('MOD_AUTH_CAS', '', 0)
         resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -489,7 +489,7 @@ class SessionView(FlaskView):
         flask_session.clear()
         flask_session['ALERT'] = alert
 
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash)))
+        resp = make_response(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
         resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
         resp.set_cookie('MOD_AUTH_CAS', '', 0)
         resp.headers['Access-Control-Allow-Origin'] = '*'
