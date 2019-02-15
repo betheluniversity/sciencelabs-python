@@ -448,8 +448,10 @@ class SessionView(FlaskView):
     def authenticate_pre_sign_in(self, session_id, session_hash, user):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
+        username = flask_session['USERNAME']
         flask_session.clear()
         flask_session['ALERT'] = alert
+        flask_session['USERNAME'] = username
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
         resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
@@ -467,9 +469,6 @@ class SessionView(FlaskView):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
         username = flask_session['USERNAME']
-
-        flask_session.clear()
-
         flask_session['ALERT'] = alert
         flask_session['USERNAME'] = username
 
