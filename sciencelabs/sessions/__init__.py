@@ -466,8 +466,12 @@ class SessionView(FlaskView):
 
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
+        username = flask_session['USERNAME']
+        
         flask_session.clear()
+
         flask_session['ALERT'] = alert
+        flask_session['USERNAME'] = username
 
         resp = make_response(redirect(
             app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')))
