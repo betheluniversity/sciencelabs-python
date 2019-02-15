@@ -460,9 +460,21 @@ class SessionView(FlaskView):
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
         if user == 'tutor':
-            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:tutor_sign_in'
         else:
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:student_sign_in'
+
+        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+        alert = flask_session['ALERT']
+        flask_session.clear()
+        flask_session['ALERT'] = alert
+
+        resp = make_response(redirect(
+            app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')))
+
+        resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
+        resp.set_cookie('MOD_AUTH_CAS', '', 0)
+        return resp
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
@@ -481,17 +493,17 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
         # self.logout()
-        # return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
-
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash)))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
-        resp.set_cookie('MOD_AUTH_CAS', '', 0)
-        return resp
+        # alert = flask_session['ALERT']
+        # flask_session.clear()
+        # flask_session['ALERT'] = alert
+        #
+        # resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url +  url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash)))
+        # resp.set_cookie('MOD_AUTH_CAS_S', '', 0)
+        # resp.set_cookie('MOD_AUTH_CAS', '', 0)
+        # return resp
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
