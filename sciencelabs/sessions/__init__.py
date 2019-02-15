@@ -338,7 +338,7 @@ class SessionView(FlaskView):
         self.session.tutor_sign_in(session_id, opener.id)
         self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
                            ') opened successfully')
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -351,7 +351,7 @@ class SessionView(FlaskView):
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -362,7 +362,7 @@ class SessionView(FlaskView):
         # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -467,7 +467,7 @@ class SessionView(FlaskView):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
         username = flask_session['USERNAME']
-        
+
         flask_session.clear()
 
         flask_session['ALERT'] = alert
@@ -540,7 +540,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
