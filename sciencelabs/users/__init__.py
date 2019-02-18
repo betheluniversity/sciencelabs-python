@@ -71,7 +71,7 @@ class UsersView(FlaskView):
         results = self.wsapi.get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
-    @route("/deactivate_single_user/<int:user_id>")
+    @route("/deactivate-single-user/<int:user_id>")
     def deactivate_single_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -83,7 +83,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('danger', 'Failed to deactivate user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
-    @route("/deactivate_users", methods=['post'])
+    @route("/deactivate-users", methods=['post'])
     def deactivate_users(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -98,7 +98,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
         return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
-    @route("/save_user_edits", methods=['post'])
+    @route("/save-user-edits", methods=['post'])
     def save_user_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -119,7 +119,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
-    @route('/create_user', methods=['post'])
+    @route('/create-user', methods=['post'])
     def create_user(self):
         self.slc.check_roles_and_route(['Administrator'])
 

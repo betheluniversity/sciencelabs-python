@@ -61,7 +61,7 @@ class ScheduleView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete schedule: ' + str(error))
         return redirect(url_for('ScheduleView:index'))
 
-    @route("/save_schedule_edits", methods=['post'])
+    @route("/save-schedule-edits", methods=['post'])
     def save_schedule_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -89,7 +89,7 @@ class ScheduleView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit schedule: ' + str(error))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
-    @route('/create_schedule_submit', methods=['post'])
+    @route('/create-schedule-submit', methods=['post'])
     def create_schedule_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 

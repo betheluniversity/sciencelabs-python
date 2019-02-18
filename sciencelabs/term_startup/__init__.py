@@ -39,7 +39,7 @@ class TermStartupView(FlaskView):
 
         return render_template('term_startup/step_four.html')
 
-    @route('/set_term', methods=['post'])
+    @route('/set-term', methods=['post'])
     def set_term(self):
         self.slc.check_roles_and_route(['Administrator'])
 
