@@ -65,7 +65,7 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 @app.before_request
 def before_request():
     if 'assets' in request.path or '/cron/' in request.path or '/checkin/' in request.path or '/student-attendance/' in request.path or '/tutor-attendance/' in request.path:
-        pass
+        flask_session['ALERT'] = None
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():
