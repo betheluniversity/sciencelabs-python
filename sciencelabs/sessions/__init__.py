@@ -28,7 +28,6 @@ class SessionView(FlaskView):
         self.wsapi = WSAPIController()
 
     def index(self):
-        self.logout_caleb('/test/test/test')
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         semester = self.schedule.get_active_semester()
@@ -466,7 +465,7 @@ class SessionView(FlaskView):
             route_url = 'SessionView:tutor_sign_in'
         else:
             route_url = 'SessionView:student_sign_in'
-        
+
         return self.logout_caleb(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
         return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
