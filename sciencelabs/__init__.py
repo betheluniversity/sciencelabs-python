@@ -69,7 +69,9 @@ def before_request():
             or '/checkin/' in request.path \
             or '/student-attendance/' in request.path \
             or '/tutor-attendance/' in request.path:
-        flask_session['ALERT'] = None
+
+        if not flask_session.get('ALERT'):
+            flask_session['ALERT'] = None
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():

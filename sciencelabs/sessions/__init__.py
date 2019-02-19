@@ -411,8 +411,6 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
-        return str(flask_session)
-
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
@@ -564,11 +562,11 @@ class SessionView(FlaskView):
 
     def logout_caleb(self, service_path):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        username = flask_session['USERNAME']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
-        flask_session['USERNAME'] = username
+        # alert = flask_session['ALERT']
+        # username = flask_session['USERNAME']
+        # flask_session.clear()
+        # flask_session['ALERT'] = alert
+        # flask_session['USERNAME'] = username
 
         # todo: try clearing out the cookies this way.
         # requests.session().clear()
