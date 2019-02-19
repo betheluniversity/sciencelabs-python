@@ -473,7 +473,7 @@ class SessionView(FlaskView):
         else:
             route_url = 'SessionView:student_sign_in'
 
-        return url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')
+        return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
