@@ -341,7 +341,7 @@ class SessionView(FlaskView):
         # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
@@ -356,7 +356,7 @@ class SessionView(FlaskView):
 
         return render_template('sessions/student_attendance.html', **locals())
 
-    @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
@@ -413,7 +413,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
@@ -467,7 +467,7 @@ class SessionView(FlaskView):
     def authenticate_sign_in(self, session_id, session_hash, user_type):
         return self._logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
-    @route('/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
+    @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
     def store_username(self, session_id, session_hash, user_type, username):
         # this entire method is used to store the username, then act as a passthrough
         flask_session['USERNAME'] = username
@@ -479,7 +479,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
-    @route('/checkin/confirm', methods=['post'])
+    @route('/no-cas/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
@@ -498,6 +498,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
+    @route('/no-cas/student-sign-out', methods=['post'])
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
