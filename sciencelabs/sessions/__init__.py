@@ -343,6 +343,8 @@ class SessionView(FlaskView):
 
     @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
+        self._session_clear_save_alert()
+
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         students_and_courses = {}
@@ -351,11 +353,13 @@ class SessionView(FlaskView):
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
-        # self.logout()
+
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
+        self._session_clear_save_alert()
+
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
@@ -461,7 +465,7 @@ class SessionView(FlaskView):
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user_type):
-        return self.logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
+        return self._logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
     @route('/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
     def store_username(self, session_id, session_hash, user_type, username):
@@ -491,7 +495,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        # self.logout()
+
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -525,7 +529,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        # self.logout()
+
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
@@ -554,7 +558,7 @@ class SessionView(FlaskView):
     #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
     #     return resp
 
-    def logout_caleb(self, service_path):
+    def _logout_caleb(self, service_path):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
         username = flask_session['USERNAME']
@@ -573,3 +577,8 @@ class SessionView(FlaskView):
         # return resp
 
         return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path)
+
+    def _session_clear_save_alert(self):
+        alert = flask_session['ALERT']
+        flask_session.clear()
+        flask_session['ALERT'] = alert
