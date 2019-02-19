@@ -564,6 +564,7 @@ class SessionView(FlaskView):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
         username = flask_session['USERNAME']
+        return username
         # flask_session.clear()
 
 
