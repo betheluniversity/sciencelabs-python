@@ -360,9 +360,6 @@ class SessionView(FlaskView):
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
 
-        # clear cookies
-        requests.session().cookies.clear()
-
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
