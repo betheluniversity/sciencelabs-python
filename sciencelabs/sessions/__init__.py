@@ -566,6 +566,9 @@ class SessionView(FlaskView):
         flask_session.clear()
         flask_session['ALERT'] = alert
 
+        if service_path[-1] != '/':
+            service_path += '/'
+
         # todo: try clearing out the cookies this way.
         # requests.session().clear()
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path))
