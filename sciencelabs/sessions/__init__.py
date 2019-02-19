@@ -504,7 +504,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/student-sign-out', methods=['get'])
+    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>', methods=['get'])
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
@@ -539,7 +539,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-sign-out', methods=['get'])
+    @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
