@@ -411,6 +411,8 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
+        return json.dumps(flask_session)
+
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
@@ -467,7 +469,7 @@ class SessionView(FlaskView):
             route_url = 'SessionView:student_sign_in'
 
         return self.logout_caleb(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
-        return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+        # return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
         # # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         # alert = flask_session['ALERT']
