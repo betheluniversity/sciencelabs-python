@@ -60,37 +60,44 @@ class EmailController:
         opener = self.user.get_user(sess.openerId)
         tutors = self.session.get_session_tutors(session_id)
         recipients = self.user.get_end_of_session_recipients()
+        count = 0
+        failed = 0
         for recipient in recipients:
-            recipient_roles = self.user.get_user_roles(recipient.id)
-            recipient_role_names = []
-            for role in recipient_roles:
-                recipient_role_names.append(role.name)
-            students_and_courses = {}
-            courses_and_attendance = {}
-            if 'Administrator' in recipient_role_names:
-                session_students = self.session.get_session_students(session_id)
-                for student in session_students:
-                    students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Gets courses attended
-                session_courses = self.course.get_courses_for_session(session_id)
-                for course in session_courses:
-                    courses_and_attendance[course] = self.session.get_session_course_students(session_id, course.id)  # Gets list of students attended for course
-            else:  # They must be a prof since get_end_of_session_recipients only gets admins and profs
-                session_courses = self.course.get_courses_for_session(session_id)
-                professor_courses = self.course.get_professor_courses(recipient.id)
-                professor_viewer_courses = self.course.get_course_viewer_courses(recipient.id)
-                professor_course_ids = []
-                for course in professor_courses:
-                    professor_course_ids.append(course.id)
-                for course in professor_viewer_courses:
-                    professor_course_ids.append(course.id)
-                for course in session_courses:
-                    if course.id in professor_course_ids:
-                        courses_and_attendance[course] = self.session.get_session_course_students(session_id, course.id)  # Same as above
-                session_students = self.session.get_prof_session_students(session_id, professor_course_ids)  # Gets students specific to prof
-                for student in session_students:
-                    students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above
-            # send an email
-            self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+            try:
+                recipient_roles = self.user.get_user_roles(recipient.id)
+                recipient_role_names = []
+                for role in recipient_roles:
+                    recipient_role_names.append(role.name)
+                students_and_courses = {}
+                courses_and_attendance = {}
+                if 'Administrator' in recipient_role_names:
+                    session_students = self.session.get_session_students(session_id)
+                    for student in session_students:
+                        students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Gets courses attended
+                    session_courses = self.course.get_courses_for_session(session_id)
+                    for course in session_courses:
+                        courses_and_attendance[course] = self.session.get_session_course_students(session_id, course.id)  # Gets list of students attended for course
+                else:  # They must be a prof since get_end_of_session_recipients only gets admins and profs
+                    session_courses = self.course.get_courses_for_session(session_id)
+                    professor_courses = self.course.get_professor_courses(recipient.id)
+                    professor_viewer_courses = self.course.get_course_viewer_courses(recipient.id)
+                    professor_course_ids = []
+                    for course in professor_courses:
+                        professor_course_ids.append(course.id)
+                    for course in professor_viewer_courses:
+                        professor_course_ids.append(course.id)
+                    for course in session_courses:
+                        if course.id in professor_course_ids:
+                            courses_and_attendance[course] = self.session.get_session_course_students(session_id, course.id)  # Same as above
+                    session_students = self.session.get_prof_session_students(session_id, professor_course_ids)  # Gets students specific to prof
+                    for student in session_students:
+                        students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above
+                # send an email
+                self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+                count += count
+            except:
+                failed += failed
+        return "Sent {0} emails, failed to send {1} emails".format(count, failed)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':

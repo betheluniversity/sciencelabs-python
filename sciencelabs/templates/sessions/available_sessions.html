@@ -4,7 +4,7 @@
     {% if open_sessions %}
         <div class="header card" style="margin-bottom: 15px;">
             <div class="card-body">
-                <p class="card-text">Open Sessions</p>
+                <p class="card-text">Open Sessions: {{ email_response }}</p>
             </div>
         </div>
         {% for session_info in open_sessions %}
