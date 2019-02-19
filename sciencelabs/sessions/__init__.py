@@ -411,7 +411,7 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
-        return flask_session
+        return str(flask_session)
 
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
