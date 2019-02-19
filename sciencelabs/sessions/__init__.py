@@ -464,7 +464,7 @@ class SessionView(FlaskView):
         return self.logout_caleb(url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth', username=flask_session.get('USERNAME')))
 
     @route('/store-username/<session_id>/<session_hash>/<user>/<username>', methods=['get'])
-    def authenticate_sign_in(self, session_id, session_hash, user, username):
+    def store_username(self, session_id, session_hash, user, username):
         # this entire method is used to store the username, then act as a passthrough
         flask_session['USERNAME'] = username
 
