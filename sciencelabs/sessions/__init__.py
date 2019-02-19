@@ -411,8 +411,6 @@ class SessionView(FlaskView):
 
     @route('/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash, card_id):
-        return flask_session['USERNAME']
-        
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
@@ -463,25 +461,19 @@ class SessionView(FlaskView):
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
+        return self.logout_caleb(url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth', username=flask_session.get('USERNAME')))
+
+    @route('/store-username/<session_id>/<session_hash>/<user>/<username>', methods=['get'])
+    def authenticate_sign_in(self, session_id, session_hash, user, username):
+        # this entire method is used to store the username, then act as a passthrough
+        flask_session['USERNAME'] = username
+
         if user == 'tutor':
             route_url = 'SessionView:tutor_sign_in'
         else:
             route_url = 'SessionView:student_sign_in'
 
-        return self.logout_caleb(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
-        # return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
-
-        # # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        # alert = flask_session['ALERT']
-        # username = flask_session['USERNAME']
-        # flask_session.clear()
-        # flask_session['ALERT'] = alert
-        # flask_session['USERNAME'] = username
-        #
-        # resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')))
-        # resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        # resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-        # return resp
+        return url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth')
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
