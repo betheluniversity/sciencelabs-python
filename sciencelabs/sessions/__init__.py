@@ -36,7 +36,8 @@ class SessionView(FlaskView):
         sessions_and_tutors = {}
         for available_session in sessions:
             sessions_and_tutors[available_session] = self.session.get_session_tutors(available_session.id)
-        self.email.close_session_email(12204)  # TODO: this is for testing. remove before 
+        self.email.send_message("test", "This is a test", "joj28267@bethel.edu", None, False)
+        # self.email.close_session_email(12204)  # TODO: this is for testing. remove before
         return render_template('sessions/available_sessions.html', **locals())
 
     @route('/closed')
