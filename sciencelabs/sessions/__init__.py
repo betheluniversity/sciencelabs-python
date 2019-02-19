@@ -466,7 +466,7 @@ class SessionView(FlaskView):
         else:
             route_url = 'SessionView:student_sign_in'
 
-        self.logout_caleb(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+        return self.logout_caleb(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
         return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
         # # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
@@ -566,6 +566,8 @@ class SessionView(FlaskView):
         flask_session.clear()
         flask_session['ALERT'] = alert
 
+        # todo: try clearing out the cookies this way.
+        # requests.session().clear()
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path))
         resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
         resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
