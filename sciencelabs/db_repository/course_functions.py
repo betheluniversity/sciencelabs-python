@@ -237,3 +237,14 @@ class Course:
         return db_session.query(Course_Table).filter(Course_Table.id == CourseViewer_Table.course_id)\
             .filter(CourseViewer_Table.user_id == user_id)\
             .all()
+
+    def get_profs_from_course(self, course_id):
+        profs = db_session.query(User_Table)\
+            .filter(User_Table.id == CourseProfessors_Table.professor_id)\
+            .filter(CourseProfessors_Table.course_id == course_id)\
+            .all()
+        prof_names = []
+        for prof in profs:
+            prof_names.append("{0} {1}".format(prof.firstName, prof.lastName))
+        return prof_names
+
