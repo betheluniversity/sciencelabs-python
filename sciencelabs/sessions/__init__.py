@@ -459,16 +459,16 @@ class SessionView(FlaskView):
     #     return resp
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
-    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
-    def authenticate_sign_in(self, session_id, session_hash, user):
-        return self.logout_caleb(url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth', username=flask_session.get('USERNAME')))
+    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
+    def authenticate_sign_in(self, session_id, session_hash, user_type):
+        return self.logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
-    @route('/store-username/<session_id>/<session_hash>/<user>/<username>', methods=['get'])
-    def store_username(self, session_id, session_hash, user, username):
+    @route('/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
+    def store_username(self, session_id, session_hash, user_type, username):
         # this entire method is used to store the username, then act as a passthrough
         flask_session['USERNAME'] = username
 
-        if user == 'tutor':
+        if user_type == 'tutor':
             route_url = 'SessionView:tutor_sign_in'
         else:
             route_url = 'SessionView:student_sign_in'
