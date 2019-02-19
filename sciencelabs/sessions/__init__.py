@@ -340,7 +340,12 @@ class SessionView(FlaskView):
         self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
                            ') opened successfully')
         # self.logout()
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+
+    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def student_attendance_passthrough(self, session_id, session_hash):
+        return self._logout_caleb(
+            url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash):
@@ -426,7 +431,7 @@ class SessionView(FlaskView):
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
                 self.slc.set_alert('danger', 'Card not recognized')
-                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user_by_username(user_info['username'])
             if not user:
                 user = self.user.create_user_at_sign_in(user_info['username'], semester)
@@ -437,13 +442,13 @@ class SessionView(FlaskView):
                 student = form.get('selected-student')
                 if student == '-1':
                     self.slc.set_alert('danger', 'Invalid Student')
-                    return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
                 user = self.user.get_user(student)
             else:
                 user = self.user.get_user_by_username(flask_session['USERNAME'])
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
-            return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('sessions/student_sign_in.html', **locals())
@@ -500,12 +505,12 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
 
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-sign-out', methods=['post'])
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
-        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):

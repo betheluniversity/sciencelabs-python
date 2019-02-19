@@ -24,7 +24,7 @@
                                    id="edit" class="btn btn-primary">Edit Session</a>
                                 <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                                    id="delete" class="btn btn-primary">Close Session</a>
-                                <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
                                    class="btn btn-primary sign-in">Enter Session</a>
                             </div>
                         </div>

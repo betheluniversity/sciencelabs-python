@@ -52,7 +52,7 @@
     </div>
     <div class="custom-default row">
         <div class="col-md-12">
-            <a href="{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash) }}">
+            <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}">
                 Return to the open session</a>
         </div>
     </div>
@@ -84,7 +84,7 @@
                 };
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
                 $.post(url, signInInfo, function(){
-                    window.location.replace("{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash) }}");
+                    window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
                 });
             });
 
