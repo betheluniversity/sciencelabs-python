@@ -461,7 +461,6 @@ class SessionView(FlaskView):
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
-        return flask_session['USERNAME']
         if user == 'tutor':
             route_url = 'SessionView:tutor_sign_in'
         else:
@@ -570,8 +569,12 @@ class SessionView(FlaskView):
         # flask_session['USERNAME'] = username
 
         # todo: try clearing out the cookies this way.
-        # requests.session().clear()
-        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-        return resp
+        import requests
+        requests.session().cookies.clear()
+
+        # resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path))
+        # resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        # resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+        # return resp
+
+        return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path)
