@@ -1,4 +1,5 @@
 import re
+import requests
 
 # Packages
 from datetime import datetime, timedelta
@@ -354,6 +355,9 @@ class SessionView(FlaskView):
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
 
+        # clear cookies
+        requests.session().cookies.clear()
+
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -496,8 +500,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
 
-        return self._logout_caleb(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-        # return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-sign-out', methods=['post'])
     def student_sign_out(self, session_id, student_id, session_hash):
@@ -566,7 +569,6 @@ class SessionView(FlaskView):
 
         # flask_session.clear()
         # todo: try clearing out the cookies this way.
-        import requests
         requests.session().cookies.clear()
 
         flask_session['ALERT'] = alert
