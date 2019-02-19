@@ -94,9 +94,9 @@ class EmailController:
                         students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above
                 # send an email
                 self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
-                count += count
+                count = count + 1
             except:
-                failed += failed
+                failed = failed + 1
         return "Sent {0} emails, failed to send {1} emails".format(count, failed)
 
     def send_message(self, subject, body, recipients, bcc, html=False):

@@ -429,7 +429,7 @@ class User:
         admin_role = self.get_role_by_name('Administrator')
         prof_role = self.get_role_by_name('Professor')
         admins = self.get_users_in_group(admin_role.id)
-        profs = self.get_users_in_group(prof_role.id)  
+        profs = self.get_users_in_group(prof_role.id)
         recipients = []
         for admin in admins:
             if admin.send_email == 1 and admin not in recipients:
