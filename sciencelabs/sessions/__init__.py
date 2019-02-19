@@ -342,7 +342,7 @@ class SessionView(FlaskView):
         # self.logout()
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
         return self._logout_caleb(
             url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
