@@ -426,9 +426,10 @@ class User:
         return emails
 
     def get_end_of_session_recipients(self):
-        # todo: ideally we wouldn't use id's, we would use the name.
-        admins = self.get_users_in_group(40001)  # Id for admins
-        profs = self.get_users_in_group(40005)  # Id for profs
+        admin_role = self.get_role_by_name('Administrator')
+        prof_role = self.get_role_by_name('Professor')
+        admins = self.get_users_in_group(admin_role.id)
+        profs = self.get_users_in_group(prof_role.id)  
         recipients = []
         for admin in admins:
             if admin.send_email == 1 and admin not in recipients:
