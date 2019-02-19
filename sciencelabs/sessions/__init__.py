@@ -342,7 +342,7 @@ class SessionView(FlaskView):
         # self.logout()
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
         return self._logout_caleb(
             url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
@@ -501,8 +501,8 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+
         return 'success'
-        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>', methods=['get'])
     def student_sign_out(self, session_id, student_id, session_hash):
