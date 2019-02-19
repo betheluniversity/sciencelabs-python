@@ -461,6 +461,7 @@ class SessionView(FlaskView):
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
+        return flask_session['USERNAME']
         if user == 'tutor':
             route_url = 'SessionView:tutor_sign_in'
         else:
@@ -549,16 +550,16 @@ class SessionView(FlaskView):
             return 'failed'
 
     # This logout method is specific to the open session
-    def logout(self):
-        # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
-
-        resp = make_response(redirect(app.config['LOGOUT_URL']))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-        return resp
+    # def logout(self):
+    #     # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+    #     alert = flask_session['ALERT']
+    #     flask_session.clear()
+    #     flask_session['ALERT'] = alert
+    #
+    #     resp = make_response(redirect(app.config['LOGOUT_URL']))
+    #     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+    #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+    #     return resp
 
     def logout_caleb(self, service_path):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
