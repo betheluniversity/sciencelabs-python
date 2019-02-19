@@ -63,14 +63,11 @@ app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.before_request
 def before_request():
-    # todo: we should go back through these and clean up the names
     if '/static/' in request.path \
             or '/assets/' in request.path \
             or '/cron/' in request.path \
             or '/checkin/' in request.path \
-            or '/student-attendance/' in request.path \
-            or '/tutor-attendance/' in request.path\
-            or '/store-username/' in request.path:
+            or '/no-cas/' in request.path:
 
         if not flask_session.get('ALERT'):
             flask_session['ALERT'] = None
