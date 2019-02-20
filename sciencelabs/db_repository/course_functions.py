@@ -70,6 +70,12 @@ class Course:
         return db_session.query(Course_Table)\
             .filter(CourseProfessors_Table.course_id == Course_Table.id)\
             .filter(CourseProfessors_Table.professor_id == prof_id) \
+            .all()
+
+    def get_current_professor_courses(self, prof_id):
+        return db_session.query(Course_Table) \
+            .filter(CourseProfessors_Table.course_id == Course_Table.id) \
+            .filter(CourseProfessors_Table.professor_id == prof_id) \
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.active == 1)\
             .all()
@@ -237,3 +243,14 @@ class Course:
         return db_session.query(Course_Table).filter(Course_Table.id == CourseViewer_Table.course_id)\
             .filter(CourseViewer_Table.user_id == user_id)\
             .all()
+
+    def get_profs_from_course(self, course_id):
+        profs = db_session.query(User_Table)\
+            .filter(User_Table.id == CourseProfessors_Table.professor_id)\
+            .filter(CourseProfessors_Table.course_id == course_id)\
+            .all()
+        prof_names = []
+        for prof in profs:
+            prof_names.append("{0} {1}".format(prof.firstName, prof.lastName))
+        return prof_names
+

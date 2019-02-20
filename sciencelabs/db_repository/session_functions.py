@@ -192,7 +192,9 @@ class Session:
     def get_prof_session_students(self, session_id, prof_course_ids):
         prof_students = []
         for course_id in prof_course_ids:
-            course_students = db_session.query(User_Table)\
+            course_students = db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName,
+                                               StudentSession_Table.timeIn, StudentSession_Table.timeOut,
+                                               StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
                 .filter(User_Table.id == StudentSession_Table.studentId)\
                 .filter(StudentSession_Table.sessionId == session_id)\
                 .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\

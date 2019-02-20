@@ -48,7 +48,7 @@ class UsersView(FlaskView):
         professor_role = self.user.get_professor_role()
         if professor_role.id in user_role_ids:
             professor = True
-            professor_courses = self.course.get_professor_courses(user_id)
+            professor_courses = self.course.get_current_professor_courses(user_id)
         return render_template('users/edit_user.html', **locals())
 
     @route('/create/<username>/<first_name>/<last_name>')
