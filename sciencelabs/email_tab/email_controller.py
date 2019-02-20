@@ -13,47 +13,6 @@ class EmailController:
         self.user = User()
         self.course = Course()
 
-    # def close_session_email(self, session_id):
-    #     # todo: check to make sure the session is open. If its not - send an alert?
-    #     # todo: this should loop over each user who should receive an email and build their individual email
-    #     # todo: make sure profs set as "course viewers" for other courses also see this
-    #
-    #     sess = self.session.get_session(session_id)
-    #     subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
-    #     opener = self.user.get_user(sess.openerId)
-    #     lab_url = app.config['LAB_BASE_URL']
-    #
-    #     recipients = self.user.get_end_of_session_recipients()
-    #     for recipient in recipients:
-    #         recipient_roles = self.user.get_user_roles(recipient.id)
-    #         recipient_role_names = []
-    #         for role in recipient_roles:
-    #             recipient_role_names.append(role.name)
-    #         students_and_courses_report = {}
-    #         students_and_courses = {}
-    #
-    #         # todo: add in this check
-    #         is_recipient_admin = False
-    #         self.create_close_session_email(is_recipient_admin)
-    #
-    #         # todo: put this into a method used above
-    #         # def create_close_session_email(is_admin=False)
-    #         tutors = self.session.get_session_tutors(session_id)
-    #         session_students = self.session.get_session_students(session_id)
-    #         for student in session_students:
-    #             students_and_courses_report[student] = self.session.get_report_student_session_courses(session_id,
-    #                                                                                                    student.id)
-    #             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
-    #         session_courses = self.session.get_session_courses(session_id)
-    #         courses_and_info = {}
-    #         courses_and_email_info = {}
-    #         for course in session_courses:
-    #             courses_and_info[course] = self.course.get_course(course.id)
-    #             courses_and_email_info[course] = self.session.get_course_email_info(course.id)
-    #
-    #         # send an email
-    #         self.send_message(subject, render_template('session/email.html', **locals()), recipient.email, None, True)
-
     def close_session_email(self, session_id):
         sess = self.session.get_session(session_id)
         subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
@@ -103,11 +62,8 @@ class EmailController:
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
             print('Would have sent email to: ' + str(recipients))
+            subject = subject + recipients
             recipients = app.config['TEST_EMAILS']
-
-        # TODO: remove this
-        subject = subject + str(recipients)
-        recipients = app.config['TEST_EMAILS']
 
         # if we are sending a message to a single user, go ahead and convert the string into a list
         if isinstance(recipients, str):
