@@ -75,7 +75,7 @@ class EmailController:
                 for course in session_courses:
                     courses_and_info[course] = {}
                     courses_and_info[course]['students'] = self.session.get_session_course_students(session_id, course.id)  # Gets students for a course in a specific session
-                    courses_and_info[course]['professor'] = self.course.get_profs_from_course(course.id)
+                    courses_and_info[course]['profs'] = self.course.get_profs_from_course(course.id)
             else:  # They must be a prof since get_end_of_session_recipients only gets admins and profs
                 session_courses = self.course.get_courses_for_session(session_id)
                 professor_courses = self.course.get_professor_courses(recipient.id)
@@ -89,7 +89,7 @@ class EmailController:
                     if course.id in professor_course_ids:
                         courses_and_info[course] = {}
                         courses_and_info[course]['students'] = self.session.get_session_course_students(session_id, course.id)  # Same as above
-                        courses_and_info[course]['professors'] = self.course.get_profs_from_course(course.id)
+                        courses_and_info[course]['profs'] = self.course.get_profs_from_course(course.id)
                 session_students = self.session.get_prof_session_students(session_id, professor_course_ids)  # Gets students specific to prof
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above

@@ -172,9 +172,13 @@
         {% endfor %}
         {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
         <tr>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px"><a href="/report/course/{{ course.id }}">{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</a></td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course/{{ course.id }}">
+                    {{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})
+                </a>
+            </td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">
-                {% for prof in info['professors'] %}
+                {% for prof in info['profs'] %}
                     {{ prof }}
                 {% endfor %}
             </td>
