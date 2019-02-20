@@ -60,6 +60,7 @@ class EmailController:
         opener = self.user.get_user(sess.openerId)
         tutors = self.session.get_session_tutors(session_id)
         recipients = self.user.get_end_of_session_recipients()
+        session_courses = self.course.get_courses_for_session(session_id)
         for recipient in recipients:
             recipient_roles = self.user.get_user_roles(recipient.id)
             recipient_role_names = []
@@ -68,16 +69,15 @@ class EmailController:
             students_and_courses = {}
             courses_and_info = {}
             if 'Administrator' in recipient_role_names:
+                professor_course_ids = 'ADMINISTRATOR'
                 session_students = self.session.get_session_students(session_id)
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Gets courses attended
-                session_courses = self.course.get_courses_for_session(session_id)
                 for course in session_courses:
                     courses_and_info[course] = {}
                     courses_and_info[course]['students'] = self.session.get_session_course_students(session_id, course.id)  # Gets students for a course in a specific session
                     courses_and_info[course]['profs'] = self.course.get_profs_from_course(course.id)
             else:  # They must be a prof since get_end_of_session_recipients only gets admins and profs
-                session_courses = self.course.get_courses_for_session(session_id)
                 professor_courses = self.course.get_professor_courses(recipient.id)
                 professor_viewer_courses = self.course.get_course_viewer_courses(recipient.id)
                 professor_course_ids = []
@@ -97,9 +97,9 @@ class EmailController:
             for course, info in courses_and_info.items():
                 for student in info['students']:
                     attendance = attendance + 1
-            if attendance > 0:
+            # if attendance > 0 or 'Administrator' in recipient_role_names: TODO: uncomment - check for sending email
                 # send an email
-                self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+            self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
