@@ -69,7 +69,6 @@ class EmailController:
             students_and_courses = {}
             courses_and_info = {}
             if 'Administrator' in recipient_role_names:
-                professor_course_ids = 'ADMINISTRATOR'
                 session_students = self.session.get_session_students(session_id)
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Gets courses attended
@@ -97,9 +96,9 @@ class EmailController:
             for course, info in courses_and_info.items():
                 for student in info['students']:
                     attendance = attendance + 1
-            # if attendance > 0 or 'Administrator' in recipient_role_names: TODO: uncomment - check for sending email
+            if attendance > 0 or 'Administrator' in recipient_role_names:
                 # send an email
-            self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+                self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':

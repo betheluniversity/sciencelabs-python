@@ -1,8 +1,3 @@
-{% for course in session_courses %}
-    | {{ course.id }} |
-{% endfor %}
-    {{ professor_course_ids }}
-
 <h3>General Information</h3>
 
 <p>Session report for the {% if sess.name is defined %}{{ sess.name }}{% endif %} {{ sess.date.strftime('%m/%d/%Y') }} ({{ sess.schedStartTime|datetimeformat }} - {{ sess.schedEndTime|datetimeformat }}) session:</p>
