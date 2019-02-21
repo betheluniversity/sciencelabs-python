@@ -578,8 +578,8 @@ class SessionView(FlaskView):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
 
-        flask_session.clear()
-        # requests.session().cookies.clear()
+        # flask_session.clear()
+        requests.session().cookies.clear()
         # todo: try clearing out the cookies this way.
         # requests.cookies
 
