@@ -422,6 +422,7 @@ class SessionView(FlaskView):
     @route('/checkin/<int:session_id>/<session_hash>', methods=['get'])
     # @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash):
+        return str(flask_session['USERNAME'])
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         # if card_id != 'cas-auth':  # This is the same regardless of prod/dev
