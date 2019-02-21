@@ -423,11 +423,12 @@ class SessionView(FlaskView):
     # @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def student_sign_in(self, session_id, session_hash):
         return self._logout_caleb(
-            url_for('SessionView:student_sign_in2', session_id=session_id, session_hash=session_hash))
+            url_for('SessionView:student_sign_in2', session_id=session_id, session_hash=session_hash, username=flask_session['username']))
 
-    @route('/no-cas/checkin2/<int:session_id>/<session_hash>', methods=['get'])
+    @route('/no-cas/checkin2/<int:session_id>/<session_hash>/<username>', methods=['get'])
     # @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
-    def student_sign_in2(self, session_id, session_hash):
+    def student_sign_in2(self, session_id, session_hash, username):
+        flask_session['username'] = username
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         # if card_id != 'cas-auth':  # This is the same regardless of prod/dev
