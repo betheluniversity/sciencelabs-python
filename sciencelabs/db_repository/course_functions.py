@@ -42,6 +42,15 @@ class Course:
                 .filter(Semester_Table.id == semester_id)
                 .all())
 
+    def get_selected_course_viewer_info(self, semester_id, prof_id):
+        return (db_session.query(Course_Table, User_Table)
+                .filter(Course_Table.id == CourseProfessors_Table.course_id)
+                .filter(CourseProfessors_Table.professor_id == User_Table.id)
+                .filter(CourseViewer_Table.user_id == prof_id)
+                .filter(CourseViewer_Table.course_id == Course_Table.id)
+                .filter(Course_Table.semester_id == semester_id)
+                .all())
+
     def get_semester_courses(self, semester_id):
         return db_session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName,
                                 CourseCode_Table.id)\

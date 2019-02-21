@@ -613,14 +613,21 @@ class ReportView(FlaskView):
         if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES']\
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+            course_viewer_info = None
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
             course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
+            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'], prof.id)
         courses_and_attendance = {}
         for course, course_user in course_info:
             courses_and_attendance[course] = {}
             courses_and_attendance[course]['user'] = course_user
             courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+        if course_viewer_info:
+            for course, course_user in course_viewer_info:
+                courses_and_attendance[course] = {}
+                courses_and_attendance[course]['user'] = course_user
+                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')
