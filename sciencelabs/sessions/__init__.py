@@ -596,3 +596,8 @@ class SessionView(FlaskView):
         alert = flask_session['ALERT']
         flask_session.clear()
         flask_session['ALERT'] = alert
+
+    def clear(self):
+        requests.session().cookies.clear()
+        return "cleared"
+    
