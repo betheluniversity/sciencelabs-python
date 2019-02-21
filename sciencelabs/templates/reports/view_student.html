@@ -112,8 +112,12 @@
                             {% set time = average_time %}
                             <li>
                                 {% if time|length != 0 %}
-                                    <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
-                                    {{ ' (' + course.dept + course.course_num + ')' }}
+                                    {% if 'Administrator' in session['USER-ROLES'] %}
+                                        <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title + ' (Section ' + course.section|string + ')' }}</a>
+                                        {{ ' (' + course.dept + course.course_num + ')' }}
+                                    {% else %}
+                                        {{ course.title + ' (Section ' + course.section|string + ')' + ' (' + course.dept + course.course_num + ')' }}
+                                    {% endif %}
                                 {% endif %}
                             </li>
                             <ul class="no-bullet">
@@ -145,7 +149,13 @@
                     {% for studentsession, info in sessions_and_courses.items() %}
                         <tr>
                             <td>{{ info['session'].date.strftime('%m/%d/%Y') }}</td>
-                            <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=info['session'].id) }}">{{ info['session'].name }}</a></td>
+                            <td>
+                                {% if 'Administrator' in session['USER-ROLES'] %}
+                                    <a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=info['session'].id) }}">{{ info['session'].name }}</a>
+                                {% else %}
+                                    {{ info['session'].name }}
+                                {% endif %}
+                            </td>
                             <td>
                                 {% for course in info['courses'] %}
                                     <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>

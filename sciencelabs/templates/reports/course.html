@@ -50,7 +50,10 @@
 
                         {% set total_unique_attendance = [0] %}
                         {% for course, info in courses_and_attendance.items() %}
-                            {% if 'Administrator' in session['USER-ROLES'] or ('Professor' in session['USER-ROLES'] and info['user'].username == session['USERNAME']) %}
+                            {# The last check in this is for when you're viewing as a role, not a specific user #}
+                            {% if 'Administrator' in session['USER-ROLES']
+                                or ('Professor' in session['USER-ROLES'] and info['user'].username == session['USERNAME'])
+                                or ('ADMIN-VIEWER' in session.keys() and session['ADMIN-VIEWER'] == True and not session['NAME']) %}
                                 <tr>
                                     <td>
                                         {{ course.dept + course.course_num }}
