@@ -572,18 +572,19 @@ class SessionView(FlaskView):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
 
-        # flask_session.clear()
+        flask_session.clear()
+        # requests.session().cookies.clear()
         # todo: try clearing out the cookies this way.
-        requests.session().cookies.clear()
+        # requests.cookies
 
         flask_session['ALERT'] = alert
 
-        # resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + service_path))
-        # resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-        # resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-        # return resp
+        resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+        return resp
 
-        return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path)
+        # return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path)
 
     def _session_clear_save_alert(self):
         alert = flask_session['ALERT']
