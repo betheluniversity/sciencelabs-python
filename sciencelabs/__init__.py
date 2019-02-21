@@ -66,7 +66,6 @@ def before_request():
     if '/static/' in request.path \
             or '/assets/' in request.path \
             or '/cron/' in request.path \
-            or '/checkin/' in request.path \
             or '/no-cas/' in request.path:
 
         if not flask_session.get('ALERT'):
