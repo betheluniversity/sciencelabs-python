@@ -450,6 +450,12 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
+
+        # clear the session
+        alert = flask_session['ALERT']
+        flask_session.clear()
+        flask_session['ALERT'] = alert
+
         return render_template('sessions/student_sign_in.html', **locals())
 
     # # todo: CLEAN THIS UP!!!!
