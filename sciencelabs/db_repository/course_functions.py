@@ -33,6 +33,15 @@ class Course:
                 .filter(Semester_Table.id == semester_id)
                 .all())
 
+    def get_selected_prof_course_info(self, semester_id, prof_id):
+        return (db_session.query(Course_Table, User_Table)
+                .filter(User_Table.id == prof_id)
+                .filter(User_Table.id == CourseProfessors_Table.professor_id)
+                .filter(CourseProfessors_Table.course_id == Course_Table.id)
+                .filter(Course_Table.semester_id == Semester_Table.id)
+                .filter(Semester_Table.id == semester_id)
+                .all())
+
     def get_semester_courses(self, semester_id):
         return db_session.query(Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName,
                                 CourseCode_Table.id)\
@@ -66,18 +75,18 @@ class Course:
             .filter(StudentSession_Table.sessionId == session_id)\
             .all()
 
-    def get_professor_courses(self, prof_id):
+    def get_all_professor_courses(self, prof_id):
         return db_session.query(Course_Table)\
             .filter(CourseProfessors_Table.course_id == Course_Table.id)\
             .filter(CourseProfessors_Table.professor_id == prof_id) \
             .all()
 
-    def get_current_professor_courses(self, prof_id):
+    def get_professor_courses(self, prof_id, semester_id):
         return db_session.query(Course_Table) \
             .filter(CourseProfessors_Table.course_id == Course_Table.id) \
             .filter(CourseProfessors_Table.professor_id == prof_id) \
             .filter(Course_Table.semester_id == Semester_Table.id)\
-            .filter(Semester_Table.active == 1)\
+            .filter(Semester_Table.id == semester_id)\
             .all()
 
     def get_semester_courses_with_section(self, semester_id):
@@ -253,4 +262,20 @@ class Course:
         for prof in profs:
             prof_names.append("{0} {1}".format(prof.firstName, prof.lastName))
         return prof_names
+
+    # Checks if the student is in the profs courses, returns true if yes
+    def student_is_in_prof_course(self, student_id, prof_id):
+        student_courses = self.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
+        student_course_ids = []
+        for course in student_courses:
+            student_course_ids.append(course.id)
+        prof_courses = self.get_professor_courses(prof_id, flask_session['SELECTED-SEMESTER'])
+        for course in prof_courses:
+            if course.id in student_course_ids:
+                return True
+        prof_viewer_courses = self.get_course_viewer_courses(prof_id)
+        for course in prof_viewer_courses:
+            if course.id in student_course_ids:
+                return True
+        return False
 
