@@ -580,6 +580,7 @@ class SessionView(FlaskView):
 
         # flask_session.clear()
         requests.session().cookies.clear()
+        requests.session().cookies.clear()
         # todo: try clearing out the cookies this way.
         # requests.cookies
 
@@ -600,4 +601,3 @@ class SessionView(FlaskView):
     def clear(self):
         requests.session().cookies.clear()
         return "cleared"
-    
