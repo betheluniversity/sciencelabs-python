@@ -4,7 +4,7 @@ from sqlalchemy import func, distinct, orm
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
-    SessionCourses_Table, CourseProfessors_Table
+    SessionCourses_Table, CourseProfessors_Table, CourseViewer_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
@@ -181,9 +181,7 @@ class User:
     def get_role_by_name(self, role_name):
         return db_session.query(Role_Table).filter(Role_Table.name == role_name).one()
 
-    def set_user_roles(self, username, roles):
-        user = self.get_user_by_username(username)
-        user_id = user.id
+    def set_user_roles(self, user_id, roles):
         for role in roles:
             role_entry = self.get_role_by_name(role)
             user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
@@ -446,3 +444,12 @@ class User:
             if role.name == 'Tutor' or role.name == 'Lead Tutor':
                 return True
         return False
+
+    def set_course_viewer(self, user_id, viewable_courses):
+        for course in viewable_courses:
+            already_viewing = db_session.query(CourseViewer_Table).filter(CourseViewer_Table.user_id == user_id)\
+                .filter(CourseViewer_Table.course_id == course).one_or_none()
+            if not already_viewing:
+                course_viewer = CourseViewer_Table(course_id=course, user_id=user_id)
+                db_session.add(course_viewer)
+        db_session.commit()
