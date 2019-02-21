@@ -419,30 +419,32 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
-    def student_sign_in(self, session_id, session_hash, card_id):
+    @route('/checkin/<int:session_id>/<session_hash>', methods=['get'])
+    # @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    def student_sign_in(self, session_id, session_hash):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
-        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
-            try:
-                user_info = self.wsapi.get_user_from_prox(card_id)
-            except:
-                self.slc.set_alert('danger', 'Card not recognized')
-                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-            user = self.user.get_user_by_username(user_info['username'])
-            if not user:
-                user = self.user.create_user_at_sign_in(user_info['username'], semester)
-        # No card so now we get the user via CAS
-        else:
-            if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
-                form = request.form
-                student = form.get('selected-student')
-                if student == '-1':
-                    self.slc.set_alert('danger', 'Invalid Student')
-                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-                user = self.user.get_user(student)
-            else:
-                user = self.user.get_user_by_username(flask_session['USERNAME'])
+        # if card_id != 'cas-auth':  # This is the same regardless of prod/dev
+        #     try:
+        #         user_info = self.wsapi.get_user_from_prox(card_id)
+        #     except:
+        #         self.slc.set_alert('danger', 'Card not recognized')
+        #         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        #     user = self.user.get_user_by_username(user_info['username'])
+        #     if not user:
+        #         user = self.user.create_user_at_sign_in(user_info['username'], semester)
+        # # No card so now we get the user via CAS
+        # else:
+        #     if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
+        #         form = request.form
+        #         student = form.get('selected-student')
+        #         if student == '-1':
+        #             self.slc.set_alert('danger', 'Invalid Student')
+        #             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        #         user = self.user.get_user(student)
+        #     else:
+
+        user = self.user.get_user_by_username(flask_session['USERNAME'])
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
