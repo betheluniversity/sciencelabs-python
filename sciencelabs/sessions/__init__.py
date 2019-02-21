@@ -586,8 +586,8 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=1)
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=1)
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
         return resp
 
         # return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path)
