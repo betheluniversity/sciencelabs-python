@@ -596,4 +596,5 @@ class SessionView(FlaskView):
         from http import cookies
         C = cookies.SimpleCookie()
         C['MOD_AUTH_CAS_S'] = ''
+        C['MOD_AUTH_CAS_S']['path'] = '/'
         return self._logout_caleb('/cslab/session/checkin/12239/NRqN1pDy0oFIF')
