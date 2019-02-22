@@ -84,18 +84,28 @@ class Course:
             .filter(StudentSession_Table.sessionId == session_id)\
             .all()
 
-    def get_all_professor_courses(self, prof_id):
-        return db_session.query(Course_Table)\
-            .filter(CourseProfessors_Table.course_id == Course_Table.id)\
-            .filter(CourseProfessors_Table.professor_id == prof_id) \
-            .all()
-
     def get_professor_courses(self, prof_id, semester_id):
-        return db_session.query(Course_Table) \
+        teaching_courses = db_session.query(Course_Table) \
             .filter(CourseProfessors_Table.course_id == Course_Table.id) \
             .filter(CourseProfessors_Table.professor_id == prof_id) \
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
+            .all()
+        viewing_courses = db_session.query(Course_Table) \
+            .filter(Course_Table.id == CourseViewer_Table.course_id) \
+            .filter(CourseViewer_Table.user_id == prof_id) \
+            .all()
+        all_courses = []
+        for course in teaching_courses:
+            all_courses.append(course)
+        for course in viewing_courses:
+            all_courses.append(course)
+        return all_courses
+
+    def get_course_viewer_courses(self, user_id):
+        return db_session.query(Course_Table) \
+            .filter(Course_Table.id == CourseViewer_Table.course_id) \
+            .filter(CourseViewer_Table.user_id == user_id) \
             .all()
 
     def get_semester_courses_with_section(self, semester_id):
@@ -257,12 +267,6 @@ class Course:
                 db_session.delete(courseviewer)
                 db_session.commit()
 
-    def get_course_viewer_courses(self, user_id):
-        return db_session.query(Course_Table)\
-            .filter(Course_Table.id == CourseViewer_Table.course_id)\
-            .filter(CourseViewer_Table.user_id == user_id)\
-            .all()
-
     def get_profs_from_course(self, course_id):
         profs = db_session.query(User_Table)\
             .filter(User_Table.id == CourseProfessors_Table.professor_id)\
@@ -279,13 +283,11 @@ class Course:
         student_course_ids = []
         for course in student_courses:
             student_course_ids.append(course.id)
+
         prof_courses = self.get_professor_courses(prof_id, flask_session['SELECTED-SEMESTER'])
         for course in prof_courses:
             if course.id in student_course_ids:
                 return True
-        prof_viewer_courses = self.get_course_viewer_courses(prof_id)
-        for course in prof_viewer_courses:
-            if course.id in student_course_ids:
-                return True
+
         return False
 

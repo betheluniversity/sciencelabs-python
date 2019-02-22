@@ -20,37 +20,42 @@ class EmailController:
         tutors = self.session.get_session_tutors(session_id)
         recipients = self.user.get_end_of_session_recipients()
         session_courses = self.course.get_courses_for_session(session_id)
+
         for recipient in recipients:
             recipient_roles = self.user.get_user_roles(recipient.id)
             recipient_role_names = []
+
             for role in recipient_roles:
                 recipient_role_names.append(role.name)
             students_and_courses = {}
             courses_and_info = {}
+
             if 'Administrator' in recipient_role_names:
                 session_students = self.session.get_session_students(session_id)
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Gets courses attended
+
                 for course in session_courses:
                     courses_and_info[course] = {}
                     courses_and_info[course]['students'] = self.session.get_session_course_students(session_id, course.id)  # Gets students for a course in a specific session
                     courses_and_info[course]['profs'] = self.course.get_profs_from_course(course.id)
+
             else:  # They must be a prof since get_end_of_session_recipients only gets admins and profs
-                professor_courses = self.course.get_all_professor_courses(recipient.id)
-                professor_viewer_courses = self.course.get_course_viewer_courses(recipient.id)
+                professor_courses = self.course.get_professor_courses(recipient.id, sess.semester_id)
                 professor_course_ids = []
                 for course in professor_courses:
                     professor_course_ids.append(course.id)
-                for course in professor_viewer_courses:
-                    professor_course_ids.append(course.id)
+
                 for course in session_courses:
                     if course.id in professor_course_ids:
                         courses_and_info[course] = {}
                         courses_and_info[course]['students'] = self.session.get_session_course_students(session_id, course.id)  # Same as above
                         courses_and_info[course]['profs'] = self.course.get_profs_from_course(course.id)
+
                 session_students = self.session.get_prof_session_students(session_id, professor_course_ids)  # Gets students specific to prof
                 for student in session_students:
                     students_and_courses[student] = self.session.get_report_student_session_courses(session_id, student.id)  # Same as above
+
             attendance = 0
             for course, info in courses_and_info.items():
                 for student in info['students']:

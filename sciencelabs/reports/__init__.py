@@ -41,9 +41,11 @@ class ReportView(FlaskView):
         month = self.get_selected_month()
         year = sem.year
         student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
+
         student_and_attendance = {}
         for student in student_info:
             student_and_attendance[student] = len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))
+
         return render_template('reports/student.html', **locals())
 
     @route('/student/<int:student_id>')
@@ -55,27 +57,33 @@ class ReportView(FlaskView):
         year = sem.year
         student = self.user.get_user(student_id)
         viewer = self.user.get_user_by_username(flask_session['USERNAME'])
+
         # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
         if 'Administrator' in flask_session['USER-ROLES'] \
                 or 'Academic Counselor' in flask_session['USER-ROLES'] \
                 or ('Professor' in flask_session['USER-ROLES'] and flask_session['NAME'] and self.courses.student_is_in_prof_course(student_id, viewer.id)) \
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
             role_can_view = True
             student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
             sessions_attended = len(self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
+
             course_and_avg_time = {}
             for course in courses:
                 course_and_avg_time[course] = self.user.get_average_time_in_course(student.id, course.id)
+
             sessions_and_courses = {}
             for studentsession, lab_session in sessions:
                 sessions_and_courses[studentsession] = {}
                 sessions_and_courses[studentsession]['session'] = lab_session
                 sessions_and_courses[studentsession]['courses'] = self.session_.get_report_student_session_courses(lab_session.id, student.id)
+
         else:
             role_can_view = False
+
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
@@ -609,25 +617,31 @@ class ReportView(FlaskView):
         month = self.get_selected_month()
         year = sem.year
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+
         # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
         if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES']\
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
             course_viewer_info = None
+
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
             course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
             course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'], prof.id)
+
         courses_and_attendance = {}
         for course, course_user in course_info:
             courses_and_attendance[course] = {}
             courses_and_attendance[course]['user'] = course_user
             courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
         if course_viewer_info:
             for course, course_user in course_viewer_info:
                 courses_and_attendance[course] = {}
                 courses_and_attendance[course]['user'] = course_user
                 courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')
@@ -640,17 +654,20 @@ class ReportView(FlaskView):
 
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
+
         students_and_time = {}
         for student, attendance in students:
             students_and_time[student] = {}
             students_and_time[student]['attendance'] = attendance
             students_and_time[student]['time'] = self.user.get_average_time_in_course(student.id, course[0].id)
+
         sessions = self.session_.get_sessions(course_id)
         sessions_and_attendance = {}
         for lab_session, schedule in sessions:
             sessions_and_attendance[lab_session] = {}
             sessions_and_attendance[lab_session]['schedule'] = schedule
             sessions_and_attendance[lab_session]['attendance'] = self.session_.get_session_attendees_with_dup(course[0].id, lab_session.id)
+
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):

@@ -49,10 +49,12 @@ class UsersView(FlaskView):
         viewable_course_ids = []
         for course in viewable_courses:
             viewable_course_ids.append(course.id)
+
         professor_role = self.user.get_professor_role()
         if professor_role.id in user_role_ids:
             professor = True
             professor_courses = self.course.get_professor_courses(user_id, active_semester.id)
+
         return render_template('users/edit_user.html', **locals())
 
     @route('/create/<username>/<first_name>/<last_name>')
