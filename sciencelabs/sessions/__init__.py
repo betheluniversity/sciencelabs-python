@@ -478,7 +478,7 @@ class SessionView(FlaskView):
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
-    def authenticate_sign_in(self, session_id, session_hash, user_type):
+    def authenticate_sign_in(self, session_id, session_hash, user_type):\
         return self._logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
     @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
@@ -577,13 +577,7 @@ class SessionView(FlaskView):
     def _logout_caleb(self, service_path):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
         alert = flask_session['ALERT']
-
-        # flask_session.clear()
-        requests.session().cookies.clear()
-        requests.session().cookies.clear()
-        # todo: try clearing out the cookies this way.
-        # requests.cookies
-
+        flask_session.clear()
         flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
@@ -599,5 +593,4 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
     def clear(self):
-        requests.session().cookies.clear()
-        return "cleared"
+        return self._logout_caleb('/cslab/session/checkin/12239/NRqN1pDy0oFIF')
