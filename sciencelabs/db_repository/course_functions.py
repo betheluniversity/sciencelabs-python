@@ -102,6 +102,14 @@ class Course:
             all_courses.append(course)
         return all_courses
 
+    def get_professor_teaching_courses(self, prof_id, semester_id):
+        return db_session.query(Course_Table) \
+            .filter(CourseProfessors_Table.course_id == Course_Table.id) \
+            .filter(CourseProfessors_Table.professor_id == prof_id) \
+            .filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.id == semester_id)\
+            .all()
+
     def get_course_viewer_courses(self, user_id):
         return db_session.query(Course_Table) \
             .filter(Course_Table.id == CourseViewer_Table.course_id) \
