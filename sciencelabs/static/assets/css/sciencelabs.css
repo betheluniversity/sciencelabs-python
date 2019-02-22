@@ -6,15 +6,15 @@ a.disabled:hover {
     color: black;
 }
 
-a:hover {
-    filter: brightness(85%);
-}
-
 a.month-nav:hover {
     color: black;
 }
 
 a.nav-link.button {
+    color: #fff !important;
+}
+
+a.nav-link.button.nav-bar-active {
     color: #FFC600 !important;
 }
 
@@ -28,16 +28,22 @@ a.semester-menu {
 }
 
 body {
-  background: #fff;
-  color: #222;
-  padding: 0;
-  margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1.5;
-  position: relative;
-  cursor: auto;
+    background: #fff;
+    color: #222;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1.5;
+    position: relative;
+    cursor: auto;
+}
+
+button.btn {
+    margin-left: 0.5em !important;
+    margin-right: 0.5em !important;
 }
 
 div.centered {
@@ -46,12 +52,17 @@ div.centered {
 
 div.dropdown {
     cursor: pointer;
+    color: #fff;
 }
 
 div.footer {
-    background-color: #f2f2f2;
+    background-color: #fafafa;
     border-color: #d8d8d8;
-    text-align: right;
+    text-align: left;
+    border-top: 1px solid #eee;
+    margin-top: 3em;
+    color: #6c757d;
+    font-size: 0.9em;
 }
 
 div.header {
@@ -84,6 +95,12 @@ div.sub-info {
 
 form.create-session-form {
     margin-top: 15px;
+}
+
+html {}
+
+html, body {
+    background-color: #fafafa;
 }
 
 input {
@@ -164,7 +181,7 @@ ul.no-margin {
 }
 
 .background-blue {
-    background-color: #0069AA;
+    background-color: #123563;
 }
 
 .big-button {
@@ -178,6 +195,17 @@ ul.no-margin {
 
 .border-white {
     border-color: white;
+}
+
+.btn.btn-primary, .csv-button.btn.btn-primary {
+    background-color: #0056B5;
+    border-color: #0056B5;
+    border-radius: 4px;
+}
+
+.btn.btn-primary:hover, .csv-button.btn.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
 }
 
 .btn-primary {
@@ -254,6 +282,7 @@ ul.no-margin {
 
 .dd-background:hover {
     background-color: #0F2C52;
+    text-decoration: underline;
 }
 
 .disabled {
@@ -305,6 +334,10 @@ ul.no-margin {
 
 .month-nav {
     color: #6c757d;
+}
+
+.navbar {
+    padding: 1em 2em !important;
 }
 
 .nav-bar-active {
@@ -362,10 +395,6 @@ ul.no-margin {
     border: 1px dotted grey;
     padding: 10px;
     float: left;
-}
-
-.yellow {
-    color: #FFC600 !important;
 }
 
 #darkblue {
