@@ -54,7 +54,7 @@
                     <div class="form-group col-md-12">
                         <label for="user-courses">User's Courses for Current Term</label>
                         <div id="user-courses">
-                            {% if professor and professor_course %}
+                            {% if professor and professor_courses %}
                                 <ul>
                                     {% for course in professor_courses %}
                                         <li>{{ course.title }} (Section {{ course.section }})</li>
@@ -72,7 +72,8 @@
                         <div id="user-courses">
                             {% for course in course_list %}
                                 <div class="custom-control custom-checkbox display-inl-b">
-                                    <input type="checkbox" class="custom-control-input" id="{{ course.id }}">
+                                    <input type="checkbox" class="custom-control-input" id="{{ course.id }}"
+                                            {{ 'checked' if course.id in viewable_course_ids }} value="{{ course.id }}" name="courses">
                                     <label class="custom-control-label" for="{{ course.id }}">
                                         {{ course.title }} (Section {{ course.section }})</label>
                                 </div>
