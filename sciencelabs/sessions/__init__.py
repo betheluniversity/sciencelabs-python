@@ -581,8 +581,8 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/cslab')
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
         return resp
 
         # return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path)
@@ -593,8 +593,7 @@ class SessionView(FlaskView):
         flask_session['ALERT'] = alert
 
     def clear(self):
-        from http import cookies
-        C = cookies.SimpleCookie()
-        C['MOD_AUTH_CAS_S'] = ''
-        C['MOD_AUTH_CAS_S']['path'] = '/'
-        return self._logout_caleb('/cslab/session/checkin/12239/NRqN1pDy0oFIF')
+        resp = make_response(redirect("https://tutorlabs.xp.bethel.edu/cslab/session/no-cas/student-attendance/12239/NRqN1pDy0oFIF"))
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
+        return resp
