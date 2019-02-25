@@ -98,7 +98,8 @@
         <th style="padding:2px 10px">Time in Lab</th>
         <th style="padding:2px 10px">Course(s)</th>
     </tr>
-    {% for student, courses in students_and_courses_report.items() %}
+    {% for student, courses in students_and_courses.items() %}
+
         <tr>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.firstName }} {{ student.lastName }}</td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.timeIn|datetimeformat }}</td>
@@ -126,7 +127,8 @@
 <table style="border-collapse:collapse">
 {% set courseCount = [0] %}
 {% set attendance = [0] %}
-{% for course, info in courses_and_email_info.items() %}
+{% for course, info in courses_and_info.items() %}
+
     {% if (courseCount[0] % 2) == 0 %}
         <tr>
     {% endif %}
@@ -134,21 +136,18 @@
     <td style="border-bottom:3px double black;vertical-align:top;padding:20px 10px">
         <table style="border-collapse:collapse;width:100%">
             <tr>
-                {% set course_info = info %}
-                {% set title = course_info[0][0] %}
-                {% set section = course_info[0][1] %}
-                <th style="padding:2px 10px" colspan="2">{{ title }} (Section {{ section }}) ({{ course.dept }}{{ course.course_num }})</th>
+                <th style="padding:2px 10px" colspan="2">{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</th>
+
             </tr>
             <tr>
                 <th style="padding:2px 10px">Name</th>
             </tr>
-            {% for student, courses in students_and_courses.items() %}
-                {% if course in courses %}
+            {% for student in info['students'] %}
+
                     {% if attendance.append(attendance.pop() + (1)) %}{% endif %}
                     <tr>
                         <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.firstName }} {{ student.lastName }}</td>
                     </tr>
-                {% endif %}
             {% endfor %}
         </table>
     </td>
@@ -168,16 +167,21 @@
     {% set total_attendance = [0] %}
     {% for course, info in courses_and_info.items() %}
         {% set attendance = [0] %}
-        {% for student, courses in students_and_courses.items() %}
-            {% if course in courses %}
-                {% if attendance.append(attendance.pop() + 1) %}{% endif %}
-            {% endif %}
+        {% for student in info['students'] %}
+            {% if attendance.append(attendance.pop() + 1) %}{% endif %}
         {% endfor %}
         {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
-        {% set course_info = info %}
         <tr>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px"><a href="/report/course/{{ course.id }}">{{ course_info[0].title }} (Section {{ course_info[0].section }}) ({{ course.dept }}{{ course.course_num }})</a></td>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">{{ course_info[1].firstName }} {{ course_info[1].lastName }}</td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course/{{ course.id }}">
+                    {{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})
+                </a>
+            </td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">
+                {% for prof in info['profs'] %}
+                    {{ prof }}
+                {% endfor %}
+            </td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ attendance[0] }}</td>
         </tr>
     {% endfor %}
@@ -209,4 +213,5 @@
 <span>*Students that sign in for multiple classes will be double counted in the class totals, but appear once in the student totals</span>
 <br />
 
-<span>View more detailed <a href="{{ url_for('ReportView:course') }}">{{ lab_title }}</a> reports</span>
+<span>View more detailed <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course">{{ lab_title }}</a> reports</span>
+

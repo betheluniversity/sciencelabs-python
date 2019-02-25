@@ -21,7 +21,7 @@ class ProfileView(FlaskView):
         user = self.user.get_user_by_username(flask_session['USERNAME'])
         return render_template('profile/profile.html', **locals())
 
-    @route('/save_edits', methods=['post'])
+    @route('/save-edits', methods=['post'])
     def save_edits(self):
         try:
             form = request.form
@@ -30,9 +30,11 @@ class ProfileView(FlaskView):
             username = form.get('username')
             email_pref = form.get('receive-email') or 0  # if User is not allowed to change email pref, set to 0
             self.user.edit_user(first_name,last_name, username, email_pref)
-            self.slc.set_alert('success', 'User edited successfully!')
+            # Need to reset the users name, which appears in the upper right corner
+            flask_session['NAME'] = '{0} {1}'.format(first_name, last_name)
+            self.slc.set_alert('success', 'Your profile has been edited successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit your profile: ' + str(error))
         return redirect(url_for('ProfileView:index'))
 
     @route('/view-role')

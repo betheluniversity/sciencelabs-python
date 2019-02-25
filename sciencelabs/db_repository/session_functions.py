@@ -182,6 +182,28 @@ class Session:
             .group_by(StudentSession_Table.id)\
             .all()
 
+    def get_session_course_students(self, session_id, course_id):
+        return db_session.query(User_Table).filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .all()
+
+    def get_prof_session_students(self, session_id, prof_course_ids):
+        prof_students = []
+        for course_id in prof_course_ids:
+            course_students = db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName,
+                                               StudentSession_Table.timeIn, StudentSession_Table.timeOut,
+                                               StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
+                .filter(User_Table.id == StudentSession_Table.studentId)\
+                .filter(StudentSession_Table.sessionId == session_id)\
+                .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+                .filter(SessionCourses_Table.course_id == course_id)\
+                .all()
+            for student in course_students:
+                prof_students.append(student)
+        return prof_students
+
     def get_studentsession_from_session(self, session_id):
         return db_session.query(User_Table, StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\
@@ -521,8 +543,9 @@ class Session:
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeOut == None).one()
-        student_session.timeOut = datetime.now().strftime('%H:%M:%S')
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeOut == None).all()
+        for single_student_session in student_session:
+            single_student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
         self.log_session(student.firstName + " " + student.lastName + " signed out as a student at " +

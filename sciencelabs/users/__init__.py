@@ -45,10 +45,16 @@ class UsersView(FlaskView):
         user_role_ids = self.user.get_user_role_ids(user_id)
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses_with_section(active_semester.id)
+        viewable_courses = self.course.get_course_viewer_courses(user_id)
+        viewable_course_ids = []
+        for course in viewable_courses:
+            viewable_course_ids.append(course.id)
+
         professor_role = self.user.get_professor_role()
         if professor_role.id in user_role_ids:
             professor = True
-            professor_courses = self.course.get_professor_courses(user_id)
+            professor_courses = self.course.get_professor_teaching_courses(user_id, active_semester.id)
+
         return render_template('users/edit_user.html', **locals())
 
     @route('/create/<username>/<first_name>/<last_name>')
@@ -71,7 +77,7 @@ class UsersView(FlaskView):
         results = self.wsapi.get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 
-    @route("/deactivate_single_user/<int:user_id>")
+    @route("/deactivate-single-user/<int:user_id>")
     def deactivate_single_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -83,7 +89,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('danger', 'Failed to deactivate user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
-    @route("/deactivate_users", methods=['post'])
+    @route("/deactivate-users", methods=['post'])
     def deactivate_users(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -98,7 +104,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
         return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
-    @route("/save_user_edits", methods=['post'])
+    @route("/save-user-edits", methods=['post'])
     def save_user_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -107,19 +113,20 @@ class UsersView(FlaskView):
         first_name = form.get('first-name')
         last_name = form.get('last-name')
         email = form.get('email')
-        username = form.get('username')
         roles = form.getlist('roles')
+        viewable_courses = form.getlist('courses')
         try:
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
-            self.user.set_user_roles(username, roles)
+            self.user.set_user_roles(user_id, roles)
+            self.user.set_course_viewer(user_id, viewable_courses)
             self.slc.set_alert('success', 'Edited user successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
-    @route('/create_user', methods=['post'])
+    @route('/create-user', methods=['post'])
     def create_user(self):
         self.slc.check_roles_and_route(['Administrator'])
 

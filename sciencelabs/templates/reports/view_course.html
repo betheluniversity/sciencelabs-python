@@ -48,15 +48,21 @@
                     </thead>
                     <tbody>
                     {% set total_attendees = [0] %}
-                    {% for session, info in sessions_and_attendance.items() %}
+                    {% for lab_session, info in sessions_and_attendance.items() %}
                     <tr>
-                        <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                        <td>{{ lab_session.date.strftime('%m/%d/%Y') }}</td>
                         <td>
                             {{ macros.day_abbr(info['schedule'].dayofWeek) }}
                         </td>
-                        <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
+                        <td>{{ lab_session.schedStartTime|datetimeformat }} - {{ lab_session.schedEndTime|datetimeformat }}</td>
                         {% set attendance_per_session = info['attendance'] %}
-                        <td><a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=session.id) }}">{{ attendance_per_session|length }}</a></td>
+                        <td>
+                            {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
+                                <a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=lab_session.id) }}">{{ attendance_per_session|length }}</a>
+                            {% else %}
+                                {{ attendance_per_session|length }}
+                            {% endif %}
+                        </td>
                     {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
                     </tr>
                     {% endfor %}

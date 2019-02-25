@@ -1,7 +1,7 @@
 import re
 
 # Packages
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, json, make_response
 from flask import session as flask_session
 from flask_classy import FlaskView, route
@@ -141,7 +141,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: ' + str(error))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
-    @route('/save_session_edits', methods=['post'])
+    @route('/save-session-edits', methods=['post'])
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -172,7 +172,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit session: ' + str(error))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/save_student_edits/<int:session_id>', methods=['post'])
+    @route('/save-student-edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -195,7 +195,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit student: ' + str(error))
             return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
 
-    @route('/save_tutor_edits', methods=['post'])
+    @route('/save-tutor-edits', methods=['post'])
     def save_tutor_edits(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -205,9 +205,7 @@ class SessionView(FlaskView):
         time_in = form.get('time-in') or None
         time_out = form.get('time-out') or None
         lead_check = form.get('lead')
-        lead = 0
-        if lead_check:
-            lead = 1
+        lead = 1 if lead_check else 0
         try:
             self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
             self.slc.set_alert('success', 'Tutor edited successfully!')
@@ -236,7 +234,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete tutor: ' + str(error))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/add_student_submit', methods=['post'])
+    @route('/add-student-submit', methods=['post'])
     def add_student_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -251,7 +249,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add student: ' + str(error))
             return redirect(url_for('SessionView:add_student', session_id=session_id))
 
-    @route('/add_anon_submit', methods=['post'])
+    @route('/add-anon-submit', methods=['post'])
     def add_anon_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -266,7 +264,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit anonymous students: ' + str(error))
             return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
-    @route('/add_tutor_submit', methods=['post'])
+    @route('/add-tutor-submit', methods=['post'])
     def add_tutor_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -276,9 +274,7 @@ class SessionView(FlaskView):
         time_in = form.get('time-in') or None
         time_out = form.get('time-out') or None
         lead_check = form.get('lead')
-        lead = 0
-        if lead_check:
-            lead = 1
+        lead = 1 if lead_check else 0
         try:
             self.session.add_tutor_to_session(session_id, tutor_id, time_in, time_out, lead)
             self.slc.set_alert('success', 'Tutor added successfully!')
@@ -287,7 +283,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add tutor: ' + str(error))
             return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
-    @route('/create_session_submit', methods=['post'])
+    @route('/create-session-submit', methods=['post'])
     def create_session_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -338,7 +334,7 @@ class SessionView(FlaskView):
         self.session.tutor_sign_in(session_id, opener.id)
         self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
                            ') opened successfully')
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -348,9 +344,10 @@ class SessionView(FlaskView):
         students_and_courses = {}
         for student in students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -358,12 +355,13 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         tutors = self.session.get_session_tutors(session_id)
+        # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
-        self.logout()
+        # self.logout()
         return render_template('sessions/tutor_attendance.html', **locals())
 
-    @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/close-session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
         if app.config['ENVIRON'] != 'prod':
             user = self.user.get_user_by_username(app.config['TEST_USERNAME'])
@@ -379,7 +377,7 @@ class SessionView(FlaskView):
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
 
-    @route('/confirm_close', methods=['post'])
+    @route('/confirm-close', methods=['post'])
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -437,35 +435,59 @@ class SessionView(FlaskView):
         student_courses = self.user.get_student_courses(user.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
         return render_template('sessions/student_sign_in.html', **locals())
+    #
+    # # todo: CLEAN THIS UP!!!!
+    # # TODO: this is caleb's method to get this code working
+    # # the assets in the url is to ensure that this route is NOT CAS Authenticated
+    # # This method is NOT CAS authenticated. It is used as a pass through, to build a proper "logout" pathway
+    # @route('/assets/authenticate-pre-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
+    # def authenticate_pre_sign_in(self, session_id, session_hash, user):
+    #     # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
+    #     alert = flask_session['ALERT']
+    #     username = flask_session['USERNAME']
+    #     flask_session.clear()
+    #     flask_session['ALERT'] = alert
+    #     flask_session['USERNAME'] = username
+    #
+    #     resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
+    #     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
+    #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
+    #     return resp
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user):
         if user == 'tutor':
-            return redirect(url_for('SessionView:tutor_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:tutor_sign_in'
         else:
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
+            route_url = 'SessionView:student_sign_in'
+
+        return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
     @route('/checkin/confirm', methods=['post'])
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
         session_hash = form.get('sessionHash')
+        card_id = form.get('cardID')
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        if student_courses == [] and other_course_name == '':
+            self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
+            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     def student_sign_out(self, session_id, student_id, session_hash):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    @route('/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
@@ -492,14 +514,14 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
-        self.logout()
+        # self.logout()
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
         return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/verify_scanner', methods=['post'])
+    @route('/verify-scanner', methods=['post'])
     def verify_scanner(self):
         form = request.form
         scan = form.get("scan")
@@ -512,10 +534,9 @@ class SessionView(FlaskView):
     # This logout method is specific to the open session
     def logout(self):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        if 'ALERT' in flask_session.keys():
-            alert = flask_session.get('ALERT', {})
-            flask_session['ALERT'] = alert
+        alert = flask_session['ALERT']
         flask_session.clear()
+        flask_session['ALERT'] = alert
 
         resp = make_response(redirect(app.config['LOGOUT_URL']))
         resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
