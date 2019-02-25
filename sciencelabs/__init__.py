@@ -6,6 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.url_map.strict_slashes = False
 
 # Local
 from sciencelabs.db_repository import db_session

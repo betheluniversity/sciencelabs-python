@@ -1,0 +1,64 @@
+<form class="form-inline">
+    <button id="set-semester" type="button" class="btn blue btn-primary button-border">Set</button>
+    <select id="semester-select" class="custom-select">
+        {% for semester in session['SEMESTER-LIST'] %}
+            {% if semester['id'] == session['SELECTED-SEMESTER'] %}
+                <option selected value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+            {% else %}
+                <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</form>
+<script>
+    $(document).ready(function(){
+        $('#set-semester').click(function(){
+            var select_tag = document.getElementById("semester-select");
+            var semester_id = select_tag.options[select_tag.selectedIndex].value;
+            var semester_term_year = select_tag.options[select_tag.selectedIndex].text;
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('View:set_semester_selector') }}",
+                data: JSON.stringify({'id': semester_id, 'term-year': semester_term_year}),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    {# Checks to see if the semester selector is used in the report/month page #}
+                    if (/month/.test(window.location.pathname))
+                    {
+                        var result = semester_term_year.split(" ");
+                        var term = result[0];
+                        var year = result[1];
+                        var month = 0;
+                        if (term == 'Interim') {
+                            month = 1;
+                        }
+                        else if (term == 'Spring') {
+                            month = 2;
+                        }
+                        else if (term == 'Fall') {
+                            month = 9;
+                        }
+                        else {
+                            month = 6;
+                        }
+
+                        // some quick fix code.
+                        var lab_base_url = "{{ lab_base_url }}";
+                        if( lab_base_url == "/")
+                            lab_base_url = '';
+
+                        window.location.replace(lab_base_url + "/report/month/" + year + '/' + month);
+                    }
+                    else
+                    {
+                        document.location.reload()
+                    }
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
