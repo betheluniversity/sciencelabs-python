@@ -460,7 +460,7 @@ class User:
                 db_session.add(course_viewer)
         db_session.commit()
 
-    def soft_delete_students(self):
+    def deactivate_students(self):
         students = db_session.query(User_Table)\
             .filter(User_Table.id == user_role_Table.user_id)\
             .filter(user_role_Table.role_id == Role_Table.id)\

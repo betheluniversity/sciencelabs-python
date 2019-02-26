@@ -53,7 +53,7 @@ class TermStartupView(FlaskView):
 
         try:
             self.schedule.set_current_term(term, year, start_date, end_date)  # Sets the new term to active
-            self.user.soft_delete_students()  # Soft deletes all students
+            self.user.deactivate_students()  # Soft deletes all students
             self.user.demote_tutors()  # Demotes all lead tutors to regular tutors
             self.slc.set_alert('success', 'Term set successfully!')
             return redirect(url_for('TermStartupView:step_two'))
