@@ -411,29 +411,31 @@ class SessionView(FlaskView):
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
-                user_info = self.wsapi.get_user_from_prox(card_id)
+                student_info = self.wsapi.get_user_from_prox(card_id)
             except:
                 self.slc.set_alert('danger', 'Card not recognized')
                 return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-            user = self.user.get_user_by_username(user_info['username'])
-            if not user:
-                user = self.user.create_user_at_sign_in(user_info['username'], semester)
+            student = self.user.get_user_by_username(student_info['username'])
+            if not student:
+                student = self.user.create_user_at_sign_in(student_info['username'], semester)
         # No card so now we get the user via CAS
         else:
             if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
                 form = request.form
-                student = form.get('selected-student')
-                if student == '-1':
+                student_choice = form.get('selected-student')
+                if student_choice == '-1':
                     self.slc.set_alert('danger', 'Invalid Student')
                     return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-                user = self.user.get_user(student)
+                student = self.user.get_user(student_choice)
             else:
-                user = self.user.get_user_by_username(flask_session['USERNAME'])
-        if self.session.student_currently_signed_in(session_id, user.id):
+                student = self.user.get_user_by_username(flask_session['USERNAME'])
+        if self.session.student_currently_signed_in(session_id, student.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
-        student_courses = self.user.get_student_courses(user.id, semester.id)
+        student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
+        if student.deletedAt != None:
+            self.user.activate_existing_user(student.username)
         return render_template('sessions/student_sign_in.html', **locals())
     #
     # # todo: CLEAN THIS UP!!!!
