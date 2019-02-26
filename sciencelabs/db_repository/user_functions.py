@@ -184,6 +184,12 @@ class User:
     def set_user_roles(self, user_id, roles):
         for role in roles:
             role_entry = self.get_role_by_name(role)
+            role_exists = db_session.query(user_role_Table)\
+                .filter(user_role_Table.user_id == user_id)\
+                .filter(user_role_Table.role_id == role_entry.id)\
+                .one_or_none()
+            if role_exists:
+                continue
             user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
             db_session.add(user_role)
         db_session.commit()
@@ -452,4 +458,27 @@ class User:
             if not already_viewing:
                 course_viewer = CourseViewer_Table(course_id=course, user_id=user_id)
                 db_session.add(course_viewer)
+        db_session.commit()
+
+    def deactivate_students(self):
+        students = db_session.query(User_Table)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student')\
+            .filter(User_Table.deletedAt == None)\
+            .all()
+        for student in students:
+            roles = db_session.query(user_role_Table).filter(user_role_Table.user_id == student.id).all()
+            if len(roles) == 1:  # This means that 'Student' is their only role
+                student.deletedAt = datetime.now()
+        db_session.commit()
+
+    def demote_tutors(self):
+        lead_roles = db_session.query(user_role_Table)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Lead Tutor')\
+            .all()
+        for lead_role in lead_roles:
+            db_session.delete(lead_role)
         db_session.commit()

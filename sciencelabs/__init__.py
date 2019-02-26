@@ -81,6 +81,8 @@ def before_request():
             current_user = User().get_user_by_username(username)
             if not current_user:
                 current_user = User().create_user_at_sign_in(username, active_semester)
+            if current_user.deletedAt != None:  # User has been soft deleted in the past, needs reactivating
+                User().activate_existing_user(current_user.username)
             flask_session['USERNAME'] = current_user.username
             flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
             flask_session['USER-ROLES'] = []
