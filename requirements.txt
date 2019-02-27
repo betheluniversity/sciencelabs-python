@@ -9,4 +9,3 @@ blinker
 mysqlclient
 cx_Oracle
 requests
-Cookie

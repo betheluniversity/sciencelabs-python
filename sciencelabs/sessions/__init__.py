@@ -339,12 +339,12 @@ class SessionView(FlaskView):
         self.session.tutor_sign_in(session_id, opener.id)
         self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
                            ') opened successfully')
-        # self.logout()
+
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
-        return self._logout_caleb(
+        return self._logout_open_session(
             url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -362,6 +362,11 @@ class SessionView(FlaskView):
 
         return render_template('sessions/student_attendance.html', **locals())
 
+    @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    def tutor_attendance_passthrough(self, session_id, session_hash):
+        return self._logout_open_session(
+            url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+
     @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
@@ -372,7 +377,7 @@ class SessionView(FlaskView):
         # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
         env = app.config['ENVIRON']
-        # self.logout()
+
         return render_template('sessions/tutor_attendance.html', **locals())
 
     @route('/close_session/<int:session_id>/<session_hash>', methods=['get', 'post'])
@@ -419,32 +424,31 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to restore session: ' + str(error))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/checkin/<int:session_id>/<session_hash>', methods=['get'])
-    # @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
-    def student_sign_in(self, session_id, session_hash):
+    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    def student_sign_in(self, session_id, session_hash, card_id):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
-        # if card_id != 'cas-auth':  # This is the same regardless of prod/dev
-        #     try:
-        #         user_info = self.wsapi.get_user_from_prox(card_id)
-        #     except:
-        #         self.slc.set_alert('danger', 'Card not recognized')
-        #         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-        #     user = self.user.get_user_by_username(user_info['username'])
-        #     if not user:
-        #         user = self.user.create_user_at_sign_in(user_info['username'], semester)
-        # # No card so now we get the user via CAS
-        # else:
-        #     if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
-        #         form = request.form
-        #         student = form.get('selected-student')
-        #         if student == '-1':
-        #             self.slc.set_alert('danger', 'Invalid Student')
-        #             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-        #         user = self.user.get_user(student)
-        #     else:
+        if card_id != 'cas-auth':  # This is the same regardless of prod/dev
+            try:
+                user_info = self.wsapi.get_user_from_prox(card_id)
+            except:
+                self.slc.set_alert('danger', 'Card not recognized')
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            user = self.user.get_user_by_username(user_info['username'])
+            if not user:
+                user = self.user.create_user_at_sign_in(user_info['username'], semester)
+        # No card so now we get the user via CAS
+        else:
+            if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
+                form = request.form
+                student = form.get('selected-student')
+                if student == '-1':
+                    self.slc.set_alert('danger', 'Invalid Student')
+                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                user = self.user.get_user(student)
+            else:
+                user = self.user.get_user_by_username(flask_session['USERNAME'])
 
-        user = self.user.get_user_by_username(flask_session['USERNAME'])
         if self.session.student_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
@@ -458,28 +462,10 @@ class SessionView(FlaskView):
 
         return render_template('sessions/student_sign_in.html', **locals())
 
-    # # todo: CLEAN THIS UP!!!!
-    # # TODO: this is caleb's method to get this code working
-    # # the assets in the url is to ensure that this route is NOT CAS Authenticated
-    # # This method is NOT CAS authenticated. It is used as a pass through, to build a proper "logout" pathway
-    # @route('/assets/authenticate-pre-sign-in/<session_id>/<session_hash>/<user>', methods=['get', 'post'])
-    # def authenticate_pre_sign_in(self, session_id, session_hash, user):
-    #     # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-    #     alert = flask_session['ALERT']
-    #     username = flask_session['USERNAME']
-    #     flask_session.clear()
-    #     flask_session['ALERT'] = alert
-    #     flask_session['USERNAME'] = username
-    #
-    #     resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url + url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user=user)))
-    #     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-    #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-    #     return resp
-
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
     def authenticate_sign_in(self, session_id, session_hash, user_type):\
-        return self._logout_caleb(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
+        return self._logout_open_session(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
     @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
     def store_username(self, session_id, session_hash, user_type, username):
@@ -524,7 +510,7 @@ class SessionView(FlaskView):
                 user_info = self.wsapi.get_user_from_prox(card_id)
             except:
                 self.slc.set_alert('danger', 'Card not recognized')
-                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+                return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             user = self.user.get_user_by_username(user_info['username'])
         else:
             if app.config['ENVIRON'] == 'prod':
@@ -535,22 +521,22 @@ class SessionView(FlaskView):
                 tutor_id = form.get('selected-tutor')
                 if tutor_id == '-1':
                     self.slc.set_alert('danger', 'Invalid Tutor')
-                    return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+                    return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
                 user = self.user.get_user(tutor_id)
         if not user or not self.user.user_is_tutor(user.id):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
-            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, user.id):
             self.slc.set_alert('danger', 'Tutor currently signed in')
-            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, user.id)
 
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
         self.session.tutor_sign_out(session_id, tutor_id)
-        return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/verify_scanner', methods=['post'])
     def verify_scanner(self):
@@ -562,38 +548,16 @@ class SessionView(FlaskView):
         else:
             return 'failed'
 
-    # This logout method is specific to the open session
-    # def logout(self):
-    #     # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-    #     alert = flask_session['ALERT']
-    #     flask_session.clear()
-    #     flask_session['ALERT'] = alert
-    #
-    #     resp = make_response(redirect(app.config['LOGOUT_URL']))
-    #     resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0)
-    #     resp.set_cookie('MOD_AUTH_CAS', '', expires=0)
-    #     return resp
-
-    def _logout_caleb(self, service_path):
+    def _logout_open_session(self, service_path):
         # Alerts getting cleared out during open session logouts, so in those cases we're saving the alert.
-        alert = flask_session['ALERT']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
+        self._session_clear_save_alert()
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
-        resp.set_cookie('MOD_AUTH_CAS', '', expires="Thu, 01 Jan 2010 00:00:00 UTC", path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/cslab')
         return resp
-
-        # return redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path)
 
     def _session_clear_save_alert(self):
         alert = flask_session['ALERT']
         flask_session.clear()
         flask_session['ALERT'] = alert
-
-    def clear(self):
-        resp = make_response(redirect("https://tutorlabs.xp.bethel.edu/cslab/session/no-cas/student-attendance/12239/NRqN1pDy0oFIF"))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/cslab', domain='tutorlabs.xp.bethel.edu')
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/cslab', domain='tutorlabs.xp.bethel.edu')
-        return resp
