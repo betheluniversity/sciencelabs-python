@@ -2,7 +2,7 @@
 
 {% block subnav %}
     <a id="student" class="nav-item nav-link active"
-       href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+       href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
     <a id="tutor" class="nav-item nav-link disabled"
        href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
 {% endblock %}
@@ -18,10 +18,8 @@
 {% block body_content %}
     {# Two routes here, one for prod that gets cas auth, one for dev for testing purposes #}
     {# TODO: This is a bit sloppy #}
-    <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user='student')
-            if env == 'prod' else url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user='cas-auth') }}" method="post">
-{#  TODO: This was caleb's test to see if we could hack it  #}
-{#    <form action="https://auth-prod.bethel.edu/cas/logout?service=https%3A%2F%2Ftutorlabs.xp.bethel.edu%2F%2Fcslab%2Fsession%2Fauthenticate-sign-in%2F12235%2FG8FZXKzrMD3I2%2Fcas-auth" method="post">#}
+    <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='student')
+            if env == 'prod' else url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
             <div>
                 <label for="student-select">Select a student to sign in:</label>

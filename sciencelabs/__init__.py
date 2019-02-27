@@ -67,10 +67,10 @@ def before_request():
     if '/static/' in request.path \
             or '/assets/' in request.path \
             or '/cron/' in request.path \
-            or '/checkin/' in request.path \
-            or '/student-attendance/' in request.path \
-            or '/tutor-attendance/' in request.path:
-        flask_session['ALERT'] = None
+            or '/no-cas/' in request.path:
+
+        if not flask_session.get('ALERT'):
+            flask_session['ALERT'] = None
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():

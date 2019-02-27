@@ -62,10 +62,9 @@
                         {% endif %}
                         <a class="dropdown-item dd-background yellow" href="{{ url_for('View:logout') }}">Logout</a>
                     </div>
-                {% else %}
-                    {% if 'student-attendance' not in request.path and 'tutor-attendance' not in request.path and '/checkin/' not in request.path %}
-                        <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
-                    {% endif %}
+                {# todo: should this exist? Do we ever need to actually use it? #}
+                {% elif 'student-attendance' not in request.path and 'tutor-attendance' not in request.path and '/checkin/' not in request.path %}
+                    <a class="nav-link dd-background yellow" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
                 {% endif %}
 
             </div>
