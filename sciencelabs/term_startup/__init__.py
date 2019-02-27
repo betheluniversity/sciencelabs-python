@@ -4,6 +4,7 @@ from flask_classy import FlaskView, route
 
 # Local
 from sciencelabs.db_repository.schedule_functions import Schedule
+from sciencelabs.db_repository.user_functions import User
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -13,6 +14,7 @@ class TermStartupView(FlaskView):
     def __init__(self):
         self.schedule = Schedule()
         self.slc = ScienceLabsController()
+        self.user = User()
 
     @route('/1/')
     def index(self):
@@ -39,17 +41,20 @@ class TermStartupView(FlaskView):
 
         return render_template('term_startup/step_four.html')
 
-    @route('/set_term', methods=['post'])
+    @route('/set-term', methods=['post'])
     def set_term(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        form = request.form
+        term = form.get('term')
+        year = form.get('year')
+        start_date = form.get('start-date')
+        end_date = form.get('end-date')
+
         try:
-            form = request.form
-            term = form.get('term')
-            year = form.get('year')
-            start_date = form.get('start-date')
-            end_date = form.get('end-date')
-            self.schedule.set_current_term(term, year, start_date, end_date)
+            self.schedule.set_current_term(term, year, start_date, end_date)  # Sets the new term to active
+            self.user.deactivate_students()  # Soft deletes all students
+            self.user.demote_tutors()  # Demotes all lead tutors to regular tutors
             self.slc.set_alert('success', 'Term set successfully!')
             return redirect(url_for('TermStartupView:step_two'))
         except Exception as error:

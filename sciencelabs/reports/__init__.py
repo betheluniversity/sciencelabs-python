@@ -25,25 +25,29 @@ class ReportView(FlaskView):
         self.session_ = Session()
         self.slc = ScienceLabsController()
 
+    @route('/')
     def index(self):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
 
         return render_template('reports/base.html', **locals())
 
+    @route('/student')
     def student(self):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
         student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
+
         student_and_attendance = {}
         for student in student_info:
             student_and_attendance[student] = len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))
+
         return render_template('reports/student.html', **locals())
 
     @route('/student/<int:student_id>')
@@ -51,22 +55,37 @@ class ReportView(FlaskView):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
         student = self.user.get_user(student_id)
-        student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
-        total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
-        courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
-        sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
-        sessions_attended = len(self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
-        course_and_avg_time = {}
-        for course in courses:
-            course_and_avg_time[course] = self.user.get_average_time_in_course(student.id, course.id)
-        sessions_and_courses = {}
-        for studentsession, lab_session in sessions:
-            sessions_and_courses[studentsession] = {}
-            sessions_and_courses[studentsession]['session'] = lab_session
-            sessions_and_courses[studentsession]['courses'] = self.session_.get_report_student_session_courses(lab_session.id, student.id)
+        viewer = self.user.get_user_by_username(flask_session['USERNAME'])
+
+        # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
+        if 'Administrator' in flask_session['USER-ROLES'] \
+                or 'Academic Counselor' in flask_session['USER-ROLES'] \
+                or ('Professor' in flask_session['USER-ROLES'] and flask_session['NAME'] and self.courses.student_is_in_prof_course(student_id, viewer.id)) \
+                or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
+            role_can_view = True
+            student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
+            courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
+            sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
+            sessions_attended = len(self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
+
+            course_and_avg_time = {}
+            for course in courses:
+                course_and_avg_time[course] = self.user.get_average_time_in_course(student.id, course.id)
+
+            sessions_and_courses = {}
+            for studentsession, lab_session in sessions:
+                sessions_and_courses[studentsession] = {}
+                sessions_and_courses[studentsession]['session'] = lab_session
+                sessions_and_courses[studentsession]['courses'] = self.session_.get_report_student_session_courses(lab_session.id, student.id)
+
+        else:
+            role_can_view = False
+
         return render_template('reports/view_student.html', **locals())
 
     def export_student_csv(self):
@@ -88,11 +107,12 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
+    @route('/semester')
     def semester(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
 
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
@@ -196,8 +216,8 @@ class ReportView(FlaskView):
                     attendance += len(self.session_.get_number_of_student_sessions(sess.id))
             total_anon += anonStudents
             session_count += sessions
-            my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
-                            self.datetimeformatter(schedule.startTime), self.datetimeformatter(schedule.endTime),
+            my_list.append([schedule.name, self._get_dayofweek(schedule.dayofWeek),
+                            self._datetimeformatter(schedule.startTime), self._datetimeformatter(schedule.endTime),
                             sessions,
                             attendance + anonStudents,
                             str(round((((attendance + anonStudents) / all_total_attendance) * 100))) + '%'])
@@ -209,8 +229,8 @@ class ReportView(FlaskView):
 
         total_unscheduled = 0
         for sessions in unscheduled_sessions:
-            my_list.append(['', sessions.date.strftime('%m/%d/%Y'), self.datetimeformatter(sessions.startTime),
-                            self.datetimeformatter(sessions.endTime),
+            my_list.append(['', sessions.date.strftime('%m/%d/%Y'), self._datetimeformatter(sessions.startTime),
+                            self._datetimeformatter(sessions.endTime),
                             len(self.user.get_session_students(sessions.id)) + sessions.anonStudents])
             total_unscheduled += len(self.user.get_session_students(sessions.id)) + sessions.anonStudents
 
@@ -222,7 +242,7 @@ class ReportView(FlaskView):
     def month(self, year, month):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        self.set_semester_selector(year, month)
+        self._set_semester_selector(year, month)
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         month = month
         year = sem.year
@@ -307,9 +327,9 @@ class ReportView(FlaskView):
                 if schedule and session_schedule:
                     if schedule.id == session_schedule.id:
                         total_attendance_per_schedule += attendance.count() + session_info.anonStudents
-            my_list.append([schedule.name, self.get_dayofweek(schedule.dayofWeek),
-                            self.datetimeformatter(schedule.startTime) + ' - ' +
-                            self.datetimeformatter(schedule.endTime),
+            my_list.append([schedule.name, self._get_dayofweek(schedule.dayofWeek),
+                            self._datetimeformatter(schedule.startTime) + ' - ' +
+                            self._datetimeformatter(schedule.endTime),
                             total_attendance_per_schedule,
                             str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%'])
 
@@ -360,20 +380,21 @@ class ReportView(FlaskView):
             total_attendance += attendance.count() + session_info.anonStudents
             sel_year, sel_month, sel_day = str(session_info.date).split('-')
             my_list.append([session_info.name, session_info.date.strftime('%m/%d/%Y'),
-                            (self.get_dayofweek((cal.weekday(int(sel_year), int(sel_month), int(sel_day)) + 1) % 7)),
-                            self.datetimeformatter(session_info.schedStartTime) +
-                            ' - ' + self.datetimeformatter(session_info.schedStartTime), attendance.count() +
+                            (self._get_dayofweek((cal.weekday(int(sel_year), int(sel_month), int(sel_day)) + 1) % 7)),
+                            self._datetimeformatter(session_info.schedStartTime) +
+                            ' - ' + self._datetimeformatter(session_info.schedStartTime), attendance.count() +
                             session_info.anonStudents])
 
         my_list.append(['', '', 'Total:', total_attendance])
 
         return self.export_csv(my_list, csv_name)
 
+    @route('/annual')
     def annual(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()  # Needed for subnav
+        month = self._get_selected_month()  # Needed for subnav
         year = sem.year  # Needed for subnav
         cumulative_list = self.build_cumulative_list()
         return render_template('reports/cumulative.html', **locals())
@@ -513,11 +534,12 @@ class ReportView(FlaskView):
 
         return my_list
 
+    @route('/session')
     def session(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
         months = self.base.months
         sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
@@ -534,7 +556,7 @@ class ReportView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
 
         session_info = self.session_.get_session(session_id)
@@ -593,19 +615,39 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
+    @route('/course')
     def course(self):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+
+        # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
+        if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES']\
+                or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
+            course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+            course_viewer_info = None
+
+        else:  # They must be a professor
+            prof = self.user.get_user_by_username(flask_session['USERNAME'])
+            course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
+            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'], prof.id)
+
         courses_and_attendance = {}
         for course, course_user in course_info:
             courses_and_attendance[course] = {}
             courses_and_attendance[course]['user'] = course_user
             courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
+        if course_viewer_info:
+            for course, course_user in course_viewer_info:
+                courses_and_attendance[course] = {}
+                courses_and_attendance[course]['user'] = course_user
+                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
         return render_template('reports/course.html', **locals())
 
     @route('/course/<int:course_id>')
@@ -613,22 +655,25 @@ class ReportView(FlaskView):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        month = self.get_selected_month()
+        month = self._get_selected_month()
         year = sem.year
 
         course = self.courses.get_course(course_id)
         students = self.user.get_students_in_course(course_id)
+
         students_and_time = {}
         for student, attendance in students:
             students_and_time[student] = {}
             students_and_time[student]['attendance'] = attendance
             students_and_time[student]['time'] = self.user.get_average_time_in_course(student.id, course[0].id)
+
         sessions = self.session_.get_sessions(course_id)
         sessions_and_attendance = {}
         for lab_session, schedule in sessions:
             sessions_and_attendance[lab_session] = {}
             sessions_and_attendance[lab_session]['schedule'] = schedule
             sessions_and_attendance[lab_session]['attendance'] = self.session_.get_session_attendees_with_dup(course[0].id, lab_session.id)
+
         return render_template('reports/view_course.html', **locals())
 
     def export_course_session_csv(self, course_id):
@@ -649,9 +694,9 @@ class ReportView(FlaskView):
 
         total_attendance = 0
         for sess, schedule in sessions:
-            sub_list = [sess.date.strftime('%m/%d/%Y'), self.get_dayofweek(schedule.dayofWeek),
-                        self.datetimeformatter(sess.schedStartTime) + ' - ' +
-                        self.datetimeformatter(sess.schedEndTime)]
+            sub_list = [sess.date.strftime('%m/%d/%Y'), self._get_dayofweek(schedule.dayofWeek),
+                        self._datetimeformatter(sess.schedStartTime) + ' - ' +
+                        self._datetimeformatter(sess.schedEndTime)]
             attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, sess.id)
             sub_list.append(len(attendance_per_session))
             total_attendance += len(attendance_per_session)
@@ -719,7 +764,7 @@ class ReportView(FlaskView):
                 mimetype="text/csv",
                 headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
 
-    def get_selected_month(self):
+    def _get_selected_month(self):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term
         if term == 'Interim':
@@ -731,17 +776,17 @@ class ReportView(FlaskView):
         else:
             return 6
 
-    def get_dayofweek(self, day_value):
+    def _get_dayofweek(self, day_value):
         day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         return day[day_value]
 
-    def datetimeformatter(self, value, custom_format='%l:%M%p'):
+    def _datetimeformatter(self, value, custom_format='%l:%M%p'):
         if value:
             return (datetime.min + value).strftime(custom_format)
         else:
             return '???'
 
-    def set_semester_selector(self, year, month):
+    def _set_semester_selector(self, year, month):
         if month == 1:
             term = 'Interim'
         elif month in (2, 3, 4, 5):
