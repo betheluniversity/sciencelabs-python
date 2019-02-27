@@ -551,8 +551,8 @@ class SessionView(FlaskView):
         self._session_clear_save_alert()
 
         resp = make_response(redirect(app.config['LOGOUT_URL'] + '?service=' + request.host_url[:-1] + service_path))
-        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/cslab')
-        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/cslab')
+        resp.set_cookie('MOD_AUTH_CAS_S', '', expires=0, path='/')
+        resp.set_cookie('MOD_AUTH_CAS', '', expires=0, path='/')
         return resp
 
     def _session_clear_save_alert(self):
