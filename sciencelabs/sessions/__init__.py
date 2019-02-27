@@ -456,9 +456,7 @@ class SessionView(FlaskView):
         time_in = datetime.now().strftime("%I:%M%p")
 
         # clear the session
-        alert = flask_session['ALERT']
-        flask_session.clear()
-        flask_session['ALERT'] = alert
+        self._session_clear_save_alert()
 
         return render_template('sessions/student_sign_in.html', **locals())
 
