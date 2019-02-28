@@ -299,9 +299,16 @@ class Session:
             .filter(Session_Table.date.between(start_date, end_date))
 
     def get_years(self):
-        return db_session.query(Semester_Table.year)\
+        years = db_session.query(Semester_Table.year)\
             .order_by(Semester_Table.year.desc())\
             .distinct()
+        years_to_return = []
+        for year in years:
+            if app.config['LAB_TITLE'] != 'Computer Science Lab':
+                years_to_return.append(year)
+            elif year.id not in [1, 2, 3, 4]:  # Must be computer science, check for semesters we don't want to pull
+                years_to_return.append(year)
+        return years_to_return
 
     def get_monthly_sessions_attendance(self, start_date, end_date):
         return (db_session.query(StudentSession_Table)
