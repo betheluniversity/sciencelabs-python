@@ -430,9 +430,9 @@ class SessionView(FlaskView):
             except:
                 self.slc.set_alert('danger', 'Card not recognized')
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-            student = self.user.get_user_by_username(user_info['username'])
+            student = self.user.get_user_by_username(student_info['username'])
             if not student:
-                student = self.user.create_user_at_sign_in(user_info['username'], semester)
+                student = self.user.create_user_at_sign_in(student_info['username'], semester)
         # No card so now we get the user via CAS
         else:
             if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
@@ -503,29 +503,29 @@ class SessionView(FlaskView):
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
-                user_info = self.wsapi.get_user_from_prox(card_id)
+                tutor_info = self.wsapi.get_user_from_prox(card_id)
             except:
                 self.slc.set_alert('danger', 'Card not recognized')
                 return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-            user = self.user.get_user_by_username(user_info['username'])
+            tutor = self.user.get_user_by_username(tutor_info['username'])
         else:
             if app.config['ENVIRON'] == 'prod':
                 username = request.environ.get('REMOTE_USER')
-                user = self.user.get_user_by_username(username)
+                tutor = self.user.get_user_by_username(username)
             else:
                 form = request.form
                 tutor_id = form.get('selected-tutor')
                 if tutor_id == '-1':
                     self.slc.set_alert('danger', 'Invalid Tutor')
                     return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-                user = self.user.get_user(tutor_id)
-        if not user or not self.user.user_is_tutor(user.id):
+                tutor = self.user.get_user(tutor_id)
+        if not tutor or not self.user.user_is_tutor(tutor.id):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-        if self.session.tutor_currently_signed_in(session_id, user.id):
+        if self.session.tutor_currently_signed_in(session_id, tutor.id):
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-        self.session.tutor_sign_in(session_id, user.id)
+        self.session.tutor_sign_in(session_id, tutor.id)
 
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
