@@ -420,6 +420,10 @@ class ReportView(FlaskView):
                       'spring': 0, '6': 0, '7': 0, 'summer': 0, 'total': 0}
 
         semesters = self.session_.get_years()
+        if app.config['LAB_TITLE'] == 'Computer Science Lab':
+            for semester in semesters:
+                if semester.id in [1, 2, 3, 4]:
+                    semesters.remove(semester)
         for semester in semesters:
             sub_list = [str(semester.year) + '-' + str(semester.year + 1)]
             fall_total = 0
