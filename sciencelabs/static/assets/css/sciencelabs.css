@@ -256,6 +256,10 @@ ul.no-margin {
     top: 35%;
 }
 
+.col-md-4 {
+    margin-right: none;
+}
+
 .csv-button.btn.btn-primary {
    border-radius: 0;
    margin: -5px 0 0 0;
@@ -263,6 +267,13 @@ ul.no-margin {
    right: 10px;
    background-color: #0F2C52;
    border-color: #0c2342;
+}
+
+/* This needs to be below '.csv-button.btn.btn-primary' */
+.btn.btn-primary, .csv-button.btn.btn-primary {
+    background-color: #0056B5;
+    border-color: #0056B5;
+    border-radius: 4px !important;
 }
 
 .custom-user-div {
@@ -277,12 +288,16 @@ ul.no-margin {
 .custom-user-nav {
     padding: 0 10px;
     background-color: tomato;
-    /*text-align: center;*/
 }
 
-.dd-background:hover {
-    background-color: #0F2C52;
-    text-decoration: underline;
+.dd-background {
+    color: #777;
+}
+
+.dd-background:hover, .dd-background:focus {
+    background-color: #f8f9fa;
+    text-decoration: none;
+    color: #777;
 }
 
 .disabled {
@@ -336,12 +351,16 @@ ul.no-margin {
     color: #6c757d;
 }
 
+.nav.margins {
+    padding: 0 2em;
+}
+
 .navbar {
     padding: 1em 2em !important;
 }
 
-.nav-bar-active {
-    background-color: #0F2C52;
+.navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .nav-link:hover {
+    text-decoration: underline;
 }
 
 .no-border-top {
@@ -374,20 +393,25 @@ ul.no-margin {
     border-right: 2px solid #000000 !important;
 }
 
+.row, .form-row {
+    width: 100%;
+    margin: 0;
+}
+
 .side-borders {
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
 }
 
 .sign-in {
-    background-color: #FFC600;
-    border-color: #FFC600;
+    background-color: #FFC600 !important;
+    border-color: #FFC600 !important;
     color: black;
 }
 
 .sign-in:hover{
-    background-color: #ffae1f;
-    border-color: #ffae1f;
+    background-color: #ffae1f !important;
+    border-color: #ffae1f !important;
     color: black;
 }
 

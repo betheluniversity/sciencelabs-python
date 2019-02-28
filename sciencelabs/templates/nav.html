@@ -11,60 +11,60 @@
             <ul class="navbar-nav mr-auto">
                 {% if 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] %}
                 <li class="nav-item">
-                    <a id="session" class="dd-background nav-link button {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint }}"
+                    <a id="session" class="nav-link button {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint }}"
                        href="{{ url_for('SessionView:index') }}">Session</a>
                 </li>
                 {% endif %}
                 {% if 'Professor' in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] %}
                 <li>
-                    <a id="reports" class="dd-background nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
+                    <a id="reports" class="nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
                        href="{{ url_for('ReportView:course') }}">Course Reports</a>
                 </li>
                 {% endif %}
                 {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
                 <li class="nav-item">
-                    <a id="reports" class="dd-background nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
+                    <a id="reports" class="nav-link button {{ 'nav-bar-active' if 'ReportView' in request.url_rule.endpoint }}"
                        href="{{ url_for('ReportView:index') }}">Reports</a>
                 </li>
                 {% endif %}
                 {% if 'Administrator' in session['USER-ROLES'] %}
                 <li class="nav-item">
-                    <a id="users" class="dd-background nav-link button {{ 'nav-bar-active' if 'UsersView' in request.url_rule.endpoint }}"
+                    <a id="users" class="nav-link button {{ 'nav-bar-active' if 'UsersView' in request.url_rule.endpoint }}"
                        href="{{ url_for('UsersView:index') }}">Users</a>
                 </li>
                 <li class="nav-item">
-                    <a id="schedule" class="dd-background nav-link button {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint }}"
+                    <a id="schedule" class="nav-link button {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint }}"
                        href="{{ url_for('ScheduleView:index') }}">Schedule</a>
                 </li>
                 <li class="nav-item">
-                    <a id="term-startup" class="dd-background nav-link button {{ 'nav-bar-active' if 'TermStartupView' in request.url_rule.endpoint }}"
+                    <a id="term-startup" class="nav-link button {{ 'nav-bar-active' if 'TermStartupView' in request.url_rule.endpoint }}"
                        href="{{ url_for('TermStartupView:index') }}">Term Startup</a>
                 </li>
                 <li class="nav-item">
-                    <a id="courses" class="dd-background nav-link button {{ 'nav-bar-active' if 'CourseView' in request.url_rule.endpoint }}"
+                    <a id="courses" class="nav-link button {{ 'nav-bar-active' if 'CourseView' in request.url_rule.endpoint }}"
                        href="{{ url_for('CourseView:index') }}">Courses</a>
                 </li>
                 <li class="nav-item">
-                    <a id="email" class="dd-background nav-link button {{ 'nav-bar-active' if 'EmailView' in request.url_rule.endpoint }}"
+                    <a id="email" class="nav-link button {{ 'nav-bar-active' if 'EmailView' in request.url_rule.endpoint }}"
                        href="{{ url_for('EmailView:index') }}">Email</a>
                 </li>
                 {% endif %}
             </ul>
             <div class="form-inline nav-item dropdown">
                 {% if session['NAME'] %}
-                    <a class="nav-link dd-background dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
                         {{ session['NAME'] }}</a>
-                    <div class="dropdown-menu background-blue" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item dd-background" href="{{ url_for('ProfileView:index') }}">My Profile</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{ url_for('ProfileView:index') }}">My Profile</a>
                         {% if 'Administrator' in session['USER-ROLES'] %}
-                            <a class="dropdown-item dd-background" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
+                            <a class="dropdown-item" href="{{ url_for('ProfileView:role_viewer') }}">Act As A Role</a>
                         {% endif %}
-                        <a class="dropdown-item dd-background" href="{{ url_for('View:logout') }}">Logout</a>
+                        <a class="dropdown-item" href="{{ url_for('View:logout') }}">Logout</a>
                     </div>
                 {% else %}
                     {% if 'student-attendance' not in request.path and 'tutor-attendance' not in request.path and '/checkin/' not in request.path %}
-                        <a class="nav-link dd-background" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
+                        <a class="nav-link" id="navbarLogin" role="button" href="{{ url_for('View:index') }}">Login</a>
                     {% endif %}
                 {% endif %}
 
