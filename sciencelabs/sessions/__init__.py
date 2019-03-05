@@ -492,7 +492,7 @@ class SessionView(FlaskView):
         time_in = form.get('timeIn')
         if student_courses == [] and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
-            return redirect(url_for('SessionView:student_sign_in', session_id=session_id, session_hash=session_hash, card_id=card_id))
+            return 'failed'
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
 
         return 'success'
