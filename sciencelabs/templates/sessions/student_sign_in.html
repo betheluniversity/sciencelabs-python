@@ -73,8 +73,6 @@
                 var jsonCourseIDs = JSON.stringify(courseIDs);
                 var otherCourseCheck = $('#other').prop('checked');
                 var signInInfo = {
-                    'sessionID': {{ session_id }},
-                    'sessionHash': '{{ session_hash }}',
                     'username': '{{ student.username }}',
                     'cardID': '{{ card_id }}',
                     'studentID': {{ student.id }},
@@ -88,6 +86,7 @@
                     if(result === 'success') {
                         window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
                     }else{
+                        // The 'true' in this forces the reload no matter what
                         window.location.reload(true);
                     }
                 });
