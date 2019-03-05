@@ -79,16 +79,12 @@ class User:
             .all()
 
     def get_student_courses(self, student_id, semester_id):
-        student_courses = db_session.query(Course_Table)\
+        return db_session.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
             .all()
-        student_courses_to_return = []
-        for course in student_courses:
-            student_courses_to_return.append(course)
-        return student_courses_to_return
 
 
     def get_students_in_course(self, course_id):
@@ -174,18 +170,17 @@ class User:
             .filter(User_Table.username == username)\
             .one()
         user.deletedAt = None
-        user_roles = self.get_user_roles(user.id)
-        for role in user_roles:
-            if role.name == 'Student':
-                self.set_student_courses(user)
+        if self.user_is_student(user.id):
+            self.set_student_courses(user)
         db_session.commit()
 
     def set_student_courses(self, student):
         active_semester = self.get_active_semester()
         student_lab_courses = self.get_student_courses(student.id, active_semester.id)
-        if student_lab_courses == []:  # No courses in db so check banner
+        if not student_lab_courses:  # No courses in db so check banner
             student_courses = self.wsapi.get_student_courses(student.username)
             for key, course in student_courses.items():
+                # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
                 if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
                         .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
@@ -479,6 +474,13 @@ class User:
                 return True
         return False
 
+    def user_is_student(self, user_id):
+        user_roles = self.get_user_roles(user_id)
+        for role in user_roles:
+            if role.name == 'Student':
+                return True
+        return False
+
     def set_course_viewer(self, user_id, viewable_courses):
         for course in viewable_courses:
             already_viewing = db_session.query(CourseViewer_Table).filter(CourseViewer_Table.user_id == user_id)\
@@ -512,13 +514,8 @@ class User:
         db_session.commit()
 
     def check_or_create_student_role(self, student_id):
-        roles = self.get_user_roles(student_id)
-        for role in roles:
-            if role.name == 'Student':
-                return True
-        # if we make it this far they don't have the student role
-        student_role = self.get_role_by_name('Student')
-        user_student_role = user_role_Table(user_id=student_id, role_id=student_role.id)
-        db_session.add(user_student_role)
-        db_session.commit()
-        return False
+        if not self.user_is_student(student_id):
+            student_role = self.get_role_by_name('Student')
+            user_student_role = user_role_Table(user_id=student_id, role_id=student_role.id)
+            db_session.add(user_student_role)
+            db_session.commit()
