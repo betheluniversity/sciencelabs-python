@@ -106,7 +106,7 @@ class Schedule:
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName) \
             .filter(User_Table.id == user_role_Table.user_id) \
             .filter(user_role_Table.role_id == Role_Table.id) \
-            .filter(Role_Table.name == "Student") \
+            .filter(Role_Table.name == 'Student') \
             .filter(User_Table.deletedAt == None)\
             .order_by(User_Table.lastName)\
             .distinct()

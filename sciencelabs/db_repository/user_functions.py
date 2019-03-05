@@ -86,6 +86,7 @@ class User:
             .filter(Semester_Table.id == semester_id)\
             .all()
 
+
     def get_students_in_course(self, course_id):
         return db_session.query(User_Table, func.count(User_Table.id))\
             .filter(Course_Table.id == course_id)\
@@ -169,7 +170,29 @@ class User:
             .filter(User_Table.username == username)\
             .one()
         user.deletedAt = None
+        if self.user_is_student(user.id):
+            self.set_student_courses(user)
         db_session.commit()
+
+    def set_student_courses(self, student):
+        active_semester = self.get_active_semester()
+        student_lab_courses = self.get_student_courses(student.id, active_semester.id)
+        if not student_lab_courses:  # No courses in db so check banner
+            student_courses = self.wsapi.get_student_courses(student.username)
+            for key, course in student_courses.items():
+                # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
+                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                        .filter(CourseCode_Table.dept == course['subject'])\
+                        .filter(CourseCode_Table.active == 1).one_or_none():
+                    course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                        .filter(Course_Table.semester_id == active_semester.id).one_or_none()
+                    if course_entry:
+                        new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                        db_session.add(new_user_course)
+                        db_session.commit()
+
+    def get_active_semester(self):
+        return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
@@ -451,6 +474,13 @@ class User:
                 return True
         return False
 
+    def user_is_student(self, user_id):
+        user_roles = self.get_user_roles(user_id)
+        for role in user_roles:
+            if role.name == 'Student':
+                return True
+        return False
+
     def set_course_viewer(self, user_id, viewable_courses):
         for course in viewable_courses:
             already_viewing = db_session.query(CourseViewer_Table).filter(CourseViewer_Table.user_id == user_id)\
@@ -482,3 +512,10 @@ class User:
         for lead_role in lead_roles:
             db_session.delete(lead_role)
         db_session.commit()
+
+    def check_or_create_student_role(self, student_id):
+        if not self.user_is_student(student_id):
+            student_role = self.get_role_by_name('Student')
+            user_student_role = user_role_Table(user_id=student_id, role_id=student_role.id)
+            db_session.add(user_student_role)
+            db_session.commit()
