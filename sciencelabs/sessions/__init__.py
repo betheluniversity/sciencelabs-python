@@ -453,6 +453,9 @@ class SessionView(FlaskView):
         if user.deletedAt != None:
             self.user.activate_existing_user(user.username)
 
+        # Check to make sure the user has the Student role, add it if they don't
+        self.user.check_or_create_student_role(user.id)
+
         # clear the session
         self._session_clear_save_alert()
 

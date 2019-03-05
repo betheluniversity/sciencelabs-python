@@ -482,3 +482,15 @@ class User:
         for lead_role in lead_roles:
             db_session.delete(lead_role)
         db_session.commit()
+
+    def check_or_create_student_role(self, student_id):
+        roles = self.get_user_roles(student_id)
+        for role in roles:
+            if role.name == 'Student':
+                return True
+        # if we make it this far they don't have the student role
+        student_role = self.get_role_by_name('Student')
+        user_student_role = user_role_Table(user_id=student_id, role_id=student_role.id)
+        db_session.add(user_student_role)
+        db_session.commit()
+        return False
