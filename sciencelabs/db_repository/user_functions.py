@@ -79,12 +79,17 @@ class User:
             .all()
 
     def get_student_courses(self, student_id, semester_id):
-        return db_session.query(Course_Table)\
+        student_courses = db_session.query(Course_Table)\
             .filter(student_id == user_course_Table.user_id)\
             .filter(user_course_Table.course_id == Course_Table.id)\
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
             .all()
+        student_courses_to_return = []
+        for course in student_courses:
+            student_courses_to_return.append(course)
+        return student_courses_to_return
+
 
     def get_students_in_course(self, course_id):
         return db_session.query(User_Table, func.count(User_Table.id))\
@@ -169,7 +174,30 @@ class User:
             .filter(User_Table.username == username)\
             .one()
         user.deletedAt = None
+        user_roles = self.get_user_roles(user.id)
+        for role in user_roles:
+            if role.name == 'Student':
+                self.set_student_courses(user)
         db_session.commit()
+
+    def set_student_courses(self, student):
+        active_semester = self.get_active_semester()
+        student_lab_courses = self.get_student_courses(student.id, active_semester.id)
+        if student_lab_courses == []:  # No courses in db so check banner
+            student_courses = self.wsapi.get_student_courses(student.username)
+            for key, course in student_courses.items():
+                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                        .filter(CourseCode_Table.dept == course['subject'])\
+                        .filter(CourseCode_Table.active == 1).one_or_none():
+                    course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                        .filter(Course_Table.semester_id == active_semester.id).one_or_none()
+                    if course_entry:
+                        new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                        db_session.add(new_user_course)
+                        db_session.commit()
+
+    def get_active_semester(self):
+        return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
