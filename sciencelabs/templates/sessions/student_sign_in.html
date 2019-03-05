@@ -5,7 +5,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Welcome, {{ user.firstName }} {{ user.lastName }}, please sign in.</p>
+            <p class="card-text">Welcome, {{ student.firstName }} {{ student.lastName }}, please sign in.</p>
         </div>
     </div>
 {% endblock %}
@@ -74,17 +74,19 @@
                 var otherCourseCheck = $('#other').prop('checked');
                 var signInInfo = {
                     'sessionID': {{ session_id }},
-                    'sessionHash': '{{ session_hash }}',
-                    'cardID': '{{ card_id }}',
-                    'studentID': {{ user.id }},
+                    'studentID': {{ student.id }},
                     'jsonCourseIDs': jsonCourseIDs,
                     'otherCourseCheck': otherCourseCheck,
                     'otherCourseName': $('#course-name').val(),
                     'timeIn': '{{ time_in }}'
                 };
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
-                $.post(url, signInInfo, function(){
-                    window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
+                $.post(url, signInInfo, function(result){
+                    if(result === 'success') {
+                        window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
+                    }else{
+                        window.location.reload();
+                    }
                 });
             });
 
