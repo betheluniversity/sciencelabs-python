@@ -482,8 +482,7 @@ class SessionView(FlaskView):
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
-        session_hash = form.get('sessionHash')
-        card_id = form.get('cardID')
+        username = form.get('username')
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
@@ -492,6 +491,7 @@ class SessionView(FlaskView):
         time_in = form.get('timeIn')
         if student_courses == [] and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
+            flask_session['USERNAME'] = username
             return 'failed'
         self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
 

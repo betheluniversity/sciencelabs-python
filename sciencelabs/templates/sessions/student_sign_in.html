@@ -75,6 +75,7 @@
                 var signInInfo = {
                     'sessionID': {{ session_id }},
                     'sessionHash': '{{ session_hash }}',
+                    'username': '{{ student.username }}',
                     'cardID': '{{ card_id }}',
                     'studentID': {{ student.id }},
                     'jsonCourseIDs': jsonCourseIDs,
@@ -83,8 +84,12 @@
                     'timeIn': '{{ time_in }}'
                 };
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
-                $.post(url, signInInfo, function(){
-                    window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
+                $.post(url, signInInfo, function(result){
+                    if(result === 'success') {
+                        window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
+                    }else{
+                        window.location.reload(true);
+                    }
                 });
             });
 
