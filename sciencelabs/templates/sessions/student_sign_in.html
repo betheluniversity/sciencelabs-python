@@ -5,7 +5,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body">
-            <p class="card-text">Welcome, {{ user.firstName }} {{ user.lastName }}, please sign in.</p>
+            <p class="card-text">Welcome, {{ student.firstName }} {{ student.lastName }}, please sign in.</p>
         </div>
     </div>
 {% endblock %}
@@ -76,7 +76,7 @@
                     'sessionID': {{ session_id }},
                     'sessionHash': '{{ session_hash }}',
                     'cardID': '{{ card_id }}',
-                    'studentID': {{ user.id }},
+                    'studentID': {{ student.id }},
                     'jsonCourseIDs': jsonCourseIDs,
                     'otherCourseCheck': otherCourseCheck,
                     'otherCourseName': $('#course-name').val(),
