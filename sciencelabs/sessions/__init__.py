@@ -538,7 +538,7 @@ class SessionView(FlaskView):
         self.session.tutor_sign_out(session_id, tutor_id)
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/verify-scanner', methods=['post'])
+    @route('/no-cas/verify-scanner', methods=['post'])
     def verify_scanner(self):
         form = request.form
         scan = form.get("scan")
