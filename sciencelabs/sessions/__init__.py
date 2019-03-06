@@ -514,8 +514,7 @@ class SessionView(FlaskView):
             tutor = self.user.get_user_by_username(tutor_info['username'])
         else:
             if app.config['ENVIRON'] == 'prod':
-                username = request.environ.get('REMOTE_USER')
-                tutor = self.user.get_user_by_username(username)
+                tutor = self.user.get_user_by_username(flask_session['USERNAME'])
             else:
                 form = request.form
                 tutor_id = form.get('selected-tutor')
