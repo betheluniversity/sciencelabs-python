@@ -204,16 +204,18 @@ class User:
     def get_role_by_name(self, role_name):
         return db_session.query(Role_Table).filter(Role_Table.name == role_name).one()
 
-    def set_user_roles(self, user_id, roles):
+    def set_user_roles(self, username, roles):
+        user = self.get_user_by_username(username)
         for role in roles:
             role_entry = self.get_role_by_name(role)
+            # Check if the user already has this role
             role_exists = db_session.query(user_role_Table)\
-                .filter(user_role_Table.user_id == user_id)\
+                .filter(user_role_Table.user_id == user.id)\
                 .filter(user_role_Table.role_id == role_entry.id)\
                 .one_or_none()
-            if role_exists:
+            if role_exists:  # If they do, skip adding it again
                 continue
-            user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
+            user_role = user_role_Table(user_id=user.id, role_id=role_entry.id)
             db_session.add(user_role)
         db_session.commit()
 

@@ -110,6 +110,7 @@ class UsersView(FlaskView):
 
         form = request.form
         user_id = form.get('user-id')
+        username = form.get('username')
         first_name = form.get('first-name')
         last_name = form.get('last-name')
         email = form.get('email')
@@ -118,7 +119,7 @@ class UsersView(FlaskView):
         try:
             self.user.update_user_info(user_id, first_name, last_name, email)
             self.user.clear_current_roles(user_id)
-            self.user.set_user_roles(user_id, roles)
+            self.user.set_user_roles(username, roles)
             self.user.set_course_viewer(user_id, viewable_courses)
             self.slc.set_alert('success', 'Edited user successfully!')
             return redirect(url_for('UsersView:index'))
