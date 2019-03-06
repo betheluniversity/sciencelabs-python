@@ -67,7 +67,7 @@ class EmailController:
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
             print('Would have sent email to: ' + str(recipients))
-            subject = subject + recipients
+            subject = subject + str(recipients)
             recipients = app.config['TEST_EMAILS']
 
         # if we are sending a message to a single user, go ahead and convert the string into a list
