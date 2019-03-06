@@ -201,7 +201,7 @@
                     };
                     $.post(url, scannedInput, function(success){
                         if(success != 'failed'){
-                           window.location.replace("{{ lab_base_url }}/session/tutor-sign-in/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                           window.location.replace("{{ lab_base_url }}/session/no-cas/tutor-sign-in/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
                             input = "";
                         }

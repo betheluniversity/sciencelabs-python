@@ -85,7 +85,7 @@
                     };
                     $.post(url, scannedInput, function(success){
                         if(success != 'failed'){
-                            window.location.replace("{{ lab_base_url }}/session/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                            window.location.replace("{{ lab_base_url }}/session/no-cas/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
                             input = "";
                         }

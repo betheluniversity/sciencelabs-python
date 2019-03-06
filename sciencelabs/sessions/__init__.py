@@ -503,7 +503,7 @@ class SessionView(FlaskView):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor_sign_in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
