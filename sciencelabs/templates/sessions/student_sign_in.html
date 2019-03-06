@@ -73,6 +73,7 @@
                 var jsonCourseIDs = JSON.stringify(courseIDs);
                 var otherCourseCheck = $('#other').prop('checked');
                 var signInInfo = {
+                    'sessionID': {{ session_id }},
                     'username': '{{ student.username }}',
                     'cardID': '{{ card_id }}',
                     'studentID': {{ student.id }},
