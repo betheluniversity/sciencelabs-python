@@ -136,6 +136,26 @@ span.tag {
     color: #0f2c52 !important;
 }
 
+table tr th, table tr td {
+    padding: 0.5625rem 0.625rem;
+    font-size: 0.875rem;
+}
+
+table.dataTable thead th, table.dataTable thead td, .table-bordered td, .table-bordered th {
+    padding: 0.5625rem 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    border: 1px solid #fff;
+}
+
+table {
+    border: 1px solid #ddd !important;
+}
+
+thead {
+    background-color: #fff;
+}
+
 ul.no-margin {
     margin: 0;
 }
@@ -413,6 +433,10 @@ ul.no-margin {
     background-color: #ffae1f !important;
     border-color: #ffae1f !important;
     color: black;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.01);
 }
 
 .user-search-result {
