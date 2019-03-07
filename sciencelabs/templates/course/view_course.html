@@ -37,8 +37,10 @@
                         </tbody>
                     </table>
                     <div style="float: right;" class="btn-group">
-                        <a id="delete" href="{{ url_for('CourseView:delete_course', course_id=course.id) }}" class="big-button btn">Delete</a>
-                        <a id="edit" href='{{ url_for('ReportView:view_course', course_id=course.id) }}' class="big-button btn">View Report</a>
+                        <a id="delete" href="{{ url_for('CourseView:delete_course', course_id=course.id) }}"
+                           class="big-button btn hover-bright">Delete</a>
+                        <a id="edit" href='{{ url_for('ReportView:view_course', course_id=course.id) }}'
+                           class="big-button btn hover-bright">View Report</a>
                     </div>
                 </div>
             </div>

@@ -107,7 +107,7 @@
             <p class="card-text">Edit Student Attendance</p>
         </div>
     </div>
-    <button id="student-views" type="button" class="edit btn btn-primary margin-bottom-10">View by Course</button>
+    <button id="student-views" type="button" class="edit btn btn-primary margin-bottom-10 hover-bright">View by Course</button>
     <div id="view-by-name">
         <table id="edit-student-table-by-name" class="table table-striped table-bordered">
             <thead>
@@ -150,9 +150,9 @@
                         <td>
                             <div class="btn-group">
                                 <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
-                                   class="btn btn-primary">Edit</a>
+                                   class="btn btn-primary hover-bright">Edit</a>
                                 <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
-                                   class="btn btn-primary">Delete</a>
+                                   class="btn btn-primary hover-bright">Delete</a>
                             </div>
                         </td>
                     </tr>
@@ -197,9 +197,9 @@
                                 <td>
                                     <div class="btn-group">
                                         <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
-                                           class="btn btn-primary">Edit</a>
+                                           class="btn btn-primary hover-bright">Edit</a>
                                         <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
-                                           class="btn btn-primary">Delete</a>
+                                           class="btn btn-primary hover-bright">Delete</a>
                                     </div>
                                 </td>
                             </tr>
@@ -212,7 +212,7 @@
     </div>
     <div style="display: block;" class="btn-group text-right">
     <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
-            class="btn btn-primary">Add a Student</a>
+            class="btn btn-primary hover-bright">Add a Student</a>
     <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
             class="btn blue btn-primary">Add Anonymous Student</a>
     </div>
@@ -259,9 +259,9 @@
                     <td>
                         <div class="btn-group">
                             <a id="edit" href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}'
-                               class="btn btn-primary">Edit</a>
+                               class="btn btn-primary hover-bright">Edit</a>
                             <a id="delete" href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}'
-                               class="btn btn-primary">Delete</a>
+                               class="btn btn-primary hover-bright">Delete</a>
                         </div>
                     </td>
                 </tr>
@@ -269,7 +269,8 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a id="edit" href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}' class="btn btn-primary">Add a Tutor</a>
+        <a id="edit" href='{{ url_for('SessionView:add_tutor', session_id=session_info.id) }}'
+           class="btn btn-primary hover-bright">Add a Tutor</a>
     </div>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">

@@ -18,12 +18,12 @@
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
                                 <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
-                                   id="gray" class="btn btn-primary">View Session</a>
+                                   id="gray" class="btn btn-primary hover-bright">View Session</a>
                                 {% endif %}
                                 <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
-                                   id="edit" class="btn btn-primary">Edit Session</a>
+                                   id="edit" class="btn btn-primary hover-bright">Edit Session</a>
                                 <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                   id="delete" class="btn btn-primary">Close Session</a>
+                                   id="delete" class="btn btn-primary hover-bright">Close Session</a>
                                 <a href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}"
                                    class="btn btn-primary sign-in">Enter Session</a>
                             </div>
@@ -81,9 +81,9 @@
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
                                     <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}'
-                                       id="edit" class="btn btn-primary">Edit</a>
+                                       id="edit" class="btn btn-primary hover-bright">Edit</a>
                                     <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}'
-                                       id="delete" class="btn btn-primary">Delete</a>
+                                       id="delete" class="btn btn-primary hover-bright">Delete</a>
                                 {% endif %}
                                 <a href="{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                                    class="btn blue btn-primary">Start</a>

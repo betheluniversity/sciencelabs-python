@@ -63,8 +63,10 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a id="edit" href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' class="btn btn-primary">Edit</a>
-                                <a id="delete" href='{{ url_for('SessionView:delete_session', session_id=session.id) }}' class="btn btn-primary">Delete</a>
+                                <a id="edit" href='{{ url_for('SessionView:edit_session', session_id=session.id) }}'
+                                   class="btn btn-primary hover-bright">Edit</a>
+                                <a id="delete" href='{{ url_for('SessionView:delete_session', session_id=session.id) }}'
+                                   class="btn btn-primary hover-bright">Delete</a>
                             </div>
                         </td>
                     </tr>

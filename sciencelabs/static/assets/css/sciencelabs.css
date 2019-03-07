@@ -337,6 +337,10 @@ ul.no-margin {
     display: none;
 }
 
+.hover-bright:hover {
+    filter: brightness(85%);
+}
+
 .icon-margins {
     margin-top: 50px;
 }
@@ -455,28 +459,16 @@ ul.no-margin {
     border-color: #DA1736;
 }
 
-#deactivate-users:hover {
-    filter: brightness(85%);
-}
-
 #delete{
     color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
 }
 
-#delete:hover {
-    filter:brightness(85%);
-}
-
 #edit {
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
-}
-
-#edit:hover {
-    filter: brightness(85%);
 }
 
 #gray {
@@ -507,10 +499,6 @@ ul.no-margin {
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
-}
-
-#student-views:hover {
-    filter: brightness(85%);
 }
 
 #yellow {

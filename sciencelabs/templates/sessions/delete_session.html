@@ -17,7 +17,8 @@
 
 {% block body_content %}
     <div class="centered">
-        <a id="edit" href='{{ url_for('SessionView:closed') }}' class="big-button btn btn-primary">Cancel</a>
-        <a id="delete" href="{{ url_for('SessionView:delete_confirmed', session_id=session_info.id) }}" class="big-button btn btn-primary">Delete</a>
+        <a id="edit" href='{{ url_for('SessionView:closed') }}' class="big-button btn btn-primary hover-bright">Cancel</a>
+        <a id="delete" href="{{ url_for('SessionView:delete_confirmed', session_id=session_info.id) }}"
+           class="big-button btn btn-primary hover-bright">Delete</a>
     </div>
 {% endblock %}
