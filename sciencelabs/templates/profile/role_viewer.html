@@ -25,7 +25,11 @@
 
                 <div class="form-row text-right">
                     <div class="form-group col-md-12">
-                        <button type="button" class="btn blue btn-primary" id="change-role">Change role</button>
+                        {% if session['ADMIN-VIEWER'] %}
+                            <strong>You cannot view as a role while already viewing as a user/role</strong>
+                        {% else %}
+                            <button type="button" class="btn blue btn-primary" id="change-role">Change role</button>
+                        {% endif %}
                     </div>
                 </div>
 
