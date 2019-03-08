@@ -384,7 +384,7 @@ class SessionView(FlaskView):
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
 
-    @route('/no-cas/confirm-close', methods=['get', 'post'])
+    @route('/no-cas/confirm-close', methods=['post'])
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
