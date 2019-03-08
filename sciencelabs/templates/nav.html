@@ -1,7 +1,10 @@
 {% macro render(title) %}
 
     <nav class="navbar navbar-expand-lg navbar-dark background-blue" style="padding: 0 10px;">
-        <a class="navbar-brand" href="{{ url_for('View:index') }}">{{ title }}</a>
+        <a class="navbar-brand" href="{{ url_for('View:index') }}">
+            <img height="48" src="https://confluence.bethel.edu/download/attachments/327682/global.logo?version=4&amp;modificationDate=1462424762000&amp;api=v2">
+            <span class="ml-2  h6" style="color: #ffc600">{{ title }}</span>
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
