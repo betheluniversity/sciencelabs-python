@@ -393,7 +393,7 @@ class SessionView(FlaskView):
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
 
-    @route('/confirm-close', methods=['post'])
+    @route('/confirm-close', methods=['get', 'post'])
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -401,14 +401,14 @@ class SessionView(FlaskView):
         session_id = form.get('session-id')
         session_hash = form.get('session-hash')
         comments = form.get('comments')
-        # try:
-        self.session.close_open_session(session_id, comments)
-        self.email.close_session_email(session_id)
-        self.slc.set_alert('success', 'Session closed successfully!')
-        return redirect(url_for("SessionView:index"))
-        # except Exception as error:
-        #     self.slc.set_alert('danger', 'Failed to close session: ' + str(error))
-        #     return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
+        try:
+            self.session.close_open_session(session_id, comments)
+            self.email.close_session_email(session_id)
+            self.slc.set_alert('success', 'Session closed successfully!')
+            return redirect(url_for("SessionView:index"))
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to close session: ' + str(error))
+            return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
