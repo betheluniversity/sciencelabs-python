@@ -192,7 +192,9 @@ class Session:
     def get_prof_session_students(self, session_id, prof_course_ids):
         prof_students = []
         for course_id in prof_course_ids:
-            course_students = db_session.query(User_Table)\
+            course_students = db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName,
+                                               StudentSession_Table.timeIn, StudentSession_Table.timeOut,
+                                               StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
                 .filter(User_Table.id == StudentSession_Table.studentId)\
                 .filter(StudentSession_Table.sessionId == session_id)\
                 .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
@@ -297,9 +299,16 @@ class Session:
             .filter(Session_Table.date.between(start_date, end_date))
 
     def get_years(self):
-        return db_session.query(Semester_Table.year)\
+        years = db_session.query(Semester_Table.year)\
             .order_by(Semester_Table.year.desc())\
             .distinct()
+        years_to_return = []
+        for year in years:
+            if app.config['LAB_TITLE'] != 'Computer Science Lab':
+                years_to_return.append(year)
+            elif year.year not in [2004, 2005, 2006]:  # Must be computer science, check for semesters we don't want to pull
+                years_to_return.append(year)
+        return years_to_return
 
     def get_monthly_sessions_attendance(self, start_date, end_date):
         return (db_session.query(StudentSession_Table)

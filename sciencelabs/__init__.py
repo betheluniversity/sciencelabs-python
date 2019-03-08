@@ -8,6 +8,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.url_map.strict_slashes = False
 
 # Local
 from sciencelabs.db_repository import db_session
@@ -68,10 +69,10 @@ def before_request():
     if '/static/' in request.path \
             or '/assets/' in request.path \
             or '/cron/' in request.path \
-            or '/checkin/' in request.path \
-            or '/student-attendance/' in request.path \
-            or '/tutor-attendance/' in request.path:
-        flask_session['ALERT'] = None
+            or '/no-cas/' in request.path:
+
+        if not flask_session.get('ALERT'):
+            flask_session['ALERT'] = None
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():
@@ -82,6 +83,8 @@ def before_request():
             current_user = User().get_user_by_username(username)
             if not current_user:
                 current_user = User().create_user_at_sign_in(username, active_semester)
+            if current_user.deletedAt != None:  # User has been soft deleted in the past, needs reactivating
+                User().activate_existing_user(current_user.username)
             flask_session['USERNAME'] = current_user.username
             flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
             flask_session['USER-ROLES'] = []

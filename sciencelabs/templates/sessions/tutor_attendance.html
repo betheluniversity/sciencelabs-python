@@ -2,9 +2,9 @@
 
 {% block subnav %}
     <a id="student" class="nav-item nav-link disabled"
-       href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+       href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
     <a id="tutor" class="nav-item nav-link active"
-       href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
+       href="{{ url_for('SessionView:tutor_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
@@ -18,7 +18,7 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user='tutor')
+            <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='tutor')
                     if env == 'prod' else url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
                 {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
                     <div>
@@ -201,7 +201,7 @@
                     };
                     $.post(url, scannedInput, function(success){
                         if(success != 'failed'){
-                           window.location.replace("{{ lab_base_url }}/session/tutor-sign-in/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                           window.location.replace("{{ lab_base_url }}/session/no-cas/tutor-sign-in/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
                             input = "";
                         }

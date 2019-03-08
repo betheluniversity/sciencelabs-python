@@ -4,7 +4,7 @@ from sqlalchemy import func, distinct, orm
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
     Role_Table, user_role_Table, Schedule_Table, user_course_Table, Course_Table, CourseCode_Table, \
-    SessionCourses_Table, CourseProfessors_Table
+    SessionCourses_Table, CourseProfessors_Table, CourseViewer_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
@@ -85,6 +85,7 @@ class User:
             .filter(Course_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
             .all()
+
 
     def get_students_in_course(self, course_id):
         return db_session.query(User_Table, func.count(User_Table.id))\
@@ -169,7 +170,29 @@ class User:
             .filter(User_Table.username == username)\
             .one()
         user.deletedAt = None
+        if self.user_is_student(user.id):
+            self.set_student_courses(user)
         db_session.commit()
+
+    def set_student_courses(self, student):
+        active_semester = self.get_active_semester()
+        student_lab_courses = self.get_student_courses(student.id, active_semester.id)
+        if not student_lab_courses:  # No courses in db so check banner
+            student_courses = self.wsapi.get_student_courses(student.username)
+            for key, course in student_courses.items():
+                # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
+                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                        .filter(CourseCode_Table.dept == course['subject'])\
+                        .filter(CourseCode_Table.active == 1).one_or_none():
+                    course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
+                        .filter(Course_Table.semester_id == active_semester.id).one_or_none()
+                    if course_entry:
+                        new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                        db_session.add(new_user_course)
+                        db_session.commit()
+
+    def get_active_semester(self):
+        return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
@@ -183,10 +206,16 @@ class User:
 
     def set_user_roles(self, username, roles):
         user = self.get_user_by_username(username)
-        user_id = user.id
         for role in roles:
             role_entry = self.get_role_by_name(role)
-            user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
+            # Check if the user already has this role
+            role_exists = db_session.query(user_role_Table)\
+                .filter(user_role_Table.user_id == user.id)\
+                .filter(user_role_Table.role_id == role_entry.id)\
+                .one_or_none()
+            if role_exists:  # If they do, skip adding it again
+                continue
+            user_role = user_role_Table(user_id=user.id, role_id=role_entry.id)
             db_session.add(user_role)
         db_session.commit()
 
@@ -426,9 +455,10 @@ class User:
         return emails
 
     def get_end_of_session_recipients(self):
-        # todo: ideally we wouldn't use id's, we would use the name.
-        admins = self.get_users_in_group(40001)  # Id for admins
-        profs = self.get_users_in_group(40005)  # Id for profs
+        admin_role = self.get_role_by_name('Administrator')
+        prof_role = self.get_role_by_name('Professor')
+        admins = self.get_users_in_group(admin_role.id)
+        profs = self.get_users_in_group(prof_role.id)
         recipients = []
         for admin in admins:
             if admin.send_email == 1 and admin not in recipients:
@@ -445,3 +475,49 @@ class User:
             if role.name == 'Tutor' or role.name == 'Lead Tutor':
                 return True
         return False
+
+    def user_is_student(self, user_id):
+        user_roles = self.get_user_roles(user_id)
+        for role in user_roles:
+            if role.name == 'Student':
+                return True
+        return False
+
+    def set_course_viewer(self, user_id, viewable_courses):
+        for course in viewable_courses:
+            already_viewing = db_session.query(CourseViewer_Table).filter(CourseViewer_Table.user_id == user_id)\
+                .filter(CourseViewer_Table.course_id == course).one_or_none()
+            if not already_viewing:
+                course_viewer = CourseViewer_Table(course_id=course, user_id=user_id)
+                db_session.add(course_viewer)
+        db_session.commit()
+
+    def deactivate_students(self):
+        students = db_session.query(User_Table)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Student')\
+            .filter(User_Table.deletedAt == None)\
+            .all()
+        for student in students:
+            roles = db_session.query(user_role_Table).filter(user_role_Table.user_id == student.id).all()
+            if len(roles) == 1:  # This means that 'Student' is their only role
+                student.deletedAt = datetime.now()
+        db_session.commit()
+
+    def demote_tutors(self):
+        lead_roles = db_session.query(user_role_Table)\
+            .filter(User_Table.id == user_role_Table.user_id)\
+            .filter(user_role_Table.role_id == Role_Table.id)\
+            .filter(Role_Table.name == 'Lead Tutor')\
+            .all()
+        for lead_role in lead_roles:
+            db_session.delete(lead_role)
+        db_session.commit()
+
+    def check_or_create_student_role(self, student_id):
+        if not self.user_is_student(student_id):
+            student_role = self.get_role_by_name('Student')
+            user_student_role = user_role_Table(user_id=student_id, role_id=student_role.id)
+            db_session.add(user_student_role)
+            db_session.commit()

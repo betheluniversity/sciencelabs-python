@@ -127,7 +127,7 @@
 <table style="border-collapse:collapse">
 {% set courseCount = [0] %}
 {% set attendance = [0] %}
-{% for course, students in courses_and_attendance.items() %}
+{% for course, info in courses_and_info.items() %}
 
     {% if (courseCount[0] % 2) == 0 %}
         <tr>
@@ -142,7 +142,7 @@
             <tr>
                 <th style="padding:2px 10px">Name</th>
             </tr>
-            {% for student in students %}
+            {% for student in info['students'] %}
 
                     {% if attendance.append(attendance.pop() + (1)) %}{% endif %}
                     <tr>
@@ -165,15 +165,23 @@
         <th style="padding:2px 10px">Attendance</th>
     </tr>
     {% set total_attendance = [0] %}
-    {% for course, students in courses_and_attendance.items() %}
+    {% for course, info in courses_and_info.items() %}
         {% set attendance = [0] %}
-        {% for student in students %}
+        {% for student in info['students'] %}
             {% if attendance.append(attendance.pop() + 1) %}{% endif %}
         {% endfor %}
         {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
         <tr>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px"><a href="/report/course/{{ course.id }}">{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</a></td>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">{# TODO #}Professor Name Here</td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course/{{ course.id }}">
+                    {{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})
+                </a>
+            </td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:left">
+                {% for prof in info['profs'] %}
+                    {{ prof }}
+                {% endfor %}
+            </td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ attendance[0] }}</td>
         </tr>
     {% endfor %}

@@ -8,7 +8,11 @@ SECRET_KEY = ""
 
 LAB_LOGIN = {'username': "", 'password': ""}
 LAB_TITLE = ''
+LAB_BASE_URL = ''
+
 DATABASE_KEY = ''
+
+INSTALL_LOCATION = ''
 
 API_USERNAME = ''
 API_PASSWORD = ''
@@ -16,4 +20,7 @@ API_PASSWORD = ''
 WSAPI_SECRET = ''
 
 ENVIRON = ''
+
 SESSION_COOKIE_DOMAIN = ''
+
+LOGOUT_URL = ''
