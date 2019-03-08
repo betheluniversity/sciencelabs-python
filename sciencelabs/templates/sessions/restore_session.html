@@ -13,52 +13,56 @@
 {% endblock %}
 
 {% block body_content %}
-    <table id="table" class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Date</th>
-                <th scope="col">Date Deleted</th>
-                <th scope="col">Time</th>
-                <th scope="col">Room</th>
-                <th scope="col">Tutors</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for session, tutors in sessions_and_tutors.items() %}
-            <tr>
-                <td>{{ session.name }}</td>
-                <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                <td>{{ session.deletedAt.strftime('%m/%d/%Y') }}</td>
-                <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
-                {% if session.room %}
-                    <td>{{ session.room }}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
-                <td>
-                    <button type="button" class="show-tutors blue btn btn-primary">Show</button>
-                    <div style="display: none;" class="text-left margin-top-10">
-                        {% for tutor in tutors %}
-                            {{ tutor.firstName }} {{ tutor.lastName }}
-                            {% if tutor.isLead %}
-                                <span class="button-labels">Lead</span>
-                            {% endif %}
-                            <br />
-                        {% endfor %}
-                    </div>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">View/Edit Session</a>
-                        <a href='{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">Restore</a>
-                    </div>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% if sessions %}
+        <table id="table" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Date Deleted</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Room</th>
+                    <th scope="col">Tutors</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for session, tutors in sessions_and_tutors.items() %}
+                <tr>
+                    <td>{{ session.name }}</td>
+                    <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
+                    <td>{{ session.deletedAt.strftime('%m/%d/%Y') }}</td>
+                    <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
+                    {% if session.room %}
+                        <td>{{ session.room }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>
+                        <button type="button" class="show-tutors blue btn btn-primary">Show</button>
+                        <div style="display: none;" class="text-left margin-top-10">
+                            {% for tutor in tutors %}
+                                {{ tutor.firstName }} {{ tutor.lastName }}
+                                {% if tutor.isLead %}
+                                    <span class="button-labels">Lead</span>
+                                {% endif %}
+                                <br />
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">View/Edit Session</a>
+                            <a href='{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">Restore</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3 class="text-center">There are no deleted sessions to restore.</h3>
+    {% endif %}
     <script>
         $(document).ready( function () {
 
