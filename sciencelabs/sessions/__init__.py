@@ -378,16 +378,17 @@ class SessionView(FlaskView):
 
     @route('/close-session/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def close_open_session(self, session_id, session_hash):
-        if app.config['ENVIRON'] != 'prod':
-            user = self.user.get_user_by_username(app.config['TEST_USERNAME'])
-        else:
-            user = self.user.get_user_by_username(request.environ.get('REMOTE_USER'))
-        flask_session['USERNAME'] = user.username
-        flask_session['NAME'] = user.firstName + ' ' + user.lastName
-        flask_session['USER-ROLES'] = []
-        user_roles = self.user.get_user_roles(user.id)
-        for role in user_roles:
-            flask_session['USER-ROLES'].append(role.name)
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        # if app.config['ENVIRON'] != 'prod':
+        #     user = self.user.get_user_by_username(app.config['TEST_USERNAME'])
+        # else:
+        #     user = self.user.get_user_by_username(request.environ.get('REMOTE_USER'))
+        # flask_session['USERNAME'] = user.username
+        # flask_session['NAME'] = user.firstName + ' ' + user.lastName
+        # flask_session['USER-ROLES'] = []
+        # user_roles = self.user.get_user_roles(user.id)
+        # for role in user_roles:
+        #     flask_session['USER-ROLES'].append(role.name)
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
