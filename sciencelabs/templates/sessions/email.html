@@ -26,12 +26,12 @@
             {% for tutor in tutors %}
                 <tr>
                     {% if tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}
-                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                        {% if tutor.timeIn and tutor.timeOut %}
-                            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ tutor.timeIn|datetimeformat }} - {{ tutor.timeOut|datetimeformat }}</td>
-                        {% else %}
-                            ???
-                        {% endif %}
+                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                            {{ tutor.firstName }} {{ tutor.lastName }}
+                        </td>
+                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                            {{ tutor.timeIn|datetimeformat if tutor.timeIn else '???' }} - {{ tutor.timeOut|datetimeformat if tutor.timeOut else '???' }}
+                        </td>
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -53,13 +53,13 @@
             </tr>
             {% for tutor in tutors %}
                 <tr>
-                    {% if tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}
-                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                        {% if tutor.timeIn and tutor.timeOut %}
-                            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ tutor.timeIn|datetimeformat }} - {{ tutor.timeOut|datetimeformat }}</td>
-                        {% else %}
-                            ???
-                        {% endif %}
+                    {% if not tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}
+                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                            {{ tutor.firstName }} {{ tutor.lastName }}
+                        </td>
+                        <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                            {{ tutor.timeIn|datetimeformat if tutor.timeIn else '???' }} - {{ tutor.timeOut|datetimeformat if tutor.timeOut else '???' }}
+                        </td>
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -102,7 +102,13 @@
 
         <tr>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.firstName }} {{ student.lastName }}</td>
-            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.timeIn|datetimeformat }}</td>
+            <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
+                {% if student.timeIn %}
+                    {{ student.timeIn|datetimeformat }}
+                {% else %}
+                    ???
+                {% endif %}
+            </td>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
                 {% if student.timeOut %}
                     {{ student.timeOut|datetimeformat }}
