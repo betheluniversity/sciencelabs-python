@@ -48,7 +48,8 @@ def utility_processor():
         'now': datetime.now(),
         'lab_title': app.config['LAB_TITLE'],
         'lab_base_url': app.config['LAB_BASE_URL'],
-        'alert': slc().get_alert()
+        'alert': slc().get_alert(),
+        'env': app.config['ENVIRON']
     })
 
     return to_return
