@@ -354,7 +354,11 @@ class SessionView(FlaskView):
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
-        env = app.config['ENVIRON']
+        # If prod, we send through a route to get CAS auth, else we go straight to student sign in
+        if app.config['ENVIRON'] == 'prod':
+            submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user_type='student')
+        else:
+            submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
 
         return render_template('sessions/student_attendance.html', **locals())
 
@@ -372,7 +376,11 @@ class SessionView(FlaskView):
         tutors = self.session.get_session_tutors(session_id)
         # This is for development - allows us to pick a tutor to sign in as
         all_tutors = self.user.get_all_current_tutors()
-        env = app.config['ENVIRON']
+        # If prod, we send through a route to get CAS auth, else we go straight to tutor sign in
+        if app.config['ENVIRON'] == 'prod':
+            submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='tutor')
+        else:
+            submit_url = url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
 
         return render_template('sessions/tutor_attendance.html', **locals())
 
