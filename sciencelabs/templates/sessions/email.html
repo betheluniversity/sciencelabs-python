@@ -122,9 +122,14 @@
                 <td>0 min</td>
             {% endif %}
 
-            {% for course in courses %}
-                <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ course.title }} (Section {{ course.section }}){% if student.otherCourse %}{{ student.otherCourse }}{% endif %}{% if student.otherCourseName %}{{ student.otherCourseName }}{% endif %}</td>
-            {% endfor %}
+            <td style="white-space:pre;">
+                {% for course in courses %}
+                    {{ course.title }} (Section {{ course.section }})
+                {% endfor %}
+                {% if student.otherCourse and student.otherCourseName %}
+                    {{ student.otherCourseName }}
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
 </table>
