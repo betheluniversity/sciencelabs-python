@@ -650,6 +650,18 @@ class ReportView(FlaskView):
 
         return render_template('reports/course.html', **locals())
 
+    def export_course_csv(self):
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        lab = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab += letter[0]
+        csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab)
+
+        csv_data = []
+        
+
+        return self.export_csv(csv_data, csv_name)
+
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
