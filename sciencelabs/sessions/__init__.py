@@ -31,9 +31,6 @@ class SessionView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        my_list = []
-        error = my_list[5]
-
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
         open_sessions = self.session.get_open_sessions()
