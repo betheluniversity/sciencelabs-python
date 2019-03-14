@@ -330,13 +330,33 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         lab_session = self.session.get_session(session_id)
-        opener = self.user.get_user_by_username(flask_session['USERNAME'])
-        self.session.start_open_session(session_id, opener.id)
-        self.session.tutor_sign_in(session_id, opener.id)
-        self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
-                           ') opened successfully')
 
-        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        if lab_session.date.strftime("%m/%d/%Y") == datetime.now().strftime("%m/%d/%Y"):
+
+            if self.check_session_time(lab_session):  # returns true if session is started within an hour window
+                opener = self.user.get_user_by_username(flask_session['USERNAME'])
+                self.session.start_open_session(session_id, opener.id)
+                self.session.tutor_sign_in(session_id, opener.id)
+                self.slc.set_alert('success', 'Session {0} ({1}) opened successfully'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+
+            else:  # After alert is set it will jump down and return to the session home page
+                self.slc.set_alert('danger', 'Session {0} ({1}) does not start at this time'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        else:  # Set alert and return to session home page
+            self.slc.set_alert('danger', 'Session {0} ({1}) is not scheduled for today'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        return redirect(url_for('SessionView:index'))
+
+    def check_session_time(self, lab_session):
+        session_start_time = lab_session.schedStartTime
+        start_plus_hour = session_start_time + timedelta(hours=1)
+        start_minus_hour = session_start_time - timedelta(hours=1)
+        now = datetime.time(datetime.now())
+        if start_minus_hour < timedelta(hours=now.hour, minutes=now.minute, seconds=now.second) < start_plus_hour:
+            return True  # Return true if session start time is within the hour
+        return False
 
     @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
@@ -463,7 +483,8 @@ class SessionView(FlaskView):
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
-    def authenticate_sign_in(self, session_id, session_hash, user_type):\
+    def authenticate_sign_in(self, session_id, session_hash, user_type):
+        asdf = "This is jsut here to make a break point"
         return self._logout_open_session(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
     @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
