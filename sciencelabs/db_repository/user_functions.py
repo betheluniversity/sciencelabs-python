@@ -518,7 +518,6 @@ class User:
                 user_role_Table.user_id == lead.id).all()
             role_list = []
             for role in roles:
-                # print(role)
                 role_list.append(role[1])
             if 40004 not in role_list:  # checks if tutor role is in the current list
                 db_session.query(user_role_Table).filter(user_role_Table.user_id == lead.id).filter(
