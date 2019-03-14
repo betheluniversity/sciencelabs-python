@@ -651,6 +651,7 @@ class ReportView(FlaskView):
         return render_template('reports/course.html', **locals())
 
     def export_course_csv(self):
+        ##### Initial CSV stuff #####
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         lab = ''
         for letter in app.config['LAB_TITLE'].split():
@@ -658,7 +659,53 @@ class ReportView(FlaskView):
         csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab)
 
         csv_data = []
-        
+        csv_data.append(['Course', 'Section', 'Professor', 'Total Attendance', 'Unique Attendance', '% of Lab Attendance'])
+
+        ##### Gathering data #####
+        # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
+        if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES'] \
+                or (
+                'ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
+            course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+            course_viewer_info = None
+
+        else:  # They must be a professor
+            prof = self.user.get_user_by_username(flask_session['USERNAME'])
+            course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
+            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'],
+                                                                              prof.id)
+
+        courses_and_attendance = {}
+        for course, course_user in course_info:
+            courses_and_attendance[course] = {}
+            courses_and_attendance[course]['user'] = course_user
+            courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
+        if course_viewer_info:
+            for course, course_user in course_viewer_info:
+                courses_and_attendance[course] = {}
+                courses_and_attendance[course]['user'] = course_user
+                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
+        ##### Adding data to CSV #####
+        total_attendance = 0
+        total_unique_attendance = 0
+        for course, info in courses_and_attendance.items():
+            total_unique_attendance = total_unique_attendance + len(info['attendance'])
+            for attendees, attend in info['attendance']:
+                total_attendance = total_attendance + attend
+
+        for course, info in courses_and_attendance.items():
+            course_total_attendance = 0
+            for attendees, attend in info['attendance']:
+                course_total_attendance = course_total_attendance + attend
+            csv_data.append([course.title + " ({0}{1})".format(course.dept, course.course_num), course.section,
+                             "{0} {1}".format(info['user'].firstName, info['user'].lastName), course_total_attendance,
+                             len(info['attendance']),
+                             "{0}%".format(round((course_total_attendance/total_attendance)*100, 2))])
+
+        csv_data.append(['', '', 'Total', total_attendance, total_unique_attendance])
 
         return self.export_csv(csv_data, csv_name)
 
