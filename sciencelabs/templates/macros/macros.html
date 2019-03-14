@@ -10,7 +10,7 @@
                 <div class="custom-control custom-checkbox display-inl-b">
                     <input name="courses" type="checkbox" class="custom-control-input" id="{{ course.courseName }}" value="{{ course.id }}" checked>
                     <label class="custom-control-label" for="{{ course.courseName }}">
-                        {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
+                        {{ '{0}{1} ({2})'.format(course.dept, course.course_num, course.courseName) }}</label>
                 </div>
             {% endfor %}
         </div>
