@@ -15,7 +15,7 @@ class EmailController:
 
     def close_session_email(self, session_id):
         sess = self.session.get_session(session_id)
-        subject = "{" + app.config['LAB_TITLE'] + "} " + sess.name + " (" + sess.date.strftime('%m/%d/%Y') + ")"
+        subject = '{{0}} {1} ({2})'.format(app.config['LAB_TITLE'], sess.name, sess.date.strftime('%m/%d/%Y'))
         opener = self.user.get_user(sess.openerId)
         tutors = self.session.get_session_tutors(session_id)
         recipients = self.user.get_end_of_session_recipients()
@@ -66,8 +66,8 @@ class EmailController:
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
-            print('Would have sent email to: ' + str(recipients))
-            subject = subject + str(recipients)
+            print('Would have sent email to: {0}'.format(str(recipients)))
+            subject = '{0} {1}'.format(subject, str(recipients))
             recipients = app.config['TEST_EMAILS']
 
         # if we are sending a message to a single user, go ahead and convert the string into a list

@@ -34,7 +34,7 @@ class ProfileView(FlaskView):
             flask_session['NAME'] = '{0} {1}'.format(first_name, last_name)
             self.slc.set_alert('success', 'Your profile has been edited successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit your profile: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit your profile: {0}'.format(str(error)))
         return redirect(url_for('ProfileView:index'))
 
     @route('/view-role')

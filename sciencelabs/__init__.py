@@ -87,7 +87,7 @@ def before_request():
             if current_user.deletedAt != None:  # User has been soft deleted in the past, needs reactivating
                 User().activate_existing_user(current_user.username)
             flask_session['USERNAME'] = current_user.username
-            flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+            flask_session['NAME'] = '{0} {1}'.format(current_user.firstName, current_user.lastName)
             flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(current_user.id)
             for role in user_roles:
