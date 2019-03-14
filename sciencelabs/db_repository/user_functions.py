@@ -500,8 +500,8 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
         for student in students:
-            roles = db_session.query(user_role_Table).filter(user_role_Table.user_id == student.id).all()
-            if len(roles) == 1:  # This means that 'Student' is their only role
+            roles = db_session.query(user_role_Table.role_id).filter(user_role_Table.user_id == student.id).all()
+            if len(roles) == 1: # This means that 'Student' is their only role
                 student.deletedAt = datetime.now()
         db_session.commit()
 
