@@ -39,7 +39,7 @@
                                     {{ macros.day_abbr(schedule.dayofWeek) }}
                                 </td>
                                 <td>
-                                    {{ '{0} - {1}'.format(schedule.startTime|datetimeformat, schedule.endTime|datetimeformat) }}
+                                    {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
                                 </td>
                                 <td>
                                     {{ schedule.room }}

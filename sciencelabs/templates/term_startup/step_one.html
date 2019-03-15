@@ -15,8 +15,8 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12 text-center">
-                        <h3>Current Term: {{ '{0} {1}'.format(semester.term, semester.year) }}</h3>
-                        <p>{{ '{0}-{1}'.format(semester.startDate.strftime('%m/%d/%Y'), semester.endDate.strftime('%m/%d/%Y')) }}</p>
+                        <h3>Current Term: {{ semester.term }} {{ semester.year }}</h3>
+                        <p>{{ semester.startDate.strftime('%m/%d/%Y') }}-{{ semester.endDate.strftime('%m/%d/%Y') }}</p>
                     </div>
                 </div>
                 <div class="form-row">
