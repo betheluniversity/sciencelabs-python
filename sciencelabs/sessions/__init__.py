@@ -139,7 +139,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session deleted successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
     @route('/save-session-edits', methods=['post'])
@@ -170,7 +170,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session edited successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     @route('/save-student-edits/<int:session_id>', methods=['post'])
@@ -193,7 +193,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
 
     @route('/save-tutor-edits', methods=['post'])
@@ -212,7 +212,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Tutor edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
 
     def delete_student_from_session(self, student_id, session_id):
@@ -222,7 +222,7 @@ class SessionView(FlaskView):
             self.session.delete_student_from_session(student_id, session_id)
             self.slc.set_alert('success', 'Student deleted successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete student: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
@@ -232,7 +232,7 @@ class SessionView(FlaskView):
             self.session.delete_tutor_from_session(tutor_id, session_id)
             self.slc.set_alert('success', 'Tutor deleted successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete tutor: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     @route('/add-student-submit', methods=['post'])
@@ -247,7 +247,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_student', session_id=session_id))
 
     @route('/add-anon-submit', methods=['post'])
@@ -262,7 +262,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Anonymous students edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit anonymous students: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit anonymous students: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
     @route('/add-tutor-submit', methods=['post'])
@@ -281,7 +281,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Tutor added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
     @route('/create-session-submit', methods=['post'])
@@ -314,7 +314,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session created successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to create session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to create session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:create'))
 
     @route('/view/<int:session_id>')
@@ -426,7 +426,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to close session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to close session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
 
     def restore_deleted_session(self, session_id):
@@ -437,7 +437,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to restore session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
 
     @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])

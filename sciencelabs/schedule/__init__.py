@@ -58,7 +58,7 @@ class ScheduleView(FlaskView):
             self.schedule.delete_schedule(schedule_id)
             self.slc.set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete schedule: {0}'.format(str(error)))
         return redirect(url_for('ScheduleView:index'))
 
     @route("/save-schedule-edits", methods=['post'])
@@ -86,7 +86,7 @@ class ScheduleView(FlaskView):
             self.slc.set_alert('success', 'Schedule edited successfully!')
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
     @route('/create-schedule-submit', methods=['post'])
@@ -113,5 +113,5 @@ class ScheduleView(FlaskView):
             self.slc.set_alert('success', 'Schedule created successfully!')
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to create schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:create_new_schedule'))

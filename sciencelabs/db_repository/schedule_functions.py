@@ -118,7 +118,7 @@ class Schedule:
             .all()
         schedule_courses = []
         for schedulecoursecode, coursecode in courses:
-            schedule_courses.append(coursecode.dept + ' ' + coursecode.courseNum)
+            schedule_courses.append('{0} {1}'.format(coursecode.dept, coursecode.courseNum))
         return schedule_courses
 
     def get_schedule(self, schedule_id):
