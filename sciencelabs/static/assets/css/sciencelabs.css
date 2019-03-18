@@ -89,6 +89,11 @@ div.semester-selector {
     direction: rtl;
 }
 
+div.tutor-td{
+    display: none;
+    white-space: nowrap;
+}
+
 div.sub-info {
     margin-bottom: 20px;
 }
