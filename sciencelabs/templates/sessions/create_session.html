@@ -108,13 +108,15 @@
         </div>
     </div>
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
+    <script src="{{ url_for('static', filename='moment.js') }}"></script>
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
     <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
     <script>
         $(document).ready(function () {
 
             var picker = new Pikaday({
-                field: document.getElementById('session-date')
+                field: document.getElementById('session-date'),
+                format: 'MM/DD/YYYY'
             });
 
             $(".chosen").chosen({

@@ -167,8 +167,8 @@ class Schedule:
             .filter(Semester_Table.active == 1)\
             .one()
         current_term.active = 0
-        db_start_date = datetime.strptime(start_date, "%a %b %d %Y").strftime("%Y-%m-%d")
-        db_end_date = datetime.strptime(end_date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_start_date = datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+        db_end_date = datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
         new_term = Semester_Table(term=term, year=year, startDate=db_start_date, endDate=db_end_date, active=1)
         db_session.add(new_term)
         db_session.commit()
