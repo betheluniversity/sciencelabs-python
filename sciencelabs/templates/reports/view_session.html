@@ -121,11 +121,15 @@
                     </div>
                 </div>
                 {% if total_attendance %}
-                    <button id="show-hide" type="button" class="big-button edit btn-primary margin-bottom-20">View by Course</button>
+                    <div>
+                        <button id="view-by-course-button" type="button" class="big-button edit btn-primary btn margin-bottom-20">View by Course</button>
+                        <button disabled id="view-by-name-button" type="button" class="big-button edit btn-primary btn margin-bottom-20">View by Name</button>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <h3 id="show-hide-text">Student Attendance by Name</h3>
-                            <div class="form-group col-md-12">
+                            <div id="view-by-name">
+                                <h3 id="show-hide-text">Student Attendance by Name</h3>
                                 <table id="table"  class="table table-striped table-bordered">
                                     <thead>
                                     <tr>
@@ -171,10 +175,12 @@
                                     </tr>
                                     </tfoot>
                                 </table>
+                            </div>
+                            <div id="view-by-course">
                                 {% for course, attendance in session_courses_and_attendance.items() %}
                                     {% if attendance|length > 0 %}
-                                        <p class="display-p hidden"><b>{{ course.underived }} ({{ course.courseName }})</b></p>
-                                        <table id="{{ course.id }}" class="course-tables hidden table table-striped table-bordered">
+                                        <p class="display-p"><b>{{ course.underived }} ({{ course.courseName }})</b></p>
+                                        <table id="{{ course.id }}" class="course-tables table table-striped table-bordered">
                                             <thead>
                                                 <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
                                                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
@@ -204,6 +210,7 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
+                            </div>
                         </div>
                     </div>
                 {% else %}
@@ -215,6 +222,9 @@
 
     <script>
         $(document).ready( function () {
+
+            $('#view-by-course').hide();
+
             var tableOne = $('#table').DataTable( {
                 "bPaginate": false,
                 "bLengthChange": false,
@@ -229,17 +239,18 @@
                 "bFilter": false,
             });
 
-            $('#show-hide').click(function(){
-                if ($(this).text() == 'View by Course') {
-                    $(this).text('View by Name');
-                    $('#show-hide-text').text('Student Attendance by Course');
-                }
-                else {
-                    $(this).text('View by Course');
-                    $('#show-hide-text').text('Student Attendance by Name');
-                }
-                $("table").toggleClass('hidden');
-                $(".display-p").toggleClass('hidden');
+            $('#view-by-course-button').click(function(){
+                $('#view-by-course').show();
+                $('#view-by-name').hide();
+                $('#view-by-course-button').prop('disabled', true);
+                $('#view-by-name-button').prop('disabled', false);
+            });
+
+            $('#view-by-name-button').click(function(){
+                $('#view-by-course').hide();
+                $('#view-by-name').show();
+                $('#view-by-course-button').prop('disabled', false);
+                $('#view-by-name-button').prop('disabled', true);
             });
         });
     </script>

@@ -500,7 +500,13 @@ ul.no-margin {
     border-color: #0F2C52;
 }
 
-#student-views {
+#view-by-course-button{
+    color: white !important;
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#view-by-name-button{
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;
