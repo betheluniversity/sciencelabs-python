@@ -62,9 +62,12 @@ class UsersView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         roles = self.user.get_all_roles()
-        existing_user = self.user.check_for_existing_user(username)
-        if existing_user:
+        existing_user = self.user.get_user_by_username(username)
+        if existing_user and existing_user.deletedAt == None:
+            message = "This user already exists in the system and is activated."
+        if existing_user and existing_user.deletedAt != None:
             self.user.activate_existing_user(username)
+            message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
         return render_template('users/select_user_roles.html', **locals())
 
     @route("/search-users", methods=['post'])
