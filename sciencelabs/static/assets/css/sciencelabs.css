@@ -93,10 +93,6 @@ div.sub-info {
     margin-bottom: 20px;
 }
 
-div#table_wrapper {
-    overflow-x: auto;
-}
-
 form.create-session-form {
     margin-top: 15px;
 }

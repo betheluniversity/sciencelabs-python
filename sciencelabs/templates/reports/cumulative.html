@@ -63,7 +63,7 @@
         <tbody>
         {% for row in cumulative_list[1:(cumulative_list|length - 1)] %}
             <tr>
-                <td>{{ row[0] }}</td>
+                <td style="white-space: nowrap;">{{ row[0] }}</td>
                 <td>
                     {% if row[1] <= 0 %}
                         {{ row[1] }}
