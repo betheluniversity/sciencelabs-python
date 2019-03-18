@@ -40,7 +40,7 @@
                     {% endif %}
                     <td>
                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
-                        <div style="display: none;" class="text-left margin-top-10">
+                        <div style="display: none; white-space: nowrap;" class="text-left margin-top-10">
                             {% for tutor in tutors %}
                                 {{ tutor.firstName }} {{ tutor.lastName }}
                                 {% if tutor.isLead %}

@@ -58,7 +58,7 @@
                                 </td>
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
-                                    <div style="display: none;" class="text-left margin-top-10">
+                                    <div style="display: none; white-space: nowrap;" class="text-left margin-top-10">
                                         {% for tutor in tutors_and_courses['tutors'] %}
                                         {% if tutor.isLead %}
                                             {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
