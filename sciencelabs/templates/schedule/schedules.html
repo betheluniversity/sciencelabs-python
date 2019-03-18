@@ -46,7 +46,7 @@
                                 </td>
                                 <td>
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
-                                    <div style="display: none;" class="text-left margin-top-10">
+                                    <div class="tutor-td text-left margin-top-10">
                                         <ul>
                                             {% for course in tutors_and_courses['courses'] %}
                                                 <li>
@@ -68,7 +68,7 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center btn-group">
                                     <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
                                        class="btn btn-primary hover-bright">Edit</a>
                                     <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
