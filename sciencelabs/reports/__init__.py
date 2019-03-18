@@ -67,7 +67,10 @@ class ReportView(FlaskView):
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             role_can_view = True
-            student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            if self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER']):
+                student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            else:
+                attendance = 0
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])

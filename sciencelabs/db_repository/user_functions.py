@@ -66,7 +66,7 @@ class User:
                 .filter(Session_Table.semester_id == Semester_Table.id) \
                 .filter(Semester_Table.id == semester_id)\
                 .group_by(User_Table.id) \
-                .one()
+                .one_or_none()
 
     def get_unique_sessions_attended(self, student_id, semester_id):
         return db_session.query(func.count(StudentSession_Table.sessionId))\
