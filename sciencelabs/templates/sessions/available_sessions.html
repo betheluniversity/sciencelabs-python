@@ -113,14 +113,14 @@
             });
 
             var availableSessionTable = $('#available-table').dataTable({
-               "order": [[1, 'asc'],[2, 'asc']],
-                 "bPaginate": false,
-                "oLanguage": {
-                    "sSearch": "Search:"
-                }
-             });
-
-            var openSessionTable = $('#open-table').dataTable({
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                ],
                "order": [[1, 'asc'],[2, 'asc']],
                  "bPaginate": false,
                 "oLanguage": {

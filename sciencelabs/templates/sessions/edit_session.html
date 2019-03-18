@@ -299,6 +299,13 @@
             });
 
             var tutorTable = $('#edit-tutor-table').dataTable({
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                ],
                 "order": [[0, 'asc'],[1, 'asc']],
                 "bPaginate": false,
                 "oLanguage": {
@@ -307,6 +314,13 @@
             });
 
             var studentTable = $('#edit-student-table-by-name').dataTable({
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                ],
                 "order": [[0, 'asc'],[1, 'asc']],
                 "bPaginate": false,
                 "oLanguage": {
@@ -315,6 +329,12 @@
             });
 
             var courseTables = $('.course-table').dataTable({
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                ],
                 "order": [[0, 'asc'],[1, 'asc']],
                 "bPaginate": false,
                 "bFilter": false,

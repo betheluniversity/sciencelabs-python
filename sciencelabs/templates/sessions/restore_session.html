@@ -67,6 +67,15 @@
         $(document).ready( function () {
 
             var table = $('#table').DataTable( {
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                ],
                 "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bFilter": false,
