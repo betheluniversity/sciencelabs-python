@@ -2,7 +2,7 @@
 
 {% block body_content %}
     {% if open_sessions %}
-        <div class="header card" style="margin-bottom: 15px;">
+        <div class="header card open-session">
             <div class="card-body">
                 <p class="card-text">Open Sessions</p>
             </div>
@@ -33,7 +33,7 @@
             </div>
         {% endfor %}
     {% endif %}
-    <div class="header card" style="margin-top:20px; margin-bottom:15px;">
+    <div class="header card available-sessions">
         <div class="card-body">
             <p class="card-text">Remaining Scheduled Sessions for {{ semester.term }} {{ semester.year }}</p>
         </div>
