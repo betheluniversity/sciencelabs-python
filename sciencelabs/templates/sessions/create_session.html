@@ -25,7 +25,11 @@
                         <label for="semester-select">Semester</label>
                         <select id="semester-select" class="custom-select chosen-container chosen-format" name="semester-select">
                             {% for semester in session['SEMESTER-LIST'] %}
-                                <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% if semester['active'] == 1 %}
+                                    <option selected value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% else %}
+                                    <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>

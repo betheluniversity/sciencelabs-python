@@ -151,6 +151,9 @@ class SessionView(FlaskView):
         name = form.get('name')
         room = form.get('room')
         semester_id = form.get('semester-select')
+        if not semester_id:
+            active_semester = self.schedule.get_active_semester()
+            semester_id = active_semester.id
         date = form.get('date')
         db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
@@ -303,6 +306,15 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+
+        # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
+        active_semester = self.schedule.get_active_semester()
+        if semester_id != active_semester.id and (not actual_start or not actual_end):
+            self.slc.set_alert('danger', 'You are creating a past session with no actual times. '
+                                         'You either need to update the semester to create a session for the current '
+                                         'semester OR give the past session actual start and end times.')
+            return redirect(url_for('SessionView:create'))
+
         if leads == []:
             self.slc.set_alert('danger', 'You must choose a Lead Tutor')
             return redirect(url_for('SessionView:create'))
