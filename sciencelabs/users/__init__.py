@@ -63,11 +63,12 @@ class UsersView(FlaskView):
 
         roles = self.user.get_all_roles()
         existing_user = self.user.get_user_by_username(username)
-        if existing_user and existing_user.deletedAt == None:
-            message = "This user already exists in the system and is activated."
-        if existing_user and existing_user.deletedAt != None:
-            self.user.activate_existing_user(username)
-            message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
+        if existing_user:  # User exists in system
+            if existing_user.deletedAt:  # Has been deactivated in the past
+                self.user.activate_existing_user(username)
+                message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
+            else:  # Currently active
+                message = "This user already exists in the system and is activated."
         return render_template('users/select_user_roles.html', **locals())
 
     @route("/search-users", methods=['post'])
