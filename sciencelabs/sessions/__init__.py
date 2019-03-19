@@ -152,7 +152,7 @@ class SessionView(FlaskView):
         room = form.get('room')
         semester_id = form.get('semester-select')
         date = form.get('date')
-        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('leads')
@@ -293,7 +293,7 @@ class SessionView(FlaskView):
         room = form.get('room')
         semester_id = form.get('semester-select')
         date = form.get('date')
-        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('choose-leads')

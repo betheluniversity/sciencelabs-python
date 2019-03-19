@@ -67,7 +67,10 @@ class ReportView(FlaskView):
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             role_can_view = True
-            student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            if self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER']):
+                student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            else:
+                attendance = 0
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
@@ -559,6 +562,7 @@ class ReportView(FlaskView):
         month = self._get_selected_month()
         year = sem.year
 
+        total_attendance = self.session_.get_number_of_student_sessions(session_id)
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
@@ -567,7 +571,6 @@ class ReportView(FlaskView):
         session_courses_and_attendance = {}
         for course in session_courses:
             session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
-        # course_list = self.courses.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)
