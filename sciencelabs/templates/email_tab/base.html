@@ -19,7 +19,7 @@
             <form action="{{ url_for('EmailView:send_email_confirm') }}" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="choose-recipients">Recipients</label>
+                        <label for="choose-recipients">Recipient Groups</label>
                         <select name="groups" class="chosen form-control" id="choose-recipients" multiple="true"
                                 data-placeholder="Choose recipients ...">
                             {% for role in role_list %}
@@ -34,11 +34,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3 btn-group">
-                        <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC ...</button>
-                        <button style="left: 10px;" type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC ...</button>
+                        <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC</button>
+                        <button style="left: 10px;" type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC</button>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-row">
                     <div id="cc-div" style="display: none;" class="form-group col-md-12 chosen-container">
                         <label for="choose-cc">CC</label>
                         <select name="cc" class="chosen form-control" id="choose-cc" multiple="true"
@@ -48,6 +48,8 @@
                             {% endfor %}
                         </select>
                     </div>
+                </div>
+                <div class="form-row">
                     <div id="bcc-div" style="display: none;"  class="form-group col-md-12 chosen-container">
                         <label for="choose-bcc">BCC</label>
                         <select name="bcc" class="chosen form-control" id="choose-bcc" multiple="true"
