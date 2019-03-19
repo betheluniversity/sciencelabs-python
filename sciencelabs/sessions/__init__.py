@@ -165,6 +165,11 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+
+        if leads == []:
+            self.slc.set_alert('danger', 'You must choose a Lead Tutor')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
+
         try:
             # Returns True if successful
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
