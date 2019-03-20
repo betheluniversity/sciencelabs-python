@@ -1,27 +1,35 @@
+import time
+
 # Packages
 from flask import render_template
 from flask import session as flask_session
 
 # Local
-from sciencelabs import app
+from sciencelabs import app, sentry
 
 
-def error_render_template(template_path, error, code=None):
-    # sentry.captureException()
-    #
-    # if code:
-    #     if code in [500, 503]:
-    #         if not app.config['UNIT_TESTING']:
-    #             app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
-    #
-    # else:
-    #     app.logger.error('Unhandled Exception: %s', str(error))
-    #     code = 500
-    #
-    # return render_template(template_path,
-    #                        sentry_event_id=sentry.last_event_id,
-    #                        public_dsn=sentry.client.get_public_dsn('https')), code
-    return render_template(template_path), code
+def error_render_template(template, error, code=None):
+
+    sentry.client.extra_context({
+        'time': time.strftime("%c"),
+        'username': flask_session['USERNAME'],
+        'user-roles': flask_session['USER-ROLES'],
+    })
+
+    # Means that it's a handled error/exception
+    if code is not None:
+        # Catch all errors for now - may change later
+        # if code == 403 or code > 499:
+        sentry.captureException()
+        app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
+
+    else:  # Means it's an unhandled exception
+        sentry.captureException()
+        app.logger.error('Unhandled Exception: {0}'.format(str(error)))
+        code = 500  # To make sure that the return statement doesn't break
+
+    return render_template(template, code=code), code
+
 
 @app.errorhandler(403)
 def permission_denied(e):
