@@ -17,7 +17,7 @@
                 {% set term = 'Summer' %}
             {% endif %}
             <p class="card-text margin-0">Attendance for {{ term }} {{ (course[0].end_date).strftime('%Y') }}</p>
-            <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course[0].id) }}" style="right: 200px;" class="csv-button  btn btn-primary">CSV Session Export</a>
+            <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course[0].id) }}" class="csv-button csv-right-2 btn btn-primary">CSV Session Export</a>
             <a href="{{ url_for('ReportView:export_course_session_attendance_csv', course_id=course[0].id) }}" class="csv-button btn btn-primary">CSV Student Export</a>
         </div>
     </div>
