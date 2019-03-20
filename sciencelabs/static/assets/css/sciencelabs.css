@@ -106,7 +106,7 @@ div.info {
     border-color: #d8d8d8;
 }
 
-div.open-session{
+div.bottom-space{
     margin-bottom: 15px;
 }
 
@@ -125,14 +125,6 @@ div.row-group {
 
 div.semester-selector {
     direction: rtl;
-}
-
-div.student-view{
-    margin-bottom: 15px;
-}
-
-div.tutor-view{
-    margin-bottom: 15px;
 }
 
 div.tutor-td{
