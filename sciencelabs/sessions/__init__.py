@@ -151,6 +151,9 @@ class SessionView(FlaskView):
         name = form.get('name')
         room = form.get('room')
         semester_id = form.get('semester-select')
+        if not semester_id:
+            active_semester = self.schedule.get_active_semester()
+            semester_id = active_semester.id
         date = form.get('date')
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
@@ -162,6 +165,11 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+
+        if not leads:
+            self.slc.set_alert('danger', 'You must choose a Lead Tutor')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
+
         try:
             # Returns True if successful
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
@@ -303,7 +311,16 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
-        if leads == []:
+
+        # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
+        active_semester = self.schedule.get_active_semester()
+        if int(semester_id) != active_semester.id and (not actual_start or not actual_end):
+            self.slc.set_alert('danger', 'You are creating a past session with no actual times. '
+                                         'You either need to update the semester to create a session for the current '
+                                         'semester OR give the past session actual start and end times.')
+            return redirect(url_for('SessionView:create'))
+
+        if not leads:
             self.slc.set_alert('danger', 'You must choose a Lead Tutor')
             return redirect(url_for('SessionView:create'))
         try:
@@ -510,7 +527,7 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        if student_courses == [] and other_course_name == '':
+        if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
