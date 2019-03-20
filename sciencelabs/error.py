@@ -12,7 +12,7 @@ def error_render_template(template_path, error, code=None):
     if code:
         if code in [500, 503]:
             if not app.config['UNIT_TESTING']:
-                app.logger.error("%s -- %s" % flask_session['username'], str(error))
+                app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
 
     else:
         app.logger.error('Unhandled Exception: %s', str(error))
