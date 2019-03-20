@@ -1,7 +1,7 @@
 import logging
 
 # Packages
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask import session as flask_session
 from raven.contrib.flask import Sentry
 from datetime import datetime
@@ -15,7 +15,7 @@ from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
-sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+# sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 from sciencelabs import error
 
 from sciencelabs.views import View
@@ -120,6 +120,27 @@ def close_db_session(response):
     # This closes the db session to allow the data to propogate to all threads. It's available for use again right away.
     db_session.close()
     return response
+
+
+# # Error Handlers
+# @app.errorhandler(403)
+# def permission_denied(e):
+#     return render_template('error/403.html'), 403
+#
+#
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('error/404.html'), 404
+#
+#
+# @app.errorhandler(500)
+# def server_error(e):
+#     return render_template('error/500.html', error=e), 500
+#
+#
+# @app.errorhandler(503)
+# def transport_error(e):
+#     return render_template('error/503.html'), 503
 
 
 if __name__ == "__main__":

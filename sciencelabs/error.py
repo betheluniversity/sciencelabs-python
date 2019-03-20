@@ -3,25 +3,25 @@ from flask import render_template
 from flask import session as flask_session
 
 # Local
-from sciencelabs import app, sentry
+from sciencelabs import app
 
 
 def error_render_template(template_path, error, code=None):
-    sentry.captureException()
-
-    if code:
-        if code in [500, 503]:
-            if not app.config['UNIT_TESTING']:
-                app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
-
-    else:
-        app.logger.error('Unhandled Exception: %s', str(error))
-        code = 500
-
-    return render_template(template_path,
-                           sentry_event_id=sentry.last_event_id,
-                           public_dsn=sentry.client.get_public_dsn('https')), code
-
+    # sentry.captureException()
+    #
+    # if code:
+    #     if code in [500, 503]:
+    #         if not app.config['UNIT_TESTING']:
+    #             app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
+    #
+    # else:
+    #     app.logger.error('Unhandled Exception: %s', str(error))
+    #     code = 500
+    #
+    # return render_template(template_path,
+    #                        sentry_event_id=sentry.last_event_id,
+    #                        public_dsn=sentry.client.get_public_dsn('https')), code
+    return render_template(template_path), code
 
 @app.errorhandler(403)
 def permission_denied(e):

@@ -6,27 +6,31 @@
 
 {% block body_content %}
 
-    <div class="row">
+    <h1>500 ERROR: JoRdAn WaS hErE</h1>
+    <p>{{ lab_title }} failed with the following error:</p>
+    <p>{{ error }}</p>
 
-        <section id="oops">
-            <div class="row">
-                <div class="large-9 medium-9 small-12 columns small-centered">
-                    <h1 class="oversized">Internal Server Error</h1>
-                    <h5>The server encountered an internal error and was unable to complete your request.</h5>
-                </div>
-            </div>
-
-            <!-- Sentry JS SDK 2.1.+ required -->
-            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
-
-            {% if sentry_event_id %}
-                <script>
-                    Raven.showReportDialog({
-                        eventId: '{{ sentry_event_id }}',
-                        dsn: '{{ public_dsn }}'
-                    });
-                </script>
-            {% endif %}
-        </section>
-    </div>
+{#    <div class="row">#}
+{##}
+{#        <section id="oops">#}
+{#            <div class="row">#}
+{#                <div class="large-9 medium-9 small-12 columns small-centered">#}
+{#                    <h1 class="oversized">Internal Server Error</h1>#}
+{#                    <h5>The server encountered an internal error and was unable to complete your request.</h5>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <!-- Sentry JS SDK 2.1.+ required -->#}
+{#            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>#}
+{##}
+{#            {% if sentry_event_id %}#}
+{#                <script>#}
+{#                    Raven.showReportDialog({#}
+{#                        eventId: '{{ sentry_event_id }}',#}
+{#                        dsn: '{{ public_dsn }}'#}
+{#                    });#}
+{#                </script>#}
+{#            {% endif %}#}
+{#        </section>#}
+{#    </div>#}
 {% endblock %}
