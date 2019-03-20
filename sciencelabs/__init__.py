@@ -57,9 +57,30 @@ def utility_processor():
     return to_return
 
 
-def datetimeformat(value, custom_format='%l:%M%p'):
+def datetimeformat(value, custom_format=None):
     if value:
-        return (datetime.min + value).strftime(custom_format)
+
+        if custom_format:
+            return (datetime.min + value).strftime(custom_format)
+
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00AM':  # Check for midnight
+            return 'midnight'
+
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00PM':  # Check for noon
+            return 'noon'
+
+        if (datetime.min + value).strftime('%M') == '00':
+            time = (datetime.min + value).strftime('%l')
+        else:
+            time = (datetime.min + value).strftime('%l:%M')
+
+        if (datetime.min + value).strftime('%p') == 'PM':
+            time = '{0} {1}'.format(time, 'p.m.')
+        else:
+            time = '{0} {1}'.format(time, 'a.m.')
+
+        return time
+
     else:
         return '???'
 
