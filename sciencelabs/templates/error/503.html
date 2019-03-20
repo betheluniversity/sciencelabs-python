@@ -1,31 +1,14 @@
 {% extends 'sciencelabs_base.html' %}
 
-{% block title %} 503 Error {% endblock %}
+{% block title %}503 Error{% endblock %}
 
-{% set title = '503 Error' %}
+{% block body_content %}
 
-{% block bdoy_content %}
+    <h1>Server Error</h1>
+    <h5>{{ lab_title }} failed with the following error: <span class="error-span">{{ error }}</span></h5>
 
-    <div class="row">
+    <p>This page is having trouble loading. Sorry about that! Try returning to the
+        <a href="{{ url_for('View:index') }}">{{ lab_title }} homepage</a>, or contact the Help Desk at
+        <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a> if you need assistance. </p>
 
-        <section id="oops">
-            <div class="row">
-                <div class="large-9 medium-9 small-12 columns small-centered">
-                    <h1 class="oversized">Service Unavailable</h1>
-                    <h5>The service you requested is not available at this time.</h5>
-                </div>
-            </div>
-            <!-- Sentry JS SDK 2.1.+ required -->
-            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
-
-            {% if sentry_event_id %}
-                <script>
-                    Raven.showReportDialog({
-                        eventId: '{{ sentry_event_id }}',
-                        dsn: '{{ public_dsn }}'
-                    });
-                </script>
-            {% endif %}
-        </section>
-    </div>
 {% endblock %}

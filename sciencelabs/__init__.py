@@ -1,7 +1,7 @@
 import logging
 
 # Packages
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask import session as flask_session
 from raven.contrib.flask import Sentry
 from datetime import datetime
@@ -16,6 +16,8 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+if app.config['ENVIRON'] == 'prod':
+    from sciencelabs import error
 
 from sciencelabs.views import View
 from sciencelabs.cron import CronView

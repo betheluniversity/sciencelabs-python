@@ -1,37 +1,14 @@
 {% extends 'sciencelabs_base.html' %}
 
-{% block title %} 404 Error {% endblock %}
-
-{% set title = '404 Error' %}
+{% block title %}404 Error{% endblock %}
 
 {% block body_content %}
 
-    <div class="row">
+    <h1>Page Not Found</h1>
+    <h5>We can't find the page you are looking for.</h5>
 
-        <section id="oops">
-            <div class="row">
-                <div class="large-9 medium-9 small-12 columns small-centered">
-                    <h1 class="oversized">Not Found</h1>
-                </div>
-            </div>
-            <!-- Sentry JS SDK 2.1.+ required -->
-            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
+    <p>Sorry about that! It’s possible that this page doesn’t exist or has been deleted. Try returning to the
+        <a href="{{ url_for('View:index') }}">{{ lab_title }} homepage</a>, or contact the Help Desk at
+        <a href="mailto:helpdesk@bethel.edu">helpdesk@bethel.edu</a> if you need assistance. </p>
 
-            {% if sentry_event_id %}
-                <script>
-                    Raven.showReportDialog({
-                        eventId: '{{ sentry_event_id }}',
-                        dsn: '{{ public_dsn }}'
-                    });
-                </script>
-            {% endif %}
-        </section>
-
-        <!-- Main Blog Content -->
-        <div class="large-9 columns" role="content">
-
-
-        </div>
-
-    </div>
 {% endblock %}

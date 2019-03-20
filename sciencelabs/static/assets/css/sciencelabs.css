@@ -173,6 +173,10 @@ select {
     width: 100%;
 }
 
+span.error-span{
+    color: red;
+}
+
 span.lab-title{
     color: #ffc600
 }
