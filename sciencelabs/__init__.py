@@ -61,6 +61,12 @@ def datetimeformat(value, custom_format=None):
         if custom_format:
             return (datetime.min + value).strftime(custom_format)
 
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00AM':  # Check for midnight
+            return 'midnight'
+
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00PM':  # Check for noon
+            return 'noon'
+
         if (datetime.min + value).strftime('%M') == '00':
             time = (datetime.min + value).strftime('%l')
         else:
