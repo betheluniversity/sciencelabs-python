@@ -1,7 +1,7 @@
 import logging
 
 # Packages
-from flask import Flask, request, render_template
+from flask import Flask, request
 from flask import session as flask_session
 from raven.contrib.flask import Sentry
 from datetime import datetime
