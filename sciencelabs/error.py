@@ -41,3 +41,8 @@ def server_error(e):
 @app.errorhandler(503)
 def transport_error(e):
     return error_render_template('error/503.html', e, 503)
+
+
+@app.errorhandler(Exception)
+def other_error(e):
+    return error_render_template(e, 0)

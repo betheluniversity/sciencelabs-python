@@ -131,6 +131,10 @@ select {
     width: 100%;
 }
 
+span.error-span{
+    color: red;
+}
+
 span.tag a {
     color: #0069aa !important;
 }

@@ -15,8 +15,9 @@ from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
-# sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
-from sciencelabs import error
+sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+if app.config['ENVIRON'] == 'prod':
+    from sciencelabs import error
 
 from sciencelabs.views import View
 from sciencelabs.cron import CronView
@@ -122,25 +123,30 @@ def close_db_session(response):
     return response
 
 
-# # Error Handlers
-# @app.errorhandler(403)
-# def permission_denied(e):
-#     return render_template('error/403.html'), 403
-#
-#
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('error/404.html'), 404
-#
-#
-# @app.errorhandler(500)
-# def server_error(e):
-#     return render_template('error/500.html', error=e), 500
-#
-#
-# @app.errorhandler(503)
-# def transport_error(e):
-#     return render_template('error/503.html'), 503
+# Error Handlers
+@app.errorhandler(403)
+def permission_denied(e):
+    return render_template('error/403.html'), 403
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error/404.html'), 404
+
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('error/500.html', error=e), 500
+
+
+@app.errorhandler(503)
+def transport_error(e):
+    return render_template('error/503.html', error=e), 503
+
+
+@app.errorhandler(Exception)
+def other_error(e):
+    return render_template('error/error.html', error=e), 0
 
 
 if __name__ == "__main__":
