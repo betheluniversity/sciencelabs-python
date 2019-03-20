@@ -1,66 +1,21 @@
-<<<<<<< HEAD
-<head>
-    <link href="{{ url_for('static', filename='assets/css/email.css') }}" rel="stylesheet"/>
-</head>
-
-<body>
-    <h3>General Information</h3>
-=======
 <h3>General Information</h3>
->>>>>>> parent of f246455... Email CSS
 
-    <p>Session report for the {% if sess.name is defined %}{{ sess.name }}{% endif %} {{ sess.date.strftime('%m/%d/%Y') }} ({{ sess.schedStartTime|datetimeformat }} - {{ sess.schedEndTime|datetimeformat }}) session:</p>
-    <ul>
-        {% if opener %}
-            <li>Opened by: {{ opener.firstName }} {{ opener.lastName }} ({{ opener.username }})</li>
-        {% endif %}
-        <li>Actual Session Time: {{ sess.startTime|datetimeformat }} - {{ sess.endTime|datetimeformat }}</li>
-    </ul>
+<p>Session report for the {% if sess.name is defined %}{{ sess.name }}{% endif %} {{ sess.date.strftime('%m/%d/%Y') }} ({{ sess.schedStartTime|datetimeformat }} - {{ sess.schedEndTime|datetimeformat }}) session:</p>
+<ul>
+    {% if opener %}
+        <li>Opened by: {{ opener.firstName }} {{ opener.lastName }} ({{ opener.username }})</li>
+    {% endif %}
+    <li>Actual Session Time: {{ sess.startTime|datetimeformat }} - {{ sess.endTime|datetimeformat }}</li>
+</ul>
 
-    <h3>General Comments</h3>
+<h3>General Comments</h3>
 
-    <p>{{ sess.comments }}</p>
+<p>{{ sess.comments }}</p>
 
-    <h3>Tutor Attendance</h3>
+<h3>Tutor Attendance</h3>
 
-    <h4>Scheduled Tutors</h4>
+<h4>Scheduled Tutors</h4>
 
-<<<<<<< HEAD
-    {% if tutors %}
-        <table class="email-table">
-            <tr>
-                <th class="email-padding">Name</th>
-                <th class="email-padding">Time</th>
-            </tr>
-            {% if tutors %}
-                {% for tutor in tutors %}
-                    <tr>
-                        {% if tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}
-                            <td class="email-padding email-border">
-                                {{ tutor.firstName }} {{ tutor.lastName }}
-                            </td>
-                            <td class="email-padding email-border">
-                                {{ tutor.timeIn|datetimeformat if tutor.timeIn else '???' }} - {{ tutor.timeOut|datetimeformat if tutor.timeOut else '???' }}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            {% endif %}
-        </table>
-
-        {% set unscheduled = [0] %}
-        {% for tutor in tutors %}
-            {% if not tutor.schedTimeIn %}
-                {% if unscheduled.append(unscheduled.pop() + (1)) %}{% endif %}
-            {% endif %}
-        {% endfor %}
-        {% if unscheduled[0] > 0 %}
-            <h4>Unscheduled Tutors</h4>
-            <table class="email-table">
-                <tr>
-                    <th class="email-padding">Name</th>
-                    <th class="email-padding">Time</th>
-=======
 {% if tutors %}
     <table style="border-collapse:collapse;min-width:300px">
         <tr>
@@ -78,43 +33,11 @@
                             {{ tutor.timeIn|datetimeformat if tutor.timeIn else '???' }} - {{ tutor.timeOut|datetimeformat if tutor.timeOut else '???' }}
                         </td>
                     {% endif %}
->>>>>>> parent of f246455... Email CSS
                 </tr>
-                {% for tutor in tutors %}
-                    <tr>
-                        {% if not tutor.schedTimeIn and (tutor.timeIn or tutor.timeOut) %}
-                            <td class="email-padding email-border">
-                                {{ tutor.firstName }} {{ tutor.lastName }}
-                            </td>
-                            <td class="email-padding email-border">
-                                {{ tutor.timeIn|datetimeformat if tutor.timeIn else '???' }} - {{ tutor.timeOut|datetimeformat if tutor.timeOut else '???' }}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
+            {% endfor %}
         {% endif %}
+    </table>
 
-<<<<<<< HEAD
-        {% set absent = [0] %}
-        {% for tutor in tutors %}
-            {% if not tutor.schedTimeIn %}
-                {% if absent.append(absent.pop() + (1)) %}{% endif %}
-            {% endif %}
-        {% endfor %}
-        {% if absent[0] > 0 %}
-        <h4>Absent Tutors</h4>
-        <table class="email-table">
-            <tr>
-                <th class="email-padding">Name</th>
-            </tr>
-            {% for tutor in tutors %}
-                {% if not tutor.timeIn and not tutor.timeOut %}
-                    <tr>
-                        <td class="email-padding email-border">{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                    </tr>
-                {% endif %}
-=======
     {% set unscheduled = [0] %}
     {% for tutor in tutors %}
         {% if not tutor.schedTimeIn %}
@@ -139,43 +62,10 @@
                         </td>
                     {% endif %}
                 </tr>
->>>>>>> parent of f246455... Email CSS
             {% endfor %}
         </table>
-        {% endif %}
     {% endif %}
 
-<<<<<<< HEAD
-    <h3>Student Attendance (by name)</h3>
-    <table class="email-table">
-        <tr>
-            <th class="email-padding">Name</th>
-            <th class="email-padding">Time In</th>
-            <th class="email-padding">Time Out</th>
-            <th class="email-padding">Time in Lab</th>
-            <th class="email-padding">Course(s)</th>
-        </tr>
-        {% for student, courses in students_and_courses.items() %}
-
-            <tr>
-                <td class="email-padding email-border">{{ student.firstName }} {{ student.lastName }}</td>
-                <td class="email-padding email-border">
-                    {% if student.timeIn %}
-                        {{ student.timeIn|datetimeformat }}
-                    {% else %}
-                        ???
-                    {% endif %}
-                </td>
-                <td class="email-padding email-border">
-                    {% if student.timeOut %}
-                        {{ student.timeOut|datetimeformat }}
-                    {% else %}
-                        ???
-                    {% endif %}
-                </td>
-                {% if student.timeOut and student.timeIn %}
-                    <td class="email-padding email-border email-text">{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
-=======
     {% set absent = [0] %}
     {% for tutor in tutors %}
         {% if not tutor.schedTimeIn %}
@@ -222,48 +112,28 @@
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
                 {% if student.timeOut %}
                     {{ student.timeOut|datetimeformat }}
->>>>>>> parent of f246455... Email CSS
                 {% else %}
-                    <td>0 min</td>
+                    ???
                 {% endif %}
-<<<<<<< HEAD
-=======
             </td>
             {% if student.timeOut and student.timeIn %}
                 <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ ((student.timeOut - student.timeIn).total_seconds()/60)|round|int }} min</td>
             {% else %}
                 <td>0 min</td>
             {% endif %}
->>>>>>> parent of f246455... Email CSS
 
-                <td>
-                    {% for course in courses %}
-                        {{ course.title }} (Section {{ course.section }})<br>
-                    {% endfor %}
-                    {% if student.otherCourse and student.otherCourseName %}
-                        {{ student.otherCourseName }}
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+            <td>
+                {% for course in courses %}
+                    {{ course.title }} (Section {{ course.section }})<br>
+                {% endfor %}
+                {% if student.otherCourse and student.otherCourseName %}
+                    {{ student.otherCourseName }}
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
 
-<<<<<<< HEAD
-    <h3>Student Attendance (by course)</h3>
-    <table class="email-table-1">
-    {% set courseCount = [0] %}
-    {% set attendance = [0] %}
-    {% for course, info in courses_and_info.items() %}
-
-        {% if (courseCount[0] % 2) == 0 %}
-            <tr>
-        {% endif %}
-        {% if courseCount.append(courseCount.pop() + (1)) %}{% endif %}
-        <td class="email-special">
-            <table class="email-table-2">
-                <tr>
-                    <th class="email-padding" colspan="2">{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</th>
-=======
 <h3>Student Attendance (by course)</h3>
 <table style="border-collapse:collapse">
 {% set courseCount = [0] %}
@@ -278,69 +148,9 @@
         <table style="border-collapse:collapse;width:100%">
             <tr>
                 <th style="padding:2px 10px" colspan="2">{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</th>
->>>>>>> parent of f246455... Email CSS
 
-                </tr>
-                <tr>
-                    <th class="email-padding">Name</th>
-                </tr>
-                {% for student in info['students'] %}
-
-                        {% if attendance.append(attendance.pop() + (1)) %}{% endif %}
-                        <tr>
-                            <td class="email-padding email-border">{{ student.firstName }} {{ student.lastName }}</td>
-                        </tr>
-                {% endfor %}
-            </table>
-        </td>
-        {% if (courseCount[0] % 2) == 0 or courseCount == attendance[0] %}
             </tr>
-        {% endif %}
-    {% endfor %}
-    </table>
-
-    <h3>Course Attendance</h3>
-    <table class="email-table">
-        <tr>
-            <th class="email-padding">Course</th>
-            <th class="email-padding">Professor</th>
-            <th class="email-padding">Attendance</th>
-        </tr>
-        {% set total_attendance = [0] %}
-        {% for course, info in courses_and_info.items() %}
-            {% set attendance = [0] %}
-            {% for student in info['students'] %}
-                {% if attendance.append(attendance.pop() + 1) %}{% endif %}
-            {% endfor %}
-            {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
             <tr>
-<<<<<<< HEAD
-                <td class="email-padding email-border">
-                    <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course/{{ course.id }}">
-                        {{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})
-                    </a>
-                </td>
-                <td class="email-padding email-border email-text-left">
-                    {% for prof in info['profs'] %}
-                        {{ prof }}
-                    {% endfor %}
-                </td>
-                <td class="email-padding email-border email-text">{{ attendance[0] }}</td>
-            </tr>
-        {% endfor %}
-        {% set attendees = [total_attendance[0] + sess.anonStudents] %}
-        <tr>
-            <td class="email-padding email-border" colspan="2"><b>Course Total*</b></td>
-            <td class="email-padding email-border email-text">{{ total_attendance[0] }}</td>
-        </tr>
-        <tr>
-            <td class="email-padding email-border" colspan="2"><b>Other Students Total</b></td>
-            {% set other_students = [0] %}
-            {% for student in session_students %}
-                {% if student.courseName or student.otherCourseName %}
-                    {% if other_students.append(other_students.pop() + 1) %}{% endif %}
-                {% endif %}
-=======
                 <th style="padding:2px 10px">Name</th>
             </tr>
             {% for student in info['students'] %}
@@ -349,24 +159,11 @@
                     <tr>
                         <td style="border-bottom: 1px solid #CCC;padding:2px 10px">{{ student.firstName }} {{ student.lastName }}</td>
                     </tr>
->>>>>>> parent of f246455... Email CSS
             {% endfor %}
-            <td class="email-padding email-border email-text">{{ other_students[0] }}</td>
+        </table>
+    </td>
+    {% if (courseCount[0] % 2) == 0 or courseCount == attendance[0] %}
         </tr>
-<<<<<<< HEAD
-        <tr>
-            <td class="email-padding email-border" colspan="2"><b>Anonymous Students Total</b></td>
-            <td class="email-padding email-border email-text">{{ sess.anonStudents }}</td>
-        </tr>
-        <tr>
-            <td class="email-padding email-border" colspan="2"><b>Student Total</b></td>
-            <td class="email-padding email-border email-text">{{ attendees[0] }}</td>
-        </tr>
-    </table>
-    <br />
-    <span>*Students that sign in for multiple classes will be double counted in the class totals, but appear once in the student totals</span>
-    <br />
-=======
     {% endif %}
 {% endfor %}
 </table>
@@ -428,7 +225,3 @@
 <br />
 
 <span>View more detailed <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course">{{ lab_title }}</a> reports</span>
->>>>>>> parent of f246455... Email CSS
-
-    <span>View more detailed <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course">{{ lab_title }}</a> reports</span>
-</body>
