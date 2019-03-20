@@ -22,7 +22,7 @@
                         <div class="header card">
                             <div class="card-body btn-group">
                                     <p class="no-margin-padding">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
-                                <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" style="right: 175px;" class="csv-button  btn btn-primary">CSV Summary Export</a>
+                                <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" class="csv-button csv-right-1 btn btn-primary">CSV Summary Export</a>
                                 <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="csv-button btn btn-primary">CSV Detail Export</a>
                             </div>
                         </div>

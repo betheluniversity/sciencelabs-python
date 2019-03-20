@@ -35,11 +35,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-3 btn-group">
                         <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC</button>
-                        <button style="left: 10px;" type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC</button>
+                        <button type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC</button>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div id="cc-div" style="display: none;" class="form-group col-md-12 chosen-container">
+                    <div id="cc-div" class="form-group col-md-12 chosen-container email">
                         <label for="choose-cc">CC</label>
                         <select name="cc" class="chosen form-control" id="choose-cc" multiple="true"
                                 data-placeholder="Choose CC recipients ...">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div id="bcc-div" style="display: none;"  class="form-group col-md-12 chosen-container">
+                    <div id="bcc-div" class="form-group col-md-12 chosen-container email">
                         <label for="choose-bcc">BCC</label>
                         <select name="bcc" class="chosen form-control" id="choose-bcc" multiple="true"
                                 data-placeholder="Choose BBC recipients ...">

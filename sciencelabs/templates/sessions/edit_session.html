@@ -220,11 +220,11 @@
             <br>
         {% endfor %}
     </div>
-    <div style="display: block;" class="btn-group text-right">
-    <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
-            class="btn btn-primary hover-bright">Add a Student</a>
-    <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
-            class="btn blue btn-primary">Add Anonymous Student</a>
+    <div class="edit-btns btn-group text-right">
+        <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
+                class="btn btn-primary hover-bright">Add a Student</a>
+        <a href="{{ url_for('SessionView:add_anonymous', session_id=session_info.id) }}"
+                class="btn blue btn-primary">Add Anonymous Student</a>
     </div>
     <div class="header card margin-top-10 margin-bottom-10">
         <div class="card-body">
