@@ -101,7 +101,8 @@ class Session:
 
     # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
-        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
@@ -111,7 +112,8 @@ class Session:
 
     # This method must return the same data as above
     def get_session_courses(self, session_id):
-        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
             .filter(session_id == StudentSession_Table.sessionId)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
@@ -127,7 +129,7 @@ class Session:
         courses = self.get_student_session_courses(session_id, student_id)
         for course in courses:
             course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
-                .filter(CourseCode_Table.active == 1).one()
+                .filter(CourseCode_Table.id == course.course_code_id).one()
             course_ids.append(course_code.id)
         return course_ids
 
