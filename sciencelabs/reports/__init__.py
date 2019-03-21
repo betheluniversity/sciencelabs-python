@@ -399,7 +399,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         month = self._get_selected_month()  # Needed for subnav
         year = sem.year  # Needed for subnav
-        cumulative_list = self.build_cumulative_list()
+        cumulative_list = self._build_cumulative_list()
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
@@ -411,11 +411,11 @@ class ReportView(FlaskView):
 
         csv_name = '{0}_CumulativeAttendance'.format(lab)
 
-        my_list = self.build_cumulative_list()
+        my_list = self._build_cumulative_list()
 
         return self.export_csv(my_list, csv_name)
 
-    def build_cumulative_list(self):
+    def _build_cumulative_list(self):
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring',
                     'Jun', 'Jul', 'Summer', 'Total']]
 

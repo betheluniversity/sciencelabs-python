@@ -349,7 +349,7 @@ class SessionView(FlaskView):
 
         if lab_session.date.strftime("%m/%d/%Y") == datetime.now().strftime("%m/%d/%Y"):
 
-            if self.check_session_time(lab_session):  # returns true if session is started within an hour window
+            if self._check_session_time(lab_session):  # returns true if session is started within an hour window
                 opener = self.user.get_user_by_username(flask_session['USERNAME'])
                 self.session.start_open_session(session_id, opener.id)
                 self.session.tutor_sign_in(session_id, opener.id)
@@ -365,7 +365,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for('SessionView:index'))
 
-    def check_session_time(self, lab_session):
+    def _check_session_time(self, lab_session):
         session_start_time = lab_session.schedStartTime
         start_plus_hour = session_start_time + timedelta(hours=1)
         start_minus_hour = session_start_time - timedelta(hours=1)

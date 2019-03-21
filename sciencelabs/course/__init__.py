@@ -50,17 +50,17 @@ class CourseView(FlaskView):
         course_list = course_string.split(";")
         for course in course_list:
             course_code = course.split(" ")[0]
-            number = self.dept_length(course_code)
+            number = self._dept_length(course_code)
             cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
             course_info = self.wsapi.get_course_info(course[:number], course[number:])
             if cc_info and course_info:
-                self.handle_coursecode(cc_info[0])
+                self._handle_coursecode(cc_info[0])
                 for info in course_info:
-                    self.handle_course(course_info[info])
+                    self._handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
 
-    def dept_length(self, course_string):
+    def _dept_length(self, course_string):
         count = 0
         for character in course_string:
             if character.isalpha():
@@ -69,7 +69,7 @@ class CourseView(FlaskView):
                 break
         return count
 
-    def handle_coursecode(self, info):
+    def _handle_coursecode(self, info):
         does_exist = self.course.check_for_existing_coursecode(info)
         if does_exist:
             self.course.check_if_existing_coursecode_is_active(info)
@@ -78,7 +78,7 @@ class CourseView(FlaskView):
             self.course.create_coursecode(info)
             self.slc.set_alert('success', 'Course Code created successfully!')
 
-    def handle_course(self, info):
+    def _handle_course(self, info):
         does_exist = self.course.check_for_existing_course(info)
         if not does_exist:
             self.course.create_course(info)
