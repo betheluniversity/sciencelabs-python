@@ -66,7 +66,7 @@ class User:
                 .filter(Session_Table.semester_id == Semester_Table.id) \
                 .filter(Semester_Table.id == semester_id)\
                 .group_by(User_Table.id) \
-                .one()
+                .first()
 
     def get_unique_sessions_attended(self, student_id, semester_id):
         return db_session.query(func.count(StudentSession_Table.sessionId))\
@@ -105,9 +105,9 @@ class User:
             .filter(User_Table.id == student_id) \
             .all()
 
-    def get_student_from_studentsession(self, student_id):
+    def get_student(self, student_id):
         return db_session.query(User_Table)\
-            .filter(User_Table.id == student_id)
+            .filter(User_Table.id == student_id).first()
 
     def get_all_roles(self):
         return db_session.query(Role_Table)\
