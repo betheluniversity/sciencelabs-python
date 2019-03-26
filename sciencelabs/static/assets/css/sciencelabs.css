@@ -200,6 +200,18 @@ ul.no-margin {
     padding: 3px 16px
 }
 
+.alert-info {
+    background-color: #6CAEDF;
+    border-color: #4699d7;
+    color: #FFFFFF;
+}
+
+.alert-success {
+    background-color: #0069AA;
+    border-color: #005a92;
+    color: #FFFFFF;
+}
+
 .add-user {
     float: right;
 }
