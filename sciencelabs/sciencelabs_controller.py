@@ -32,3 +32,14 @@ class ScienceLabsController(object):
             'type': message_type,
             'message': message
         }
+
+    def set_second_alert(self, message_type, message):
+        flask_session['ALERT_2'] = {
+            'type': message_type,
+            'message': message
+        }
+
+    def get_second_alert(self):
+        alert_return = flask_session['ALERT_2']
+        flask_session['ALERT_2'] = None
+        return alert_return

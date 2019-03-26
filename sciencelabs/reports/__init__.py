@@ -68,6 +68,7 @@ class ReportView(FlaskView):
 
             role_can_view = True
             student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            self.slc.set_second_alert('info', 'Notice: ' + student.firstName + ' ' + student.lastName + ' has not attended any labs for ' + sem.term + ' ' + str(year) + '')
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
