@@ -54,7 +54,7 @@ class TermStartupView(FlaskView):
             self.schedule.set_current_term(term, year, start_date, end_date)  # Sets the new term to active
             self.user.deactivate_students()  # Soft deletes all students
             self.user.demote_tutors()  # Demotes all lead tutors to regular tutors
-            # self.user.populate_courses_cron()  # Pulls in new courses and profs from banner
+            self.user.populate_courses_cron()  # Pulls in new courses and profs from banner
             semester = Schedule().get_active_semester()
             flask_session['SEMESTER-LIST'] = \
                 [{'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active}] + \
