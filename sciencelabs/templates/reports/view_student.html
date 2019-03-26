@@ -54,11 +54,19 @@
                         <tbody>
                         <tr>
                             <td><b>Sessions Held for courses user was enrolled in</b></td>
+                            {% if student_info %}
                             <td>{{ total_sessions|length }}</td>
+                            {% else %}
+                                <td>0</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><b>Percentage Attended</b></td>
-                            <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% if attendance %}
+                                <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% else %}
+                                <td>0%</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><b>Average Time per Session</b></td>
@@ -75,7 +83,11 @@
                                     {% if avg_time.append(avg_time.pop() + ((avg_time_per_course[0] / time|length)|round())) %}{% endif %}
                                 {% endif %}
                             {% endfor %}
+                            {% if courses %}
                             <td>{{ (avg_time[0] / courses|length)|round|int }} minutes</td>
+                            {% else %}
+                                <td>0 minutes</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><b>Total Time this Term</b></td>
