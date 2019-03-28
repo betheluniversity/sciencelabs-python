@@ -1,0 +1,48 @@
+{% extends 'reports/base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body btn-group">
+            <p class="no-margin-padding">{{ lab_title }} Enrollment Report</p>
+            <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block semester_switch %}{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-8">
+            <table id="new-table"  class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Semester</th>
+                        <th>Total Attendance</th>
+                        <th>Total Unique</th>
+                        <th>Total Enrolled</th>
+                        <th>Percent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>This will be the Semester, given like "Spring 2018"</td>
+                        <td>This will be the total attendance for that semester</td>
+                        <td>This will be how many unique students made use of the lab that semester</td>
+                        <td>This will be how many students were enrolled in lab courses that semester</td>
+                        <td>This will be the % given by unique/total enrolled</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div class="sub-info card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        This page contains stats for course enrollment.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

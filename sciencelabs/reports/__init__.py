@@ -534,6 +534,16 @@ class ReportView(FlaskView):
 
         return my_list
 
+    @route('/enrollment')
+    def enrollment(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        month = self._get_selected_month()
+        year = sem.year
+
+        return render_template('reports/enrollment.html', **locals())
+
     @route('/session')
     def session(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
