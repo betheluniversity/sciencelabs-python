@@ -411,28 +411,6 @@ ul.no-margin {
     margin-top: 50px;
 }
 
-.loader {
-    border: 16px solid #f3f3f3;
-    left: 50% !important;
-    border-radius: 50%;
-    border-top: 16px solid #123563;
-    width: 120px;
-    height: 120px;
-    -webkit-animation: spin 2s linear infinite;
-}
-
-.loading-wrapper {
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 .margins {
     width: 100%;
     margin: 20px auto;
@@ -525,6 +503,29 @@ ul.no-margin {
     background-color: #ffae1f !important;
     border-color: #ffae1f !important;
     color: black;
+}
+
+.spinner {
+    top: 50%;
+    left: 50%;
+    margin: 0 auto;
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 120px; /* width of the spinner gif */
+    height: 0px; /* height of the spinner gif +2px to fix IE8 issue */
+}
+
+.spinner-img {
+    position: fixed;
+    margin-left: -60px;
+}
+
+.spinner-wrapper {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
