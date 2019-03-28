@@ -25,6 +25,10 @@ class EmailView(FlaskView):
         user_list = self.user.get_all_current_users()
         return render_template('email_tab/base.html', **locals())
 
+    @route('/')
+    def email_redirect(self):
+        return redirect(url_for('EmailView:index'))
+
     @route('/confirm', methods=['post'])
     def send_email_confirm(self):
         self.slc.check_roles_and_route(['Administrator'])

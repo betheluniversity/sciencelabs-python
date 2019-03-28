@@ -24,6 +24,11 @@ class CourseView(FlaskView):
 
         return render_template('course/base.html', **locals())
 
+    # This route exists in case a user deletes the "admin" part of the course url - redirects back to base page
+    @route('/')
+    def course_redirect(self):
+        return redirect(url_for('CourseView:index'))
+
     @route('<int:course_id>')
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
