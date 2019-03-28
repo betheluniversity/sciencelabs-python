@@ -505,6 +505,29 @@ ul.no-margin {
     color: black;
 }
 
+.spinner {
+    top: 50%;
+    left: 50%;
+    margin: 0 auto;
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 120px; /* width of the spinner gif */
+    height: 0px; /* height of the spinner gif +2px to fix IE8 issue */
+}
+
+.spinner-img {
+    position: fixed;
+    margin-left: -60px;
+}
+
+.spinner-wrapper {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(0,0,0,.01);
 }
