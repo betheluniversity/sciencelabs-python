@@ -50,7 +50,7 @@
                         var lab_base_url = "{{ lab_base_url }}";
                         if( lab_base_url == "/")
                             lab_base_url = '';
-
+                        {# TODO WHEN TESTING, REMOVE lab_base_url FROM CODE #}
                         window.location.replace(lab_base_url + "/report/month/" + year + '/' + month);
                     }
                     else

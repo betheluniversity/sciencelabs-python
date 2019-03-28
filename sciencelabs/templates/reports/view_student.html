@@ -64,7 +64,11 @@
                         </tr>
                         <tr>
                             <td><b>Percentage Attended</b></td>
-                            <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% if attendance %}
+                                <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% else %}
+                                <td>0%</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><b>Average Time per Session</b></td>

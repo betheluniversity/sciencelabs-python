@@ -96,7 +96,7 @@ def before_request():
             or '/no-cas/' in request.path:
 
         if not flask_session.get('ALERT'):
-            flask_session['ALERT'] = None
+            flask_session['ALERT'] = []
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():
@@ -134,7 +134,7 @@ def before_request():
         if 'SELECTED-SEMESTER' not in flask_session.keys():
             flask_session['SELECTED-SEMESTER'] = active_semester.id
         if 'ALERT' not in flask_session.keys():
-            flask_session['ALERT'] = None
+            flask_session['ALERT'] = []
 
 
 @app.after_request

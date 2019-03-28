@@ -105,9 +105,9 @@ class User:
             .filter(User_Table.id == student_id) \
             .all()
 
-    def get_student_from_studentsession(self, student_id):
+    def get_student(self, student_id):
         return db_session.query(User_Table)\
-            .filter(User_Table.id == student_id)
+            .filter(User_Table.id == student_id).first()
 
     def get_all_roles(self):
         return db_session.query(Role_Table)\
@@ -500,16 +500,35 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
         for student in students:
-            roles = db_session.query(user_role_Table).filter(user_role_Table.user_id == student.id).all()
-            if len(roles) == 1:  # This means that 'Student' is their only role
+            roles = db_session.query(user_role_Table.role_id).filter(user_role_Table.user_id == student.id).all()
+            if len(roles) == 1: # This means that 'Student' is their only role
                 student.deletedAt = datetime.now()
         db_session.commit()
 
     def demote_tutors(self):
-        lead_roles = db_session.query(user_role_Table)\
-            .filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == Role_Table.id)\
-            .filter(Role_Table.name == 'Lead Tutor')\
+        # This logic below updates lead tutor role to be a tutor role, if a lead tutor isn't also assigned the tutor role
+        leads = db_session.query(User_Table) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == Role_Table.id) \
+            .filter(Role_Table.name == 'Lead Tutor') \
+            .filter(User_Table.deletedAt == None) \
+            .all()
+        for lead in leads:
+            roles = db_session.query(user_role_Table.user_id, user_role_Table.role_id).filter(
+                user_role_Table.user_id == lead.id).all()
+            role_list = []
+            for role in roles:
+                role_list.append(role[1])
+            if 40004 not in role_list:  # checks if tutor role is in the current list
+                db_session.query(user_role_Table).filter(user_role_Table.user_id == lead.id).filter(
+                    user_role_Table.role_id == 40003).update({'role_id': 40004})
+                db_session.commit()
+
+        # This logic below deletes all the Lead Tutors
+        lead_roles = db_session.query(user_role_Table) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == Role_Table.id) \
+            .filter(Role_Table.name == 'Lead Tutor') \
             .all()
         for lead_role in lead_roles:
             db_session.delete(lead_role)

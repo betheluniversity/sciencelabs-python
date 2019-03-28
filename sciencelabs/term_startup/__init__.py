@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
@@ -44,7 +44,6 @@ class TermStartupView(FlaskView):
     @route('/set-term', methods=['post'])
     def set_term(self):
         self.slc.check_roles_and_route(['Administrator'])
-
         form = request.form
         term = form.get('term')
         year = form.get('year')
@@ -56,6 +55,11 @@ class TermStartupView(FlaskView):
             self.user.deactivate_students()  # Soft deletes all students
             self.user.demote_tutors()  # Demotes all lead tutors to regular tutors
             self.user.populate_courses_cron()  # Pulls in new courses and profs from banner
+            semester = Schedule().get_active_semester()
+            flask_session['SEMESTER-LIST'] = \
+                [{'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active}] + \
+                flask_session['SEMESTER-LIST']
+            flask_session['SELECTED-SEMESTER'] = semester.id
             self.slc.set_alert('success', 'Term set successfully!')
             return redirect(url_for('TermStartupView:step_two'))
         except Exception as error:
