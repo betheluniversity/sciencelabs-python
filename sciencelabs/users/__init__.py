@@ -62,9 +62,13 @@ class UsersView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         roles = self.user.get_all_roles()
-        existing_user = self.user.check_for_existing_user(username)
-        if existing_user:
-            self.user.activate_existing_user(username)
+        existing_user = self.user.get_user_by_username(username)
+        if existing_user:  # User exists in system
+            if existing_user.deletedAt:  # Has been deactivated in the past
+                self.user.activate_existing_user(username)
+                message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
+            else:  # Currently active
+                message = "This user already exists in the system and is activated."
         return render_template('users/select_user_roles.html', **locals())
 
     @route("/search-users", methods=['post'])
@@ -86,7 +90,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('success', 'User deactivated successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to deactivate user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user: {0}'.format(str(error)))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route("/deactivate-users", methods=['post'])
@@ -101,7 +105,7 @@ class UsersView(FlaskView):
                 self.user.delete_user(user)
             self.slc.set_alert('success', 'User(s) deactivated successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to deactivate user(s): ' + str(error))
+            self.slc.set_alert('danger', 'Failed to deactivate user(s): {0}'.format(str(error)))
         return 'done'  # Return doesn't matter: success or failure take you to the same page. Only the alert changes.
 
     @route("/save-user-edits", methods=['post'])
@@ -124,7 +128,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('success', 'Edited user successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit user: {0}'.format(str(error)))
             return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route('/create-user', methods=['post'])
@@ -146,7 +150,7 @@ class UsersView(FlaskView):
             self.slc.set_alert('success', 'User added successfully!')
             return redirect(url_for('UsersView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add user: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add user: {0}'.format(str(error)))
             return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name,
                                     last_name=last_name))
 
@@ -161,7 +165,7 @@ class UsersView(FlaskView):
             flask_session['ADMIN-NAME'] = flask_session['NAME']
             # Setting up viewing role
             flask_session['USERNAME'] = user_info.username
-            flask_session['NAME'] = user_info.firstName + ' ' + user_info.lastName
+            flask_session['NAME'] = '{0} {1}'.format(user_info.firstName, user_info.lastName)
             flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(user_id)
             for role in user_roles:
@@ -183,7 +187,7 @@ class UsersView(FlaskView):
                 flask_session.pop('ADMIN-NAME')
                 return redirect(url_for('View:index'))
             except Exception as error:
-                self.slc.set_alert('danger', 'An error occurred: ' + str(error))
+                self.slc.set_alert('danger', 'An error occurred: {0}'.format(str(error)))
                 return redirect(url_for('View:index'))
         else:
             self.slc.set_alert('danger', 'You do not have permission to access this function')

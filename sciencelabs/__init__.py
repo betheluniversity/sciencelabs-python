@@ -16,6 +16,8 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
 sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+if app.config['ENVIRON'] == 'prod':
+    from sciencelabs import error
 
 from sciencelabs.views import View
 from sciencelabs.cron import CronView
@@ -50,14 +52,36 @@ def utility_processor():
         'lab_base_url': app.config['LAB_BASE_URL'],
         'alert': slc().get_alert(),
         'alert_2': slc().get_second_alert()
+        'env': app.config['ENVIRON']
     })
 
     return to_return
 
 
-def datetimeformat(value, custom_format='%l:%M%p'):
+def datetimeformat(value, custom_format=None):
     if value:
-        return (datetime.min + value).strftime(custom_format)
+
+        if custom_format:
+            return (datetime.min + value).strftime(custom_format)
+
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00AM':  # Check for midnight
+            return 'midnight'
+
+        if (datetime.min + value).strftime('%l:%M:%p') == '12:00PM':  # Check for noon
+            return 'noon'
+
+        if (datetime.min + value).strftime('%M') == '00':
+            time = (datetime.min + value).strftime('%l')
+        else:
+            time = (datetime.min + value).strftime('%l:%M')
+
+        if (datetime.min + value).strftime('%p') == 'PM':
+            time = '{0} {1}'.format(time, 'p.m.')
+        else:
+            time = '{0} {1}'.format(time, 'a.m.')
+
+        return time
+
     else:
         return '???'
 
@@ -89,7 +113,7 @@ def before_request():
             if current_user.deletedAt != None:  # User has been soft deleted in the past, needs reactivating
                 User().activate_existing_user(current_user.username)
             flask_session['USERNAME'] = current_user.username
-            flask_session['NAME'] = current_user.firstName + ' ' + current_user.lastName
+            flask_session['NAME'] = '{0} {1}'.format(current_user.firstName, current_user.lastName)
             flask_session['USER-ROLES'] = []
             user_roles = User().get_user_roles(current_user.id)
             for role in user_roles:

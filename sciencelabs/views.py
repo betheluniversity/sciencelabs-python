@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import json
 
 # Packages
@@ -34,13 +33,13 @@ class View(FlaskView):
             for semester in flask_session['SEMESTER-LIST']:
                 if semester['id'] == semester_id:
                     semester['active'] = 1  # activates the semester chosen
-                    self.slc.set_alert('success', 'Successfully set semester to ' + semester['term'] + ' ' +
-                                       str(semester['year']))
+                    self.slc.set_alert('success', 'Successfully set semester to {0} {1}'.format(semester['term'],
+                                                                                                str(semester['year'])))
                 else:
                     semester['active'] = 0  # deactivates all others
             # Sets the SELECTED-SEMESTER
             flask_session['SELECTED-SEMESTER'] = int(semester_id)
             return 'success'
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to change semester: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to change semester: {0}'.format(str(error)))
             return error

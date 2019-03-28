@@ -53,7 +53,7 @@ class EmailView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
         form = request.form
         message = form.get('message')
-        subject = "{" + app.config['LAB_TITLE'] + "} " + form.get('subject')
+        subject = '{{0}} {1}'.format(app.config['LAB_TITLE'], form.get('subject'))
         group_id_strings = form.getlist('groups')
         groups = []
         for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)

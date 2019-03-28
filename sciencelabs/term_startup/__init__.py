@@ -63,5 +63,5 @@ class TermStartupView(FlaskView):
             self.slc.set_alert('success', 'Term set successfully!')
             return redirect(url_for('TermStartupView:step_two'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to set term: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to set term: {0}'.format(str(error)))
             return redirect(url_for('TermStartupView:index'))

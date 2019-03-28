@@ -6,6 +6,14 @@ a.disabled:hover {
     color: black;
 }
 
+a.csv-right-1{
+    right: 175px !important;
+}
+
+a.csv-right-2{
+    right: 200px !important;
+}
+
 a.month-nav:hover {
     color: black;
 }
@@ -46,13 +54,34 @@ button.btn {
     margin-right: 0.5em !important;
 }
 
+button.close-btn{
+    margin: 10px 0;
+}
+
+div.available-sessions{
+    margin-top:20px;
+    margin-bottom:15px;
+}
+
 div.centered {
     text-align:center;
+}
+
+div.course-btns{
+    float: right;
 }
 
 div.dropdown {
     cursor: pointer;
     color: #fff;
+}
+
+div.edit-btns{
+    display: block;
+}
+
+div.email{
+    display: none;
 }
 
 div.footer {
@@ -77,6 +106,15 @@ div.info {
     border-color: #d8d8d8;
 }
 
+div.bottom-space{
+    margin-bottom: 15px;
+}
+
+div.report-symbols{
+    background-color: white;
+    padding: 0;
+}
+
 div.row-group {
     background-color: #0069AA;
     border-color: white;
@@ -89,12 +127,13 @@ div.semester-selector {
     direction: rtl;
 }
 
-div.sub-info {
-    margin-bottom: 20px;
+div.tutor-td{
+    display: none;
+    white-space: nowrap;
 }
 
-div#table_wrapper {
-    overflow-x: auto;
+div.sub-info {
+    margin-bottom: 20px;
 }
 
 form.create-session-form {
@@ -121,6 +160,10 @@ nav a {
     color: gray;
 }
 
+nav.navbar{
+    padding: 0 10px;
+}
+
 p {
     margin-bottom: 1.25rem;
     line-height: 1.6;
@@ -128,6 +171,14 @@ p {
 
 select {
     width: 100%;
+}
+
+span.error-span{
+    color: red;
+}
+
+span.lab-title{
+    color: #ffc600
 }
 
 span.tag a {
@@ -154,6 +205,10 @@ table.dataTable thead th, table.dataTable thead td, .table-bordered td, .table-b
 
 table {
     border: 1px solid #ddd !important;
+}
+
+td.year-range{
+    white-space: nowrap;
 }
 
 thead {
@@ -254,6 +309,7 @@ ul.no-margin {
 
 .button-curved {
     border-radius: .25rem !important;
+    left: 10px;
 }
 
 .button-labels {
@@ -511,7 +567,13 @@ ul.no-margin {
     border-color: #0F2C52;
 }
 
-#student-views {
+#view-by-course-button{
+    color: white !important;
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#view-by-name-button{
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;

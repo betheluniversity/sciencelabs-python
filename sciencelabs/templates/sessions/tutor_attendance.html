@@ -18,9 +18,8 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='tutor')
-                    if env == 'prod' else url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
-                {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose tutor #}
+            <form action="{{ submit_url }}" method="post">
+                {% if env != 'prod' %}  {# Can't sign in other users for dev env, so dropdown to choose tutor #}
                     <div>
                         <label for="tutor-select">Select a tutor to sign in:</label>
                         <select id="tutor-select" name="selected-tutor">
@@ -42,9 +41,9 @@
                     <th colspan="3" class="text-center">Tutors</th>
                 </tr>
                 <tr>
-                    <th>Name</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Tutor Name">Name</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                 </tr>
                 {% for tutor in tutors %}
                     {% if tutor.timeIn != None %}
@@ -115,9 +114,9 @@
                     <th colspan="3" class="text-center">Course Information</th>
                 </tr>
                 <tr>
-                    <th>Course</th>
-                    <th>Professor</th>
-                    <th>Email</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Name and Section">Course</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Professor">Professor</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Professor Email">Email</th>
                 </tr>
                 {% for course, user in course_info %}
                     <tr>

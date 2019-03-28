@@ -68,12 +68,9 @@ class ReportView(FlaskView):
 
             role_can_view = True
             if self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER']):
-                student_info, attendance = self.user.get_student_attendance(student_id,
-                                                                            flask_session['SELECTED-SEMESTER'])
+                student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
             else:
-                student = self.user.get_student(student_id)
-                sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-                self.slc.set_second_alert('info', 'Notice: ' + student.firstName + ' ' + student.lastName + ' has not attended any labs for ' + sem.term + ' ' + str(year) + '')
+                attendance = 0
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
@@ -104,7 +101,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab)
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
@@ -177,7 +174,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_TermReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab)
 
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance',
@@ -307,7 +304,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '%s%s_%s_%s_SummaryReport' % (term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab, selected_month)
 
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
@@ -371,7 +368,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '%s%s_%s_%s_DetailReport' % (term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab, selected_month)
 
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
@@ -402,7 +399,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         month = self._get_selected_month()  # Needed for subnav
         year = sem.year  # Needed for subnav
-        cumulative_list = self.build_cumulative_list()
+        cumulative_list = self._build_cumulative_list()
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
@@ -412,13 +409,13 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s_CumulativeAttendance' % lab
+        csv_name = '{0}_CumulativeAttendance'.format(lab)
 
-        my_list = self.build_cumulative_list()
+        my_list = self._build_cumulative_list()
 
         return self.export_csv(my_list, csv_name)
 
-    def build_cumulative_list(self):
+    def _build_cumulative_list(self):
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring',
                     'Jun', 'Jul', 'Summer', 'Total']]
 
@@ -565,6 +562,7 @@ class ReportView(FlaskView):
         month = self._get_selected_month()
         year = sem.year
 
+        total_attendance = self.session_.get_number_of_student_sessions(session_id)
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
@@ -573,7 +571,6 @@ class ReportView(FlaskView):
         session_courses_and_attendance = {}
         for course in session_courses:
             session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
-        # course_list = self.courses.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)
@@ -594,7 +591,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab)
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
@@ -696,7 +693,7 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         course = self.courses.get_course(course_id)
-        csv_course_info = course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
+        csv_course_info = '{0}{1} ({2})'.format(course[0].dept, course[0].course_num, course[0].title)
 
         total_attendance = 0
         for sess, schedule in sessions:
@@ -710,7 +707,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        csv_name = '%s%s_%s_SessionAttendance_%s' % (term, year, lab, csv_course_info)
+        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab, csv_course_info)
 
         return self.export_csv(my_list, csv_name)
 
@@ -724,7 +721,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab)
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 

@@ -39,7 +39,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                     {% if session['USERNAME'] != user.username and session['ADMIN-USERNAME'] != user.username %}
-                        <label for="roles">Roles</label>
+                        <label for="roles"><strong>Roles</strong></label>
                         {% for role in roles %}
                             <div class="custom-control custom-checkbox display-inl-b">
                                 <input type="checkbox" class="role-checkbox custom-control-input" id="{{ role.id }}"
@@ -52,7 +52,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label for="user-courses">User's Courses for Current Term</label>
+                        <label for="user-courses"><strong>User's Courses for Current Term</strong></label>
                         <div id="user-courses">
                             {% if professor and professor_courses %}
                                 <ul>
@@ -68,7 +68,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label for="user-courses">Additional Viewable Courses for the Current Term</label>
+                        <label for="user-courses"><strong>Additional Viewable Courses for the Current Term</strong></label>
                         <div id="user-courses">
                             {% for course in course_list %}
                                 <div class="custom-control custom-checkbox display-inl-b">

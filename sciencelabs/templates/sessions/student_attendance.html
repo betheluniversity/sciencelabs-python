@@ -16,11 +16,8 @@
 {% endblock %}
 
 {% block body_content %}
-    {# Two routes here, one for prod that gets cas auth, one for dev for testing purposes #}
-    {# TODO: This is a bit sloppy #}
-    <form action="{{ url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='student')
-            if env == 'prod' else url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth') }}" method="post">
-        {% if env != 'prod' %}  {# Can't sign in for dev env, so dropdown to choose student #}
+    <form action="{{ submit_url }}" method="post">
+        {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
             <div>
                 <label for="student-select">Select a student to sign in:</label>
                 <select id="student-select" name="selected-student">
@@ -42,10 +39,10 @@
             <th class="text-center" colspan="4">Attendance</th>
         </tr>
         <tr>
-            <th>Name</th>
-            <th>Courses</th>
-            <th>Time In</th>
-            <th>Time Out</th>
+            <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
+            <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
         </tr>
         {% for student, courses in students_and_courses.items() %}
             <tr>

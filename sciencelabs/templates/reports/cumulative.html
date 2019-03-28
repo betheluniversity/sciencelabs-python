@@ -41,30 +41,30 @@
     <table id="table"  class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>Year</th>
-                <th>Aug</th>
-                <th>Sep</th>
-                <th>Oct</th>
-                <th>Nov</th>
-                <th>Dec</th>
-                <th>Fall</th>
-                <th>Jan</th>
-                <th>Feb</th>
-                <th>Mar</th>
-                <th>Apr</th>
-                <th>May</th>
-                <th>Spring</th>
-                <th>Jun</th>
-                <th>Jul</th>
-                <th>Summer</th>
-                <th>Total</th>
+                <th data-toggle="tooltip" data-placement="top" title="Academic Year">Year</th>
+                <th data-toggle="tooltip" data-placement="top" title="August">Aug</th>
+                <th data-toggle="tooltip" data-placement="top" title="September">Sep</th>
+                <th data-toggle="tooltip" data-placement="top" title="October">Oct</th>
+                <th data-toggle="tooltip" data-placement="top" title="November">Nov</th>
+                <th data-toggle="tooltip" data-placement="top" title="December">Dec</th>
+                <th data-toggle="tooltip" data-placement="top" title="Fall Semester Totals">Fall</th>
+                <th data-toggle="tooltip" data-placement="top" title="January (Interim Totals)">Jan</th>
+                <th data-toggle="tooltip" data-placement="top" title="February">Feb</th>
+                <th data-toggle="tooltip" data-placement="top" title="March">Mar</th>
+                <th data-toggle="tooltip" data-placement="top" title="April">Apr</th>
+                <th data-toggle="tooltip" data-placement="top" title="May">May</th>
+                <th data-toggle="tooltip" data-placement="top" title="Spring Semester Totals">Spring</th>
+                <th data-toggle="tooltip" data-placement="top" title="June">Jun</th>
+                <th data-toggle="tooltip" data-placement="top" title="July">Jul</th>
+                <th data-toggle="tooltip" data-placement="top" title="Summer Totals">Summer</th>
+                <th data-toggle="tooltip" data-placement="top" title="Academic Year Totals">Total</th>
             </tr>
         </thead>
         <tbody>
         {% for row in cumulative_list[1:(cumulative_list|length - 1)] %}
             <tr>
-            {% set year = row[0][:4] %}
-                <td>{{ row[0] }}</td>
+                {% set year = row[0][:4] %}
+                <td class="year-range">{{ row[0] }}</td>
                 <td>
                     {% if row[1] <= 0 %}
                         {{ row[1] }}

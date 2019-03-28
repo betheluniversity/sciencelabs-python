@@ -101,7 +101,8 @@ class Session:
 
     # The following two methods must return the same data for a logic check in one of the templates
     def get_student_session_courses(self, session_id, student_id):
-        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
@@ -111,7 +112,8 @@ class Session:
 
     # This method must return the same data as above
     def get_session_courses(self, session_id):
-        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num, CourseCode_Table.courseName)\
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
             .filter(session_id == StudentSession_Table.sessionId)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(Course_Table.id == SessionCourses_Table.course_id)\
@@ -127,7 +129,7 @@ class Session:
         courses = self.get_student_session_courses(session_id, student_id)
         for course in courses:
             course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
-                .filter(CourseCode_Table.active == 1).one()
+                .filter(CourseCode_Table.id == course.course_code_id).one()
             course_ids.append(course_code.id)
         return course_ids
 
@@ -498,8 +500,9 @@ class Session:
         session_to_open.startTime = datetime.now().strftime('%H:%M:%S')
         session_to_open.openerId = opener_id
         db_session.commit()
-        self.log_session(session_to_open.name + ' (' + session_to_open.date.strftime("%m/%d/%Y") + ') opened at ' +
-                         datetime.now().strftime("%H:%M:%S"))
+        self.log_session('{0} ({1}) opened at {2}'.format(session_to_open.name,
+                                                          session_to_open.date.strftime("%m/%d/%Y"),
+                                                          datetime.now().strftime("%H:%M:%S")))
 
     def close_open_session(self, session_id, comments):
         session_to_close = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
@@ -507,8 +510,9 @@ class Session:
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
         db_session.commit()
-        self.log_session(session_to_close.name + ' (' + session_to_close.date.strftime("%m/%d/%Y") + ') closed at ' +
-                         datetime.now().strftime("%H:%M:%S"))
+        self.log_session('{0} ({1}) closed at {2}'.format(session_to_close.name,
+                                                          session_to_close.date.strftime("%m/%d/%Y"),
+                                                          datetime.now().strftime("%H:%M:%S")))
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -519,8 +523,8 @@ class Session:
         else:
             self.add_tutor_to_session(session_id, tutor_id, datetime.now().strftime("%H:%M:%S"), None, 0)
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
-        self.log_session(tutor.firstName + " " + tutor.lastName + " signed in as a tutor at " +
-                         datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+        self.log_session('{0} {1} signed in as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
+                                                                      datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -528,8 +532,8 @@ class Session:
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
-        self.log_session(tutor.firstName + " " + tutor.lastName + " signed out as a tutor at " +
-                         datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+        self.log_session('{0} {1} signed out as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
+                                                                       datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
@@ -545,8 +549,8 @@ class Session:
             db_session.add(new_student_course)
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
-        self.log_session(student.firstName + " " + student.lastName + " signed in as a student at " +
-                         datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+        self.log_session('{0} {1} signed in as a student at {2}'.format(student.firstName, student.lastName,
+                                                                        datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
@@ -555,15 +559,15 @@ class Session:
             single_student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
-        self.log_session(student.firstName + " " + student.lastName + " signed out as a student at " +
-                         datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+        self.log_session('{0} {1} signed out as a student at {2}'.format(student.firstName, student.lastName,
+                                                                         datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def close_open_sessions_cron(self):
         open_sessions = self.get_open_sessions()
         for open_session in open_sessions:
-            message = 'Closed by the system on ' + datetime.now().strftime('%m/%d/%Y')
+            message = 'Closed by the system on {0}'.format(datetime.now().strftime('%m/%d/%Y'))
             if open_session.comments:
-                message += ' with message ' + open_session.comments
+                message += ' with message {0}'.format(open_session.comments)
             self.close_open_session(open_session.id, message)
         db_session.commit()
         return open_sessions

@@ -66,7 +66,7 @@ class User:
                 .filter(Session_Table.semester_id == Semester_Table.id) \
                 .filter(Semester_Table.id == semester_id)\
                 .group_by(User_Table.id) \
-                .first()
+                .one_or_none()
 
     def get_unique_sessions_attended(self, student_id, semester_id):
         return db_session.query(func.count(StudentSession_Table.sessionId))\
@@ -196,7 +196,7 @@ class User:
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
-                              email=username+'@bethel.edu', send_email=send_email, deletedAt=None)
+                              email='{0}@bethel.edu'.format(username), send_email=send_email, deletedAt=None)
         db_session.add(new_user)
         db_session.commit()
         return new_user
@@ -317,14 +317,14 @@ class User:
         for student in active_students:
             # Get courses from banner
             student_banner_courses = self.wsapi.get_student_courses(student.username)
-            message += student.firstName + ' ' + student.lastName + ' ' + 'Courses:\n'
+            message += '{0} {1} Courses:\n'.format(student.firstName, student.lastName)
 
             # Check if courseCode exists (yes = move on, no = quit)
             for key, course in student_banner_courses.items():
                 if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
                         .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
-                    message += course['subject'] + ' ' + course['cNumber'] + '\n'
+                    message += '{0} {1}\n'.format(course['subject'], course['cNumber'])
 
                     # Check if semester exists (yes = move on, no = throw exception)
                     try:
@@ -380,7 +380,7 @@ class User:
                     course.courseName = banner_courses['0']['title']
                     db_session.commit()
                     message += "Course Code edited\n"
-                    message += course.underived + " (" + course.courseName + ")\n"
+                    message += '{0} ({1})\n'.format(course.underived, course.courseName)
 
                     for key, banner_course in banner_courses.items():
                         # Check if semester exists (yes = move on, no = throw exception)
