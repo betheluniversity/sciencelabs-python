@@ -51,7 +51,6 @@ def utility_processor():
         'lab_title': app.config['LAB_TITLE'],
         'lab_base_url': app.config['LAB_BASE_URL'],
         'alert': slc().get_alert(),
-        'alert_2': slc().get_second_alert(),
         'env': app.config['ENVIRON']
     })
 
@@ -97,9 +96,7 @@ def before_request():
             or '/no-cas/' in request.path:
 
         if not flask_session.get('ALERT'):
-            flask_session['ALERT'] = None
-        if not flask_session['ALERT_2']:
-            flask_session['ALERT_2'] = None
+            flask_session['ALERT'] = []
     else:
         active_semester = Schedule().get_active_semester()
         if 'USERNAME' not in flask_session.keys():
@@ -137,9 +134,7 @@ def before_request():
         if 'SELECTED-SEMESTER' not in flask_session.keys():
             flask_session['SELECTED-SEMESTER'] = active_semester.id
         if 'ALERT' not in flask_session.keys():
-            flask_session['ALERT'] = None
-        if 'ALERT_2' not in flask_session.keys():
-            flask_session['ALERT_2'] = None
+            flask_session['ALERT'] = []
 
 
 @app.after_request
