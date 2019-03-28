@@ -51,7 +51,7 @@ def utility_processor():
         'lab_title': app.config['LAB_TITLE'],
         'lab_base_url': app.config['LAB_BASE_URL'],
         'alert': slc().get_alert(),
-        'alert_2': slc().get_second_alert()
+        'alert_2': slc().get_second_alert(),
         'env': app.config['ENVIRON']
     })
 
