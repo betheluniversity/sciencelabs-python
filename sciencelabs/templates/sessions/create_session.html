@@ -51,7 +51,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" id="choose-leads" multiple="true"
+                        <select class="chosen form-control" required="required" id="choose-leads" multiple="true"
                                 data-placeholder="Choose lead tutors ..." name="choose-leads">
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>

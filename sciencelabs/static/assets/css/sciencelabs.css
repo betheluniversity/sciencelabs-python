@@ -488,6 +488,13 @@ ul.no-margin {
     margin: 0;
 }
 
+select:invalid {
+  height: 0px !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  display: flex !important;
+}
+
 .side-borders {
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
