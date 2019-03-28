@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, Response
+from flask import render_template, Response, redirect, url_for
 from flask import session as flask_session
 from flask_classy import FlaskView, route
 import calendar
@@ -242,6 +242,20 @@ class ReportView(FlaskView):
         my_list.append(['', '', 'Total', total_unscheduled])
 
         return self.export_csv(my_list, csv_name)
+
+    # This method handles the month route with no parameters, redirects to main month route with selected semester vars
+    @route('/month')
+    def month_no_params(self):
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        if sem.term == 'Interim':
+            month = 1
+        elif sem.term == 'Spring':
+            month = 2
+        elif sem.term == 'Fall':
+            month = 8
+        else:
+            month = 6
+        return redirect(url_for('ReportView:month', year=sem.year, month=month))
 
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
