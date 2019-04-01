@@ -542,6 +542,14 @@ class ReportView(FlaskView):
         month = self._get_selected_month()
         year = sem.year
 
+        semesters = self.schedule.get_semesters()
+        semesters_and_attendance = {}
+        for semester in semesters:
+            semesters_and_attendance[semester] = {}
+            semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
+            semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
+            semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
+
         return render_template('reports/enrollment.html', **locals())
 
     @route('/session')

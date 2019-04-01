@@ -4,7 +4,7 @@
     <div class="header card">
         <div class="card-body btn-group">
             <p class="no-margin-padding">{{ lab_title }} Enrollment Report</p>
-            <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+            <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a> {# TODO: Export this info #}
         </div>
     </div>
 {% endblock %}
@@ -17,21 +17,29 @@
             <table id="new-table"  class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>Semester</th>
-                        <th>Total Attendance</th>
-                        <th>Total Unique</th>
-                        <th>Total Enrolled</th>
-                        <th>Percent</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Semester Term and Year">Semester</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Total Attendance for Semester">Total</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Total Unique Attendance for Semester">Unique</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Total Enrolled for Lab Courses">Enrolled</th>
+                        <th data-toggle="tooltip" data-placement="top" title="% of Enrolled">Percent</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>This will be the Semester, given like "Spring 2018"</td>
-                        <td>This will be the total attendance for that semester</td>
-                        <td>This will be how many unique students made use of the lab that semester</td>
-                        <td>This will be how many students were enrolled in lab courses that semester</td>
-                        <td>This will be the % given by unique/total enrolled</td>
-                    </tr>
+                    {% for semester, attendance_info in semesters_and_attendance.items() %}
+                        <tr>
+                            <td class="year-range">{{ semester.term }} {{ semester.year }}</td>
+                            <td>{{ attendance_info['totalAttendance'] }}</td>
+                            <td>{{ attendance_info['uniqueAttendance'] }}</td>
+                            <td>{{ attendance_info['enrolled'] }}</td>
+                            <td>
+                                {% if attendance_info['enrolled'] > 0 %}
+                                    {{ (attendance_info['uniqueAttendance'] / attendance_info['enrolled'] * 100)|round(1) }}%
+                                {% else %}
+                                    0.0%
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -39,7 +47,26 @@
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        This page contains stats for course enrollment.
+                        This page contains stats for {{ lab_title }} course enrollment by semester.
+                    </p>
+                    <p class="card-text">
+                        <strong>Total</strong> is the total attendance for all sessions held that semester. This
+                        includes students who attended the same session twice.
+                    </p>
+                    <p class="card-text">
+                        <strong>Unique</strong> is the total number of unique students who visited {{ lab_title }} that
+                        semester.
+                    </p>
+                    <p class="card-text">
+                        <strong>Enrolled</strong> is the total number of students enrolled in courses that
+                        {{ lab_title }} held sessions for that semester. We did not track this data before Spring 2015,
+                        so for those semesters this column will be 0. This will also cause the Percent column to be 0.
+                    </p>
+                    <p class="card-text">
+                        <strong>Percent</strong> is calculated by (unique/enrolled)&times;100. It is the percent of students
+                        enrolled in {{ lab_title }} courses that went to at least one session. Please note that this
+                        does not account for students who were in more than one course serviced by {{ lab_title }}, so
+                        this is only an approximation.
                     </p>
                 </div>
             </div>

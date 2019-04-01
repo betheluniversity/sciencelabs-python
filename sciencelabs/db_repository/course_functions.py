@@ -299,3 +299,10 @@ class Course:
 
         return False
 
+    def get_enrolled_students_for_semester(self, semester_id):
+        semeseter_courses = self.get_semester_courses_with_section(semester_id)
+        enrolled = 0
+        for course in semeseter_courses:
+            enrolled = enrolled + course.num_attendees if course.num_attendees else enrolled
+        return enrolled
+

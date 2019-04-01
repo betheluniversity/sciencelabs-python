@@ -7,6 +7,7 @@ from raven.contrib.flask import Sentry
 from datetime import datetime
 
 app = Flask(__name__)
+app.debug = True
 app.config.from_object('config')
 app.url_map.strict_slashes = False
 

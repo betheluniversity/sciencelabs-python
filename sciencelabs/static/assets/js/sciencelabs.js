@@ -2,6 +2,8 @@
 
 $(document).ready(function(){
 
+    $('[data-toggle="tooltip"]').tooltip();
+
    $(".show-tutors").click(function() {
        $(this).next().toggle();
        if($(this).text() !== 'Show')
