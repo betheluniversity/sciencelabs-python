@@ -4,7 +4,7 @@
     <div class="header card">
         <div class="card-body btn-group">
             <p class="no-margin-padding">{{ lab_title }} Enrollment Report</p>
-            <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a> {# TODO: Export this info #}
+            <a href="{{ url_for('ReportView:export_enrollment_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
         </div>
     </div>
 {% endblock %}

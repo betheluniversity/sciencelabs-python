@@ -552,6 +552,32 @@ class ReportView(FlaskView):
 
         return render_template('reports/enrollment.html', **locals())
 
+    def export_enrollment_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        lab = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab += letter[0]
+
+        csv_name = '%s_EnrollmentVsAttendance' % lab
+
+        data = [['Semester', 'Total', 'Unique', 'Enrolled', 'Percent']]
+
+        semesters = self.schedule.get_semesters()
+        semesters_and_attendance = {}
+        for semester in semesters:
+            semesters_and_attendance[semester] = {}
+            semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
+            semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
+            semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
+
+        for semester, attendance_info in semesters_and_attendance.items():
+            data.append(['{0} {1}'.format(semester.term, semester.year), attendance_info['totalAttendance'],
+                         attendance_info['uniqueAttendance'], attendance_info['enrolled'],
+                         '{0}%'.format(round((attendance_info['uniqueAttendance']/attendance_info['enrolled'])*100, 1) if attendance_info['enrolled'] > 0 else 0)])
+
+        return self.export_csv(data, csv_name)
+
     @route('/session')
     def session(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
