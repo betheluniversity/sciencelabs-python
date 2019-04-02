@@ -112,15 +112,20 @@ class ScheduleView(FlaskView):
             self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                     start_time, end_time, day_of_week, leads, tutors, courses)
 
-            d1 = active_semester.startDate
-            d2 = active_semester.endDate
-            delta = d2 - d1
-            for i in range(delta.days + 1):
-                next_day_of_week = (d1 + timedelta(i)).weekday()
-                next_date = (d1 + timedelta(i))
+            start = active_semester.startDate
+            end = active_semester.endDate
+            delta = end - start
+            dow = -1
+            for i in range(7):
+                next_day_of_week = (start + timedelta(i)).weekday()
                 if (next_day_of_week == day_of_week - 1 and next_day_of_week != 6) or next_day_of_week == 6 and day_of_week == 0:
-                    self.session.create_session(active_semester.id, next_date, start_time, end_time, None, None, room,
-                                                "", 0, name)
+                    dow = i
+                    break
+
+            for i in range(dow, delta.days + 1, 7):
+                next_date = (start + timedelta(i))
+                self.session.create_session(active_semester.id, next_date, start_time, end_time, None, None,
+                                            room, "", 0, name)
 
             self.slc.set_alert('success', 'Schedule created successfully!')
             return redirect(url_for('ScheduleView:index'))
