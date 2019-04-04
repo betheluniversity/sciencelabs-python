@@ -753,6 +753,16 @@ class ReportView(FlaskView):
 
         return self.export_csv(csv_data, csv_name)
 
+    def export_course_overview_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        lab = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab += letter[0]
+        csv_name = '%s_CourseOverviewReport' % lab
+
+        return self.export_csv(data, csv_name)
+
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
