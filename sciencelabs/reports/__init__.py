@@ -761,6 +761,19 @@ class ReportView(FlaskView):
             lab += letter[0]
         csv_name = '%s_CourseOverviewReport' % lab
 
+        data = [['Course', 'Section', 'Course Code', 'Professor', 'Enrolled']]
+
+        active_semester = self.schedule.get_active_semester()
+        current_courses = self.courses.get_semester_courses_with_section(active_semester.id)
+        courses_and_profs = {}
+        for course in current_courses:
+            courses_and_profs[course] = self.courses.get_profs_from_course(course.id)
+
+        for course, profs in courses_and_profs.items():
+            prof_list = ', '.join(profs)
+            data.append([course.title, course.section, '{0}{1}'.format(course.dept, course.course_num), prof_list,
+                         course.num_attendees])
+
         return self.export_csv(data, csv_name)
 
     @route('/course/<int:course_id>')

@@ -17,6 +17,10 @@
                 <div class="sub-info card info">
                     <div class="card-body">
                         <p class="card-text">
+                            <a href="{{ url_for('ReportView:export_course_overview_csv') }}"
+                               class="btn btn-primary">CSV Export</a>
+                        </p>
+                        <p class="card-text">
                             This page has two sections, the "{{ lab_title }} Courses Across All Terms"
                             and the "{{ lab_title }} Courses for Current Term". Administrators should
                             populate the bottom "{{ lab_title }} Courses Across All Terms" section with
