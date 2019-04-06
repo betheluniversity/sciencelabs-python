@@ -438,20 +438,20 @@ class User:
         user = self.get_user(user_id)
         return user.email
 
-    def get_recipient_emails(self, groups, cc_ids):
+    def get_recipient_emails(self, cc_ids):
         emails = []
         for cc in cc_ids:
             emails.append(self.get_email_from_id(cc))
+        return emails
+
+    def get_bcc_emails(self, groups, bcc_ids):
+        emails = []
+        for bcc in bcc_ids:
+            emails.append(self.get_email_from_id(bcc))
         for group in groups:
             group_users = self.get_users_in_group(group)
             for user in group_users:
                 emails.append(self.get_email_from_id(user.id))
-        return emails
-
-    def get_bcc_emails(self, bcc_ids):
-        emails = []
-        for bcc in bcc_ids:
-            emails.append(self.get_email_from_id(bcc))
         return emails
 
     def get_end_of_session_recipients(self):
