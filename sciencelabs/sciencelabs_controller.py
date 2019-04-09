@@ -34,9 +34,10 @@ class ScienceLabsController(object):
             # When we hit "save" on these pages we go to either create-session/schedule-submit and then we are
             # redirected to a subsequent page where the error should be displayed. Without this logic the error is
             # displayed on the submit page which the user isn't going to see.
-            if flask_session['DELAYED-ALERT']:
-                flask_session['DELAYED-ALERT'] = False
-                return None
+            # if flask_session['DELAYED-ALERT']:
+            #     flask_session['DELAYED-ALERT'] = False
+            #     return None
+            test = 0
         except Exception as e:
             pass
         alert_return = flask_session['ALERT']
@@ -44,10 +45,9 @@ class ScienceLabsController(object):
         return alert_return
 
     # This method sets the alert for when one is needed next
-    def set_alert(self, message_type, message, delayed=False):
+    def set_alert(self, message_type, message):
         flask_session['ALERT'].append({
             'type': message_type,
             'message': message
         })
-        flask_session['DELAYED-ALERT'] = delayed
 
