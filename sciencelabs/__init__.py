@@ -95,7 +95,7 @@ def before_request():
             or '/cron/' in request.path \
             or '/no-cas/' in request.path:
 
-        if not flask_session.get('ALERT'):
+        if not 'ALERT' not in flask_session.keys():
             flask_session['ALERT'] = []
     else:
         active_semester = Schedule().get_active_semester()
