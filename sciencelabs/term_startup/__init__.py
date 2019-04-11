@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, request, redirect, url_for, session as flask_session
+from flask import render_template, request, session as flask_session
 from flask_classy import FlaskView, route
 
 # Local
@@ -61,7 +61,7 @@ class TermStartupView(FlaskView):
                 flask_session['SEMESTER-LIST']
             flask_session['SELECTED-SEMESTER'] = semester.id
             self.slc.set_alert('success', 'Term set successfully!')
-            return redirect(url_for('TermStartupView:step_two'))
+            return self.step_two()
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to set term: {0}'.format(str(error)))
-            return redirect(url_for('TermStartupView:index'))
+            return self.index()
