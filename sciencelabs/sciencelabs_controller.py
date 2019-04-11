@@ -22,6 +22,8 @@ class ScienceLabsController(object):
 
     # This method get's the current alert (if there is one) and then resets alert to nothing
     def get_alert(self):
+        if 'ALERT' not in flask_session.keys():
+            flask_session['ALERT'] = []
         alert_return = flask_session['ALERT']
         flask_session['ALERT'] = []
         return alert_return
