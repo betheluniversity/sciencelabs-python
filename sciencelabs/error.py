@@ -10,10 +10,13 @@ from sciencelabs import app, sentry
 
 def error_render_template(template, error, code=None):
 
+    username = 'no username'
+    if 'USERNAME' in flask_session.keys():
+        username = flask_session['USERNAME']
+
     sentry.client.extra_context({
         'time': time.strftime("%c"),
-        'username': flask_session['USERNAME'],
-        'user-roles': flask_session['USER-ROLES'],
+        'username': username,
     })
 
     # Means that it's a handled error/exception
@@ -21,7 +24,7 @@ def error_render_template(template, error, code=None):
         # Catch all errors for now - may change later
         # if code == 403 or code > 499:
         sentry.captureException()
-        app.logger.error("{0} -- {1}".format(flask_session['USERNAME'], str(error)))
+        app.logger.error("{0} -- {1}".format(username, str(error)))
 
     else:  # Means it's an unhandled exception
         sentry.captureException()
@@ -53,4 +56,4 @@ def transport_error(e):
 
 @app.errorhandler(Exception)
 def other_error(e):
-    return error_render_template(e, 0)
+    return error_render_template('error/error.html', e, 0)
