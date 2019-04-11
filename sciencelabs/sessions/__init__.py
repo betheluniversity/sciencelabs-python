@@ -70,7 +70,7 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
@@ -88,7 +88,7 @@ class SessionView(FlaskView):
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
@@ -98,28 +98,28 @@ class SessionView(FlaskView):
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         student_list = self.schedule.get_registered_students()
         return render_template('sessions/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         return render_template('sessions/add_anonymous.html', **locals())
 
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('sessions/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('sessions/add_tutor.html', **locals())
@@ -144,7 +144,7 @@ class SessionView(FlaskView):
 
     @route('/save-session-edits', methods=['post'])
     def save_session_edits(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -179,7 +179,7 @@ class SessionView(FlaskView):
 
     @route('/save-student-edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         student_id = form.get('student-id')
@@ -203,7 +203,7 @@ class SessionView(FlaskView):
 
     @route('/save-tutor-edits', methods=['post'])
     def save_tutor_edits(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -242,7 +242,7 @@ class SessionView(FlaskView):
 
     @route('/add-student-submit', methods=['post'])
     def add_student_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -257,7 +257,7 @@ class SessionView(FlaskView):
 
     @route('/add-anon-submit', methods=['post'])
     def add_anon_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -272,7 +272,7 @@ class SessionView(FlaskView):
 
     @route('/add-tutor-submit', methods=['post'])
     def add_tutor_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
