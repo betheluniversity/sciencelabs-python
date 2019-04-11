@@ -22,23 +22,6 @@ class ScienceLabsController(object):
 
     # This method get's the current alert (if there is one) and then resets alert to nothing
     def get_alert(self):
-        try:
-            # if a delayed alert exists, that means we don't want to show the alert on the current page
-            # so we return None instead of the actual alert and keep the alert data in flask_session['ALERT'].
-            # Once we go onto the new page, then DELAYED-ALERT is set to False so we display the real alert.
-            #
-            #
-            #
-            # Examples where this happens are both the "Session -> Create a Session" tab and
-            # "Schedule -> Create New Schedule" tab.
-            # When we hit "save" on these pages we go to either create-session/schedule-submit and then we are
-            # redirected to a subsequent page where the error should be displayed. Without this logic the error is
-            # displayed on the submit page which the user isn't going to see.
-            if flask_session['DELAYED-ALERT']:
-                flask_session['DELAYED-ALERT'] = False
-                return None
-        except Exception as e:
-            pass
         alert_return = flask_session['ALERT']
         flask_session['ALERT'] = []
         return alert_return
@@ -49,5 +32,4 @@ class ScienceLabsController(object):
             'type': message_type,
             'message': message
         })
-        flask_session['DELAYED-ALERT'] = delayed
 
