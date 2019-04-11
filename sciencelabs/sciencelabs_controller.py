@@ -27,7 +27,7 @@ class ScienceLabsController(object):
         return alert_return
 
     # This method sets the alert for when one is needed next
-    def set_alert(self, message_type, message, delayed=False):
+    def set_alert(self, message_type, message):
         flask_session['ALERT'].append({
             'type': message_type,
             'message': message
