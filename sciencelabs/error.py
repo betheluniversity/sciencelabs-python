@@ -10,6 +10,11 @@ from sciencelabs import app, sentry
 
 def error_render_template(template, error, code=None):
 
+    # Check to make sure ALERT has been set, otherwise the template will fail to load
+    if 'ALERT' not in flask_session.keys():
+        flask_session['ALERT'] = []
+
+    # Check for username - it is possible for there not to be one though so handle that as well
     username = 'no username'
     if 'USERNAME' in flask_session.keys():
         username = flask_session['USERNAME']
