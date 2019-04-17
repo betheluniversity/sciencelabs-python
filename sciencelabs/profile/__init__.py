@@ -35,7 +35,7 @@ class ProfileView(FlaskView):
             self.slc.set_alert('success', 'Your profile has been edited successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit your profile: {0}'.format(str(error)))
-        return self.index()
+        return redirect(url_for('ProfileView:index'))
 
     @route('/view-role')
     def role_viewer(self):

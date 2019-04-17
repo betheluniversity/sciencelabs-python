@@ -106,4 +106,4 @@ class CourseView(FlaskView):
             self.course.delete_course(course_table, user_table)
         self.slc.set_alert('success', 'Course deleted successfully!')
 
-        return self.index()
+        return redirect(url_for('CourseView:index'))
