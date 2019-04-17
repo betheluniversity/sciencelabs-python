@@ -34,4 +34,3 @@ class ScienceLabsController(object):
             'type': message_type,
             'message': message
         })
-

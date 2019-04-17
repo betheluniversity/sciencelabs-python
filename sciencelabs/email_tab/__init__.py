@@ -77,4 +77,4 @@ class EmailView(FlaskView):
             self.slc.set_alert('success', 'Email sent successfully')
         else:
             self.slc.set_alert('danger', 'Failed to send email')
-        return self.index()
+        return redirect(url_for('EmailView:index'))

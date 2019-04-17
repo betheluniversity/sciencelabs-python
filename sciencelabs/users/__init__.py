@@ -88,10 +88,10 @@ class UsersView(FlaskView):
         try:
             self.user.delete_user(user_id)
             self.slc.set_alert('success', 'User deactivated successfully!')
-            return self.index()
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to deactivate user: {0}'.format(str(error)))
-            return self.edit_user(user_id)
+            return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route("/deactivate-users", methods=['post'])
     def deactivate_users(self):
@@ -126,10 +126,10 @@ class UsersView(FlaskView):
             self.user.set_user_roles(username, roles)
             self.user.set_course_viewer(user_id, viewable_courses)
             self.slc.set_alert('success', 'Edited user successfully!')
-            return self.index()
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit user: {0}'.format(str(error)))
-            return self.edit_user(user_id)
+            return redirect(url_for('UsersView:edit_user', user_id=user_id))
 
     @route('/create-user', methods=['post'])
     def create_user(self):
@@ -148,10 +148,11 @@ class UsersView(FlaskView):
             self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
             self.slc.set_alert('success', 'User added successfully!')
-            return self.index()
+            return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to add user: {0}'.format(str(error)))
-            return self.select_user_roles(username, first_name, last_name)
+            return redirect(url_for('UsersView:select_user_roles', username=username, first_name=first_name,
+                                    last_name=last_name))
 
     def act_as_user(self, user_id):
         if not flask_session['ADMIN-VIEWER']:
@@ -187,7 +188,7 @@ class UsersView(FlaskView):
                 return redirect(url_for('View:index'))
             except Exception as error:
                 self.slc.set_alert('danger', 'An error occurred: {0}'.format(str(error)))
-                return self.index()
+                return redirect(url_for('View:index'))
         else:
             self.slc.set_alert('danger', 'You do not have permission to access this function')
-            return self.index()
+            return redirect(url_for('View:index'))

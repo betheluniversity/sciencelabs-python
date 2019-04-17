@@ -1,5 +1,5 @@
 # Packages
-from flask import render_template, request
+from flask import render_template, redirect, url_for, request
 from flask_classy import FlaskView, route
 
 # Local
@@ -59,7 +59,7 @@ class ScheduleView(FlaskView):
             self.slc.set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete schedule: {0}'.format(str(error)))
-        return self.index()
+        return redirect(url_for('ScheduleView:index'))
 
     @route("/save-schedule-edits", methods=['post'])
     def save_schedule_edits(self):
@@ -84,10 +84,10 @@ class ScheduleView(FlaskView):
             self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
                                         start_time, end_time, day_of_week, leads, tutors, courses)
             self.slc.set_alert('success', 'Schedule edited successfully!')
-            return self.index()
+            return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
-            return self.edit_schedule(schedule_id)
+            return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
     @route('/create-schedule-submit', methods=['post'])
     def create_schedule_submit(self):
@@ -111,7 +111,7 @@ class ScheduleView(FlaskView):
             self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                     start_time, end_time, day_of_week, leads, tutors, courses)
             self.slc.set_alert('success', 'Schedule created successfully!')
-            return self.index()
+            return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))
-            return self.create_new_schedule()
+            return redirect(url_for('ScheduleView:create_new_schedule'))
