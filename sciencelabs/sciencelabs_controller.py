@@ -34,3 +34,4 @@ class ScienceLabsController(object):
             'type': message_type,
             'message': message
         })
+        flask_session.modified = True

@@ -16,8 +16,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="choose-tutor">Registered Tutors</label>
-                        <select id="choose-tutor" class="custom-select chosen-container chosen-format" name="choose-tutor" required>
-                           <option disabled selected value="">Choose tutor...</option>
+                        <select id="choose-tutor" class="custom-select chosen-container chosen-format"
+                                name="choose-tutor" required data-placeholder="Choose tutor...">
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
