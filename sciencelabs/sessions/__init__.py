@@ -320,15 +320,18 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:create'))
 
         if not leads:
-            self.slc.set_alert('danger', 'You must choose a Lead Tutor')
+            self.slc.set_alert('danger', 'You must choose a Lead Tutor to create a session')
             return redirect(url_for('SessionView:create'))
         try:
             # Returns True if successful
             self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
-            self.slc.set_alert('success', 'Session created successfully!')
-            return redirect(url_for('SessionView:closed'))
+            self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+            if actual_start or actual_end:  # Past session, so go to closed to view
+                return redirect(url_for('SessionView:closed'))
+            else:  # Future session, so go to available to view
+                return redirect(url_for('SessionView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to create session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:create'))
