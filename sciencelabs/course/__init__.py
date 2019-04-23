@@ -22,6 +22,13 @@ class CourseView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        course_info = self.course.get_course_info()
+        active_coursecodes = self.course.get_active_coursecode()
+        cc_str = ''
+        for coursecodes in active_coursecodes:
+            cc_str += '{0}{1} ({2}); '.format(coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
+        semester = self.schedule.get_active_semester()
+
         return render_template('course/base.html', **locals())
 
     # This route exists in case a user deletes the "admin" part of the course url - redirects back to base page
@@ -35,16 +42,6 @@ class CourseView(FlaskView):
 
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
-
-    def load_course_table(self):
-        course_info = self.course.get_course_info()
-        active_coursecodes = self.course.get_active_coursecode()
-        cc_str = ''
-        for coursecodes in active_coursecodes:
-            cc_str += '{0}{1} ({2}); '.format(coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
-        semester = self.schedule.get_active_semester()
-
-        return render_template('course/course_table.html', **locals())
 
     @route("/submit/", methods=['POST'])
     def submit(self):
