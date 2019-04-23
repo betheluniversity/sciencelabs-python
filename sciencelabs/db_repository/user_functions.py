@@ -1,3 +1,4 @@
+from flask import abort
 from datetime import datetime
 from sqlalchemy import func, distinct, orm
 
@@ -410,6 +411,8 @@ class User:
 
     def create_user_at_sign_in(self, username, semester):
         wsapi_names = self.wsapi.get_names_from_username(username)
+        if not wsapi_names:
+            abort(503)
         names = wsapi_names['0']
         first_name = names['firstName']
         if names['prefFirstName']:
