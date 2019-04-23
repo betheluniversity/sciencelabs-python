@@ -9,7 +9,46 @@
         <div class="custom-default row">
             <div class="col-md-8">
                 <form role="form" action="{{ url_for('CourseView:submit') }}" method="POST">
-                    <div id="loading" class="form-row">
+                    <div class="form-group col-md-12">
+                        <h3>{{ lab_title }} Courses for {{ semester.term }} {{ semester.year }}</h3>
+                    </div>
+                    <table id="table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Name">Course</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Section">Sec</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Code">Course Code</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Professor">Professor</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Students Enrolled">Enr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course, user in course_info %}
+                                <tr>
+                                    <td>
+                                        <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title }}</a>
+                                    </td>
+                                    <td>
+                                        {{ course.section }}
+                                    </td>
+                                    <td>
+                                        {{ course.dept + course.course_num }}
+                                    </td>
+                                    <td>
+                                        {{ user.firstName }}
+                                        {{ user.lastName }}
+                                    </td>
+                                    <td>
+                                        {{ course.num_attendees }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group col-md-12 text-right margin-top-20">
+                        <h3 class="text-left">{{ lab_title }} Courses Across all Terms</h3>
+                        <input id="tags" type="text" name="potential_courses" class="tags" value="{{ cc_str }}"/>
+                        <button type="submit" class="btn blue btn-primary margin-top-10" id="submit-courses">Submit Courses</button>
                     </div>
                 </form>
             </div>
@@ -64,13 +103,24 @@
             </div>
         </div>
 
-    <script>
+    <script type="text/javascript">
         $(document).ready( function () {
-            var table = $('#table').DataTable( {
-                "aoColumns": []
+            
+            $(function(){
+                $('#tags').tagsInput({
+                    delimiter: ';',
+                    height:'150px',
+                    width:'100%',
+                    interactive:true,
+                    defaultText:'add a course',
+                    minInputWidth: '90px',
+                    removeWithBackspace : true,
+                    minChars : 6,
+                    maxChars : 0, //if not provided there is no limit,
+                    placeholderColor : '#666666'
+                });
             });
 
-            $('#loading').load("{{ url_for('CourseView:load_course_table') }}")
         });
     </script>
 {% endblock %}
