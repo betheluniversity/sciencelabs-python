@@ -165,16 +165,11 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if not leads:
-            self.slc.set_alert('danger', 'You must choose a Lead Tutor')
-            return redirect(url_for('SessionView:edit_session', session_id=session_id))
-
         try:
-            # Returns True if successful
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
                                                 tutors, courses)
-            self.slc.set_alert('success', 'Session edited successfully!')
+            self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
@@ -319,11 +314,7 @@ class SessionView(FlaskView):
                                          'semester OR give the past session actual start and end times.')
             return redirect(url_for('SessionView:create'))
 
-        if not leads:
-            self.slc.set_alert('danger', 'You must choose a Lead Tutor to create a session')
-            return redirect(url_for('SessionView:create'))
         try:
-            # Returns True if successful
             self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
