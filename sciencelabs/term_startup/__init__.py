@@ -60,7 +60,7 @@ class TermStartupView(FlaskView):
                 [{'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active}] + \
                 flask_session['SEMESTER-LIST']
             flask_session['SELECTED-SEMESTER'] = semester.id
-            self.slc.set_alert('success', 'Term set successfully!')
+            self.slc.set_alert('success', 'Term {0} {1} set successfully!'.format(term, year))
             return redirect(url_for('TermStartupView:step_two'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to set term: {0}'.format(str(error)))

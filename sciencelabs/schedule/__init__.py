@@ -83,7 +83,7 @@ class ScheduleView(FlaskView):
             # This returns True if it executes successfully
             self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
                                         start_time, end_time, day_of_week, leads, tutors, courses)
-            self.slc.set_alert('success', 'Schedule edited successfully!')
+            self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
@@ -110,7 +110,7 @@ class ScheduleView(FlaskView):
             courses = form.getlist('courses')
             self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                     start_time, end_time, day_of_week, leads, tutors, courses)
-            self.slc.set_alert('success', 'Schedule created successfully!')
+            self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))

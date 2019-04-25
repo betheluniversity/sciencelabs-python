@@ -101,6 +101,10 @@ class CourseView(FlaskView):
                     count += 1
                 self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
             self.course.delete_course(course_table, user_table)
-        self.slc.set_alert('success', 'Course deleted successfully!')
+        self.slc.set_alert('success',
+                           '{0}{1} - {2} (Section {3}) deleted successfully!'.format(course_table.dept,
+                                                                                     course_table.course_num,
+                                                                                     course_table.title,
+                                                                                     course_table.section))
 
         return redirect(url_for('CourseView:index'))

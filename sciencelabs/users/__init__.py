@@ -125,7 +125,7 @@ class UsersView(FlaskView):
             self.user.clear_current_roles(user_id)
             self.user.set_user_roles(username, roles)
             self.user.set_course_viewer(user_id, viewable_courses)
-            self.slc.set_alert('success', 'Edited user successfully!')
+            self.slc.set_alert('success', 'Edited {0} {1} ({2}) successfully!'.format(first_name, last_name, username))
             return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit user: {0}'.format(str(error)))
@@ -147,7 +147,7 @@ class UsersView(FlaskView):
         try:
             self.user.create_user(first_name, last_name, username, email_pref)
             self.user.set_user_roles(username, roles)
-            self.slc.set_alert('success', 'User added successfully!')
+            self.slc.set_alert('success', '{0} {1} ({2}) added successfully!'.format(first_name, last_name, username))
             return redirect(url_for('UsersView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to add user: {0}'.format(str(error)))
