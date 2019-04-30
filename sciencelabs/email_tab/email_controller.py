@@ -66,13 +66,16 @@ class EmailController:
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
-            print('Would have sent email to: {0}'.format(str(recipients)))
-            subject = '{0} {1}'.format(subject, str(recipients))
+            print('Would have sent email to: {0} {1}'.format(str(recipients), str(bcc)))
+            subject = '{0} {1} {2}'.format(subject, str(recipients), str(bcc))
             recipients = app.config['TEST_EMAILS']
+            bcc = []
 
         # if we are sending a message to a single user, go ahead and convert the string into a list
         if isinstance(recipients, str):
             recipients = [recipients]
+        if isinstance(bcc, str):
+            bcc = [bcc]
 
         mail = Mail(app)
         msg = Message(subject=subject,
