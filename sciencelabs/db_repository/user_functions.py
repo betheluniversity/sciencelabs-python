@@ -111,7 +111,7 @@ class User:
             .filter(User_Table.id == student_id).first()
 
     def get_all_roles(self):
-        return db_session.query(Role_Table)\
+        return db_session.query(Role_Table).filter(Role_Table.name != "API User")\
             .all()
 
     def get_user_roles(self, user_id):
