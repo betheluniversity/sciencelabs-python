@@ -449,13 +449,36 @@ class User:
 
     def get_bcc_emails(self, groups, bcc_ids):
         emails = []
+
         for bcc in bcc_ids:
             emails.append(self.get_email_from_id(bcc))
+
         for group in groups:
             group_users = self.get_users_in_group(group)
+
+            # If role is student, remove students from list who haven't attended any sessions
+            role = self.get_role_by_role_id(group)
+            if role.name == "Student":
+                student_users = []
+                for user in group_users:
+                    if self.student_is_active(user.id):
+                        student_users.append(user)
+                group_users = student_users
+
             for user in group_users:
-                emails.append(self.get_email_from_id(user.id))
+                emails.append(user.email)
+
         return emails
+
+    def student_is_active(self, student_id):
+        active_semester = self.get_active_semester()
+        student_sessions = db_session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == active_semester.id).all()
+        if len(student_sessions) > 0:
+            return True
+        else:
+            return False
 
     def get_end_of_session_recipients(self):
         admin_role = self.get_role_by_name('Administrator')
