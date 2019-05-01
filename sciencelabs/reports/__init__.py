@@ -624,8 +624,9 @@ class ReportView(FlaskView):
             for session_info in sessions:
                 if (str(session_info.date.strftime('%m'))) == date:
                     attendance = len(self.session_.get_number_of_student_sessions(session_info.id))
-                    my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
-                                    days[self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek],
+                    session_schedule = self.session_.get_dayofWeek_from_session(session_info.id)
+                    week_day = days[session_schedule.dayofWeek] if session_schedule else ""
+                    my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name, week_day,
                                     session_info.startTime, session_info.endTime, session_info.room, attendance,
                                     session_info.comments])
                     total_attendance += attendance
