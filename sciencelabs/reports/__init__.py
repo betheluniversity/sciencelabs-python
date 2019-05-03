@@ -1,10 +1,11 @@
 # Packages
-from flask import render_template, Response, redirect, url_for
+from flask import render_template, Response, redirect, url_for, stream_with_context
 from flask import session as flask_session
 from flask_classy import FlaskView, route
 import calendar
 import csv
 from datetime import datetime
+from io import StringIO
 
 # Local
 from sciencelabs import app
@@ -765,10 +766,29 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
-    def export_csv(self, data, csv_name):
+    # def export_csv(self, data, csv_name):
+    #
+    #     with open(csv_name + '.csv', 'w+') as csvfile:
+    #         filewriter = csv.writer(csvfile)
+    #
+    #         my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
+    #         filewriter.writerow(my_list)
+    #         my_list = []
+    #         filewriter.writerow(my_list)
+    #
+    #         for row in data:
+    #             filewriter.writerow(row)
+    #
+    #     with open(csv_name + '.csv', 'rb') as f:
+    #         return Response(
+    #             f.read(),
+    #             mimetype="text/csv",
+    #             headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
 
-        with open(csv_name + '.csv', 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+    def export_csv(self, data, csv_name):
+        def generate():
+            w = StringIO()
+            filewriter = csv.writer(w)
 
             my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
             filewriter.writerow(my_list)
@@ -778,11 +798,13 @@ class ReportView(FlaskView):
             for row in data:
                 filewriter.writerow(row)
 
-        with open(csv_name + '.csv', 'rb') as f:
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
+        file_headers = {"Content-disposition": "attachment; filename=" + csv_name + '.csv'}
+
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/csv',
+            headers=file_headers
+        )
 
     def _get_selected_month(self):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
