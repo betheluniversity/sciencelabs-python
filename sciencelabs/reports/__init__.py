@@ -766,25 +766,6 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
-    # def export_csv(self, data, csv_name):
-    #
-    #     with open(csv_name + '.csv', 'w+') as csvfile:
-    #         filewriter = csv.writer(csvfile)
-    #
-    #         my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
-    #         filewriter.writerow(my_list)
-    #         my_list = []
-    #         filewriter.writerow(my_list)
-    #
-    #         for row in data:
-    #             filewriter.writerow(row)
-    #
-    #     with open(csv_name + '.csv', 'rb') as f:
-    #         return Response(
-    #             f.read(),
-    #             mimetype="text/csv",
-    #             headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
-
     def export_csv(self, data, csv_name):
         def generate():
             w = StringIO()
