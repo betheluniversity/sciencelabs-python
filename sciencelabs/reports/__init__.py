@@ -797,6 +797,9 @@ class ReportView(FlaskView):
 
             for row in data:
                 filewriter.writerow(row)
+                yield w.getvalue()
+                w.seek(0)
+                w.truncate(0)
 
         file_headers = {"Content-disposition": "attachment; filename=" + csv_name + '.csv'}
 
