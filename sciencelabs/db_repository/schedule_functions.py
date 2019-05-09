@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-from sqlalchemy import func, or_, distinct
+from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
