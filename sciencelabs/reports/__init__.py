@@ -100,11 +100,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab_acronym)
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
@@ -173,11 +173,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab_acronym)
 
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance',
@@ -316,12 +316,12 @@ class ReportView(FlaskView):
         else:
             term = 'Summer'
         term_abbr = term[:2].upper()
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab_acronym, selected_month)
 
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
@@ -380,12 +380,12 @@ class ReportView(FlaskView):
         else:
             term = 'Summer'
         term_abbr = term[:2].upper()
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab_acronym, selected_month)
 
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
@@ -422,11 +422,11 @@ class ReportView(FlaskView):
     def export_cumulative_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}_CumulativeAttendance'.format(lab)
+        csv_name = '{0}_CumulativeAttendance'.format(lab_acronym)
 
         my_list = self._build_cumulative_list()
 
@@ -575,11 +575,11 @@ class ReportView(FlaskView):
     def export_enrollment_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '%s_EnrollmentVsAttendance' % lab
+        csv_name = '{0}_EnrollmentVsAttendance'.format(lab_acronym)
 
         data = [['Semester', 'Total', 'Unique', 'Enrolled', 'Percent']]
 
@@ -648,11 +648,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab_acronym)
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
@@ -718,10 +718,10 @@ class ReportView(FlaskView):
     def export_course_csv(self):
         ##### Initial CSV stuff #####
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
-        csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab)
+            lab_acronym += letter[0]
+        csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab_acronym)
 
         csv_data = []
         csv_data.append(['Course', 'Section', 'Professor', 'Total Attendance', 'Unique Attendance', '% of Lab Attendance'])
@@ -777,10 +777,10 @@ class ReportView(FlaskView):
     def export_course_overview_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
-        csv_name = '%s_CourseOverviewReport' % lab
+            lab_acronym += letter[0]
+        csv_name = '{0}_CourseOverviewReport'.format(lab_acronym)
 
         data = [['Course', 'Section', 'Course Code', 'Professor', 'Enrolled']]
 
@@ -829,9 +829,9 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
 
@@ -851,7 +851,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab, csv_course_info)
+        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab_acronym, csv_course_info)
 
         return self.export_csv(my_list, csv_name)
 
@@ -861,11 +861,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab_acronym)
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 
