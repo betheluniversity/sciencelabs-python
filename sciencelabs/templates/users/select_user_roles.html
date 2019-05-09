@@ -14,7 +14,7 @@
             {% if existing_user %}
                 <div class="centered">
                     <h4>{{ first_name }} {{ last_name }} already exists</h4>
-                    <p>If this user existed in the database previously, their account is activated again.</p>
+                    <p>{{ message }}</p>
                 </div>
             {% else %}
                 <form action="{{ url_for('UsersView:create_user') }}" method="post">

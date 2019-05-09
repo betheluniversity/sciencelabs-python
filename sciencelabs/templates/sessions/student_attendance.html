@@ -39,10 +39,10 @@
             <th class="text-center" colspan="4">Attendance</th>
         </tr>
         <tr>
-            <th>Name</th>
-            <th>Courses</th>
-            <th>Time In</th>
-            <th>Time Out</th>
+            <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
+            <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
         </tr>
         {% for student, courses in students_and_courses.items() %}
             <tr>

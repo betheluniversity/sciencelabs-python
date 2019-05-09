@@ -54,11 +54,21 @@
                         <tbody>
                         <tr>
                             <td><b>Sessions Held for courses user was enrolled in</b></td>
-                            <td>{{ total_sessions|length }}</td>
+                            <td>
+                                {% if courses %}
+                                    {{ total_sessions|length }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td><b>Percentage Attended</b></td>
-                            <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% if attendance %}
+                                <td>{{ (attendance/(total_sessions|length)*100)|round|int }}%</td>
+                            {% else %}
+                                <td>0%</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td><b>Average Time per Session</b></td>
@@ -75,7 +85,13 @@
                                     {% if avg_time.append(avg_time.pop() + ((avg_time_per_course[0] / time|length)|round())) %}{% endif %}
                                 {% endif %}
                             {% endfor %}
-                            <td>{{ (avg_time[0] / courses|length)|round|int }} minutes</td>
+                            <td>
+                                {% if courses|length != 0 %}
+                                    {{ (avg_time[0] / courses|length)|round|int }} minutes
+                                {% else %}
+                                    0 minutes
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td><b>Total Time this Term</b></td>
@@ -97,11 +113,17 @@
                             <b>{{ lab_title }} Course(s) Enrolled in for {{ sem.term }} {{ sem.year }} as of {{ now.strftime('%m/%d/%Y') }}</b>
                         </li>
                         <ul class="no-bullet">
-                            {% for course in courses %}
+                            {% if courses %}
+                                {% for course in courses %}
+                                    <li>
+                                        <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}'><span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span></a>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
                                 <li>
-                                    <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}'><span class="button-labels">{{ course.title + ' (Section ' + course.section|string + ')' }}</span></a>
+                                    No courses are on record for this student for {{ lab_title }} during {{ sem.term }} {{ sem.year }}.
                                 </li>
-                            {% endfor %}
+                            {% endif %}
                         </ul>
                     </ul>
                     <ul class="no-bullet">
@@ -138,12 +160,12 @@
                     <table id="table"  class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Courses</th>
-                                <th>Time In</th>
-                                <th>Time Out</th>
-                                <th>Minutes</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Courses Student Attended Session for">Courses</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Total Time in Session">Total Time</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -41,9 +41,9 @@
                     <th colspan="3" class="text-center">Tutors</th>
                 </tr>
                 <tr>
-                    <th>Name</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Tutor Name">Name</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                 </tr>
                 {% for tutor in tutors %}
                     {% if tutor.timeIn != None %}
@@ -114,9 +114,9 @@
                     <th colspan="3" class="text-center">Course Information</th>
                 </tr>
                 <tr>
-                    <th>Course</th>
-                    <th>Professor</th>
-                    <th>Email</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Name and Section">Course</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Professor">Professor</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Professor Email">Email</th>
                 </tr>
                 {% for course, user in course_info %}
                     <tr>
@@ -144,13 +144,15 @@
                     <p class="card-text"><strong>Running the Help Session:</strong></p>
 
                     <p class="card-text"><strong>Tutor Sign In:</strong> Each tutor must personally sign in using the
-                        <span id="yellow" class="button-labels">Sign in as a Tutor</span> button.</p>
+                        <span id="yellow" class="button-labels">Scan ID or Click Here to Sign in as a Tutor</span>
+                        button or by scanning their ID. Make sure to sign out at the end of the session or your time
+                        will be recorded as 0.</p>
 
                     <p class="card-text"><strong>Student Sign In:</strong> Make sure that each student signs in when
                         they visit the help session by pressing the
-                        <span id="yellow" class="button-labels">Please Sign In Here</span> button on the student sign
-                        in page. The student will be prompted to select the courses for which they are visiting the lab
-                        or the reason for their attendance before they sign in.</p>
+                        <span id="yellow" class="button-labels">Scan ID or Click Here to Sign In</span> button on the
+                        student sign in page or by scanning their ID. The student will be prompted to select the courses
+                        for which they are visiting the lab or the reason for their attendance before they sign in.</p>
 
                     <p class="card-text"><strong>Emails to Professors:</strong> If you need to email a professor during
                         a help session, see the list of professor names and emails for each class listed on this page.
@@ -158,12 +160,12 @@
                         send this email due to CAS authentication overlap issues.</p>
 
                     <p class="card-text"><strong>Editing Attendance:</strong> To edit a student's attendance, the lead
-                        tutor must log in to the system using the <span class="button-labels">Login</span> button in
-                        the upper right hand corner of the screen. Go to the <span class="button-labels">Sessions</span>
+                        tutor must log in to the system by going to the home page (click the logo in the upper left hand
+                        corner of the screen. Go to the <span class="button-labels">Sessions</span>
                         tab and choose the <span class="button-labels">Edit Attendance</span> button next to the open
                         session. You may then proceed to edit individual student or tutor attendance. When editing is
                         complete, return to the available sessions listing and press
-                        <span id="darkblue" class="button-labels">Enter Session</span>.</p>
+                        <span id="yellow" class="button-labels">Enter Session</span>.</p>
 
                     <p class="card-text"><strong>Closing a Session:</strong> To close a session, the lead tutor must
                         press the <span class="button-labels">Lead Tutor Close Session</span> button at the bottom of

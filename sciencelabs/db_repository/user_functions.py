@@ -1,3 +1,4 @@
+from flask import abort
 from datetime import datetime
 from sqlalchemy import func, distinct, orm
 
@@ -66,7 +67,7 @@ class User:
                 .filter(Session_Table.semester_id == Semester_Table.id) \
                 .filter(Semester_Table.id == semester_id)\
                 .group_by(User_Table.id) \
-                .one()
+                .one_or_none()
 
     def get_unique_sessions_attended(self, student_id, semester_id):
         return db_session.query(func.count(StudentSession_Table.sessionId))\
@@ -105,9 +106,9 @@ class User:
             .filter(User_Table.id == student_id) \
             .all()
 
-    def get_student_from_studentsession(self, student_id):
+    def get_student(self, student_id):
         return db_session.query(User_Table)\
-            .filter(User_Table.id == student_id)
+            .filter(User_Table.id == student_id).first()
 
     def get_all_roles(self):
         return db_session.query(Role_Table)\
@@ -196,7 +197,7 @@ class User:
 
     def create_user(self, first_name, last_name, username, send_email):
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
-                              email=username+'@bethel.edu', send_email=send_email, deletedAt=None)
+                              email='{0}@bethel.edu'.format(username), send_email=send_email, deletedAt=None)
         db_session.add(new_user)
         db_session.commit()
         return new_user
@@ -317,14 +318,14 @@ class User:
         for student in active_students:
             # Get courses from banner
             student_banner_courses = self.wsapi.get_student_courses(student.username)
-            message += student.firstName + ' ' + student.lastName + ' ' + 'Courses:\n'
+            message += '{0} {1} Courses:\n'.format(student.firstName, student.lastName)
 
             # Check if courseCode exists (yes = move on, no = quit)
             for key, course in student_banner_courses.items():
                 if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
                         .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
-                    message += course['subject'] + ' ' + course['cNumber'] + '\n'
+                    message += '{0} {1}\n'.format(course['subject'], course['cNumber'])
 
                     # Check if semester exists (yes = move on, no = throw exception)
                     try:
@@ -380,7 +381,7 @@ class User:
                     course.courseName = banner_courses['0']['title']
                     db_session.commit()
                     message += "Course Code edited\n"
-                    message += course.underived + " (" + course.courseName + ")\n"
+                    message += '{0} ({1})\n'.format(course.underived, course.courseName)
 
                     for key, banner_course in banner_courses.items():
                         # Check if semester exists (yes = move on, no = throw exception)
@@ -410,6 +411,8 @@ class User:
 
     def create_user_at_sign_in(self, username, semester):
         wsapi_names = self.wsapi.get_names_from_username(username)
+        if not wsapi_names:
+            abort(503)
         names = wsapi_names['0']
         first_name = names['firstName']
         if names['prefFirstName']:
@@ -438,21 +441,44 @@ class User:
         user = self.get_user(user_id)
         return user.email
 
-    def get_recipient_emails(self, groups, cc_ids):
+    def get_recipient_emails(self, cc_ids):
         emails = []
         for cc in cc_ids:
             emails.append(self.get_email_from_id(cc))
-        for group in groups:
-            group_users = self.get_users_in_group(group)
-            for user in group_users:
-                emails.append(self.get_email_from_id(user.id))
         return emails
 
-    def get_bcc_emails(self, bcc_ids):
+    def get_bcc_emails(self, groups, bcc_ids):
         emails = []
+
         for bcc in bcc_ids:
             emails.append(self.get_email_from_id(bcc))
+
+        for group in groups:
+            group_users = self.get_users_in_group(group)
+
+            # If role is student, remove students from list who haven't attended any sessions
+            role = self.get_role_by_role_id(group)
+            if role.name == "Student":
+                student_users = []
+                for user in group_users:
+                    if self.student_is_active(user.id):
+                        student_users.append(user)
+                group_users = student_users
+
+            for user in group_users:
+                emails.append(user.email)
+
         return emails
+
+    def student_is_active(self, student_id):
+        active_semester = self.get_active_semester()
+        student_sessions = db_session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == active_semester.id).all()
+        if len(student_sessions) > 0:
+            return True
+        else:
+            return False
 
     def get_end_of_session_recipients(self):
         admin_role = self.get_role_by_name('Administrator')
@@ -500,16 +526,35 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
         for student in students:
-            roles = db_session.query(user_role_Table).filter(user_role_Table.user_id == student.id).all()
-            if len(roles) == 1:  # This means that 'Student' is their only role
+            roles = db_session.query(user_role_Table.role_id).filter(user_role_Table.user_id == student.id).all()
+            if len(roles) == 1: # This means that 'Student' is their only role
                 student.deletedAt = datetime.now()
         db_session.commit()
 
     def demote_tutors(self):
-        lead_roles = db_session.query(user_role_Table)\
-            .filter(User_Table.id == user_role_Table.user_id)\
-            .filter(user_role_Table.role_id == Role_Table.id)\
-            .filter(Role_Table.name == 'Lead Tutor')\
+        # This logic below updates lead tutor role to be a tutor role, if a lead tutor isn't also assigned the tutor role
+        leads = db_session.query(User_Table) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == Role_Table.id) \
+            .filter(Role_Table.name == 'Lead Tutor') \
+            .filter(User_Table.deletedAt == None) \
+            .all()
+        for lead in leads:
+            roles = db_session.query(user_role_Table.user_id, user_role_Table.role_id).filter(
+                user_role_Table.user_id == lead.id).all()
+            role_list = []
+            for role in roles:
+                role_list.append(role[1])
+            if 40004 not in role_list:  # checks if tutor role is in the current list
+                db_session.query(user_role_Table).filter(user_role_Table.user_id == lead.id).filter(
+                    user_role_Table.role_id == 40003).update({'role_id': 40004})
+                db_session.commit()
+
+        # This logic below deletes all the Lead Tutors
+        lead_roles = db_session.query(user_role_Table) \
+            .filter(User_Table.id == user_role_Table.user_id) \
+            .filter(user_role_Table.role_id == Role_Table.id) \
+            .filter(Role_Table.name == 'Lead Tutor') \
             .all()
         for lead_role in lead_roles:
             db_session.delete(lead_role)

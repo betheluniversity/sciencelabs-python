@@ -58,7 +58,7 @@ class ScheduleView(FlaskView):
             self.schedule.delete_schedule(schedule_id)
             self.slc.set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete schedule: {0}'.format(str(error)))
         return redirect(url_for('ScheduleView:index'))
 
     @route("/save-schedule-edits", methods=['post'])
@@ -83,10 +83,10 @@ class ScheduleView(FlaskView):
             # This returns True if it executes successfully
             self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
                                         start_time, end_time, day_of_week, leads, tutors, courses)
-            self.slc.set_alert('success', 'Schedule edited successfully!')
+            self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
     @route('/create-schedule-submit', methods=['post'])
@@ -110,8 +110,8 @@ class ScheduleView(FlaskView):
             courses = form.getlist('courses')
             self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                     start_time, end_time, day_of_week, leads, tutors, courses)
-            self.slc.set_alert('success', 'Schedule created successfully!')
+            self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to create schedule: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:create_new_schedule'))

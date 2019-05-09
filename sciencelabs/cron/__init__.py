@@ -53,7 +53,7 @@ class CronView(FlaskView):
                 self.email.close_session_email(session_closed.id)
             return 'success'
         except Exception as error:
-            return 'failed: ' + str(error)
+            return 'failed: {0}'.format(str(error))
 
     @requires_auth
     @route('/populate-user-courses', methods=['get'])
@@ -61,7 +61,7 @@ class CronView(FlaskView):
         try:
             return self.user.populate_user_courses_cron()
         except Exception as error:
-            return 'failed: ' + str(error)
+            return 'failed: {0}'.format(str(error))
 
     @requires_auth
     @route('/populate-courses', methods=['get'])
@@ -69,4 +69,4 @@ class CronView(FlaskView):
         try:
             return self.user.populate_courses_cron()
         except Exception as error:
-            return 'failed: ' + str(error)
+            return 'failed: {0}'.format(str(error))

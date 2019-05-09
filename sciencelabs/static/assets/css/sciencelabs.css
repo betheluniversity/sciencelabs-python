@@ -6,6 +6,14 @@ a.disabled:hover {
     color: black;
 }
 
+a.csv-right-1{
+    right: 175px !important;
+}
+
+a.csv-right-2{
+    right: 200px !important;
+}
+
 a.month-nav:hover {
     color: black;
 }
@@ -46,13 +54,34 @@ button.btn {
     margin-right: 0.5em !important;
 }
 
+button.close-btn{
+    margin: 10px 0;
+}
+
+div.available-sessions{
+    margin-top:20px;
+    margin-bottom:15px;
+}
+
 div.centered {
     text-align:center;
+}
+
+div.course-btns{
+    float: right;
 }
 
 div.dropdown {
     cursor: pointer;
     color: #fff;
+}
+
+div.edit-btns{
+    display: block;
+}
+
+div.email{
+    display: none;
 }
 
 div.footer {
@@ -77,6 +106,15 @@ div.info {
     border-color: #d8d8d8;
 }
 
+div.bottom-space{
+    margin-bottom: 15px;
+}
+
+div.report-symbols{
+    background-color: white;
+    padding: 0;
+}
+
 div.row-group {
     background-color: #0069AA;
     border-color: white;
@@ -89,12 +127,13 @@ div.semester-selector {
     direction: rtl;
 }
 
-div.sub-info {
-    margin-bottom: 20px;
+div.tutor-td{
+    display: none;
+    white-space: nowrap;
 }
 
-div#table_wrapper {
-    overflow-x: auto;
+div.sub-info {
+    margin-bottom: 20px;
 }
 
 form.create-session-form {
@@ -121,6 +160,10 @@ nav a {
     color: gray;
 }
 
+nav.navbar{
+    padding: 0 10px;
+}
+
 p {
     margin-bottom: 1.25rem;
     line-height: 1.6;
@@ -128,6 +171,14 @@ p {
 
 select {
     width: 100%;
+}
+
+span.error-span{
+    color: red;
+}
+
+span.lab-title{
+    color: #ffc600
 }
 
 span.tag a {
@@ -204,6 +255,12 @@ ul.no-margin {
     padding: 3px 16px
 }
 
+.alert-info {
+    background-color: #4699d7;
+    border-color: #4699d7;
+    color: #FFFFFF;
+}
+
 .add-user {
     float: right;
 }
@@ -246,6 +303,7 @@ ul.no-margin {
 
 .button-curved {
     border-radius: .25rem !important;
+    left: 10px;
 }
 
 .button-labels {
@@ -430,6 +488,13 @@ ul.no-margin {
     margin: 0;
 }
 
+select:invalid {
+  height: 0px !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  display: flex !important;
+}
+
 .side-borders {
     border-left: 2px solid #000000 !important;
     border-right: 2px solid #000000 !important;
@@ -445,6 +510,29 @@ ul.no-margin {
     background-color: #ffae1f !important;
     border-color: #ffae1f !important;
     color: black;
+}
+
+.spinner {
+    top: 50%;
+    left: 50%;
+    margin: 0 auto;
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 120px; /* width of the spinner gif */
+    height: 0px; /* height of the spinner gif +2px to fix IE8 issue */
+}
+
+.spinner-img {
+    position: fixed;
+    margin-left: -60px;
+}
+
+.spinner-wrapper {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -503,7 +591,13 @@ ul.no-margin {
     border-color: #0F2C52;
 }
 
-#student-views {
+#view-by-course-button{
+    color: white !important;
+    background-color: #0F2C52;
+    border-color: #0F2C52;
+}
+
+#view-by-name-button{
     color: white !important;
     background-color: #0F2C52;
     border-color: #0F2C52;

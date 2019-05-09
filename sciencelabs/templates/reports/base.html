@@ -38,7 +38,7 @@
 
 
 {% block body_content %}
-    <div class="header card-body" style="background-color: white; padding: 0">
+    <div class="header card-body report-symbols">
         <div class="row row-group">
             {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
             <a class="report-img col-sm-4 col-group" href="{{ url_for('ReportView:course') }}">

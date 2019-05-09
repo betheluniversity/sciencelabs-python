@@ -25,7 +25,11 @@
                         <label for="semester-select">Semester</label>
                         <select id="semester-select" class="custom-select chosen-container chosen-format" name="semester-select">
                             {% for semester in session['SEMESTER-LIST'] %}
-                                <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% if semester['id'] == active_semester.id %}
+                                    <option selected value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% else %}
+                                    <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -47,7 +51,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" id="choose-leads" multiple="true"
+                        <select class="chosen form-control" required="required" id="choose-leads" multiple="true"
                                 data-placeholder="Choose lead tutors ..." name="choose-leads">
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
@@ -108,13 +112,15 @@
         </div>
     </div>
     <link rel="stylesheet" href="{{ url_for('static', filename='pikaday.css') }}">
+    <script src="{{ url_for('static', filename='moment.js') }}"></script>
     <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
     <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
     <script>
         $(document).ready(function () {
 
             var picker = new Pikaday({
-                field: document.getElementById('session-date')
+                field: document.getElementById('session-date'),
+                format: 'MM/DD/YYYY'
             });
 
             $(".chosen").chosen({

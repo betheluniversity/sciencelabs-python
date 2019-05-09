@@ -17,12 +17,12 @@
                     <thead>
                         <tr>
                             <th>DOW #</th>
-                            <th>Name</th>
-                            <th>DOW</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Courses</th>
-                            <th>Tutors</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Schedule Name">Name</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Day of Week">DOW</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Schedule Time">Time</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Schedule Room">Room</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Schedule Courses">Courses</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Schedule Tutors">Tutors</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -46,7 +46,7 @@
                                 </td>
                                 <td>
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
-                                    <div style="display: none;" class="text-left margin-top-10">
+                                    <div class="tutor-td text-left margin-top-10">
                                         <ul>
                                             {% for course in tutors_and_courses['courses'] %}
                                                 <li>
@@ -58,7 +58,7 @@
                                 </td>
                                 <td>
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
-                                    <div style="display: none;" class="text-left margin-top-10">
+                                    <div class="tutor-td text-left margin-top-10">
                                         {% for tutor in tutors_and_courses['tutors'] %}
                                         {% if tutor.isLead %}
                                             {{ tutor.firstName }} {{ tutor.lastName }}<br><span class="button-labels">Lead</span><br>
@@ -68,7 +68,7 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center btn-group">
                                     <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
                                        class="btn btn-primary hover-bright">Edit</a>
                                     <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
@@ -119,8 +119,8 @@
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
-                    { "orderSequence": [ "asc", "desc" ] },
-                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] }
                 ],
 

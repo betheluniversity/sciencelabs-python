@@ -17,12 +17,12 @@
         <table id="table" class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Date Deleted</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Room</th>
-                    <th scope="col">Tutors</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Date That the Session Was Deleted">Date Deleted</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
+                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Session Tutors">Tutors</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -40,7 +40,7 @@
                     {% endif %}
                     <td>
                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
-                        <div style="display: none;" class="text-left margin-top-10">
+                        <div class="tutor-td text-left margin-top-10">
                             {% for tutor in tutors %}
                                 {{ tutor.firstName }} {{ tutor.lastName }}
                                 {% if tutor.isLead %}
@@ -67,6 +67,15 @@
         $(document).ready( function () {
 
             var table = $('#table').DataTable( {
+                "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                ],
                 "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bFilter": false,

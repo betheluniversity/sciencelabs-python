@@ -1,10 +1,11 @@
 # Packages
-from flask import render_template, Response
+from flask import render_template, Response, redirect, url_for, stream_with_context
 from flask import session as flask_session
 from flask_classy import FlaskView, route
 import calendar
 import csv
 from datetime import datetime
+from io import StringIO
 
 # Local
 from sciencelabs import app
@@ -67,7 +68,12 @@ class ReportView(FlaskView):
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             role_can_view = True
-            student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            if self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER']):
+                student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+            else:
+                self.slc.set_alert('info','Notice: ' + student.firstName + ' ' + student.lastName + ' has not attended any labs for ' + sem.term + ' ' + str(year) + '')
+
+                attendance = 0
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
@@ -98,7 +104,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_StudentReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab)
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
@@ -171,7 +177,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_TermReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab)
 
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance',
@@ -238,6 +244,20 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
+    # This method handles the month route with no parameters, redirects to main month route with selected semester vars
+    @route('/month')
+    def month_no_params(self):
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        if sem.term == 'Interim':
+            month = 1
+        elif sem.term == 'Spring':
+            month = 2
+        elif sem.term == 'Fall':
+            month = 8
+        else:
+            month = 6
+        return redirect(url_for('ReportView:month', year=sem.year, month=month))
+
     @route('/month/<int:year>/<int:month>')
     def month(self, year, month):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
@@ -301,7 +321,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '%s%s_%s_%s_SummaryReport' % (term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab, selected_month)
 
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
@@ -365,7 +385,7 @@ class ReportView(FlaskView):
             lab += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '%s%s_%s_%s_DetailReport' % (term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab, selected_month)
 
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
@@ -396,7 +416,7 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         month = self._get_selected_month()  # Needed for subnav
         year = sem.year  # Needed for subnav
-        cumulative_list = self.build_cumulative_list()
+        cumulative_list = self._build_cumulative_list()
         return render_template('reports/cumulative.html', **locals())
 
     def export_cumulative_csv(self):
@@ -406,13 +426,13 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s_CumulativeAttendance' % lab
+        csv_name = '{0}_CumulativeAttendance'.format(lab)
 
-        my_list = self.build_cumulative_list()
+        my_list = self._build_cumulative_list()
 
         return self.export_csv(my_list, csv_name)
 
-    def build_cumulative_list(self):
+    def _build_cumulative_list(self):
         my_list = [['Year', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Fall', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Spring',
                     'Jun', 'Jul', 'Summer', 'Total']]
 
@@ -603,6 +623,7 @@ class ReportView(FlaskView):
         month = self._get_selected_month()
         year = sem.year
 
+        total_attendance = self.session_.get_number_of_student_sessions(session_id)
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
         student_s_list = self.session_.get_studentsession_from_session(session_id)
@@ -611,7 +632,6 @@ class ReportView(FlaskView):
         session_courses_and_attendance = {}
         for course in session_courses:
             session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
-        # course_list = self.courses.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)
@@ -632,7 +652,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_SessionReport' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab)
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
@@ -649,8 +669,9 @@ class ReportView(FlaskView):
             for session_info in sessions:
                 if (str(session_info.date.strftime('%m'))) == date:
                     attendance = len(self.session_.get_number_of_student_sessions(session_info.id))
-                    my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name,
-                                    days[self.session_.get_dayofWeek_from_session(session_info.id).dayofWeek],
+                    session_schedule = self.session_.get_dayofWeek_from_session(session_info.id)
+                    week_day = days[session_schedule.dayofWeek] if session_schedule else ""
+                    my_list.append([session_info.date.strftime('%m/%d/%Y'), session_info.name, week_day,
                                     session_info.startTime, session_info.endTime, session_info.room, attendance,
                                     session_info.comments])
                     total_attendance += attendance
@@ -816,7 +837,7 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         course = self.courses.get_course(course_id)
-        csv_course_info = course[0].dept + course[0].course_num + ' (' + course[0].title + ')'
+        csv_course_info = '{0}{1} ({2})'.format(course[0].dept, course[0].course_num, course[0].title)
 
         total_attendance = 0
         for sess, schedule in sessions:
@@ -830,7 +851,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        csv_name = '%s%s_%s_SessionAttendance_%s' % (term, year, lab, csv_course_info)
+        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab, csv_course_info)
 
         return self.export_csv(my_list, csv_name)
 
@@ -844,7 +865,7 @@ class ReportView(FlaskView):
         for letter in app.config['LAB_TITLE'].split():
             lab += letter[0]
 
-        csv_name = '%s%s_%s_SessionAttendance' % (term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab)
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 
@@ -872,9 +893,9 @@ class ReportView(FlaskView):
         return self.export_csv(my_list, csv_name)
 
     def export_csv(self, data, csv_name):
-
-        with open(csv_name + '.csv', 'w+') as csvfile:
-            filewriter = csv.writer(csvfile)
+        def generate():
+            w = StringIO()
+            filewriter = csv.writer(w)
 
             my_list = [csv_name, 'Exported on:', datetime.now().strftime('%m/%d/%Y')]
             filewriter.writerow(my_list)
@@ -883,12 +904,17 @@ class ReportView(FlaskView):
 
             for row in data:
                 filewriter.writerow(row)
+                yield w.getvalue()
+                w.seek(0)
+                w.truncate(0)
 
-        with open(csv_name + '.csv', 'rb') as f:
-            return Response(
-                f.read(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=" + csv_name + '.csv'})
+        file_headers = {"Content-disposition": "attachment; filename=" + csv_name + '.csv'}
+
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/csv',
+            headers=file_headers
+        )
 
     def _get_selected_month(self):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])

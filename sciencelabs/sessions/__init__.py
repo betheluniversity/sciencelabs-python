@@ -1,5 +1,4 @@
 import re
-import requests
 
 # Packages
 from datetime import datetime, timedelta
@@ -71,7 +70,7 @@ class SessionView(FlaskView):
 
     @route('/edit/<int:session_id>')
     def edit_session(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         session_tutors = self.session.get_session_tutors(session_id)
@@ -89,7 +88,7 @@ class SessionView(FlaskView):
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')
     def edit_student(self, student_id, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         student = self.session.get_student_session_info(student_id, session_id)
         student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
@@ -99,28 +98,28 @@ class SessionView(FlaskView):
 
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         student_list = self.schedule.get_registered_students()
         return render_template('sessions/add_student.html', **locals())
 
     @route('/addanon/<int:session_id>')
     def add_anonymous(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
         return render_template('sessions/add_anonymous.html', **locals())
 
     @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
     def edit_tutor(self, tutor_id, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         tutor = self.session.get_tutor_session_info(tutor_id, session_id)
         return render_template('sessions/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
     def add_tutor(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('sessions/add_tutor.html', **locals())
@@ -139,20 +138,23 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session deleted successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
     @route('/save-session-edits', methods=['post'])
     def save_session_edits(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
         name = form.get('name')
         room = form.get('room')
         semester_id = form.get('semester-select')
+        if not semester_id:
+            active_semester = self.schedule.get_active_semester()
+            semester_id = active_semester.id
         date = form.get('date')
-        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('leads')
@@ -162,20 +164,20 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+
         try:
-            # Returns True if successful
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
                                                 tutors, courses)
-            self.slc.set_alert('success', 'Session edited successfully!')
+            self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     @route('/save-student-edits/<int:session_id>', methods=['post'])
     def save_student_edits(self, session_id):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         student_id = form.get('student-id')
@@ -193,12 +195,12 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
 
     @route('/save-tutor-edits', methods=['post'])
     def save_tutor_edits(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -212,7 +214,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Tutor edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
 
     def delete_student_from_session(self, student_id, session_id):
@@ -222,7 +224,7 @@ class SessionView(FlaskView):
             self.session.delete_student_from_session(student_id, session_id)
             self.slc.set_alert('success', 'Student deleted successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete student: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     def delete_tutor_from_session(self, tutor_id, session_id):
@@ -232,12 +234,12 @@ class SessionView(FlaskView):
             self.session.delete_tutor_from_session(tutor_id, session_id)
             self.slc.set_alert('success', 'Tutor deleted successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to delete tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to delete tutor: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
     @route('/add-student-submit', methods=['post'])
     def add_student_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -247,12 +249,12 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add student: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_student', session_id=session_id))
 
     @route('/add-anon-submit', methods=['post'])
     def add_anon_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -262,12 +264,12 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Anonymous students edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to edit anonymous students: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to edit anonymous students: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
     @route('/add-tutor-submit', methods=['post'])
     def add_tutor_submit(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
@@ -281,7 +283,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Tutor added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add tutor: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to add tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
     @route('/create-session-submit', methods=['post'])
@@ -293,7 +295,7 @@ class SessionView(FlaskView):
         room = form.get('room')
         semester_id = form.get('semester-select')
         date = form.get('date')
-        db_date = datetime.strptime(date, "%a %b %d %Y").strftime("%Y-%m-%d")
+        db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('choose-leads')
@@ -303,18 +305,26 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
-        if leads == []:
-            self.slc.set_alert('danger', 'You must choose a Lead Tutor')
+
+        # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
+        active_semester = self.schedule.get_active_semester()
+        if int(semester_id) != active_semester.id and (not actual_start or not actual_end):
+            self.slc.set_alert('danger', 'You are creating a past session with no actual times. '
+                                         'You either need to update the semester to create a session for the current '
+                                         'semester OR give the past session actual start and end times.')
             return redirect(url_for('SessionView:create'))
+
         try:
-            # Returns True if successful
             self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
-            self.slc.set_alert('success', 'Session created successfully!')
-            return redirect(url_for('SessionView:closed'))
+            self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+            if actual_start or actual_end:  # Past session, so go to closed to view
+                return redirect(url_for('SessionView:closed'))
+            else:  # Future session, so go to available to view
+                return redirect(url_for('SessionView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to create session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to create session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:create'))
 
     @route('/view/<int:session_id>')
@@ -330,13 +340,33 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         lab_session = self.session.get_session(session_id)
-        opener = self.user.get_user_by_username(flask_session['USERNAME'])
-        self.session.start_open_session(session_id, opener.id)
-        self.session.tutor_sign_in(session_id, opener.id)
-        self.slc.set_alert('success', 'Session ' + lab_session.name + ' (' + lab_session.date.strftime('%m/%d/%Y') +
-                           ') opened successfully')
 
-        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        if lab_session.date.strftime("%m/%d/%Y") == datetime.now().strftime("%m/%d/%Y"):
+
+            if self._check_session_time(lab_session):  # returns true if session is started within an hour window
+                opener = self.user.get_user_by_username(flask_session['USERNAME'])
+                self.session.start_open_session(session_id, opener.id)
+                self.session.tutor_sign_in(session_id, opener.id)
+                self.slc.set_alert('success', 'Session {0} ({1}) opened successfully'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+
+            else:  # After alert is set it will jump down and return to the session home page
+                self.slc.set_alert('danger', 'Session {0} ({1}) does not start at this time'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        else:  # Set alert and return to session home page
+            self.slc.set_alert('danger', 'Session {0} ({1}) is not scheduled for today'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        return redirect(url_for('SessionView:index'))
+
+    def _check_session_time(self, lab_session):
+        session_start_time = lab_session.schedStartTime
+        start_plus_hour = session_start_time + timedelta(hours=1)
+        start_minus_hour = session_start_time - timedelta(hours=1)
+        now = datetime.time(datetime.now())
+        if start_minus_hour < timedelta(hours=now.hour, minutes=now.minute, seconds=now.second) < start_plus_hour:
+            return True  # Return true if session start time is within the hour
+        return False
 
     @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
@@ -406,7 +436,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session closed successfully!')
             return redirect(url_for("SessionView:index"))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to close session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to close session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
 
     def restore_deleted_session(self, session_id):
@@ -417,7 +447,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to restore session: ' + str(error))
+            self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
 
     @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
@@ -428,7 +458,8 @@ class SessionView(FlaskView):
             try:
                 student_info = self.wsapi.get_user_from_prox(card_id)
             except:
-                self.slc.set_alert('danger', 'Card not recognized')
+                self.slc.set_alert('danger', 'Card not recognized. Please try again or click the button below to enter '
+                                             'your Bethel username and password.')
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             student = self.user.get_user_by_username(student_info['username'])
             if not student:
@@ -463,7 +494,8 @@ class SessionView(FlaskView):
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
-    def authenticate_sign_in(self, session_id, session_hash, user_type):\
+    def authenticate_sign_in(self, session_id, session_hash, user_type):
+        asdf = "This is jsut here to make a break point"
         return self._logout_open_session(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
     @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
@@ -489,7 +521,7 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
-        if student_courses == [] and other_course_name == '':
+        if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
@@ -509,7 +541,8 @@ class SessionView(FlaskView):
             try:
                 tutor_info = self.wsapi.get_user_from_prox(card_id)
             except:
-                self.slc.set_alert('danger', 'Card not recognized')
+                self.slc.set_alert('danger', 'Card not recognized. Please try again or click the button below to enter '
+                                             'your Bethel username and password.')
                 return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             tutor = self.user.get_user_by_username(tutor_info['username'])
         else:

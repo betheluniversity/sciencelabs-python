@@ -1,3 +1,5 @@
+import time
+
 # Packages
 from flask import render_template
 from flask import session as flask_session
@@ -6,21 +8,35 @@ from flask import session as flask_session
 from sciencelabs import app, sentry
 
 
-def error_render_template(template_path, error, code=None):
-    sentry.captureException()
+def error_render_template(template, error, code=None):
 
-    if code:
-        if code in [500, 503]:
-            if not app.config['UNIT_TESTING']:
-                app.logger.error("%s -- %s" % flask_session['username'], str(error))
+    # Check to make sure ALERT has been set, otherwise the template will fail to load
+    if 'ALERT' not in flask_session.keys():
+        flask_session['ALERT'] = []
 
-    else:
-        app.logger.error('Unhandled Exception: %s', str(error))
-        code = 500
+    # Check for username - it is possible for there not to be one though so handle that as well
+    username = 'no username'
+    if 'USERNAME' in flask_session.keys():
+        username = flask_session['USERNAME']
 
-    return render_template(template_path,
-                           sentry_event_id=sentry.last_event_id,
-                           public_dsn=sentry.client.get_public_dsn('https')), code
+    sentry.client.extra_context({
+        'time': time.strftime("%c"),
+        'username': username,
+    })
+
+    # Means that it's a handled error/exception
+    if code is not None:
+        # Catch all errors for now - may change later
+        # if code == 403 or code > 499:
+        sentry.captureException()
+        app.logger.error("{0} -- {1}".format(username, str(error)))
+
+    else:  # Means it's an unhandled exception
+        sentry.captureException()
+        app.logger.error('Unhandled Exception: {0}'.format(str(error)))
+        code = 500  # To make sure that the return statement doesn't break
+
+    return render_template(template, code=code), code
 
 
 @app.errorhandler(403)
@@ -41,3 +57,8 @@ def server_error(e):
 @app.errorhandler(503)
 def transport_error(e):
     return error_render_template('error/503.html', e, 503)
+
+
+@app.errorhandler(Exception)
+def other_error(e):
+    return error_render_template('error/error.html', e, 0)

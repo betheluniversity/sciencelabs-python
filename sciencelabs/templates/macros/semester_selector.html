@@ -3,9 +3,13 @@
     <select id="semester-select" class="custom-select">
         {% for semester in session['SEMESTER-LIST'] %}
             {% if semester['id'] == session['SELECTED-SEMESTER'] %}
-                <option selected value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                <option selected value="{{ semester['id'] }}">
+                    {{ '{0} {1}'.format(semester['term'], semester['year']) }}
+                </option>
             {% else %}
-                <option value="{{ semester['id'] }}">{{ semester['term'] }} {{ semester['year'] }}</option>
+                <option value="{{ semester['id'] }}">
+                    {{ '{0} {1}'.format(semester['term'], semester['year']) }}
+                </option>
             {% endif %}
         {% endfor %}
     </select>
@@ -46,8 +50,9 @@
                         var lab_base_url = "{{ lab_base_url }}";
                         if( lab_base_url == "/")
                             lab_base_url = '';
-
                         window.location.replace(lab_base_url + "/report/month/" + year + '/' + month);
+                        // TODO Use below when testing locally
+                        {#window.location.repeat("/report/month/" + year + "/" + month);#}
                     }
                     else
                     {

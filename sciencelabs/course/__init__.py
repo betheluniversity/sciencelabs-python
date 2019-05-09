@@ -22,7 +22,19 @@ class CourseView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        course_info = self.course.get_course_info()
+        active_coursecodes = self.course.get_active_coursecode()
+        cc_str = ''
+        for coursecodes in active_coursecodes:
+            cc_str += '{0}{1} ({2}); '.format(coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
+        semester = self.schedule.get_active_semester()
+
         return render_template('course/base.html', **locals())
+
+    # This route exists in case a user deletes the "admin" part of the course url - redirects back to base page
+    @route('/')
+    def course_redirect(self):
+        return redirect(url_for('CourseView:index'))
 
     @route('<int:course_id>')
     def view_course(self, course_id):
@@ -30,16 +42,6 @@ class CourseView(FlaskView):
 
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
-
-    def load_course_table(self):
-        course_info = self.course.get_course_info()
-        active_coursecodes = self.course.get_active_coursecode()
-        cc_str = ''
-        for coursecodes in active_coursecodes:
-            cc_str += '%s%s (%s); ' % (coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
-        semester = self.schedule.get_active_semester()
-
-        return render_template('course/course_table.html', **locals())
 
     @route("/submit/", methods=['POST'])
     def submit(self):
@@ -50,17 +52,17 @@ class CourseView(FlaskView):
         course_list = course_string.split(";")
         for course in course_list:
             course_code = course.split(" ")[0]
-            number = self.dept_length(course_code)
+            number = self._dept_length(course_code)
             cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
             course_info = self.wsapi.get_course_info(course[:number], course[number:])
             if cc_info and course_info:
-                self.handle_coursecode(cc_info[0])
+                self._handle_coursecode(cc_info[0])
                 for info in course_info:
-                    self.handle_course(course_info[info])
+                    self._handle_course(course_info[info])
 
         return redirect(url_for('CourseView:index'))
 
-    def dept_length(self, course_string):
+    def _dept_length(self, course_string):
         count = 0
         for character in course_string:
             if character.isalpha():
@@ -69,7 +71,7 @@ class CourseView(FlaskView):
                 break
         return count
 
-    def handle_coursecode(self, info):
+    def _handle_coursecode(self, info):
         does_exist = self.course.check_for_existing_coursecode(info)
         if does_exist:
             self.course.check_if_existing_coursecode_is_active(info)
@@ -78,7 +80,7 @@ class CourseView(FlaskView):
             self.course.create_coursecode(info)
             self.slc.set_alert('success', 'Course Code created successfully!')
 
-    def handle_course(self, info):
+    def _handle_course(self, info):
         does_exist = self.course.check_for_existing_course(info)
         if not does_exist:
             self.course.create_course(info)
@@ -99,6 +101,10 @@ class CourseView(FlaskView):
                     count += 1
                 self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
             self.course.delete_course(course_table, user_table)
-        self.slc.set_alert('success', 'Course deleted successfully!')
+        self.slc.set_alert('success',
+                           '{0}{1} - {2} (Section {3}) deleted successfully!'.format(course_table.dept,
+                                                                                     course_table.course_num,
+                                                                                     course_table.title,
+                                                                                     course_table.section))
 
         return redirect(url_for('CourseView:index'))
