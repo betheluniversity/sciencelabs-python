@@ -100,11 +100,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_StudentReport'.format(term, year, lab_acronym)
 
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
@@ -173,11 +173,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_TermReport'.format(term, year, lab_acronym)
 
         my_list = [['Schedule Statistics for Closed Sessions']]
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance',
@@ -316,12 +316,12 @@ class ReportView(FlaskView):
         else:
             term = 'Summer'
         term_abbr = term[:2].upper()
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_SummaryReport'.format(term_abbr, year, lab_acronym, selected_month)
 
         my_list = [['Schedule Name', 'DOW', 'Scheduled Time', 'Total Attendance', '% Total']]
 
@@ -380,12 +380,12 @@ class ReportView(FlaskView):
         else:
             term = 'Summer'
         term_abbr = term[:2].upper()
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
         selected_month = self.base.months[month - 1]
 
-        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab, selected_month)
+        csv_name = '{0}{1}_{2}_{3}_DetailReport'.format(term_abbr, year, lab_acronym, selected_month)
 
         my_list = [['Name', 'Date', 'DOW', 'Scheduled Time', 'Total Attendance']]
 
@@ -422,11 +422,11 @@ class ReportView(FlaskView):
     def export_cumulative_csv(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}_CumulativeAttendance'.format(lab)
+        csv_name = '{0}_CumulativeAttendance'.format(lab_acronym)
 
         my_list = self._build_cumulative_list()
 
@@ -554,6 +554,51 @@ class ReportView(FlaskView):
 
         return my_list
 
+    @route('/enrollment')
+    def enrollment(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        month = self._get_selected_month()
+        year = sem.year
+
+        semesters_and_attendance = self.get_enrollment_data()
+
+        return render_template('reports/enrollment.html', **locals())
+
+    def export_enrollment_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        lab_acronym = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab_acronym += letter[0]
+
+        csv_name = '{0}_EnrollmentVsAttendance'.format(lab_acronym)
+
+        data = [['Semester', 'Total', 'Unique', 'Enrolled', 'Percent']]
+
+        semesters_and_attendance = self.get_enrollment_data()
+
+        for semester, attendance_info in semesters_and_attendance.items():
+            data.append(['{0} {1}'.format(semester.term, semester.year),
+                         attendance_info['totalAttendance'],
+                         attendance_info['uniqueAttendance'],
+                         attendance_info['enrolled'],
+                         attendance_info['percent']])
+
+        return self.export_csv(data, csv_name)
+
+    def get_enrollment_data(self):
+        semesters = self.schedule.get_semesters()
+        semesters_and_attendance = {}
+        for semester in semesters:
+            semesters_and_attendance[semester] = {}
+            semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
+            semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
+            semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
+            semesters_and_attendance[semester]['percent'] = '{0}%'.format(round((semesters_and_attendance[semester]['uniqueAttendance'] /semesters_and_attendance[semester]['enrolled']) * 100, 1) if semesters_and_attendance[semester]['enrolled'] > 0 else 0)
+        return semesters_and_attendance
+
     @route('/session')
     def session(self):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
@@ -604,11 +649,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionReport'.format(term, year, lab_acronym)
 
         my_list = [['Date', 'Name', 'DOW', 'Start Time', 'End Time', 'Room', 'Total Attendance', 'Comments']]
 
@@ -671,6 +716,88 @@ class ReportView(FlaskView):
 
         return render_template('reports/course.html', **locals())
 
+    def export_course_csv(self):
+        ##### Initial CSV stuff #####
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        lab_acronym = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab_acronym += letter[0]
+        csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab_acronym)
+
+        csv_data = []
+        csv_data.append(['Course', 'Section', 'Professor', 'Total Attendance', 'Unique Attendance', '% of Lab Attendance'])
+
+        ##### Gathering data #####
+        # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
+        if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES'] \
+                or (
+                'ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+
+            course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+            course_viewer_info = None
+
+        else:  # They must be a professor
+            prof = self.user.get_user_by_username(flask_session['USERNAME'])
+            course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
+            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'],
+                                                                              prof.id)
+
+        courses_and_attendance = {}
+        for course, course_user in course_info:
+            courses_and_attendance[course] = {}
+            courses_and_attendance[course]['user'] = course_user
+            courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
+        if course_viewer_info:
+            for course, course_user in course_viewer_info:
+                courses_and_attendance[course] = {}
+                courses_and_attendance[course]['user'] = course_user
+                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+
+        ##### Adding data to CSV #####
+        total_attendance = 0
+        total_unique_attendance = 0
+        for course, info in courses_and_attendance.items():
+            total_unique_attendance = total_unique_attendance + len(info['attendance'])
+            for attendees, attend in info['attendance']:
+                total_attendance = total_attendance + attend
+
+        for course, info in courses_and_attendance.items():
+            course_total_attendance = 0
+            for attendees, attend in info['attendance']:
+                course_total_attendance = course_total_attendance + attend
+            csv_data.append([course.title + " ({0}{1})".format(course.dept, course.course_num), course.section,
+                             "{0} {1}".format(info['user'].firstName, info['user'].lastName), course_total_attendance,
+                             len(info['attendance']),
+                             "{0}%".format(round((course_total_attendance/total_attendance)*100, 2))])
+
+        csv_data.append(['', '', 'Total', total_attendance, total_unique_attendance])
+
+        return self.export_csv(csv_data, csv_name)
+
+    def export_course_overview_csv(self):
+        self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
+
+        lab_acronym = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab_acronym += letter[0]
+        csv_name = '{0}_CourseOverviewReport'.format(lab_acronym)
+
+        data = [['Course', 'Section', 'Course Code', 'Professor', 'Enrolled']]
+
+        active_semester = self.schedule.get_active_semester()
+        current_courses = self.courses.get_semester_courses_with_section(active_semester.id)
+        courses_and_profs = {}
+        for course in current_courses:
+            courses_and_profs[course] = self.courses.get_profs_from_course(course.id)
+
+        for course, profs in courses_and_profs.items():
+            prof_list = ', '.join(profs)
+            data.append([course.title, course.section, '{0}{1}'.format(course.dept, course.course_num), prof_list,
+                         course.num_attendees])
+
+        return self.export_csv(data, csv_name)
+
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
@@ -703,9 +830,9 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
 
@@ -725,7 +852,7 @@ class ReportView(FlaskView):
 
         my_list.append(['', '', 'Total', total_attendance])
 
-        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab, csv_course_info)
+        csv_name = '{0}{1}_{2}_SessionAttendance_{3}'.format(term, year, lab_acronym, csv_course_info)
 
         return self.export_csv(my_list, csv_name)
 
@@ -735,11 +862,11 @@ class ReportView(FlaskView):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term = sem.term[:2]
         year = sem.year
-        lab = ''
+        lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
-            lab += letter[0]
+            lab_acronym += letter[0]
 
-        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab)
+        csv_name = '{0}{1}_{2}_SessionAttendance'.format(term, year, lab_acronym)
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 

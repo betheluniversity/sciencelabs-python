@@ -353,3 +353,9 @@ class Schedule:
             new_schedule_course = ScheduleCourseCodes_Table(schedule_id=schedule_id, coursecode_id=course)
             db_session.add(new_schedule_course)
         db_session.commit()
+
+    def get_total_semester_attendance(self, semester_id):
+        semester_student_sessions = db_session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == semester_id).all()
+        return len(semester_student_sessions)

@@ -224,6 +224,7 @@
     {% endif %}
     <script>
         $(document).ready( function () {
+
             var table = $('#table').DataTable({
                 "ordering": false,
                 "bPaginate": false,
@@ -231,6 +232,14 @@
                 "bFilter": false,
                 "bInfo": false
             });
+
+            var newTable = $('#new-table').DataTable({
+                "ordering": false,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false
+            })
         });
     </script>
 {% endblock %}

@@ -19,7 +19,12 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <h3>Active Courses for {{ semester.term }} {{ semester.year }}</h3>
+                        <div class="header card">
+                            <div class="card-body btn-group">
+                                <p class="no-margin-padding">Active Courses for {{ semester.term }} {{ semester.year }}</p>
+                                <a href="{{ url_for('ReportView:export_course_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% if courses_and_attendance %}
@@ -78,8 +83,17 @@
                                         {% if total_unique_attendance.append(total_unique_attendance.pop() + (attendance|length)) %}{% endif %}
                                     </td>
                                     <td>
-                                        {% if total_attendance[0] != 0 %}
-                                            {{ ((total_attendees[0]/total_attendance[0])*100)|round(2) }}%
+                                        {% if course.num_attendees %}
+                                            {{ course.num_attendees }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if course.num_attendees %}
+                                            {{ (((attendance|length)/course.num_attendees)*100)|round(2) }}%
+                                        {% else %}
+                                            N/A
                                         {% endif %}
                                     </td>
                                     <td>
@@ -109,8 +123,8 @@
                         All {{ lab_title }} course reports for the term given at the top of the page are
                         listed along with their total attendance. Total attendance gives the total number of visits for
                         the course. Unique attendance gives the number of unique students who have attended the help
-                        session. Percentage gives the percentage of a specific course attendance out of all attendance
-                        for all {{ lab_title }} courses.
+                        session. Percentage gives the percentage of students in the course that have visited
+                        {{ lab_title }}, calculated by (Unq/Enr)&times;100.
                     </p>
                     <p class="card-text">
                         To <strong>search</strong> for a course report, type any portion of the course number, course
@@ -153,6 +167,7 @@
 
             var table = $('#table').DataTable( {
                 "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
