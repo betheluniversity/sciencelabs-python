@@ -562,13 +562,7 @@ class ReportView(FlaskView):
         month = self._get_selected_month()
         year = sem.year
 
-        semesters = self.schedule.get_semesters()
-        semesters_and_attendance = {}
-        for semester in semesters:
-            semesters_and_attendance[semester] = {}
-            semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
-            semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
-            semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
+        semesters_and_attendance = self.get_enrollment_data()
 
         return render_template('reports/enrollment.html', **locals())
 
@@ -583,6 +577,18 @@ class ReportView(FlaskView):
 
         data = [['Semester', 'Total', 'Unique', 'Enrolled', 'Percent']]
 
+        semesters_and_attendance = self.get_enrollment_data()
+
+        for semester, attendance_info in semesters_and_attendance.items():
+            data.append(['{0} {1}'.format(semester.term, semester.year),
+                         attendance_info['totalAttendance'],
+                         attendance_info['uniqueAttendance'],
+                         attendance_info['enrolled'],
+                         attendance_info['percent']])
+
+        return self.export_csv(data, csv_name)
+
+    def get_enrollment_data(self):
         semesters = self.schedule.get_semesters()
         semesters_and_attendance = {}
         for semester in semesters:
@@ -590,13 +596,8 @@ class ReportView(FlaskView):
             semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
             semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
             semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
-
-        for semester, attendance_info in semesters_and_attendance.items():
-            data.append(['{0} {1}'.format(semester.term, semester.year), attendance_info['totalAttendance'],
-                         attendance_info['uniqueAttendance'], attendance_info['enrolled'],
-                         '{0}%'.format(round((attendance_info['uniqueAttendance']/attendance_info['enrolled'])*100, 1) if attendance_info['enrolled'] > 0 else 0)])
-
-        return self.export_csv(data, csv_name)
+            semesters_and_attendance[semester]['percent'] = '{0}%'.format(round((semesters_and_attendance[semester]['uniqueAttendance'] /semesters_and_attendance[semester]['enrolled']) * 100, 1) if semesters_and_attendance[semester]['enrolled'] > 0 else 0)
+        return semesters_and_attendance
 
     @route('/session')
     def session(self):

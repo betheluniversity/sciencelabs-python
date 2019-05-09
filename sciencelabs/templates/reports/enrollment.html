@@ -31,13 +31,7 @@
                             <td>{{ attendance_info['totalAttendance'] }}</td>
                             <td>{{ attendance_info['uniqueAttendance'] }}</td>
                             <td>{{ attendance_info['enrolled'] }}</td>
-                            <td>
-                                {% if attendance_info['enrolled'] > 0 %}
-                                    {{ (attendance_info['uniqueAttendance'] / attendance_info['enrolled'] * 100)|round(1) }}%
-                                {% else %}
-                                    0.0%
-                                {% endif %}
-                            </td>
+                            <td>{{ attendance_info['percent'] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
