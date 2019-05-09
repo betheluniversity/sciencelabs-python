@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body btn-group">
-            <p class="no-margin-padding">{{ lab_title }} Enrollment Report</p>
+            <p class="no-margin-padding">{{ lab_title }} Enrollment vs. Attendance Report</p>
             <a href="{{ url_for('ReportView:export_enrollment_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
         </div>
     </div>
@@ -47,24 +47,28 @@
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        This page contains stats for {{ lab_title }} course enrollment by semester.
+                        This page contains stats for {{ lab_title }} attendance related to corresponding course
+                        enrollment, by semester.
                     </p>
                     <p class="card-text">
-                        <strong>Total</strong> is the total attendance for all sessions held that semester.
+                        <strong>Total</strong> is the total attendance for all sessions held during the given semester.
                     </p>
                     <p class="card-text">
-                        <strong>Unique</strong> is the total number of unique students who visited {{ lab_title }} that
-                        semester. A student is counted as unique for each class they visit a session for.
+                        <strong>Unique</strong> is the total number of unique students who visited {{ lab_title }}
+                        during the given semester. If a student came to a session and received help for multiple
+                        courses, they will be counted once for each course served. (Students will be counted once for
+                        each course, in the "Enrolled" column, so this method of counting serves to make the comparison
+                        of these columns correct.
                     </p>
                     <p class="card-text">
-                        <strong>Enrolled</strong> is the total number of students enrolled in courses that
-                        {{ lab_title }} held sessions for that semester. We did not track this data before Spring 2015,
-                        so for those semesters this column will be 0. This will also cause the Percent column to be 0.
+                        <strong>Enrolled</strong> is the total number of students enrolled in courses served by
+                        {{ lab_title }} during the given semester. Prior to Spring 2015, enrollment data was not
+                        recorded, so enrollment and percent values for these semesters will be zero. If a student took
+                        multiple courses during a semester, they will be counted once for each course.
                     </p>
                     <p class="card-text">
-                        <strong>Percent</strong> is calculated by (unique/enrolled)&times;100. It is the percent of students
-                        enrolled in {{ lab_title }} courses that went to at least one session for each course they were
-                        enrolled in.
+                        <strong>Percent</strong> is calculated as (unique/enrolled)&times;100, giving the percent of students
+                        enrolled in {{ lab_title }} courses that went to at least one session.
                     </p>
                 </div>
             </div>
