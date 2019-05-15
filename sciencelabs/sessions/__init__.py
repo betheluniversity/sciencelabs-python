@@ -567,8 +567,10 @@ class SessionView(FlaskView):
 
     @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])
     def tutor_sign_out(self, session_id, tutor_id, session_hash):
-        self.session.tutor_sign_out(session_id, tutor_id)
-        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        result = self.session.tutor_sign_out(session_id, tutor_id)
+        if not result:
+            self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/verify-scanner', methods=['post'])
     def verify_scanner(self):

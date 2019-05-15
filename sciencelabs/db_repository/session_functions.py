@@ -528,12 +528,15 @@ class Session:
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
-            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).one()
+            .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).one_or_none()
+        if not tutor_session:
+            return False
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
         self.log_session('{0} {1} signed out as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
                                                                        datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        return True
 
     def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
