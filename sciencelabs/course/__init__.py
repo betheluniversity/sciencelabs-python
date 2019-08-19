@@ -56,7 +56,7 @@ class CourseView(FlaskView):
             cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
             course_info = self.wsapi.get_course_info(course[:number], course[number:])
             if cc_info and course_info:
-                self._handle_coursecode(cc_info[0])
+                self._handle_coursecode(cc_info['0'])
                 for info in course_info:
                     self._handle_course(course_info[info])
 
