@@ -43,3 +43,13 @@ class View(FlaskView):
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to change semester: {0}'.format(str(error)))
             return error
+
+    @route("/metrics")
+    def metrics(self):
+        prometheus_data = {
+            'site is up': "Yes",
+            'db connections': "There are some",
+            'other data': "Maybe"
+        }
+        return render_template('metrics.html', **locals())
+
