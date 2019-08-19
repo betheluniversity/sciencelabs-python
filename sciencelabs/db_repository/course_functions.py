@@ -212,7 +212,7 @@ class Course:
         semester_id = None
         semester_list = flask_session['SEMESTER-LIST']
         for semesters in semester_list:
-            if semesters.year == year and semesters.term == term:
+            if semesters['year'] == year and semesters.term == term:
                 semester_id = semesters.id
 
         new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
