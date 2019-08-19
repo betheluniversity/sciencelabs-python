@@ -50,15 +50,19 @@ class CourseView(FlaskView):
         form = request.form
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
-        for course in course_list:
-            course_code = course.split(" ")[0]
-            number = self._dept_length(course_code)
-            cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
-            course_info = self.wsapi.get_course_info(course[:number], course[number:])
-            if cc_info and course_info:
-                self._handle_coursecode(cc_info['0'])
-                for info in course_info:
-                    self._handle_course(course_info[info])
+        try:
+            for course in course_list:
+                course_code = course.split(" ")[0]
+                number = self._dept_length(course_code)
+                cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
+                course_info = self.wsapi.get_course_info(course[:number], course[number:])
+                if cc_info and course_info:
+                    self._handle_coursecode(cc_info['0'])
+                    for info in course_info:
+                        self._handle_course(course_info[info])
+            self.slc.set_alert('success', 'Courses Submitted Successfully!')
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to add courses: ' + str(error))
 
         return redirect(url_for('CourseView:index'))
 
@@ -75,18 +79,13 @@ class CourseView(FlaskView):
         does_exist = self.course.check_for_existing_coursecode(info)
         if does_exist:
             self.course.check_if_existing_coursecode_is_active(info)
-            self.slc.set_alert('success', 'Existing Course Code activated!')
         else:
             self.course.create_coursecode(info)
-            self.slc.set_alert('success', 'Course Code created successfully!')
 
     def _handle_course(self, info):
         does_exist = self.course.check_for_existing_course(info)
         if not does_exist:
             self.course.create_course(info)
-            self.slc.set_alert('success', 'Course created successfully!')
-        else:
-            self.slc.set_alert('danger', 'Course already exists so doing nothing.')
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
