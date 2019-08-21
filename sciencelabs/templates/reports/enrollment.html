@@ -27,7 +27,7 @@
                 <tbody>
                     {% for semester, attendance_info in semesters_and_attendance.items() %}
                         <tr>
-                            <td class="year-range">{{ semester.term }} {{ semester.year }}</td>
+                            <td class="no-space">{{ semester.term }} {{ semester.year }}</td>
                             <td>{{ attendance_info['totalAttendance'] }}</td>
                             <td>{{ attendance_info['uniqueAttendance'] }}</td>
                             <td>{{ attendance_info['enrolled'] }}</td>

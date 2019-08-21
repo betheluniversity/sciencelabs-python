@@ -26,7 +26,13 @@ class UsersView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        users_info = self.user.get_user_info()
+        active_users = self.user.get_all_current_users()
+        users_info = {}
+        for user in active_users:
+            user_roles = self.user.get_user_roles(user.id)
+            role_names = [role.name for role in user_roles]
+            roles = ", ".join(role_names) if role_names else ''
+            users_info[user] = roles
         return render_template('users/users.html', **locals())
 
     @route('/search')
@@ -66,7 +72,8 @@ class UsersView(FlaskView):
         if existing_user:  # User exists in system
             if existing_user.deletedAt:  # Has been deactivated in the past
                 self.user.activate_existing_user(username)
-                message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
+                self.slc.set_alert('success', 'This user has been activated successfully! You can now edit their roles here.')
+                return redirect(url_for('UsersView:edit_user', user_id=existing_user.id))
             else:  # Currently active
                 message = "This user already exists in the system and is activated."
         return render_template('users/select_user_roles.html', **locals())
