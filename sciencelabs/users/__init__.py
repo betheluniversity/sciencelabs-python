@@ -72,7 +72,8 @@ class UsersView(FlaskView):
         if existing_user:  # User exists in system
             if existing_user.deletedAt:  # Has been deactivated in the past
                 self.user.activate_existing_user(username)
-                message = "This user has been deactivated in the past, but now they are reactivated with their same roles."
+                self.slc.set_alert('success', 'This user has been activated successfully! You can now edit their roles here.')
+                return redirect(url_for('UsersView:edit_user', user_id=existing_user.id))
             else:  # Currently active
                 message = "This user already exists in the system and is activated."
         return render_template('users/select_user_roles.html', **locals())
