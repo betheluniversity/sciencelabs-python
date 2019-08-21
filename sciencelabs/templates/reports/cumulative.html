@@ -64,7 +64,7 @@
         {% for row in cumulative_list[1:(cumulative_list|length - 1)] %}
             <tr>
                 {% set year = row[0][:4] %}
-                <td class="year-range">{{ row[0] }}</td>
+                <td class="no-space">{{ row[0] }}</td>
                 <td>
                     {% if row[1] <= 0 %}
                         {{ row[1] }}

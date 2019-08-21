@@ -207,7 +207,7 @@ table {
     border: 1px solid #ddd !important;
 }
 
-td.year-range{
+td.no-space{
     white-space: nowrap;
 }
 

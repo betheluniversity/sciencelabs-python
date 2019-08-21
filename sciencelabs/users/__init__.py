@@ -26,7 +26,13 @@ class UsersView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        users_info = self.user.get_user_info()
+        active_users = self.user.get_all_current_users()
+        users_info = {}
+        for user in active_users:
+            user_roles = self.user.get_user_roles(user.id)
+            role_names = [role.name for role in user_roles]
+            roles = ", ".join(role_names) if role_names else ''
+            users_info[user] = roles
         return render_template('users/users.html', **locals())
 
     @route('/search')

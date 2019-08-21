@@ -15,7 +15,6 @@
                 <table id="table"  class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Role Sort</th>
                             <th data-toggle="tooltip" data-placement="top" title="User Last Name">Last</th>
                             <th data-toggle="tooltip" data-placement="top" title="User First Name">First</th>
                             <th data-toggle="tooltip" data-placement="top" title="User Email">Email</th>
@@ -25,29 +24,26 @@
                             <th>✓</th>
                         </tr>
                         <tr>
-                            <th colspan="6"></th>
+                            <th colspan="5"></th>
                             <th colspan="2">
                                 <button id="deactivate-users" type="button" class="btn btn-primary hover-bright">Deactivate</button>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user, role in users_info %}
+                        {% for user, roles in users_info.items() %}
                             <tr>
-                                <td>
-                                    {{ role.sort }}
-                                </td>
-                                <td>
+                                <td class="no-space">
                                     {{ user.lastName }}
                                 </td>
-                                <td>
+                                <td class="no-space">
                                     {{ user.firstName }}
                                 </td>
-                                <td>
+                                <td class="no-space">
                                     {{ user.email }}
                                 </td>
                                 <td>
-                                    {{ role.name }}
+                                    {{ roles }}
                                 </td>
                                 <td>
                                     {% if session['ADMIN-VIEWER'] or user.username == session['USERNAME'] %}
@@ -111,10 +107,9 @@
             });
 
             var table = $('#table').DataTable( {
-                "aaSorting": [[0, 'desc'], [1, 'asc']],
+                "aaSorting": [[0, 'asc']],
 
                 "aoColumns": [
-                    { "orderSequence": [ null ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
@@ -122,10 +117,6 @@
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
-                ],
-
-                "columnDefs": [
-                    {"visible": false, "targets": 0}
                 ],
 
                 "bPaginate": false,
