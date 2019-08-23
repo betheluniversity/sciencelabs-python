@@ -196,6 +196,12 @@ class User:
         return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
     def create_user(self, first_name, last_name, username, send_email):
+        existing_user = self.get_user_by_username(username)
+        if existing_user:
+            if existing_user.deletedAt:
+                existing_user.deletedAt = None
+                db_session.commit()
+            return existing_user
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
                               email='{0}@bethel.edu'.format(username), send_email=send_email, deletedAt=None)
         db_session.add(new_user)
@@ -529,35 +535,6 @@ class User:
             roles = db_session.query(user_role_Table.role_id).filter(user_role_Table.user_id == student.id).all()
             if len(roles) == 1: # This means that 'Student' is their only role
                 student.deletedAt = datetime.now()
-        db_session.commit()
-
-    def demote_tutors(self):
-        # This logic below updates lead tutor role to be a tutor role, if a lead tutor isn't also assigned the tutor role
-        leads = db_session.query(User_Table) \
-            .filter(User_Table.id == user_role_Table.user_id) \
-            .filter(user_role_Table.role_id == Role_Table.id) \
-            .filter(Role_Table.name == 'Lead Tutor') \
-            .filter(User_Table.deletedAt == None) \
-            .all()
-        for lead in leads:
-            roles = db_session.query(user_role_Table.user_id, user_role_Table.role_id).filter(
-                user_role_Table.user_id == lead.id).all()
-            role_list = []
-            for role in roles:
-                role_list.append(role[1])
-            if 40004 not in role_list:  # checks if tutor role is in the current list
-                db_session.query(user_role_Table).filter(user_role_Table.user_id == lead.id).filter(
-                    user_role_Table.role_id == 40003).update({'role_id': 40004})
-                db_session.commit()
-
-        # This logic below deletes all the Lead Tutors
-        lead_roles = db_session.query(user_role_Table) \
-            .filter(User_Table.id == user_role_Table.user_id) \
-            .filter(user_role_Table.role_id == Role_Table.id) \
-            .filter(Role_Table.name == 'Lead Tutor') \
-            .all()
-        for lead_role in lead_roles:
-            db_session.delete(lead_role)
         db_session.commit()
 
     def check_or_create_student_role(self, student_id):

@@ -3,7 +3,8 @@ from sqlalchemy import orm
 from flask import session as flask_session
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
-    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
+    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table, \
+    ScheduleCourseCodes_Table, SessionCourseCodes_Table
 
 
 class Course:
@@ -163,8 +164,16 @@ class Course:
         db_session.commit()
 
     def check_for_existing_course(self, c_info):
+        term, year, *rest = (c_info['term'].split('-')[0].split(' '))
+        semester_id = None
+        semester_list = flask_session['SEMESTER-LIST']
+        for semesters in semester_list:
+            if semesters['year'] == year and semesters['term'] == term:
+                semester_id = semesters['id']
+                break
         try:
             course = db_session.query(Course_Table)\
+                .filter(semester_id == Course_Table.semester_id)\
                 .filter(c_info['crn'] == Course_Table.crn)\
                 .filter(c_info['subject'] == Course_Table.dept)\
                 .filter(c_info['cNumber'] == Course_Table.course_num)\
@@ -182,7 +191,6 @@ class Course:
         return db_session.query(CourseCode_Table)\
             .filter(cc_info['subject'] == CourseCode_Table.dept)\
             .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-            .filter(cc_info['title'] == CourseCode_Table.courseName)\
             .one()
 
     def create_course(self, c_info):
@@ -206,14 +214,12 @@ class Course:
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
-        # TODO DON'T KNOW WHETHER TO CREATE IT OR NOT WHEN TERM/YEAR DOESN'T EXIST, RIGHT NOW WE ARE JUST CREATING IT
-        # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
-
         semester_id = None
         semester_list = flask_session['SEMESTER-LIST']
         for semesters in semester_list:
-            if semesters['year'] == year and semesters.term == term:
-                semester_id = semesters.id
+            if semesters['year'] == int(year) and semesters['term'] == term:
+                semester_id = semesters['id']
+                break
 
         new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
@@ -224,7 +230,7 @@ class Course:
         db_session.add(new_course)
         db_session.commit()
 
-        user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
+        user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one_or_none()
 
         if user:
             new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
@@ -306,3 +312,19 @@ class Course:
             enrolled = enrolled + course.num_attendees if course.num_attendees else enrolled
         return enrolled
 
+    def get_schedule_course_ids(self, schedule_id):
+        schedule_courses = db_session.query(ScheduleCourseCodes_Table)\
+            .filter(ScheduleCourseCodes_Table.schedule_id == schedule_id)\
+            .all()
+        schedule_course_ids = []
+        for course in schedule_courses:
+            schedule_course_ids.append(course.coursecode_id)
+        return schedule_course_ids
+
+    def get_session_course_ids(self, session_id):
+        session_courses = db_session.query(SessionCourseCodes_Table) \
+            .filter(SessionCourseCodes_Table.session_id == session_id).all()
+        session_course_ids = []
+        for course in session_courses:
+            session_course_ids.append(course.coursecode_id)
+        return session_course_ids

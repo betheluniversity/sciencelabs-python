@@ -45,6 +45,7 @@ class ScheduleView(FlaskView):
         active_semester = self.schedule.get_active_semester()
         schedule = self.schedule.get_schedule(schedule_id)
         course_list = self.course.get_semester_courses(active_semester.id)
+        schedule_course_ids = self.course.get_schedule_course_ids(schedule_id)
         lead_ids = self.schedule.get_scheduled_lead_ids(schedule_id)
         tutor_ids = self.schedule.get_scheduled_tutor_ids(schedule_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
