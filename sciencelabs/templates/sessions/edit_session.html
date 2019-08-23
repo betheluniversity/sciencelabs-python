@@ -87,7 +87,7 @@
                        value="{{ session_info.endTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
-        {{ macros.select_courses(course_list, session_course_ids) }}
+        {{ macros.select_courses(course_list, session_course_ids, False) }}
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="comments">Comments</label>

@@ -1,4 +1,4 @@
-{% macro select_courses(course_list, selected_course_ids) %}
+{% macro select_courses(course_list, selected_course_ids, create_page) %}
     <div class="form-row">
         <div class="form-group col-md-12">
             <button type="button" class="all blue btn btn-primary" id="all-courses">Select No Courses</button>
@@ -9,7 +9,7 @@
             {% for course in course_list %}
                 <div class="custom-control custom-checkbox display-inl-b">
                     <input name="courses" type="checkbox" class="custom-control-input" id="{{ course.courseName }}" value="{{ course.id }}"
-                            {{ 'checked' if course.id in selected_course_ids or selected_course_ids == 'all' }}>
+                            {{ 'checked' if course.id in selected_course_ids or create_page }}>
                     <label class="custom-control-label" for="{{ course.courseName }}">
                         {{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</label>
                 </div>
