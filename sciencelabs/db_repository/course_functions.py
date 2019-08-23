@@ -170,6 +170,7 @@ class Course:
         for semesters in semester_list:
             if semesters['year'] == year and semesters['term'] == term:
                 semester_id = semesters['id']
+                break
         try:
             course = db_session.query(Course_Table)\
                 .filter(semester_id == Course_Table.semester_id)\
@@ -218,6 +219,7 @@ class Course:
         for semesters in semester_list:
             if semesters['year'] == int(year) and semesters['term'] == term:
                 semester_id = semesters['id']
+                break
 
         new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
