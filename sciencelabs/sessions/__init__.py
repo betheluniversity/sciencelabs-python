@@ -572,6 +572,8 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
+    # Verifying here on the back end to hide the encoding for the id card numbers
+    # TODO: refactor to redirect from here instead of in the JS
     @route('/no-cas/verify-scanner', methods=['post'])
     def verify_scanner(self):
         form = request.form
