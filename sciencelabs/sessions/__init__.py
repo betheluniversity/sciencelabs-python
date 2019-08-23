@@ -83,7 +83,7 @@ class SessionView(FlaskView):
         for student in session_students:
             students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
         course_list = self.course.get_semester_courses(flask_session['SELECTED-SEMESTER'])
-        session_courses = self.session.get_session_courses(session_id)
+        session_course_ids = self.course.get_session_course_ids(session_id)
         return render_template('sessions/edit_session.html', **locals())
 
     @route('/attendance/edit/<int:student_id>/<int:session_id>')

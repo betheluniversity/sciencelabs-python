@@ -196,6 +196,12 @@ class User:
         return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
     def create_user(self, first_name, last_name, username, send_email):
+        existing_user = self.get_user_by_username(username)
+        if existing_user:
+            if existing_user.deletedAt:
+                existing_user.deletedAt = None
+                db_session.commit()
+            return existing_user
         new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
                               email='{0}@bethel.edu'.format(username), send_email=send_email, deletedAt=None)
         db_session.add(new_user)

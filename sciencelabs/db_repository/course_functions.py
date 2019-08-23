@@ -3,7 +3,8 @@ from sqlalchemy import orm
 from flask import session as flask_session
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
-    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table
+    Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table, \
+    ScheduleCourseCodes_Table, SessionCourseCodes_Table
 
 
 class Course:
@@ -309,3 +310,19 @@ class Course:
             enrolled = enrolled + course.num_attendees if course.num_attendees else enrolled
         return enrolled
 
+    def get_schedule_course_ids(self, schedule_id):
+        schedule_courses = db_session.query(ScheduleCourseCodes_Table)\
+            .filter(ScheduleCourseCodes_Table.schedule_id == schedule_id)\
+            .all()
+        schedule_course_ids = []
+        for course in schedule_courses:
+            schedule_course_ids.append(course.coursecode_id)
+        return schedule_course_ids
+
+    def get_session_course_ids(self, session_id):
+        session_courses = db_session.query(SessionCourseCodes_Table) \
+            .filter(SessionCourseCodes_Table.session_id == session_id).all()
+        session_course_ids = []
+        for course in session_courses:
+            session_course_ids.append(course.coursecode_id)
+        return session_course_ids

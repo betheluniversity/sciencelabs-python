@@ -56,7 +56,7 @@ class Role_Table(base):
 class ScheduleCourseCodes_Table(base):
     __tablename__ = 'ScheduleCourseCodes'
     schedule_id = Column(Integer, primary_key=True)
-    coursecode_id = Column(Integer)
+    coursecode_id = Column(Integer, primary_key=True)
 
 
 class Schedule_Table(base):
@@ -84,13 +84,13 @@ class Semester_Table(base):
 class SessionCourseCodes_Table(base):
     __tablename__ = 'SessionCourseCodes'
     session_id = Column(Integer, primary_key=True)
-    coursecode_id = Column(Integer)
+    coursecode_id = Column(Integer, primary_key=True)
 
 
 class SessionCourses_Table(base):
     __tablename__ = 'SessionCourses'
     studentsession_id = Column(Integer, primary_key=True)
-    course_id = Column(Integer)
+    course_id = Column(Integer, primary_key=True)
 
 
 class Session_Table(base):
