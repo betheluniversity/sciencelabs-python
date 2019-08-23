@@ -163,8 +163,15 @@ class Course:
         db_session.commit()
 
     def check_for_existing_course(self, c_info):
+        term, year, *rest = (c_info['term'].split('-')[0].split(' '))
+        semester_id = None
+        semester_list = flask_session['SEMESTER-LIST']
+        for semesters in semester_list:
+            if semesters['year'] == year and semesters['term'] == term:
+                semester_id = semesters['id']
         try:
             course = db_session.query(Course_Table)\
+                .filter(semester_id == Course_Table.semester_id)\
                 .filter(c_info['crn'] == Course_Table.crn)\
                 .filter(c_info['subject'] == Course_Table.dept)\
                 .filter(c_info['cNumber'] == Course_Table.course_num)\
@@ -182,7 +189,6 @@ class Course:
         return db_session.query(CourseCode_Table)\
             .filter(cc_info['subject'] == CourseCode_Table.dept)\
             .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-            .filter(cc_info['title'] == CourseCode_Table.courseName)\
             .one()
 
     def create_course(self, c_info):
@@ -206,14 +212,11 @@ class Course:
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
-        # TODO DON'T KNOW WHETHER TO CREATE IT OR NOT WHEN TERM/YEAR DOESN'T EXIST, RIGHT NOW WE ARE JUST CREATING IT
-        # TODO MAYBE JUST MAKE IT IF THE CLASS IS DURING THE CURRENT ACTIVE TERM/YEAR
-
         semester_id = None
         semester_list = flask_session['SEMESTER-LIST']
         for semesters in semester_list:
-            if semesters['year'] == year and semesters.term == term:
-                semester_id = semesters.id
+            if semesters['year'] == int(year) and semesters['term'] == term:
+                semester_id = semesters['id']
 
         new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
@@ -224,7 +227,7 @@ class Course:
         db_session.add(new_course)
         db_session.commit()
 
-        user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).first()
+        user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one_or_none()
 
         if user:
             new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)

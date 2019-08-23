@@ -55,14 +55,14 @@ class CourseView(FlaskView):
                 course_code = course.split(" ")[0]
                 number = self._dept_length(course_code)
                 cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
-                course_info = self.wsapi.get_course_info(course[:number], course[number:])
+                course_info = self.wsapi.get_course_info(course_code[:number], course_code[number:])
                 if cc_info and course_info:
                     self._handle_coursecode(cc_info['0'])
                     for info in course_info:
                         self._handle_course(course_info[info])
             self.slc.set_alert('success', 'Courses Submitted Successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Failed to add courses: ' + str(error))
+            self.slc.set_alert('danger', 'Course Submission Failed: ' + error)
 
         return redirect(url_for('CourseView:index'))
 
