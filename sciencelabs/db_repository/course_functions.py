@@ -191,6 +191,7 @@ class Course:
         return db_session.query(CourseCode_Table)\
             .filter(cc_info['subject'] == CourseCode_Table.dept)\
             .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
+            .filter(cc_info['title'] == CourseCode_Table.courseName)
             .one()
 
     def create_course(self, c_info):
