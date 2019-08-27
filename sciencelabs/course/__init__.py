@@ -62,7 +62,7 @@ class CourseView(FlaskView):
                         self._handle_course(course_info[info])
             self.slc.set_alert('success', 'Courses Submitted Successfully!')
         except Exception as error:
-            self.slc.set_alert('danger', 'Course Submission Failed: ' + error)
+            self.slc.set_alert('danger', 'Course Submission Failed: ' + str(error))
 
         return redirect(url_for('CourseView:index'))
 
