@@ -50,8 +50,8 @@ class CourseView(FlaskView):
         form = request.form
         course_string = form.get('potential_courses')
         course_list = course_string.split(";")
-        try:
-            for course in course_list:
+        for course in course_list:
+            try:
                 course_code = course.split(" ")[0]
                 number = self._dept_length(course_code)
                 cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
@@ -60,9 +60,9 @@ class CourseView(FlaskView):
                     self._handle_coursecode(cc_info['0'])
                     for info in course_info:
                         self._handle_course(course_info[info])
-            self.slc.set_alert('success', 'Courses Submitted Successfully!')
-        except Exception as error:
-            self.slc.set_alert('danger', 'Course Submission Failed: ' + str(error))
+                self.slc.set_alert('success', '{0} ({1}) Submitted Successfully!'.format(course_code, cc_info['0']['title']))
+            except Exception as error:
+                self.slc.set_alert('danger', '{0} ({1}) Submission Failed: {2}'.format(course_code, cc_info['0']['title'], error))
 
         return redirect(url_for('CourseView:index'))
 
