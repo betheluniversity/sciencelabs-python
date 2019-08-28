@@ -15,8 +15,8 @@ from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
-sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 if app.config['ENVIRON'] == 'prod':
+    sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
     from sciencelabs import error
 
 from sciencelabs.views import View
