@@ -43,7 +43,7 @@ class CourseView(FlaskView):
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
 
-    @route("/submit/", methods=['POST'])
+    @route("/submit/", methods=['POST', 'GET'])
     def submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
