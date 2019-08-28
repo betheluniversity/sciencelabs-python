@@ -75,7 +75,7 @@ class CourseView(FlaskView):
             except Exception as error:
                 self.slc.set_alert('danger', '{0} Failed: {1}'.format(course_code, error))
 
-        return redirect(url_for('CourseView:Index'))
+        return redirect(url_for('CourseView:index'))
 
     # @route("/submit/", methods=['POST'])
     # def submit(self):
