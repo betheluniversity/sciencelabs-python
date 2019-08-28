@@ -63,7 +63,7 @@ class CourseView(FlaskView):
 
                     if course_info:
                         course_code_entry = self.course.new_term_course_code(course_info)
-                        course_entry = self.course.new_term_course(course_info, course_code_entry)
+                        self.course.new_term_course(course_info, course_code_entry)
                         self.slc.set_alert('success', '{0} was submitted successfully!'.format(course_code))
 
                     else:

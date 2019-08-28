@@ -342,22 +342,20 @@ class Course:
             new_course_code = self.create_coursecode(course_info['0'])
             return new_course_code
 
-    def new_term_course(self, course_info, course_code):
+    def new_term_course(self, all_course_info, course_code):
         semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
-        existing_course = db_session.query(Course_Table)\
-                .filter(semester.id == Course_Table.semester_id)\
-                .filter(course_info['crn'] == Course_Table.crn)\
-                .filter(course_info['subject'] == Course_Table.dept)\
-                .filter(course_info['cNumber'] == Course_Table.course_num)\
-                .filter(course_info['section'] == Course_Table.section)\
-                .filter(course_info['meetingDay'] == Course_Table.meeting_day)\
-                .filter(course_info['title'] == Course_Table.title)\
-                .filter(course_info['enrolled'] == Course_Table.num_attendees)\
-                .filter(course_info['room'] == Course_Table.room)\
-            .one_or_none()
+        for course_info in all_course_info:
+            existing_course = db_session.query(Course_Table)\
+                    .filter(semester.id == Course_Table.semester_id)\
+                    .filter(course_info['crn'] == Course_Table.crn)\
+                    .filter(course_info['subject'] == Course_Table.dept)\
+                    .filter(course_info['cNumber'] == Course_Table.course_num)\
+                    .filter(course_info['section'] == Course_Table.section)\
+                    .filter(course_info['meetingDay'] == Course_Table.meeting_day)\
+                    .filter(course_info['title'] == Course_Table.title)\
+                    .filter(course_info['enrolled'] == Course_Table.num_attendees)\
+                    .filter(course_info['room'] == Course_Table.room)\
+                    .one_or_none()
 
-        if existing_course:
-            return existing_course
-
-        else:
-            self.create_course(course_info, course_code)
+            if not existing_course:
+                self.create_course(course_info, course_code)
