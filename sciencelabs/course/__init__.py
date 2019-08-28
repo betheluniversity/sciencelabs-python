@@ -56,24 +56,24 @@ class CourseView(FlaskView):
             course_dept = course_code[:split_number]
             course_num = course_code[split_number:]
 
-            try:
+            # try:
 
-                if self.wsapi.validate_course(course_dept, course_num):
-                    course_info = self.wsapi.get_course_info(course_dept, course_num)
+            if self.wsapi.validate_course(course_dept, course_num):
+                course_info = self.wsapi.get_course_info(course_dept, course_num)
 
-                    if course_info:
-                        course_code_entry = self.course.new_term_course_code(course_info)
-                        self.course.new_term_course(course_info, course_code_entry)
-                        self.slc.set_alert('success', '{0} was submitted successfully!'.format(course_code))
-
-                    else:
-                        self.slc.set_alert('danger', '{0} is not offered this semester.'.format(course_code))
+                if course_info:
+                    course_code_entry = self.course.new_term_course_code(course_info)
+                    self.course.new_term_course(course_info, course_code_entry)
+                    self.slc.set_alert('success', '{0} was submitted successfully!'.format(course_code))
 
                 else:
-                    self.slc.set_alert('danger', '{0} is an invalid course code.'.format(course_code))
+                    self.slc.set_alert('danger', '{0} is not offered this semester.'.format(course_code))
 
-            except Exception as error:
-                self.slc.set_alert('danger', '{0} Failed: {1}'.format(course_code, error))
+            else:
+                self.slc.set_alert('danger', '{0} is an invalid course code.'.format(course_code))
+
+            # except Exception as error:
+            #     self.slc.set_alert('danger', '{0} Failed: {1}'.format(course_code, error))
 
         return redirect(url_for('CourseView:index'))
 
