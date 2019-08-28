@@ -162,6 +162,7 @@ class Course:
                                           courseName=cc_info['title'])
         db_session.add(new_coursecode)
         db_session.commit()
+        return new_coursecode
 
     def check_for_existing_course(self, c_info):
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
@@ -194,8 +195,7 @@ class Course:
             .filter(cc_info['title'] == CourseCode_Table.courseName)\
             .one()
 
-    def create_course(self, c_info):
-        coursecode = self.get_coursecode(c_info)
+    def create_course(self, c_info, coursecode):
         begin_date = c_info['beginDate']
         begin_date = datetime.strptime(begin_date, '%m/%d/%Y')
         begin_date.strftime('%Y-%m-%d')
@@ -215,14 +215,9 @@ class Course:
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
-        semester_id = None
-        semester_list = flask_session['SEMESTER-LIST']
-        for semesters in semester_list:
-            if semesters['year'] == int(year) and semesters['term'] == term:
-                semester_id = semesters['id']
-                break
+        semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
-        new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
+        new_course = Course_Table(semester_id=semester.id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
                                   end_date=end_date, end_time=end_time,
@@ -329,3 +324,40 @@ class Course:
         for course in session_courses:
             session_course_ids.append(course.coursecode_id)
         return session_course_ids
+
+    def new_term_course_code(self, course_info):
+        existing_course_code = db_session.query(CourseCode_Table)\
+            .filter(CourseCode_Table.dept == course_info['0']['subject'])\
+            .filter(CourseCode_Table.courseNum == course_info['0']['cNumber'])\
+            .filter(CourseCode_Table.courseName == course_info['0']['title'])\
+            .one_or_none()
+
+        if existing_course_code:
+            if existing_course_code.active == 0:
+                existing_course_code.active = 1
+                db_session.commit()
+            return existing_course_code
+
+        else:
+            new_course_code = self.create_coursecode(course_info['0'])
+            return new_course_code
+
+    def new_term_course(self, course_info, course_code):
+        semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+        existing_course = db_session.query(Course_Table)\
+                .filter(semester.id == Course_Table.semester_id)\
+                .filter(course_info['crn'] == Course_Table.crn)\
+                .filter(course_info['subject'] == Course_Table.dept)\
+                .filter(course_info['cNumber'] == Course_Table.course_num)\
+                .filter(course_info['section'] == Course_Table.section)\
+                .filter(course_info['meetingDay'] == Course_Table.meeting_day)\
+                .filter(course_info['title'] == Course_Table.title)\
+                .filter(course_info['enrolled'] == Course_Table.num_attendees)\
+                .filter(course_info['room'] == Course_Table.room)\
+            .one_or_none()
+
+        if existing_course:
+            return existing_course
+
+        else:
+            self.create_course(course_info, course_code)

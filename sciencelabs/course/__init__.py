@@ -48,23 +48,52 @@ class CourseView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
-        course_string = form.get('potential_courses')
-        course_list = course_string.split(";")
-        for course in course_list:
-            try:
-                course_code = course.split(" ")[0]
-                number = self._dept_length(course_code)
-                cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
-                course_info = self.wsapi.get_course_info(course_code[:number], course_code[number:])
-                if cc_info and course_info:
-                    self._handle_coursecode(cc_info['0'])
-                    for info in course_info:
-                        self._handle_course(course_info[info])
-                self.slc.set_alert('success', '{0} ({1}) Submitted Successfully!'.format(course_code, cc_info['0']['title']))
-            except Exception as error:
-                self.slc.set_alert('danger', '{0} ({1}) Submission Failed: {2}'.format(course_code, cc_info['0']['title'], error))
+        all_courses_string = form.get('potential_courses')
+        all_courses_list = all_courses_string.split(';')
+        for course in all_courses_list:
+            course_code = course.split(" ")[0]
+            split_number = self._dept_length(course_code)
+            course_dept = course_code[:split_number]
+            course_num = course_code[split_number:]
 
-        return redirect(url_for('CourseView:index'))
+            if self.wsapi.validate_course(course_dept, course_num):
+                course_info = self.wsapi.get_course_info(course_dept, course_num)
+
+                if course_info:
+                    course_code_entry = self.course.new_term_course_code(course_info)
+                    course_entry = self.course.new_term_course(course_info, course_code_entry)
+                    self.slc.set_alert('success', '{0} was submitted successfully!'.format(course_code))
+
+                else:
+                    self.slc.set_alert('danger', '{0} is not offered this semester.'.format(course_code))
+
+            else:
+                self.slc.set_alert('danger', '{0} is an invalid course code.'.format(course_code))
+
+        return redirect(url_for('CourseView:Index'))
+
+    # @route("/submit/", methods=['POST'])
+    # def submit(self):
+    #     self.slc.check_roles_and_route(['Administrator'])
+    #
+    #     form = request.form
+    #     course_string = form.get('potential_courses')
+    #     course_list = course_string.split(";")
+    #     for course in course_list:
+    #         try:
+    #             course_code = course.split(" ")[0]
+    #             number = self._dept_length(course_code)
+    #             cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
+    #             course_info = self.wsapi.get_course_info(course_code[:number], course_code[number:])
+    #             if cc_info and course_info:
+    #                 self._handle_coursecode(cc_info['0'])
+    #                 for info in course_info:
+    #                     self._handle_course(course_info[info])
+    #             self.slc.set_alert('success', '{0} ({1}) Submitted Successfully!'.format(course_code, cc_info['0']['title']))
+    #         except Exception as error:
+    #             self.slc.set_alert('danger', '{0} ({1}) Submission Failed: {2}'.format(course_code, cc_info['0']['title'], error))
+    #
+    #     return redirect(url_for('CourseView:index'))
 
     def _dept_length(self, course_string):
         count = 0
@@ -75,17 +104,17 @@ class CourseView(FlaskView):
                 break
         return count
 
-    def _handle_coursecode(self, info):
-        does_exist = self.course.check_for_existing_coursecode(info)
-        if does_exist:
-            self.course.check_if_existing_coursecode_is_active(info)
-        else:
-            self.course.create_coursecode(info)
-
-    def _handle_course(self, info):
-        does_exist = self.course.check_for_existing_course(info)
-        if not does_exist:
-            self.course.create_course(info)
+    # def _handle_coursecode(self, info):
+    #     does_exist = self.course.check_for_existing_coursecode(info)
+    #     if does_exist:
+    #         self.course.check_if_existing_coursecode_is_active(info)
+    #     else:
+    #         self.course.create_coursecode(info)
+    #
+    # def _handle_course(self, info):
+    #     does_exist = self.course.check_for_existing_course(info)
+    #     if not does_exist:
+    #         self.course.create_course(info)
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
