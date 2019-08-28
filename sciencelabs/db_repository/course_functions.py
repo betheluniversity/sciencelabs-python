@@ -344,7 +344,7 @@ class Course:
 
     def new_term_course(self, all_course_info, course_code):
         semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
-        for course_info in all_course_info:
+        for key, course_info in all_course_info.items():
             existing_course = db_session.query(Course_Table)\
                     .filter(semester.id == Course_Table.semester_id)\
                     .filter(course_info['crn'] == Course_Table.crn)\
