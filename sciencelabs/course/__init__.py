@@ -22,7 +22,10 @@ class CourseView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        course_info = self.course.get_course_info()
+        courses = self.course.get_current_courses()
+        courses_and_profs = {}
+        for course in courses:
+            courses_and_profs[course] = self.course.get_course_profs(course.id)
         active_coursecodes = self.course.get_active_coursecode()
         cc_str = ''
         for coursecodes in active_coursecodes:

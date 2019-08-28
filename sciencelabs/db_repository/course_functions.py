@@ -359,3 +359,11 @@ class Course:
 
             if not existing_course:
                 self.create_course(course_info, course_code)
+
+    def get_current_courses(self):
+        return db_session.query(Course_Table).filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1).all()
+
+    def get_course_profs(self, course_id):
+        return db_session.query(User_Table).filter(User_Table.id == CourseProfessors_Table.professor_id)\
+            .filter(CourseProfessors_Table.course_id == course_id).all()
