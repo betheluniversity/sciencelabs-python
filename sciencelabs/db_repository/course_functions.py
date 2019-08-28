@@ -1,13 +1,17 @@
 from datetime import datetime, timedelta
 from sqlalchemy import orm
-from flask import session as flask_session
+from flask import session as flask_session, abort
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table, \
-    ScheduleCourseCodes_Table, SessionCourseCodes_Table
+    ScheduleCourseCodes_Table, SessionCourseCodes_Table, user_role_Table, Role_Table
+from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
 class Course:
+    def __init__(self):
+        self.wsapi = WSAPIController()
+
     def get_course_info(self):
         return (db_session.query(Course_Table, User_Table)
                 .filter(Course_Table.num_attendees)
@@ -127,75 +131,15 @@ class Course:
             .filter(CourseCode_Table.active == 1)\
             .all()
 
-    def check_for_existing_coursecode(self, cc_info):
-        try:
-            coursecode = db_session.query(CourseCode_Table)\
-                .filter(cc_info['subject'] == CourseCode_Table.dept)\
-                .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-                .filter(cc_info['title'] == CourseCode_Table.courseName)\
-                .one()
-            return True
-        except orm.exc.NoResultFound:
-            return False
-
-    def check_if_existing_coursecode_is_active(self, cc_info):
-        coursecode = db_session.query(CourseCode_Table)\
-                .filter(cc_info['subject'] == CourseCode_Table.dept)\
-                .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-                .filter(cc_info['title'] == CourseCode_Table.courseName)\
-                .one()
-        if coursecode.active == 0:
-            self.activate_existing_coursecode(cc_info)
-
-    def activate_existing_coursecode(self, cc_info):
-        coursecode = db_session.query(CourseCode_Table)\
-            .filter(cc_info['subject'] == CourseCode_Table.dept)\
-            .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-            .filter(cc_info['title'] == CourseCode_Table.courseName)\
-            .one()
-        coursecode.active = 1
-        db_session.commit()
-
     def create_coursecode(self, cc_info):
         new_coursecode = CourseCode_Table(dept=cc_info['subject'], courseNum=cc_info['cNumber'],
                                           underived=(cc_info['subject'] + cc_info['cNumber']), active=1,
                                           courseName=cc_info['title'])
         db_session.add(new_coursecode)
         db_session.commit()
+        return new_coursecode
 
-    def check_for_existing_course(self, c_info):
-        term, year, *rest = (c_info['term'].split('-')[0].split(' '))
-        semester_id = None
-        semester_list = flask_session['SEMESTER-LIST']
-        for semesters in semester_list:
-            if semesters['year'] == year and semesters['term'] == term:
-                semester_id = semesters['id']
-                break
-        try:
-            course = db_session.query(Course_Table)\
-                .filter(semester_id == Course_Table.semester_id)\
-                .filter(c_info['crn'] == Course_Table.crn)\
-                .filter(c_info['subject'] == Course_Table.dept)\
-                .filter(c_info['cNumber'] == Course_Table.course_num)\
-                .filter(c_info['section'] == Course_Table.section)\
-                .filter(c_info['meetingDay'] == Course_Table.meeting_day)\
-                .filter(c_info['title'] == Course_Table.title)\
-                .filter(c_info['enrolled'] == Course_Table.num_attendees)\
-                .filter(c_info['room'] == Course_Table.room)\
-                .one()
-            return True
-        except orm.exc.NoResultFound:
-            return False
-
-    def get_coursecode(self, cc_info):
-        return db_session.query(CourseCode_Table)\
-            .filter(cc_info['subject'] == CourseCode_Table.dept)\
-            .filter(cc_info['cNumber'] == CourseCode_Table.courseNum)\
-            .filter(cc_info['title'] == CourseCode_Table.courseName)\
-            .one()
-
-    def create_course(self, c_info):
-        coursecode = self.get_coursecode(c_info)
+    def create_course(self, c_info, coursecode):
         begin_date = c_info['beginDate']
         begin_date = datetime.strptime(begin_date, '%m/%d/%Y')
         begin_date.strftime('%Y-%m-%d')
@@ -215,14 +159,9 @@ class Course:
 
         term, year, *rest = (c_info['term'].split('-')[0].split(' '))
 
-        semester_id = None
-        semester_list = flask_session['SEMESTER-LIST']
-        for semesters in semester_list:
-            if semesters['year'] == int(year) and semesters['term'] == term:
-                semester_id = semesters['id']
-                break
+        semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
 
-        new_course = Course_Table(semester_id=semester_id, begin_date=begin_date,
+        new_course = Course_Table(semester_id=semester.id, begin_date=begin_date,
                                   begin_time=begin_time, course_num=c_info['cNumber'],
                                   section=c_info['section'], crn=c_info['crn'], dept=c_info['subject'],
                                   end_date=end_date, end_time=end_time,
@@ -233,10 +172,48 @@ class Course:
 
         user = db_session.query(User_Table).filter(User_Table.username == c_info['instructorUsername']).one_or_none()
 
-        if user:
-            new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
-            db_session.add(new_courseprofessor)
-            db_session.commit()
+        if not user:
+            user = self.create_new_prof(c_info['instructorUsername'])
+
+        new_courseprofessor = CourseProfessors_Table(course_id=new_course.id, professor_id=user.id)
+        db_session.add(new_courseprofessor)
+        db_session.commit()
+
+    def create_new_prof(self, prof_username):
+        wsapi_names = self.wsapi.get_names_from_username(prof_username)
+        if not wsapi_names:
+            abort(503)
+        names = wsapi_names['0']
+        first_name = names['firstName']
+        if names['prefFirstName']:
+            first_name = names['prefFirstName']
+        last_name = names['lastName']
+        prof = self.create_user(first_name, last_name, prof_username, 0)
+        self.set_user_roles(prof.id, ['Professor'])
+
+    def create_user(self, first_name, last_name, username, send_email):
+        new_user = User_Table(username=username, password=None, firstName=first_name, lastName=last_name,
+                              email='{0}@bethel.edu'.format(username), send_email=send_email, deletedAt=None)
+        db_session.add(new_user)
+        db_session.commit()
+        return new_user
+
+    def set_user_roles(self, user_id, roles):
+        for role in roles:
+            role_entry = self.get_role_by_name(role)
+            # Check if the user already has this role
+            role_exists = db_session.query(user_role_Table)\
+                .filter(user_role_Table.user_id == user_id)\
+                .filter(user_role_Table.role_id == role_entry.id)\
+                .one_or_none()
+            if role_exists:  # If they do, skip adding it again
+                continue
+            user_role = user_role_Table(user_id=user_id, role_id=role_entry.id)
+            db_session.add(user_role)
+        db_session.commit()
+
+    def get_role_by_name(self, role_name):
+        return db_session.query(Role_Table).filter(Role_Table.name == role_name).one()
 
     def deactivate_coursecode(self, dept, course_num):
         coursecode = db_session.query(CourseCode_Table) \
@@ -329,3 +306,46 @@ class Course:
         for course in session_courses:
             session_course_ids.append(course.coursecode_id)
         return session_course_ids
+
+    def new_term_course_code(self, course_info):
+        existing_course_code = db_session.query(CourseCode_Table)\
+            .filter(CourseCode_Table.dept == course_info['0']['subject'])\
+            .filter(CourseCode_Table.courseNum == course_info['0']['cNumber'])\
+            .filter(CourseCode_Table.courseName == course_info['0']['title'])\
+            .one_or_none()
+
+        if existing_course_code:
+            if existing_course_code.active == 0:
+                existing_course_code.active = 1
+                db_session.commit()
+            return existing_course_code
+
+        else:
+            new_course_code = self.create_coursecode(course_info['0'])
+            return new_course_code
+
+    def new_term_course(self, all_course_info, course_code):
+        semester = db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
+        for key, course_info in all_course_info.items():
+            existing_course = db_session.query(Course_Table)\
+                    .filter(semester.id == Course_Table.semester_id)\
+                    .filter(course_info['crn'] == Course_Table.crn)\
+                    .filter(course_info['subject'] == Course_Table.dept)\
+                    .filter(course_info['cNumber'] == Course_Table.course_num)\
+                    .filter(course_info['section'] == Course_Table.section)\
+                    .filter(course_info['meetingDay'] == Course_Table.meeting_day)\
+                    .filter(course_info['title'] == Course_Table.title)\
+                    .filter(course_info['enrolled'] == Course_Table.num_attendees)\
+                    .filter(course_info['room'] == Course_Table.room)\
+                    .one_or_none()
+
+            if not existing_course:
+                self.create_course(course_info, course_code)
+
+    def get_current_courses(self):
+        return db_session.query(Course_Table).filter(Course_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.active == 1).all()
+
+    def get_course_profs(self, course_id):
+        return db_session.query(User_Table).filter(User_Table.id == CourseProfessors_Table.professor_id)\
+            .filter(CourseProfessors_Table.course_id == course_id).all()

@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for course, user in course_info %}
+                            {% for course, profs in courses_and_profs.items() %}
                                 <tr>
                                     <td>
                                         <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title }}</a>
@@ -35,8 +35,10 @@
                                         {{ course.dept + course.course_num }}
                                     </td>
                                     <td>
-                                        {{ user.firstName }}
-                                        {{ user.lastName }}
+                                        {% for prof in profs %}
+                                            {{ prof.firstName }}
+                                            {{ prof.lastName }}
+                                        {% endfor %}
                                     </td>
                                     <td>
                                         {{ course.num_attendees }}

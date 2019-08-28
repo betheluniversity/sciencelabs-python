@@ -22,7 +22,10 @@ class CourseView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
-        course_info = self.course.get_course_info()
+        courses = self.course.get_current_courses()
+        courses_and_profs = {}
+        for course in courses:
+            courses_and_profs[course] = self.course.get_course_profs(course.id)
         active_coursecodes = self.course.get_active_coursecode()
         cc_str = ''
         for coursecodes in active_coursecodes:
@@ -43,26 +46,40 @@ class CourseView(FlaskView):
         course, user, semester = self.course.get_course(course_id)
         return render_template('course/view_course.html', **locals())
 
-    @route("/submit/", methods=['POST'])
+    @route("/submit/", methods=['POST', 'GET'])
     def submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
-        course_string = form.get('potential_courses')
-        course_list = course_string.split(";")
-        try:
-            for course in course_list:
-                course_code = course.split(" ")[0]
-                number = self._dept_length(course_code)
-                cc_info = self.wsapi.validate_course(course_code[:number], course_code[number:])
-                course_info = self.wsapi.get_course_info(course_code[:number], course_code[number:])
-                if cc_info and course_info:
-                    self._handle_coursecode(cc_info['0'])
-                    for info in course_info:
-                        self._handle_course(course_info[info])
-            self.slc.set_alert('success', 'Courses Submitted Successfully!')
-        except Exception as error:
-            self.slc.set_alert('danger', 'Course Submission Failed: ' + str(error))
+        all_courses_string = form.get('potential_courses')
+        all_courses_list = all_courses_string.split(';')
+        message = "These course codes were submitted successfully: "
+        for course in all_courses_list:
+            course_code = course.split(" ")[0]
+            split_number = self._dept_length(course_code)
+            course_dept = course_code[:split_number]
+            course_num = course_code[split_number:]
+
+            try:
+
+                if self.wsapi.validate_course(course_dept, course_num):
+                    course_info = self.wsapi.get_course_info(course_dept, course_num)
+
+                    if course_info:
+                        course_code_entry = self.course.new_term_course_code(course_info)
+                        self.course.new_term_course(course_info, course_code_entry)
+                        message += '{0} '.format(course_code)
+
+                #     else:
+                #         self.slc.set_alert('danger', '{0} is not offered this semester.'.format(course_code))
+                #
+                # else:
+                #     self.slc.set_alert('danger', '{0} is an invalid course code.'.format(course_code))
+
+            except Exception as error:
+                self.slc.set_alert('danger', '{0} Failed: {1}'.format(course_code, error))
+
+        self.slc.set_alert('success', message)
 
         return redirect(url_for('CourseView:index'))
 
@@ -74,18 +91,6 @@ class CourseView(FlaskView):
             else:
                 break
         return count
-
-    def _handle_coursecode(self, info):
-        does_exist = self.course.check_for_existing_coursecode(info)
-        if does_exist:
-            self.course.check_if_existing_coursecode_is_active(info)
-        else:
-            self.course.create_coursecode(info)
-
-    def _handle_course(self, info):
-        does_exist = self.course.check_for_existing_course(info)
-        if not does_exist:
-            self.course.create_course(info)
 
     @route("/delete/<int:course_id>")
     def delete_course(self, course_id):
