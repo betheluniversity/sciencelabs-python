@@ -84,7 +84,9 @@ class UsersView(FlaskView):
 
         form = request.form
         first_name = form.get('firstName')
+        first_name = first_name.strip()  # remove leading/trailing whitespace
         last_name = form.get('lastName')
+        last_name = last_name.strip()
         results = self.wsapi.get_username_from_name(first_name, last_name)
         return render_template('users/user_search_results.html', **locals())
 

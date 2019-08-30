@@ -395,6 +395,10 @@ ul.no-margin {
     display: inline-block;
 }
 
+.error-text {
+    color: red;
+}
+
 .full-width {
     width: 100%;
 }
