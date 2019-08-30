@@ -1,5 +1,10 @@
 <div class="row">
     {% if results %}
+        {% if "error" in results %}
+        <div class="col-md-12 user-search-results text-center">
+            <h4 class="error-text">{{ results }}</h4>
+        </div>
+        {% else %}
         <div class="col-md-12 user-search-results">
             {% for key, result in results.items() %}
                 {% if result['prefFirstName'] %}
@@ -17,6 +22,7 @@
                 </div>
             {% endfor %}
         </div>
+        {% endif %}
     {% elif results is iterable %}
         <div class="col-md-12 user-search-results text-center">
             <h4>User does not exist in Banner. Try again.</h4>
