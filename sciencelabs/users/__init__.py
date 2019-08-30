@@ -87,7 +87,10 @@ class UsersView(FlaskView):
         first_name = first_name.strip()  # remove leading/trailing whitespace
         last_name = form.get('lastName')
         last_name = last_name.strip()
-        results = self.wsapi.get_username_from_name(first_name, last_name)
+        try:
+            results = self.wsapi.get_username_from_name(first_name, last_name)
+        except Exception as error:
+            results = "An error occurred: {0}".format(error)
         return render_template('users/user_search_results.html', **locals())
 
     @route("/deactivate-single-user/<int:user_id>")
