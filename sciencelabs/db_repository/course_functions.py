@@ -215,30 +215,15 @@ class Course:
     def get_role_by_name(self, role_name):
         return db_session.query(Role_Table).filter(Role_Table.name == role_name).one()
 
-    def deactivate_coursecode(self, dept, course_num):
-        coursecode = db_session.query(CourseCode_Table) \
-            .filter(dept == CourseCode_Table.dept) \
-            .filter(course_num == CourseCode_Table.courseNum) \
-            .one()
-        coursecode.active = 0
-        db_session.commit()
-
-    def delete_course(self, course, user):
-
-        does_exist = self.check_for_existing_courseviewer(course.id)
-        if does_exist:
-            self.delete_courseviewer(course.id)
-
-        courseprofessor = db_session.query(CourseProfessors_Table)\
-            .filter(CourseProfessors_Table.course_id == course.id)\
-            .filter(CourseProfessors_Table.professor_id == user.id)\
-            .one()
-
-        db_session.delete(courseprofessor)
-        db_session.commit()
-
-        db_session.delete(course)
-        db_session.commit()
+    def delete_course(self, course_id):
+        course = db_session.query(Course_Table).filter(Course_Table.id == course_id).one_or_none()
+        if course:
+            course_profs = db_session.query(CourseProfessors_Table)\
+                .filter(CourseProfessors_Table.course_id == course_id).all()
+            for prof in course_profs:
+                db_session.delete(prof)
+            db_session.delete(course)
+            db_session.commit()
 
     def check_for_existing_courseviewer(self, course_id):
         try:

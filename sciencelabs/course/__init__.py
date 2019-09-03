@@ -96,19 +96,11 @@ class CourseView(FlaskView):
     def delete_course(self, course_id):
         self.slc.check_roles_and_route(['Administrator'])
 
-        course_table, user_table, semester_table = self.course.get_course(course_id)
-        if course_table:
-            course_info = self.course.get_course_info()
-            count = 0
-            for courses, user in course_info:
-                if courses.dept == course_table.dept and courses.course_num == course_table.course_num:
-                    count += 1
-                self.course.deactivate_coursecode(course_table.dept, course_table.course_num)
-            self.course.delete_course(course_table, user_table)
-        self.slc.set_alert('success',
-                           '{0}{1} - {2} (Section {3}) deleted successfully!'.format(course_table.dept,
-                                                                                     course_table.course_num,
-                                                                                     course_table.title,
-                                                                                     course_table.section))
+        try:
+            self.course.delete_course(course_id)
+            self.slc.set_alert('success', 'Course deleted successfully!')
+
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to delete course: {0}'.format(error))
 
         return redirect(url_for('CourseView:index'))
