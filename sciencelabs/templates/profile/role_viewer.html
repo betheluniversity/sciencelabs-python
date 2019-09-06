@@ -15,7 +15,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-role">Choose a role</label>
-                        <select data-placeholder="Choose a role ..." class="chosen form-control" id="choose-role" name="role">
+                        <select name="role" id="choose-role">
                             {% for role in role_list %}
                                 <option value="{{ role.id }}">{{ role.name }}</option>
                             {% endfor %}
@@ -46,10 +46,9 @@
         </div>
     </div>
     <script>
-        $(document).ready(function () {
-            $(".chosen").chosen({
-                display_disabled_options: true
-            });
+        var role = new SlimSelect({
+            select: "#choose-role",
+            placeholder: "Choose a role",
         });
 
         $(document).ready(function () {
