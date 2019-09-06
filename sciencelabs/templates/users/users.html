@@ -46,7 +46,9 @@
                                     {{ roles }}
                                 </td>
                                 <td>
-                                    {% if session['ADMIN-VIEWER'] or user.username == session['USERNAME'] %}
+                                    {% if user.username == session['USERNAME'] %}
+                                        Current User
+                                    {% elif session['ADMIN-VIEWER'] or user.username == session['USERNAME'] %}
                                         N/A
                                     {% else %}
                                         <a id="darkblue" href='{{ url_for('UsersView:act_as_user', user_id=user.id) }}' class="btn btn-primary">Act As User</a>
