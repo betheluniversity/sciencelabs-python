@@ -51,8 +51,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" required="required" id="choose-leads" multiple="true"
-                                data-placeholder="Choose lead tutors ..." name="choose-leads">
+                        <select required="required" id="choose-leads" multiple="true" name="choose-leads">
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead in tutor_names }}>{{ lead.firstName }} {{ lead.lastName }}</option>
                             {% endfor %}
@@ -62,8 +61,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <select class="chosen form-control" id="choose-tutors" multiple="true"
-                                data-placeholder="Choose tutors ..." name="choose-tutors">
+                        <select id="choose-tutors" multiple="true" name="choose-tutors">
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}" {{ 'selected' if tutor in tutor_names }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
@@ -117,16 +115,22 @@
     <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
     <script>
         $(document).ready(function () {
-
             var picker = new Pikaday({
                 field: document.getElementById('session-date'),
                 format: 'MM/DD/YYYY'
             });
+        });
 
-            $(".chosen").chosen({
-                display_disabled_options: true
-            });
+        var leads = new SlimSelect({
+            select: "#choose-leads",
+            placeholder: "Choose lead tutors...",
+            closeOnSelect: false
+        });
 
+        var tutors = new SlimSelect({
+            select: "#choose-tutors",
+            placeholder: "Choose tutors...",
+            closeOnSelect: false
         });
     </script>
 {% endblock %}
