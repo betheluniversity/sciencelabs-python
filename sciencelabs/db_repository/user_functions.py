@@ -428,9 +428,12 @@ class User:
         self.set_user_roles(username, ['Student'])
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+            if db_session.query(CourseCode_Table)\
+                    .filter(CourseCode_Table.courseNum == course['cNumber'])\
                     .filter(CourseCode_Table.dept == course['subject'])\
-                    .filter(CourseCode_Table.active == 1).one_or_none():
+                    .filter(CourseCode_Table.courseName == course['title'])\
+                    .filter(CourseCode_Table.active == 1)\
+                    .one_or_none():
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
                     .filter(Course_Table.semester_id == semester.id).one_or_none()
                 if course_entry:
