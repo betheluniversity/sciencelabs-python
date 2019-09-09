@@ -13,8 +13,7 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="choose-recipients">Recipients</label>
-                <select name="groups" class="chosen form-control" id="choose-recipients" multiple="true"
-                        data-placeholder="Choose recipients ...">
+                <select name="groups" id="choose-recipients" multiple="true"">
                     {% for role in role_list %}
                         <option value="{{ role.id }}" {{ 'selected' if role.id in groups }}>{{ role.name }}</option>
                     {% endfor %}
@@ -22,14 +21,13 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="subject">Subject</label>
-                <input name="subject" type="text" class="form-control" id="subject" autocomplete="off" value="{{ subject }}">
+                <input name="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off" value="{{ subject }}">
             </div>
         </div>
         <div class="form-row">
             <div id="cc-div" class="form-group col-md-12 chosen-container">
                 <label for="choose-cc">CC</label>
-                <select name="cc" class="chosen form-control" id="choose-cc" multiple="true"
-                        data-placeholder="Choose CC recipients ...">
+                <select name="cc" id="choose-cc" multiple="true">
                     {% for user in user_list %}
                         <option value="{{ user.id }}" {{ 'selected' if user.id in cc }}>{{ user.firstName }} {{ user.lastName }}</option>
                     {% endfor %}
@@ -39,8 +37,7 @@
         <div class="form-row">
             <div id="bcc-div" class="form-group col-md-12 chosen-container">
                 <label for="choose-bcc">BCC</label>
-                <select name="bcc" class="chosen form-control" id="choose-bcc" multiple="true"
-                        data-placeholder="Choose BBC recipients ...">
+                <select name="bcc" id="choose-bcc" multiple="true">
                     {% for user in user_list %}
                         <option value="{{ user.id }}" {{ 'selected' if user.id in bcc }}>{{ user.firstName }} {{ user.lastName }}</option>
                     {% endfor %}
@@ -61,12 +58,22 @@
     </form>
 
     <script>
-
-        $(document).ready(function () {
-            $(".chosen").chosen({
-                display_disabled_options: true
-            });
+        var recipients = new SlimSelect({
+            select: "#choose-recipients",
+            placeholder: "Choose recipients...",
+            closeOnSelect: false
         });
 
+        var cc = new SlimSelect({
+            select: '#choose-cc',
+            placeholder: 'Choose CC recipients...',
+            closeOnSelect: false
+        });
+
+        var bcc = new SlimSelect({
+            select: "#choose-bcc",
+            placeholder: 'Choose BCC recipients...',
+            closeOnSelect: false
+        });
     </script>
 {% endblock %}

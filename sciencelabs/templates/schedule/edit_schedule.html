@@ -53,8 +53,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
-                        <select class="chosen form-control" required="required" id="choose-leads" multiple="true" name="leads"
-                                data-placeholder="Choose lead tutors ...">
+                        <select required="required" id="choose-leads" multiple="true" name="leads">
                             {% for lead in lead_list %}
                                 <option value="{{ lead.id }}" {{ 'selected' if lead.id in lead_ids }}>{{ lead.firstName }} {{ lead.lastName }}</option>
                             {% endfor %}
@@ -64,8 +63,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-tutors">Tutors</label>
-                        <select class="chosen form-control" id="choose-tutors" name="tutors"
-                                multiple data-placeholder="Choose tutors ...">
+                        <select id="choose-tutors" name="tutors" multiple>
                             {% for tutor in tutor_list %}
                                 <option value="{{ tutor.id }}" {{ 'selected' if tutor.id in tutor_ids }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
                             {% endfor %}
@@ -100,10 +98,16 @@
         </div>
     </div>
     <script>
-        $(document).ready(function () {
-            $(".chosen").chosen({
-                display_disabled_options: true
-            });
+        var leads = new SlimSelect({
+            select: "#choose-leads",
+            placeholder: "Choose lead tutors...",
+            closeOnSelect: false
+        });
+
+        var tutors = new SlimSelect({
+            select: "#choose-tutors",
+            placeholder: "Choose tutors...",
+            closeOnSelect: false
         });
     </script>
 {% endblock %}
