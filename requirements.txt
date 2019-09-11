@@ -3,6 +3,7 @@ Flask-SQLAlchemy
 SQLAlchemy-migrate
 Flask
 raven
+sentry_sdk[flask]
 Flask-Classy
 Flask-Mail
 blinker
