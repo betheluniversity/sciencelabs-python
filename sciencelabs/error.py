@@ -1,5 +1,3 @@
-import time
-
 # Packages
 from flask import render_template
 from flask import session as flask_session
