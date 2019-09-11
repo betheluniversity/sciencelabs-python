@@ -3,7 +3,7 @@ import logging
 # Packages
 from flask import Flask, request
 from flask import session as flask_session
-from raven.contrib.flask import Sentry
+
 from datetime import datetime
 
 app = Flask(__name__)
@@ -17,6 +17,10 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 
 if app.config['ENVIRON'] == 'prod':
     sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
+if app.config['SENTRY_URL']:
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    sentry_sdk.init(dsn="https://441ac324abfe4e58911d03fd02170aac@sentry.io/1374674", integrations=[FlaskIntegration()])
     from sciencelabs import error
 
 from sciencelabs.views import View
