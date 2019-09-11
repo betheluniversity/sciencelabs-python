@@ -12,8 +12,8 @@
     <div class="row">
         <div class="col-md-8">
             <form action="{{ url_for('SessionView:save_tutor_edits') }}" method="post">
-                <input type="hidden" name="session-id" value="{{ session_id }}">
-                <input type="hidden" name="tutor-id" value="{{ tutor_id }}">
+                <input type="hidden" name="tutor-session-id" value="{{ tutor_session_id }}">
+                <input type="hidden" name="session-id" value="{{ tutor.sessionId }}">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="time-in">Time In</label>
