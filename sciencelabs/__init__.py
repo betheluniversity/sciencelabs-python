@@ -15,8 +15,6 @@ from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
-if app.config['ENVIRON'] == 'prod':
-    sentry = Sentry(app, dsn=app.config['SENTRY_URL'], logging=True, level=logging.INFO)
 if app.config['SENTRY_URL']:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
