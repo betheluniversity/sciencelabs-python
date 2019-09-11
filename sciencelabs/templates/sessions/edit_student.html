@@ -11,7 +11,8 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-8">
-            <form action="{{ url_for('SessionView:save_student_edits', session_id=session_id) }}" method="post">
+            <form action="{{ url_for('SessionView:save_student_edits', session_id=student.sessionId) }}" method="post">
+                <input type="hidden" name="student-session-id" value="{{ student_session_id }}">
                 <input type="hidden" class="form-control" name="student-id" value="{{ student_id }}">
                 <div class="form-row">
                     <div class="form-group col-md-6">
@@ -31,7 +32,7 @@
                         {% for course in student_courses %}
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
-                                        {{ 'checked' if course in session_courses }} value="{{ course.id }}" name="course">
+                                        {{ 'checked' if course.id in session_course_ids }} value="{{ course.id }}" name="course">
                                 <label class="custom-control-label" for="{{ course.id }}">{{ course.courseName }}</label>
                             </div>
                         {% endfor %}

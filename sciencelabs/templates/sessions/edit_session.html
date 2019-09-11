@@ -128,40 +128,40 @@
                 <th></th>
             </thead>
             <tbody>
-                {% for student, courses in students_and_courses.items() %}
+                {% for student_session, info in student_info.items() %}
                     <tr>
                         <td>
-                            {{ student.firstName }} {{ student.lastName }}
+                            {{ info['student'].firstName }} {{ info['student'].lastName }}
                         </td>
                         <td>
-                            {% if student.timeIn %}
-                                {{ student.timeIn|datetimeformat }}
+                            {% if student_session.timeIn %}
+                                {{ student_session.timeIn|datetimeformat }}
                             {% else %}
                                 ???
                             {% endif %}
                         </td>
                         <td>
-                            {% if student.timeOut %}
-                                {{ student.timeOut|datetimeformat}}
+                            {% if student_session.timeOut %}
+                                {{ student_session.timeOut|datetimeformat}}
                             {% else %}
                                 ???
                             {% endif %}
                         </td>
                         <td>
                             <ul>
-                                {% for course in courses %}
+                                {% for course in info['courses'] %}
                                     <li>{{ course.dept }}{{ course.course_num }}</li>
                                 {% endfor %}
-                                {% if student.otherCourse or student.otherCourseName %}
-                                    <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                                {% if student_session.otherCourse or student_session.otherCourseName %}
+                                    <li>{{ student_session.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
                                 {% endif %}
                             </ul>
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
+                                <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                    class="btn btn-primary hover-bright">Edit</a>
-                                <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
+                                <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_session_id=student_session.id, session_id=session_info.id) }}"
                                    class="btn btn-primary hover-bright">Delete</a>
                             </div>
                         </td>
@@ -174,7 +174,6 @@
             </tr>
         </table>
     </div>
-
     <div id="view-by-course">
         {% for course in session_courses %}
             <h5><strong>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</strong></h5>
@@ -186,29 +185,29 @@
                     <th></th>
                 </thead>
                 <tbody>
-                    {% for student, courses in students_and_courses.items() %}
-                        {% if course in courses %}
+                    {% for student_session, info in student_info.items() %}
+                        {% if course in info['courses'] %}
                             <tr>
-                                <td><a href="{{ url_for('ReportView:view_student', student_id=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></td>
+                                <td><a href="{{ url_for('ReportView:view_student', student_id=info['student'].id) }}">{{ info['student'].firstName }} {{ info['student'].lastName }}</a></td>
                                 <td>
-                                    {% if student.timeIn %}
-                                        {{ student.timeIn|datetimeformat }}
+                                    {% if student_session.timeIn %}
+                                        {{ student_session.timeIn|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if student.timeOut %}
-                                        {{ student.timeOut|datetimeformat }}
+                                    {% if student_session.timeOut %}
+                                        {{ student_session.timeOut|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
+                                        <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                            class="btn btn-primary hover-bright">Edit</a>
-                                        <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
+                                        <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_session_id=student_session.id, session_id=session_info.id) }}"
                                            class="btn btn-primary hover-bright">Delete</a>
                                     </div>
                                 </td>
@@ -240,27 +239,27 @@
             <th></th>
         </thead>
         <tbody>
-            {% for tutor in session_tutors %}
+            {% for tutor_session, tutor in tutor_info.items() %}
                 <tr>
                     <td>
                         {{ tutor.firstName }} {{ tutor.lastName }}
                     </td>
                     <td>
-                        {% if tutor.timeIn %}
-                            {{ tutor.timeIn|datetimeformat }}
+                        {% if tutor_session.timeIn %}
+                            {{ tutor_session.timeIn|datetimeformat }}
                         {% else %}
                              ???
                         {% endif %}
                     </td>
                     <td>
-                        {% if tutor.timeOut %}
-                            {{ tutor.timeOut|datetimeformat }}
+                        {% if tutor_session.timeOut %}
+                            {{ tutor_session.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
                     <td>
-                        {% if tutor.isLead %}
+                        {% if tutor_session.isLead %}
                             Yes
                         {% else %}
                             No
@@ -268,9 +267,9 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a id="edit" href='{{ url_for('SessionView:edit_tutor', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                            <a id="edit" href='{{ url_for('SessionView:edit_tutor', tutor_session_id=tutor_session.id) }}'
                                class="btn btn-primary hover-bright">Edit</a>
-                            <a id="delete" href='{{ url_for('SessionView:delete_tutor_from_session', tutor_id=tutor.id ,session_id=session_info.id) }}'
+                            <a id="delete" href='{{ url_for('SessionView:delete_tutor_from_session', tutor_session_id=tutor_session.id, session_id=session_info.id) }}'
                                class="btn btn-primary hover-bright">Delete</a>
                         </div>
                     </td>

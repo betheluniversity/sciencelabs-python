@@ -73,27 +73,41 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
-        session_tutors = self.session.get_session_tutors(session_id)
+
+        tutor_sessions = self.session.get_tutor_sessions(session_id)
+        tutor_info = {}
+        for tutor_session in tutor_sessions:
+            tutor_info[tutor_session] = self.user.get_user(tutor_session.tutorId)
+
         lead_ids = self.session.get_session_lead_ids(session_id)
         tutor_ids = self.session.get_session_tutor_ids(session_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
-        session_students = self.session.get_session_students(session_id)
-        students_and_courses = {}
-        for student in session_students:
-            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+
+        student_sessions = self.session.get_student_sessions(session_id)
+        student_info = {}
+        for student_session in student_sessions:
+            student_info[student_session] = {
+                'student': self.user.get_user(student_session.studentId),
+                'courses': self.session.get_studentsession_courses(student_session.id)
+            }
+
         course_list = self.course.get_semester_courses(flask_session['SELECTED-SEMESTER'])
         session_course_ids = self.course.get_session_course_ids(session_id)
+        session_courses = self.session.get_session_courses(session_id)
         return render_template('sessions/edit_session.html', **locals())
 
-    @route('/attendance/edit/<int:student_id>/<int:session_id>')
-    def edit_student(self, student_id, session_id):
+    @route('/attendance/edit/<int:student_session_id>')
+    def edit_student(self, student_session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        student = self.session.get_student_session_info(student_id, session_id)
-        student_courses = self.course.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
-        session_courses = self.session.get_student_session_courses(session_id, student_id)
-        other_course = self.session.get_other_course(session_id, student_id)
+        student = self.session.get_student_session_info(student_session_id)
+        student_courses = self.course.get_student_courses(student.id, flask_session['SELECTED-SEMESTER'])
+        session_courses = self.session.get_studentsession_courses(student_session_id)
+        session_course_ids = []
+        for course in session_courses:
+            session_course_ids.append(course.id)
+        other_course = self.session.get_other_course(student_session_id)
         return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
@@ -110,11 +124,11 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
         return render_template('sessions/add_anonymous.html', **locals())
 
-    @route('/attendance/tutor/edit/<int:tutor_id>/<int:session_id>')
-    def edit_tutor(self, tutor_id, session_id):
+    @route('/attendance/tutor/edit/<int:tutor_session_id>')
+    def edit_tutor(self, tutor_session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
-        tutor = self.session.get_tutor_session_info(tutor_id, session_id)
+        tutor = self.session.get_tutor_session_info(tutor_session_id)
         return render_template('sessions/edit_tutor.html', **locals())
 
     @route('/addattendance/tutor/<int:session_id>')
@@ -180,7 +194,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
-        student_id = form.get('student-id')
+        student_session_id = form.get('student-session-id')
         time_in = form.get('time-in') or None
         time_out = form.get('time-out') or None
         student_courses = form.getlist('course')
@@ -190,48 +204,48 @@ class SessionView(FlaskView):
             other_course = None
         try:
             # Returns True if successful
-            self.session.edit_student_session(session_id, student_id, time_in, time_out, other_course,
+            self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit student: {0}'.format(str(error)))
-            return redirect(url_for('SessionView:edit_student', student_id=student_id, session_id=session_id))
+            return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
 
     @route('/save-tutor-edits', methods=['post'])
     def save_tutor_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
+        tutor_session_id = form.get('tutor-session-id')
         session_id = form.get('session-id')
-        tutor_id = form.get('tutor-id')
         time_in = form.get('time-in') or None
         time_out = form.get('time-out') or None
         lead_check = form.get('lead')
         lead = 1 if lead_check else 0
         try:
-            self.session.edit_tutor_session(session_id, tutor_id, time_in, time_out, lead)
+            self.session.edit_tutor_session(tutor_session_id, time_in, time_out, lead)
             self.slc.set_alert('success', 'Tutor edited successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit tutor: {0}'.format(str(error)))
-            return redirect(url_for('SessionView:edit_tutor', tutor_id=tutor_id, session_id=session_id))
+            return redirect(url_for('SessionView:edit_tutor', tutor_session_id=tutor_session_id))
 
-    def delete_student_from_session(self, student_id, session_id):
+    def delete_student_from_session(self, student_session_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         try:
-            self.session.delete_student_from_session(student_id, session_id)
+            self.session.delete_student_from_session(student_session_id)
             self.slc.set_alert('success', 'Student deleted successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete student: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    def delete_tutor_from_session(self, tutor_id, session_id):
+    def delete_tutor_from_session(self, tutor_session_id, session_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         try:
-            self.session.delete_tutor_from_session(tutor_id, session_id)
+            self.session.delete_tutor_from_session(tutor_session_id)
             self.slc.set_alert('success', 'Tutor deleted successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete tutor: {0}'.format(str(error)))

@@ -52,6 +52,9 @@ class Session:
             .filter(User_Table.id == TutorSession_Table.tutorId)\
             .order_by(TutorSession_Table.isLead.desc())
 
+    def get_tutor_sessions(self, session_id):
+        return db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id).all()
+
     def get_session_lead_ids(self, session_id):
         lead_ids = []
         leads = db_session.query(User_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -68,20 +71,18 @@ class Session:
             tutor_ids.append(tutor.id)
         return tutor_ids
 
-    def get_tutor_session_info(self, tutor_id, session_id):
+    def get_tutor_session_info(self, tutor_session_id):
         return db_session.query(User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
-                                TutorSession_Table.timeIn, TutorSession_Table.timeOut)\
-            .filter(TutorSession_Table.sessionId == session_id)\
-            .filter(TutorSession_Table.tutorId == tutor_id)\
-            .filter(User_Table.id == tutor_id)\
+                                TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.sessionId)\
+            .filter(TutorSession_Table.id == tutor_session_id)\
+            .filter(TutorSession_Table.tutorId == User_Table.id)\
             .one()
 
-    def get_student_session_info(self, student_id, session_id):
+    def get_student_session_info(self, student_session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
-                             StudentSession_Table.timeOut) \
-            .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id) \
-            .filter(User_Table.id == student_id)\
+                             StudentSession_Table.timeOut, StudentSession_Table.sessionId) \
+            .filter(StudentSession_Table.id == student_session_id)\
+            .filter(StudentSession_Table.studentId == User_Table.id) \
             .one()
 
     def get_session_students(self, session_id):
@@ -92,11 +93,23 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
 
+    def get_student_sessions(self, session_id):
+        return db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id).all()
+
     def get_number_of_student_sessions(self, session_id):
         return db_session.query(func.count(StudentSession_Table.sessionId))\
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.id == session_id)\
             .group_by(StudentSession_Table.studentId)\
+            .all()
+
+    def get_studentsession_courses(self, student_session_id):
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.id == student_session_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .all()
 
     # The following two methods must return the same data for a logic check in one of the templates
@@ -144,10 +157,9 @@ class Session:
             .filter(Course_Table.id == course_id)\
             .all()
 
-    def get_other_course(self, session_id, student_id):
+    def get_other_course(self, student_session_id):
         return db_session.query(StudentSession_Table.otherCourse, StudentSession_Table.otherCourseName)\
-            .filter(StudentSession_Table.sessionId == session_id)\
-            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.id == student_session_id)\
             .one()
 
     def get_sessions(self, course_id):
@@ -251,26 +263,23 @@ class Session:
         db_session.add(new_student_session)
         db_session.commit()
 
-    def delete_student_from_session(self, student_id, session_id):
+    def delete_student_from_session(self, student_session_id):
         student_session_to_delete = db_session.query(StudentSession_Table)\
-            .filter(StudentSession_Table.studentId == student_id)\
-            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.id == student_session_id)\
             .one()
         db_session.delete(student_session_to_delete)
         db_session.commit()
 
-    def delete_tutor_from_session(self, tutor_id, session_id):
+    def delete_tutor_from_session(self, tutor_session_id):
         tutor_session_to_delete = db_session.query(TutorSession_Table)\
-            .filter(TutorSession_Table.tutorId == tutor_id)\
-            .filter(TutorSession_Table.sessionId == session_id)\
+            .filter(TutorSession_Table.id == tutor_session_id)\
             .one()
         db_session.delete(tutor_session_to_delete)
         db_session.commit()
 
-    def edit_tutor_session(self, session_id, tutor_id, time_in, time_out, lead):
+    def edit_tutor_session(self, tutor_session_id, time_in, time_out, lead):
         tutor_session_to_edit = db_session.query(TutorSession_Table)\
-            .filter(TutorSession_Table.sessionId == session_id)\
-            .filter(TutorSession_Table.tutorId == tutor_id)\
+            .filter(TutorSession_Table.id == tutor_session_id)\
             .one()
         tutor_session_to_edit.timeIn = time_in
         tutor_session_to_edit.timeOut = time_out
@@ -357,14 +366,14 @@ class Session:
 
     ######################### EDIT STUDENT METHODS #########################
 
-    def edit_student_session(self, session_id, student_id, time_in, time_out, other_course, student_courses):
-        self.edit_student_session_info(session_id, student_id, time_in, time_out, other_course)
-        self.edit_student_courses(session_id, student_id, student_courses)
+    def edit_student_session(self, student_session_id, time_in, time_out, other_course, student_courses):
+        self.edit_student_session_info(student_session_id, time_in, time_out, other_course)
+        self.edit_student_courses(student_session_id, student_courses)
 
-    def edit_student_session_info(self, session_id, student_id, time_in, time_out, other_course):
+    def edit_student_session_info(self, student_session_id, time_in, time_out, other_course):
         student_session_to_edit = db_session.query(StudentSession_Table) \
-            .filter(StudentSession_Table.sessionId == session_id) \
-            .filter(StudentSession_Table.studentId == student_id).one()
+            .filter(StudentSession_Table.id == student_session_id) \
+            .one()
         student_session_to_edit.timeIn = time_in
         student_session_to_edit.timeOut = time_out
         if other_course:
@@ -375,9 +384,10 @@ class Session:
             student_session_to_edit.otherCourseName = None
         db_session.commit()
 
-    def edit_student_courses(self, session_id, student_id, student_courses):
-        student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.studentId == student_id) \
-            .filter(StudentSession_Table.sessionId == session_id).one()
+    def edit_student_courses(self, student_session_id, student_courses):
+        student_session = db_session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.id == student_session_id) \
+            .one()
         db_session.query(SessionCourses_Table).filter(
             SessionCourses_Table.studentsession_id == student_session.id).delete()
         for course in student_courses:
