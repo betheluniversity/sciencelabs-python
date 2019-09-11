@@ -28,7 +28,6 @@ class ReportView(FlaskView):
 
     @route('/')
     def index(self):
-        test23
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
