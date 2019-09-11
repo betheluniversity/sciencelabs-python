@@ -5,6 +5,8 @@ from flask import render_template
 from flask import session as flask_session
 
 # Local
+from sciencelabs import app, sentry_sdk
+from sentry_sdk import configure_scope
 
 
 def error_render_template(template, error, code=500):
@@ -18,6 +20,9 @@ def error_render_template(template, error, code=500):
     if 'USERNAME' in flask_session.keys():
         username = flask_session['USERNAME']
 
+    with configure_scope() as scope:
+        scope.set_tag("time", time.strftime("%c"))
+        scope.set_tag("username", username)
 
     app.logger.error("{0} -- {1}".format(username, str(error)))
 
