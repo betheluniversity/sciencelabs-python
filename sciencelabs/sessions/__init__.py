@@ -73,7 +73,6 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         session_info = self.session.get_session(session_id)
-        # session_tutors = self.session.get_session_tutors(session_id)
 
         tutor_sessions = self.session.get_tutor_sessions(session_id)
         tutor_info = {}
@@ -84,11 +83,6 @@ class SessionView(FlaskView):
         tutor_ids = self.session.get_session_tutor_ids(session_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
-
-        # session_students = self.session.get_session_students(session_id)
-        # students_and_courses = {}
-        # for student in session_students:
-        #     students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
 
         student_sessions = self.session.get_student_sessions(session_id)
         student_info = {}

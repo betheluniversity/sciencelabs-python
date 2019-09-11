@@ -174,12 +174,6 @@
             </tr>
         </table>
     </div>
-
-
-
-
-
-
     <div id="view-by-course">
         {% for course in session_courses %}
             <h5><strong>{{ course.dept }}{{ course.course_num }} ({{ course.courseName }})</strong></h5>
@@ -225,11 +219,6 @@
             <br>
         {% endfor %}
     </div>
-
-
-
-
-
     <div class="edit-btns btn-group text-right">
         <a id="edit" href="{{ url_for('SessionView:add_student', session_id=session_info.id) }}"
                 class="btn btn-primary hover-bright">Add a Student</a>
