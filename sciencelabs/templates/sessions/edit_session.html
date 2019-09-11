@@ -191,29 +191,29 @@
                     <th></th>
                 </thead>
                 <tbody>
-                    {% for student, courses in students_and_courses.items() %}
-                        {% if course in courses %}
+                    {% for student_session, info in student_info.items() %}
+                        {% if course in info['courses'] %}
                             <tr>
-                                <td><a href="{{ url_for('ReportView:view_student', student_id=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></td>
+                                <td><a href="{{ url_for('ReportView:view_student', student_id=info['student'].id) }}">{{ info['student'].firstName }} {{ info['student'].lastName }}</a></td>
                                 <td>
-                                    {% if student.timeIn %}
-                                        {{ student.timeIn|datetimeformat }}
+                                    {% if student_session.timeIn %}
+                                        {{ student_session.timeIn|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if student.timeOut %}
-                                        {{ student.timeOut|datetimeformat }}
+                                    {% if student_session.timeOut %}
+                                        {{ student_session.timeOut|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a id="edit" href="{{ url_for('SessionView:edit_student', student_id=student.id, session_id=session_info.id) }}"
+                                        <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                            class="btn btn-primary hover-bright">Edit</a>
-                                        <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_id=student.id, session_id=session_info.id) }}"
+                                        <a id="delete" href="{{ url_for('SessionView:delete_student_from_session', student_session_id=student_session.id, session_id=session_info.id) }}"
                                            class="btn btn-primary hover-bright">Delete</a>
                                     </div>
                                 </td>
