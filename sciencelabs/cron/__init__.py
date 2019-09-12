@@ -88,7 +88,7 @@ class CronView(FlaskView):
         else:
             semester = self.user.get_active_semester()
             semester_start = semester.startDate
-            if semester_start < now.date() < semester_start + timedelta(weeks=2):
+            if semester_start < now.date() < (semester_start + timedelta(weeks=2)):
                 return True
         return False
 
