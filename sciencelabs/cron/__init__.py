@@ -2,6 +2,7 @@
 from flask import Response, request
 from flask_classy import FlaskView, route
 from functools import wraps
+from datetime import datetime, timedelta
 
 # Local
 from sciencelabs.db_repository.session_functions import Session
@@ -58,15 +59,37 @@ class CronView(FlaskView):
     @requires_auth
     @route('/populate-user-courses', methods=['get'])
     def populate_user_courses(self):
-        try:
-            return self.user.populate_user_courses_cron()
-        except Exception as error:
-            return 'failed: {0}'.format(str(error))
+        if self._check_date():
+            try:
+                return self.user.populate_user_courses_cron()
+            except Exception as error:
+                return 'failed: {0}'.format(str(error))
+        else:
+            return "Skipping populate user courses cron on {0}".format(datetime.now().strftime("%m/%d/%Y"))
 
     @requires_auth
     @route('/populate-courses', methods=['get'])
     def populate_courses(self):
-        try:
-            return self.user.populate_courses_cron()
-        except Exception as error:
-            return 'failed: {0}'.format(str(error))
+        if self._check_date():
+            try:
+                return self.user.populate_courses_cron()
+            except Exception as error:
+                return 'failed: {0}'.format(str(error))
+        else:
+            return "Skipping populate courses cron on {0}".format(datetime.now().strftime("%m/%d/%Y"))
+
+    # This method allows the cron to run Sunday - Thursday for the first two weeks of the semester,
+    # then only on Tuesdays and Thursdays for the rest of it.
+    def _check_date(self):
+        now = datetime.now()
+        # Always run on Tuesdays (1) and Thursdays (3)
+        if now.weekday() in [1, 3]:
+            return True
+        else:
+            semester = self.user.get_active_semester()
+            semester_start = semester.startDate
+            if semester_start < now.date() < semester_start + timedelta(weeks=2):
+                return True
+        return False
+
+
