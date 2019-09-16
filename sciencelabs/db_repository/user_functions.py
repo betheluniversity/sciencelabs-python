@@ -441,9 +441,14 @@ class User:
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
                     .filter(Course_Table.semester_id == semester_id).one_or_none()
                 if course_entry:
-                    new_user_course = user_course_Table(user_id=user_id, course_id=course_entry.id)
-                    db_session.add(new_user_course)
-                    db_session.commit()
+                    user_course_entry = db_session.query(user_course_Table)\
+                        .filter(user_course_Table.user_id == user_id)\
+                        .filter(user_course_Table.course_id == course_entry.id)\
+                        .one_or_none()
+                    if not user_course_entry:
+                        new_user_course = user_course_Table(user_id=user_id, course_id=course_entry.id)
+                        db_session.add(new_user_course)
+                        db_session.commit()
 
     def get_users_in_group(self, role_id):
         return db_session.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\
