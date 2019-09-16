@@ -426,21 +426,24 @@ class User:
         last_name = names['lastName']
         student = self.create_user(first_name, last_name, username, 0)
         self.set_user_roles(username, ['Student'])
+        self.create_user_courses(username, student.id, semester.id)
+        return student
+
+    def create_user_courses(self, username, user_id, semester_id):
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            if db_session.query(CourseCode_Table)\
-                    .filter(CourseCode_Table.courseNum == course['cNumber'])\
-                    .filter(CourseCode_Table.dept == course['subject'])\
-                    .filter(CourseCode_Table.courseName == course['title'])\
-                    .filter(CourseCode_Table.active == 1)\
+            if db_session.query(CourseCode_Table) \
+                    .filter(CourseCode_Table.courseNum == course['cNumber']) \
+                    .filter(CourseCode_Table.dept == course['subject']) \
+                    .filter(CourseCode_Table.courseName == course['title']) \
+                    .filter(CourseCode_Table.active == 1) \
                     .one_or_none():
-                course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
-                    .filter(Course_Table.semester_id == semester.id).one_or_none()
+                course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
+                    .filter(Course_Table.semester_id == semester_id).one_or_none()
                 if course_entry:
-                    new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                    new_user_course = user_course_Table(user_id=user_id, course_id=course_entry.id)
                     db_session.add(new_user_course)
                     db_session.commit()
-        return student
 
     def get_users_in_group(self, role_id):
         return db_session.query(User_Table).filter(User_Table.id == user_role_Table.user_id)\

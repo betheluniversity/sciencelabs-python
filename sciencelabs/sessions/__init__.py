@@ -471,13 +471,13 @@ class SessionView(FlaskView):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 student_info = self.wsapi.get_user_from_prox(card_id)
+                username = student_info['username']
             except:
                 self.slc.set_alert('danger', 'Card not recognized. Please try again or click the button below to enter '
                                              'your Bethel username and password.')
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
-            student = self.user.get_user_by_username(student_info['username'])
-            if not student:
-                student = self.user.create_user_at_sign_in(student_info['username'], semester)
+            student = self.user.get_user_by_username(username)
+
         # No card so now we get the user via CAS
         else:
             if app.config['ENVIRON'] != 'prod':  # If we are in dev env we grab the student selected from the dropdown.
@@ -487,16 +487,26 @@ class SessionView(FlaskView):
                     self.slc.set_alert('danger', 'Invalid Student')
                     return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
                 student = self.user.get_user(student_choice)
+                username = student.username
             else:
-                student = self.user.get_user_by_username(flask_session['USERNAME'])
+                username = flask_session['USERNAME']
+                student = self.user.get_user_by_username(username)
 
+        # Check if student exists in the system
+        if not student:
+            student = self.user.create_user_at_sign_in(username, semester)
+
+        # Check if student has been deactivated at some point
+        if student.deletedAt != None:
+            self.user.activate_existing_user(student.username)
+            self.user.create_user_courses(student.username, student.id, semester.id)
+
+        # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
-        if student.deletedAt != None:
-            self.user.activate_existing_user(student.username)
 
         # Check to make sure the user has the Student role, add it if they don't
         self.user.check_or_create_student_role(student.id)
