@@ -318,10 +318,7 @@ class Course:
                     .filter(course_info['subject'] == Course_Table.dept)\
                     .filter(course_info['cNumber'] == Course_Table.course_num)\
                     .filter(course_info['section'] == Course_Table.section)\
-                    .filter(course_info['meetingDay'] == Course_Table.meeting_day)\
                     .filter(course_info['title'] == Course_Table.title)\
-                    .filter(course_info['enrolled'] == Course_Table.num_attendees)\
-                    .filter(course_info['room'] == Course_Table.room)\
                     .one_or_none()
 
             if not existing_course:

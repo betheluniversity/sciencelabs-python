@@ -1,6 +1,7 @@
 # Packages
 from flask import render_template, request, redirect, url_for, session as flask_session
 from flask_classy import FlaskView, route
+from datetime import datetime, timedelta
 
 # Local
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -49,6 +50,21 @@ class TermStartupView(FlaskView):
         year = form.get('year')
         start_date = form.get('start-date')
         end_date = form.get('end-date')
+
+        # Check that dates are both populated
+        if not start_date or not end_date:
+            self.slc.set_alert('danger', 'Select a start date and an end date for the semester')
+            return redirect(url_for('TermStartupView:index'))
+
+        # Check that end_date is at least 2 weeks after start_date
+        if datetime.strptime(start_date, "%m/%d/%Y") + timedelta(weeks=2) > datetime.strptime(end_date, "%m/%d/%Y"):
+            self.slc.set_alert('danger', 'The end date must be at least 2 weeks after the start date')
+            return redirect(url_for('TermStartupView:index'))
+
+        # Check if there is already a semester
+        if self.schedule.create_semester_check(term, year):
+            self.slc.set_alert('danger', 'This semester already exists in the system.')
+            return redirect(url_for('TermStartupView:index'))
 
         try:
             self.schedule.set_current_term(term, year, start_date, end_date)  # Sets the new term to active
