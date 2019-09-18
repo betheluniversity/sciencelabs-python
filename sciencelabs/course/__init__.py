@@ -22,6 +22,8 @@ class CourseView(FlaskView):
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        print(self.wsapi.get_course_info('PHY', 292))
+
         courses = self.course.get_current_courses()
         courses_and_profs = {}
         for course in courses:
