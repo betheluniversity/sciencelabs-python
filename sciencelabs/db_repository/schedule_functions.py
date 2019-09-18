@@ -359,3 +359,12 @@ class Schedule:
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == semester_id).all()
         return len(semester_student_sessions)
+
+    def create_semester_check(self, term, year):
+        semester_exists = db_session.query(Semester_Table)\
+            .filter(Semester_Table.term == term)\
+            .filter(Semester_Table.year == year)\
+            .one_or_none()
+        if semester_exists:
+            return True
+        return False
