@@ -1,4 +1,4 @@
-{% macro render(title) %}
+{% macro render(title, env, lab_base_url) %}
 
     <nav class="navbar navbar-expand-lg navbar-dark background-blue">
         <a class="navbar-brand" href="{{ url_for('View:index') }}">
@@ -74,6 +74,17 @@
             </div>
         </div>
     </nav>
+    {# This is a banner to help distinguish between prod and xp #}
+    {% if env != 'prod' %}
+        <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav-testing">
+            <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">
+                <p class="custom-user-p">This is a testing version of this page. Click
+                    <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}{{ url_for(request.endpoint) }}">here</a>
+                    to view the production version.</p>
+            </div>
+        </nav>
+    {% endif %}
+    {# This is a banner for when an admin is acting as a user or role #}
     {% if session['ADMIN-VIEWER'] %}
         <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav">
             <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">

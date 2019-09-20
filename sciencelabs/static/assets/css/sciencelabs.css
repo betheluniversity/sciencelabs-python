@@ -376,6 +376,11 @@ ul.no-margin {
     background-color: tomato;
 }
 
+.custom-user-nav-testing {
+    padding: 0 10px;
+    background-color: lightcoral;
+}
+
 .dd-background {
     color: #777;
 }
