@@ -74,6 +74,7 @@
             </div>
         </div>
     </nav>
+    {# This is a banner to help distinguish between prod and xp #}
     {% if env != 'prod' %}
         <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav-testing">
             <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">
@@ -83,6 +84,7 @@
             </div>
         </nav>
     {% endif %}
+    {# This is a banner for when an admin is acting as a user or role #}
     {% if session['ADMIN-VIEWER'] %}
         <nav class="navbar navbar-expand-lg navbar-dark custom-user-nav">
             <div class="collapse navbar-collapse custom-user-div" id="navbarSupportedContent">
