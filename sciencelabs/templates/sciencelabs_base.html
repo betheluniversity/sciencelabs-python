@@ -80,7 +80,7 @@
         <!-- Shared JS file for sciencelabs file -->
         <script type="text/javascript" src="{{ url_for('static', filename='assets/js/sciencelabs.js') }}"></script>
 
-        {{ nav.render(lab_title) }}
+        {{ nav.render(lab_title, env, lab_base_url) }}
 
         {# SHOWS ALERTS #}
         {% if alert %}
