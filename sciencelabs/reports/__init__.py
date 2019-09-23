@@ -123,22 +123,20 @@ class ReportView(FlaskView):
 
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         term_info = self.schedule.get_term_report(flask_session['SELECTED-SEMESTER'])
-        term_attendance = self.schedule.get_session_attendance(flask_session['SELECTED-SEMESTER'])
         anon_attendance = self.schedule.get_anon_student_attendance_info(flask_session['SELECTED-SEMESTER'])
         unique_attendance_info = self.user.get_unique_session_attendance(flask_session['SELECTED-SEMESTER'])
+
+        total_attendance = 0
         anon_attendance_info = {}
         for sess, sched in anon_attendance:
             anon_attendance_info[sess] = {}
             anon_attendance_info[sess]['schedule'] = sched
             anon_attendance_info[sess]['attendance'] = len(self.session_.get_number_of_student_sessions(sess.id))
+            total_attendance += len(self.session_.get_number_of_student_sessions(sess.id))
 
         total_sessions = 0
         for sessions in term_info:
             total_sessions += sessions[1]
-
-        total_attendance = 0
-        for sessions in term_attendance:
-            total_attendance += sessions[1]
 
         avg_total = self.session_.get_avg_total_time_per_student(flask_session['SELECTED-SEMESTER'])
         avg_total_time = 0
@@ -183,11 +181,12 @@ class ReportView(FlaskView):
         my_list.append(['Schedule Name', 'DOW', 'Start Time', 'Stop Time', 'Number of Sessions', 'Attendance',
                         'Percentage'])
 
-        term_attendance = self.schedule.get_session_attendance(flask_session['SELECTED-SEMESTER'])
+        anon_attendance = self.schedule.get_anon_student_attendance_info(flask_session['SELECTED-SEMESTER'])
+
         total_attendance = 0
         unique_attendance = 0
-        for sessions in term_attendance:
-            total_attendance += sessions[1]
+        for sess, sched in anon_attendance:
+            total_attendance += len(self.session_.get_number_of_student_sessions(sess.id))
 
         unique_attendance_info = self.user.get_unique_session_attendance(flask_session['SELECTED-SEMESTER'])
         unique_attendance_list = []
@@ -203,7 +202,6 @@ class ReportView(FlaskView):
                     all_total_attendance += unscheduled_attendance[1]
 
         term_info = self.schedule.get_term_report(flask_session['SELECTED-SEMESTER'])
-        anon_attendance = self.schedule.get_anon_student_attendance_info(flask_session['SELECTED-SEMESTER'])
 
         for schedule, sessions in term_info:
             for sess, sched in anon_attendance:
