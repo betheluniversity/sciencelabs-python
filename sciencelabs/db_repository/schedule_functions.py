@@ -54,15 +54,6 @@ class Schedule:
             .filter(Session_Table.semester_id == semester_id)\
             .all()
 
-    def get_session_attendance(self, semester_id):
-        return db_session.query(Schedule_Table, func.count(Schedule_Table.id)) \
-            .filter(StudentSession_Table.sessionId == Session_Table.id) \
-            .filter(Session_Table.semester_id == Semester_Table.id) \
-            .filter(Semester_Table.id == semester_id) \
-            .filter(Schedule_Table.id == Session_Table.schedule_id) \
-            .group_by(Schedule_Table.id)\
-            .all()
-
     def get_active_semester(self):
         return db_session.query(Semester_Table)\
             .filter(Semester_Table.active == 1)\
