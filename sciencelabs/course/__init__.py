@@ -43,7 +43,9 @@ class CourseView(FlaskView):
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
-        course, user, semester = self.course.get_course(course_id)
+        course = self.course.get_course(course_id)
+        user = self.course.get_course_profs(course_id)
+        semester = self.schedule.get_semester(course.semester_id)
         return render_template('course/view_course.html', **locals())
 
     @route("/submit/", methods=['POST', 'GET'])
