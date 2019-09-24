@@ -75,12 +75,7 @@ class Course:
             .distinct()
 
     def get_course(self, course_id):
-        return db_session.query(Course_Table, User_Table, Semester_Table)\
-            .filter(Course_Table.id == course_id)\
-            .filter(CourseProfessors_Table.course_id == course_id)\
-            .filter(CourseProfessors_Table.professor_id == User_Table.id)\
-            .filter(Course_Table.semester_id == Semester_Table.id)\
-            .one()
+        return db_session.query(Course_Table).filter(Course_Table.id == course_id).one()
 
     def get_courses_for_session(self, session_id):
         return db_session.query(Course_Table)\

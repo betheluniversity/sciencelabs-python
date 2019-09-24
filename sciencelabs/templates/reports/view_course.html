@@ -5,7 +5,7 @@
 {% block header %}
     <div class="header card">
         <div class="card-body btn-group">
-            {% set month = (((course[0].end_date).strftime('%m'))|int) %}
+            {% set month = (((course.end_date).strftime('%m'))|int) %}
             {% set term = '' %}
             {% if month == 1 %}
                 {% set term = 'Interim' %}
@@ -16,9 +16,9 @@
             {% else %}
                 {% set term = 'Summer' %}
             {% endif %}
-            <p class="card-text margin-0">Attendance for {{ term }} {{ (course[0].end_date).strftime('%Y') }}</p>
-            <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course[0].id) }}" class="csv-button csv-right-2 btn btn-primary">CSV Session Export</a>
-            <a href="{{ url_for('ReportView:export_course_session_attendance_csv', course_id=course[0].id) }}" class="csv-button btn btn-primary">CSV Student Export</a>
+            <p class="card-text margin-0">Attendance for {{ term }} {{ (course.end_date).strftime('%Y') }}</p>
+            <a href="{{ url_for('ReportView:export_course_session_csv', course_id=course.id) }}" class="csv-button csv-right-2 btn btn-primary">CSV Session Export</a>
+            <a href="{{ url_for('ReportView:export_course_session_attendance_csv', course_id=course.id) }}" class="csv-button btn btn-primary">CSV Student Export</a>
         </div>
     </div>
 {% endblock %}
@@ -29,8 +29,10 @@
             <form>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <h4>{{ course[0].title }} (Section {{ course[0].section }}) ({{ course[0].dept }}{{ course[0].course_num }})</h4>
-                        <h4>{{ course[1].firstName }} {{ course[1].lastName }}</h4>
+                        <h4>{{ course.title }} (Section {{ course.section }}) ({{ course.dept }}{{ course.course_num }})</h4>
+                        {% for prof in course_profs %}
+                            <h4>{{ prof.firstName }} {{ prof.lastName }}</h4>
+                        {% endfor %}
                     </div>
                 </div>
             </form>

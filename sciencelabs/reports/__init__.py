@@ -805,20 +805,24 @@ class ReportView(FlaskView):
         year = sem.year
 
         course = self.courses.get_course(course_id)
+        course_profs = self.courses.get_course_profs(course_id)
         students = self.user.get_students_in_course(course_id)
 
         students_and_time = {}
         for student, attendance in students:
-            students_and_time[student] = {}
-            students_and_time[student]['attendance'] = attendance
-            students_and_time[student]['time'] = self.user.get_average_time_in_course(student.id, course[0].id)
+            students_and_time[student] = {
+                'attendance': attendance,
+                'time': self.user.get_average_time_in_course(student.id, course.id)
+            }
 
         sessions = self.session_.get_sessions(course_id)
         sessions_and_attendance = {}
         for lab_session, schedule in sessions:
-            sessions_and_attendance[lab_session] = {}
-            sessions_and_attendance[lab_session]['schedule'] = schedule
-            sessions_and_attendance[lab_session]['attendance'] = self.session_.get_session_attendees_with_dup(course[0].id, lab_session.id)
+            sessions_and_attendance[lab_session] = {
+                'schedule': schedule,
+                'attendance': self.session_.get_session_attendees_with_dup(course.id, lab_session.id)
+
+            }
 
         return render_template('reports/view_course.html', **locals())
 
@@ -836,7 +840,7 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         course = self.courses.get_course(course_id)
-        csv_course_info = '{0}{1} ({2})'.format(course[0].dept, course[0].course_num, course[0].title)
+        csv_course_info = '{0}{1} ({2})'.format(course.dept, course.course_num, course.title)
 
         total_attendance = 0
         for sess, schedule in sessions:
