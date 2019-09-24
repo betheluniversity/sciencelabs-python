@@ -810,16 +810,19 @@ class ReportView(FlaskView):
 
         students_and_time = {}
         for student, attendance in students:
-            students_and_time[student] = {}
-            students_and_time[student]['attendance'] = attendance
-            students_and_time[student]['time'] = self.user.get_average_time_in_course(student.id, course.id)
+            students_and_time[student] = {
+                'attendance': attendance,
+                'time': self.user.get_average_time_in_course(student.id, course.id)
+            }
 
         sessions = self.session_.get_sessions(course_id)
         sessions_and_attendance = {}
         for lab_session, schedule in sessions:
-            sessions_and_attendance[lab_session] = {}
-            sessions_and_attendance[lab_session]['schedule'] = schedule
-            sessions_and_attendance[lab_session]['attendance'] = self.session_.get_session_attendees_with_dup(course.id, lab_session.id)
+            sessions_and_attendance[lab_session] = {
+                'schedule': schedule,
+                'attendance': self.session_.get_session_attendees_with_dup(course.id, lab_session.id)
+
+            }
 
         return render_template('reports/view_course.html', **locals())
 
