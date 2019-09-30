@@ -190,10 +190,11 @@ class User:
                     if course_entry:
                         user_course_entry = db_session.query(user_course_Table)\
                             .filter(user_course_Table.user_id == student.id)\
-                            .filter(user_course_Table.course_id == course_entry.id)
-                        new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
-                        db_session.add(new_user_course)
-                        db_session.commit()
+                            .filter(user_course_Table.course_id == course_entry.id).one_or_none()
+                        if not user_course_entry:
+                            new_user_course = user_course_Table(user_id=student.id, course_id=course_entry.id)
+                            db_session.add(new_user_course)
+                            db_session.commit()
 
     def get_active_semester(self):
         return db_session.query(Semester_Table).filter(Semester_Table.active == 1).one()
