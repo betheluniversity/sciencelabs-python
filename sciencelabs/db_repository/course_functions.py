@@ -4,7 +4,7 @@ from flask import session as flask_session, abort
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
     Session_Table, CourseCode_Table, SessionCourses_Table, StudentSession_Table, CourseViewer_Table, \
-    ScheduleCourseCodes_Table, SessionCourseCodes_Table, user_role_Table, Role_Table
+    ScheduleCourseCodes_Table, SessionCourseCodes_Table, user_role_Table, Role_Table, user_course_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
 
@@ -65,13 +65,10 @@ class Course:
     def get_student_courses(self, student_id, semester_id):
         return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
                                 CourseCode_Table.courseName)\
-            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
-            .filter(Course_Table.id == SessionCourses_Table.course_id)\
-            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(StudentSession_Table.sessionId == Session_Table.id)\
-            .filter(Session_Table.semester_id == semester_id) \
-            .filter(StudentSession_Table.studentId == User_Table.id)\
-            .filter(User_Table.id == student_id)\
+            .filter(user_course_Table.user_id == student_id)\
+            .filter(user_course_Table.course_id == Course_Table.id)\
+            .filter(Course_Table.semester_id == semester_id)\
+            .filter(Course_Table.course_code_id == CourseCode_Table.id)\
             .distinct()
 
     def get_course(self, course_id):
