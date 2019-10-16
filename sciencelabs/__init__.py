@@ -3,6 +3,7 @@ import logging
 # Packages
 from flask import Flask, request
 from flask import session as flask_session
+import sentry_sdk
 
 from datetime import datetime
 
@@ -16,7 +17,6 @@ from sciencelabs.db_repository.user_functions import User
 from sciencelabs.db_repository.schedule_functions import Schedule
 
 if app.config['ENVIRON'] == 'prod' and app.config['SENTRY_URL']:
-    import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
     sentry_sdk.init(dsn=app.config['SENTRY_URL'], integrations=[FlaskIntegration()])
     from sciencelabs import error
