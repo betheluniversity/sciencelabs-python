@@ -104,9 +104,15 @@
                             {% endfor %}
                         </tbody>
                         <tfoot>
+                            {% if other_info %}
+                                <tr>
+                                    <th class="no-border-top" colspan="4">Other</th>
+                                    <th class="no-border-top">{{ other_info|length }}</th>
+                                </tr>
+                            {% endif %}
                             <tr>
                                 <th class="no-border-top" colspan="4">Total</th>
-                                <th class="no-border-top">{{ total_attendance[0] }}</th>
+                                <th class="no-border-top">{{ total_attendance[0] + other_info|length }}</th>
                                 <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
                             </tr>
                         </tfoot>
