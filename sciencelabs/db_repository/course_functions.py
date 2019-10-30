@@ -38,6 +38,15 @@ class Course:
                 .filter(Semester_Table.id == semester_id)
                 .all())
 
+    def get_other_info(self, semester_id):
+        return db_session.query(StudentSession_Table)\
+            .filter(User_Table.id == StudentSession_Table.studentId)\
+            .filter(StudentSession_Table.otherCourseName != None)\
+            .filter(StudentSession_Table.sessionId == Session_Table.id)\
+            .filter(Session_Table.semester_id == Semester_Table.id)\
+            .filter(Semester_Table.id == semester_id)\
+            .all()
+
     def get_selected_prof_course_info(self, semester_id, prof_id):
         return (db_session.query(Course_Table, User_Table)
                 .filter(User_Table.id == prof_id)
