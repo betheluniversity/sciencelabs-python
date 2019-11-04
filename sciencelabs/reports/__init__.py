@@ -693,6 +693,7 @@ class ReportView(FlaskView):
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
+            other_info = self.courses.get_other_info(flask_session['SELECTED-SEMESTER'])
             course_viewer_info = None
 
         else:  # They must be a professor
