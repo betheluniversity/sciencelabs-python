@@ -30,8 +30,8 @@
                             <td class="no-space">{{ semester.term }} {{ semester.year }}</td>
                             <td>{{ attendance_info['totalAttendance'] }}</td>
                             <td>{{ attendance_info['uniqueAttendance'] }}</td>
-                            <td>{{ attendance_info['enrolled'] }}</td>
-                            <td>{{ attendance_info['percent'] }}</td>
+                            <td>{{ 'N/A' if attendance_info['enrolled'] == 0 else attendance_info['enrolled'] }}</td>
+                            <td>{{ 'N/A' if attendance_info['percent'] == '0%' else attendance_info['percent'] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -57,7 +57,7 @@
                     <p class="card-text">
                         <strong>Enrolled</strong> is the total number of students enrolled in courses served by
                         {{ lab_title }} during the given semester. Prior to Spring 2015, enrollment data was not
-                        recorded, so enrollment and percent values for these semesters will be zero. If a student took
+                        recorded, so enrollment and percent values for these semesters will be N/A. If a student took
                         multiple courses during a semester, they will be counted once for each course.
                     </p>
                     <p class="card-text">
