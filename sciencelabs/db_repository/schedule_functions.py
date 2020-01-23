@@ -217,7 +217,7 @@ class Schedule:
                                   end_time, room, name):
         sessions = []
         session_date = self.get_first_session_date(day_of_week, term_start_date)
-        while session_date < term_end_date:  # Loop through until our session date is after the end date of the term
+        while session_date <= term_end_date:  # Loop through until our session date is after the end date of the term
             schedule_session = Session_Table(semester_id=term_id, schedule_id=schedule_id,
                                              date=session_date, schedStartTime=start_time,
                                              schedEndTime=end_time, room=room, open=0, hash=self.base.get_hash(),
