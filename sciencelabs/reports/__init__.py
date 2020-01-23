@@ -827,6 +827,16 @@ class ReportView(FlaskView):
 
         return render_template('reports/view_course.html', **locals())
 
+    @route('/course-session/<int:course_id>')
+    def view_course_session(self, course_id):
+        sessions = self.session_.get_sessions(course_id)
+        sessions_and_attendance = {}
+        for lab_session, schedule in sessions:
+            sessions_and_attendance[lab_session] = [
+                self.session_.get_session_attendees_with_dup(course_id, lab_session.id)
+            ]
+        return
+
     def export_course_session_csv(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 
