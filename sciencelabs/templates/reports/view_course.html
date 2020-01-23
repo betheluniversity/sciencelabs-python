@@ -50,8 +50,6 @@
                     </thead>
                     <tbody>
                     {% set total_attendees = [0] %}
-                    {{ sessions }}
-                    {{ sessions_and_attendance }}
                     {% for lab_session, info in sessions_and_attendance.items() %}
                     <tr>
                         <td><a class="no-decoration" href="{{ url_for('ReportView:view_course_session', course_id=course.id) }}">{{ lab_session.date.strftime('%m/%d/%Y') }}</a></td>
