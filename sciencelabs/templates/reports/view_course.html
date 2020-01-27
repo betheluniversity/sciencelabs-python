@@ -100,7 +100,7 @@
                         {% for times, user in time %}
                             {% if times.timeOut and times.timeIn %}{% if avg_time.append(avg_time.pop() + (((times.timeOut - times.timeIn).total_seconds())/60)) %}{% endif %}{% endif %}
                         {% endfor %}
-                            <td>{{ (avg_time[0] / time|length)|round|int }} min</td>
+                            <td>{{ (avg_time[0] / time|length)|round|int }} mins</td>
                         </tr>
                     {% endfor %}
                     </tbody>
