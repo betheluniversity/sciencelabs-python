@@ -52,7 +52,7 @@
                     {% set total_attendees = [0] %}
                     {% for lab_session, info in sessions_and_attendance.items() %}
                     <tr>
-                        <td><a class="no-decoration" href="{{ url_for('ReportView:view_course_session', course_id=course.id, date=lab_session.date.strftime('%Y-%m-%d')) }}">{{ lab_session.date.strftime('%m/%d/%Y') }}</a></td>
+                        <td>{{ lab_session.date.strftime('%m/%d/%Y') }}</td>
                         <td>
                             {{ macros.day_abbr(info['schedule'].dayofWeek) }}
                         </td>
@@ -62,7 +62,7 @@
                             {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
                                 <a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=lab_session.id) }}">{{ attendance_per_session|length }}</a>
                             {% else %}
-                                {{ attendance_per_session|length }}
+                                <a class="no-decoration" href="{{ url_for('ReportView:view_course_session', course_id=course.id, date=lab_session.date.strftime('%Y-%m-%d')) }}">{{ attendance_per_session|length }}</a>
                             {% endif %}
                         </td>
                     {% if total_attendees.append(total_attendees.pop() + attendance_per_session|length) %}{% endif %}
