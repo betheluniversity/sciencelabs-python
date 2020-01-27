@@ -124,18 +124,15 @@ def before_request():
             flask_session['USER-ROLES'] = ['STUDENT']
         if 'ADMIN-VIEWER' not in flask_session.keys():
             flask_session['ADMIN-VIEWER'] = False
-        if 'SEMESTER-LIST' not in flask_session.keys():
-            semester_list = Schedule().get_semesters()
-            flask_session['SEMESTER-LIST'] = []
+        semester_list = Schedule().get_semesters()
+        flask_session['SEMESTER-LIST'] = []
+        for semester in semester_list:
             # Adds all semesters to a dictionary
-            for semester in semester_list:
-                flask_session['SEMESTER-LIST'].append(
-                    {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
+            flask_session['SEMESTER-LIST'].append(
+                {'id': semester.id, 'term': semester.term, 'year': semester.year, 'active': semester.active})
+            if 'SELECTED-SEMESTER' not in flask_session.keys() and semester.active == 1:
                 # Sets the current active semester to 'SELECTED-SEMESTER'
-                if semester.active == 1:
-                    flask_session['SELECTED-SEMESTER'] = semester.id
-        if 'SELECTED-SEMESTER' not in flask_session.keys():
-            flask_session['SELECTED-SEMESTER'] = active_semester.id
+                flask_session['SELECTED-SEMESTER'] = semester.id
         if 'ALERT' not in flask_session.keys():
             flask_session['ALERT'] = []
 
