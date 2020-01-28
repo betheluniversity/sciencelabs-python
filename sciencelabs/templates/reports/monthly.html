@@ -109,7 +109,7 @@
                             <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td>{{ total_attendance_per_schedule[0] }}</td>
                             {% if total_attendance[0] %}
-                                <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) }}%</td>
+                                <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
                             {% else %}
                                 <td>???</td>
                             {% endif %}
@@ -127,7 +127,7 @@
                             <tr>
                                 <th class="no-border-top" colspan="3">Unscheduled Sessions</th>
                                 <th class="no-border-top">{{ total_unscheduled[0] }}</th>
-                                <th class="no-border-top">{{ ((total_unscheduled[0] / total_attendance[0])*100)|round(2) }}%</th>
+                                <th class="no-border-top">{{ ((total_unscheduled[0] / total_attendance[0])*100)|round(2) if total_attendance[0] > 0 else '0.0' }}%</th>
                             </tr>
                         {% else %}
                             <tr>
