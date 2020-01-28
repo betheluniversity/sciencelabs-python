@@ -1,6 +1,8 @@
 # Packages
 from flask import render_template, request, redirect, url_for
+from flask import session as flask_session
 from flask_classy import FlaskView, route
+from datetime import datetime
 
 # Local
 from sciencelabs.db_repository.course_functions import Course
@@ -52,6 +54,7 @@ class CourseView(FlaskView):
     def submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         form = request.form
         all_courses_string = form.get('potential_courses')
         all_courses_list = all_courses_string.split(';')
@@ -65,18 +68,16 @@ class CourseView(FlaskView):
             try:
 
                 if self.wsapi.validate_course(course_dept, course_num):
-                    course_info = self.wsapi.get_course_info(course_dept, course_num)
+                    date_offset = 0
+                    # startDate gets stored as a date so use combine() to make it datetime for comparison
+                    if datetime.now() <= datetime.combine(semester.startDate, datetime.min.time()):
+                        date_offset = datetime.combine(semester.startDate, datetime.min.time()) - datetime.now()
+                    course_info = self.wsapi.get_course_info(course_dept, course_num, date_offset.days)
 
                     if course_info:
                         course_code_entry = self.course.new_term_course_code(course_info)
                         self.course.new_term_course(course_info, course_code_entry)
                         message += '{0} '.format(course_code)
-
-                #     else:
-                #         self.slc.set_alert('danger', '{0} is not offered this semester.'.format(course_code))
-                #
-                # else:
-                #     self.slc.set_alert('danger', '{0} is an invalid course code.'.format(course_code))
 
             except Exception as error:
                 self.slc.set_alert('danger', '{0} Failed: {1}'.format(course_code, error))
