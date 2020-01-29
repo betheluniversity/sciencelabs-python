@@ -196,7 +196,7 @@ class Session:
             .group_by(StudentSession_Table.id)\
             .all()
 
-    def get_student_sessions(self, course_id, session_id):
+    def get_student_sessions_for_course(self, course_id, session_id):
         return db_session.query(StudentSession_Table)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
