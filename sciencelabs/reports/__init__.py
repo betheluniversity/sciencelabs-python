@@ -838,7 +838,7 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         student_sessions = {}
-        for lab_session, schedule in sessions:
+        for lab_session in sessions:
             if lab_session.date == date:
                 student_sessions = self.session_.get_student_sessions_for_course(course_id, lab_session.id)
                 break
@@ -876,8 +876,8 @@ class ReportView(FlaskView):
         csv_course_info = '{0}{1} ({2})'.format(course.dept, course.course_num, course.title)
 
         total_attendance = 0
-        for sess, schedule in sessions:
-            sub_list = [sess.date.strftime('%m/%d/%Y'), self._get_dayofweek(schedule.dayofWeek),
+        for sess in sessions:
+            sub_list = [sess.date.strftime('%m/%d/%Y'), self._get_dayofweek((sess.date.weekday() + 1) % 7),
                         self._datetimeformatter(sess.schedStartTime) + ' - ' +
                         self._datetimeformatter(sess.schedEndTime)]
             attendance_per_session = self.session_.get_session_attendees_with_dup(course_id, sess.id)
