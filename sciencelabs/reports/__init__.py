@@ -827,6 +827,40 @@ class ReportView(FlaskView):
 
         return render_template('reports/view_course.html', **locals())
 
+    @route('/course-session/<int:course_id>/<string:date>')
+    def view_course_session(self, course_id, date):
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        month = self._get_selected_month()
+        year = sem.year
+
+        date = datetime.strptime(date, '%Y-%m-%d').date()
+        course = self.courses.get_course(course_id)
+        course_profs = self.courses.get_course_profs(course_id)
+
+        sessions = self.session_.get_sessions(course_id)
+        student_sessions = {}
+        for lab_session, schedule in sessions:
+            if lab_session.date == date:
+                student_sessions = self.session_.get_student_sessions(course_id, lab_session.id)
+
+                break
+
+        students = []
+        for ss in student_sessions:
+            student = self.user.get_user(ss.studentId)
+            if ss.timeOut and ss.timeIn:
+                total_time = (ss.timeOut - ss.timeIn).total_seconds() / 60
+            students.extend([{
+                'id': student.id,
+                'firstName': student.firstName,
+                'lastName': student.lastName,
+                'total_time': total_time
+            }])
+
+        date = date.strftime('%m/%d/%Y')
+
+        return render_template('reports/view_course_session.html', **locals())
+
     def export_course_session_csv(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 

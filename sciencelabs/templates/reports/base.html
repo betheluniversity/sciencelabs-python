@@ -6,7 +6,7 @@
                href="{{ url_for('ReportView:course') }}">Course</a>
             <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
                href="{{ url_for('ReportView:student') }}">Student</a>
-            <a id="session-report" class="nav-link {{ 'active' if 'session' in request.path else 'disabled'}}"
+            <a id="session-report" class="nav-link {{ 'active' if '/session' in request.path else 'disabled'}}"
                href="{{ url_for('ReportView:session') }}">Session</a>
             <a id="monthly" class="nav-link {{ 'active' if 'month' in request.path else 'disabled'}}"
                href="{{ url_for('ReportView:month', year=year, month=month) }}">Monthly</a>
