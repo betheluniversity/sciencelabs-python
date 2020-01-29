@@ -54,7 +54,7 @@
                     <tr>
                         <td>{{ lab_session.date.strftime('%m/%d/%Y') }}</td>
                         <td>
-                            {{ macros.day_abbr(info['schedule'].dayofWeek) }}
+                            {{ macros.day_abbr((lab_session.date.weekday() + 1) % 7) }}
                         </td>
                         <td>{{ lab_session.schedStartTime|datetimeformat }} - {{ lab_session.schedEndTime|datetimeformat }}</td>
                         {% set attendance_per_session = info['attendance'] %}
