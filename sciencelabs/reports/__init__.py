@@ -841,7 +841,6 @@ class ReportView(FlaskView):
         for lab_session, schedule in sessions:
             if lab_session.date == date:
                 student_sessions = self.session_.get_student_sessions_for_course(course_id, lab_session.id)
-
                 break
 
         students = []
