@@ -163,8 +163,7 @@ class Session:
             .one()
 
     def get_sessions(self, course_id):
-        return db_session.query(Session_Table, Schedule_Table)\
-            .filter(Session_Table.schedule_id == Schedule_Table.id)\
+        return db_session.query(Session_Table)\
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == course_id)\

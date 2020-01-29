@@ -818,9 +818,8 @@ class ReportView(FlaskView):
 
         sessions = self.session_.get_sessions(course_id)
         sessions_and_attendance = {}
-        for lab_session, schedule in sessions:
+        for lab_session in sessions:
             sessions_and_attendance[lab_session] = {
-                'schedule': schedule,
                 'attendance': self.session_.get_session_attendees_with_dup(course.id, lab_session.id)
 
             }
