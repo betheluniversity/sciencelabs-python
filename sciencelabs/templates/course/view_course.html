@@ -10,7 +10,13 @@
                         <thead>
                         <tr>
                             <td><b>Professor</b></td>
-                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            {% for prof in profs %}
+                                {% if loop.last %}
+                                    <td>{{ prof.firstName }} {{ prof.lastName }}</td>
+                                {% else %}
+                                    <td>{{ prof.firstName }} {{ prof.lastName }}, </td>
+                                {% endif %}
+                            {% endfor %}
                         </tr>
                         </thead>
                         <tbody>
