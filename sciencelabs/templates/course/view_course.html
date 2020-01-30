@@ -10,7 +10,9 @@
                         <thead>
                         <tr>
                             <td><b>Professor</b></td>
-                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            {% for prof in profs %}
+                                <td>{{ prof.firstName }} {{ prof.lastName }}</td>
+                            {% endfor %}
                         </tr>
                         </thead>
                         <tbody>

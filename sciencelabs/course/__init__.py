@@ -46,7 +46,7 @@ class CourseView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Academic Counselor'])
 
         course = self.course.get_course(course_id)
-        user = self.course.get_course_profs(course_id)
+        profs = self.course.get_course_profs(course_id)
         semester = self.schedule.get_semester(course.semester_id)
         return render_template('course/view_course.html', **locals())
 
