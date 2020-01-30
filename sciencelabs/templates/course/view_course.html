@@ -11,7 +11,12 @@
                         <tr>
                             <td><b>Professor</b></td>
                             {% for prof in profs %}
-                                <td>{{ prof.firstName }} {{ prof.lastName }}</td>
+                                {% if loop.last %}
+                                    <td>{{ prof.firstName }} {{ prof.lastName }}</td>
+                                {% else %}
+                                    <td>{{ prof.firstName }} {{ prof.lastName }}, </td>
+                                {% endif %}
+
                             {% endfor %}
                         </tr>
                         </thead>
