@@ -71,8 +71,8 @@ class CourseView(FlaskView):
                     date_offset = 0
                     # startDate gets stored as a date so use combine() to make it datetime for comparison
                     if datetime.now() <= datetime.combine(semester.startDate, datetime.min.time()):
-                        date_offset = datetime.combine(semester.startDate, datetime.min.time()) - datetime.now()
-                    course_info = self.wsapi.get_course_info(course_dept, course_num, date_offset.days)
+                        date_offset = (datetime.combine(semester.startDate, datetime.min.time()) - datetime.now()).days
+                    course_info = self.wsapi.get_course_info(course_dept, course_num, date_offset)
 
                     if course_info:
                         course_code_entry = self.course.new_term_course_code(course_info)
