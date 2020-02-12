@@ -846,6 +846,7 @@ class ReportView(FlaskView):
         students = []
         for ss in student_sessions:
             student = self.user.get_user(ss.studentId)
+            total_time = 0
             if ss.timeOut and ss.timeIn:
                 total_time = (ss.timeOut - ss.timeIn).total_seconds() / 60
             students.extend([{
