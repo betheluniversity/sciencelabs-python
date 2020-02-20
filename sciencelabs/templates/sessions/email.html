@@ -173,13 +173,13 @@
         <th style="padding:2px 10px">Professor</th>
         <th style="padding:2px 10px">Attendance</th>
     </tr>
-    {% set total_attendance = [0] %}
+    {% set course_attendance = [0] %}
     {% for course, info in courses_and_info.items() %}
         {% set attendance = [0] %}
         {% for student in info['students'] %}
             {% if attendance.append(attendance.pop() + 1) %}{% endif %}
         {% endfor %}
-        {% if total_attendance.append(total_attendance.pop() + attendance[0]) %}{% endif %}
+        {% if course_attendance.append(course_attendance.pop() + attendance[0]) %}{% endif %}
         <tr>
             <td style="border-bottom: 1px solid #CCC;padding:2px 10px">
                 <a href="https://tutorlabs.bethel.edu{{ lab_base_url }}/report/course/{{ course.id }}">
@@ -197,7 +197,7 @@
     {% set attendees = [total_attendance[0] + sess.anonStudents] %}
     <tr>
         <td colspan="2" style="border-bottom: 1px solid #CCC;padding:2px 10px"><b>Course Total*</b></td>
-        <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ total_attendance[0] }}</td>
+        <td style="border-bottom: 1px solid #CCC;padding:2px 10px;text-align:right">{{ course_attendance[0] }}</td>
     </tr>
     <tr>
         <td colspan="2" style="border-bottom: 1px solid #CCC;padding:2px 10px"><b>Other Students Total</b></td>
