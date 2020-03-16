@@ -52,9 +52,7 @@ class UsersView(FlaskView):
         active_semester = self.schedule.get_active_semester()
         course_list = self.course.get_semester_courses_with_section(active_semester.id)
         viewable_courses = self.course.get_course_viewer_courses(user_id)
-        viewable_course_ids = []
-        for course in viewable_courses:
-            viewable_course_ids.append(course.id)
+        viewable_course_ids = [course.id for course in viewable_courses]
 
         professor_role = self.user.get_professor_role()
         if professor_role.id in user_role_ids:

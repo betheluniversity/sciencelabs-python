@@ -33,9 +33,7 @@ class SessionView(FlaskView):
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
         open_sessions = self.session.get_open_sessions()
-        sessions_and_tutors = {}
-        for available_session in sessions:
-            sessions_and_tutors[available_session] = self.session.get_session_tutors(available_session.id)
+        sessions_and_tutors = {available_session: self.session.get_session_tutors(available_session.id) for available_session in sessions}
         return render_template('sessions/available_sessions.html', **locals())
 
     @route('/closed')
@@ -43,9 +41,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         sessions = self.session.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
-        sessions_and_tutors = {}
-        for closed_session in sessions:
-            sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
+        sessions_and_tutors = {closed_session: self.session.get_session_tutors(closed_session.id) for closed_session in sessions}
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         return render_template('sessions/closed_sessions.html', **locals())
 
@@ -63,9 +59,7 @@ class SessionView(FlaskView):
 
         sessions = self.session.get_deleted_sessions(flask_session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
-        sessions_and_tutors = {}
-        for closed_session in sessions:
-            sessions_and_tutors[closed_session] = self.session.get_session_tutors(closed_session.id)
+        sessions_and_tutors = {deleted_session: self.session.get_session_tutors(deleted_session.id) for deleted_session in sessions}
         return render_template('sessions/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -75,9 +69,7 @@ class SessionView(FlaskView):
         session_info = self.session.get_session(session_id)
 
         tutor_sessions = self.session.get_tutor_sessions(session_id)
-        tutor_info = {}
-        for tutor_session in tutor_sessions:
-            tutor_info[tutor_session] = self.user.get_user(tutor_session.tutorId)
+        tutor_info = {tutor_session: self.user.get_user(tutor_session.tutorId) for tutor_session in tutor_sessions}
 
         lead_ids = self.session.get_session_lead_ids(session_id)
         tutor_ids = self.session.get_session_tutor_ids(session_id)
@@ -104,9 +96,7 @@ class SessionView(FlaskView):
         student = self.session.get_student_session_info(student_session_id)
         student_courses = self.course.get_student_courses(student.id, flask_session['SELECTED-SEMESTER'])
         session_courses = self.session.get_studentsession_courses(student_session_id)
-        session_course_ids = []
-        for course in session_courses:
-            session_course_ids.append(course.id)
+        session_course_ids = [course.id for course in session_courses]
         other_course = self.session.get_other_course(student_session_id)
         return render_template('sessions/edit_student.html', **locals())
 
@@ -344,9 +334,7 @@ class SessionView(FlaskView):
     @route('/view/<int:session_id>')
     def view_session(self, session_id):
         session_students = self.session.get_session_students(session_id)
-        students_and_courses = {}
-        for student in session_students:
-            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in session_students}
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('sessions/view_session.html', **locals())
 
@@ -393,9 +381,7 @@ class SessionView(FlaskView):
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
-        students_and_courses = {}
-        for student in students:
-            students_and_courses[student] = self.session.get_student_session_courses(session_id, student.id)
+        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in students}
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         # If prod, we send through a route to get CAS auth, else we go straight to student sign in

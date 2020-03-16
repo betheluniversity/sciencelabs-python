@@ -25,9 +25,7 @@ class CourseView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         courses = self.course.get_current_courses()
-        courses_and_profs = {}
-        for course in courses:
-            courses_and_profs[course] = self.course.get_course_profs(course.id)
+        courses_and_profs = {course: self.course.get_course_profs(course.id) for course in courses}
         active_coursecodes = self.course.get_active_coursecode()
         cc_str = ''
         for coursecodes in active_coursecodes:
