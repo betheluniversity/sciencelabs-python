@@ -45,9 +45,7 @@ class ReportView(FlaskView):
         year = sem.year
         student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
 
-        student_and_attendance = {}
-        for student in student_info:
-            student_and_attendance[student] = len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))
+        student_and_attendance = {student: len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER'])) for student in student_info}
 
         return render_template('reports/student.html', **locals())
 
@@ -79,15 +77,14 @@ class ReportView(FlaskView):
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
             sessions_attended = len(self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
 
-            course_and_avg_time = {}
-            for course in courses:
-                course_and_avg_time[course] = self.user.get_average_time_in_course(student.id, course.id)
+            course_and_avg_time = {course: self.user.get_average_time_in_course(student.id, course.id) for course in courses}
 
             sessions_and_courses = {}
             for studentsession, lab_session in sessions:
-                sessions_and_courses[studentsession] = {}
-                sessions_and_courses[studentsession]['session'] = lab_session
-                sessions_and_courses[studentsession]['courses'] = self.session_.get_report_student_session_courses(lab_session.id, student.id)
+                sessions_and_courses[studentsession] = {
+                    'session': lab_session,
+                    'courses': self.session_.get_report_student_session_courses(lab_session.id, student.id)
+                }
 
         else:
             role_can_view = False
@@ -129,10 +126,12 @@ class ReportView(FlaskView):
         total_attendance = 0
         anon_attendance_info = {}
         for sess, sched in anon_attendance:
-            anon_attendance_info[sess] = {}
-            anon_attendance_info[sess]['schedule'] = sched
-            anon_attendance_info[sess]['attendance'] = len(self.session_.get_number_of_student_sessions(sess.id))
-            total_attendance += len(self.session_.get_number_of_student_sessions(sess.id))
+            session_attendance = len(self.session_.get_number_of_student_sessions(sess.id))
+            anon_attendance_info[sess] = {
+                'schedule': sched,
+                'attendance': session_attendance
+            }
+            total_attendance += session_attendance
 
         total_sessions = 0
         for sessions in term_info:
@@ -159,9 +158,10 @@ class ReportView(FlaskView):
         unscheduled_sessions = self.session_.get_unscheduled_sessions(sem.year, sem.term)
         unscheduled_sessions_and_attendance = {}
         for unscheduled_session in unscheduled_sessions:
-            unscheduled_sessions_and_attendance[unscheduled_session] = {}
-            unscheduled_sessions_and_attendance[unscheduled_session]['attendance'] = len(self.user.get_session_students(unscheduled_session.id))
-            unscheduled_sessions_and_attendance[unscheduled_session]['unscheduled-attendance'] = self.session_.get_unscheduled_unique_attendance(unscheduled_session.id)
+            unscheduled_sessions_and_attendance[unscheduled_session] = {
+                'attendance': len(self.user.get_session_students(unscheduled_session.id)),
+                'unscheduled-attendance': self.session_.get_unscheduled_unique_attendance(unscheduled_session.id)
+            }
 
         return render_template('reports/term.html', **locals())
 
@@ -288,17 +288,16 @@ class ReportView(FlaskView):
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         unscheduled_sessions = self.session_.get_unscheduled_sessions(selected_year, term)
-        unscheduled_sessions_and_attendance = {}
-        for unscheduled_session in unscheduled_sessions:
-            unscheduled_sessions_and_attendance[unscheduled_session] = len(self.user.get_session_students(unscheduled_session.id))
+        unscheduled_sessions_and_attendance = {unscheduled_session: len(self.user.get_session_students(unscheduled_session.id)) for unscheduled_session in unscheduled_sessions}
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' +
                                                                                                        str(month) +
                                                                                                        '-31'))
         monthly_sessions_schedule_and_attendance = {}
         for month_session in monthly_sessions:
-            monthly_sessions_schedule_and_attendance[month_session] = {}
-            monthly_sessions_schedule_and_attendance[month_session]['schedule'] = self.schedule.get_schedule_from_session(month_session.id)
-            monthly_sessions_schedule_and_attendance[month_session]['attendance'] = self.session_.get_session_attendees(month_session.id)
+            monthly_sessions_schedule_and_attendance[month_session] = {
+                'schedule': self.schedule.get_schedule_from_session(month_session.id),
+                'attendance': self.session_.get_session_attendees(month_session.id)
+            }
         return render_template('reports/monthly.html', **locals())
 
     def export_monthly_summary_csv(self, year, month):
@@ -590,11 +589,14 @@ class ReportView(FlaskView):
         semesters = self.schedule.get_semesters()
         semesters_and_attendance = {}
         for semester in semesters:
-            semesters_and_attendance[semester] = {}
-            semesters_and_attendance[semester]['totalAttendance'] = self.schedule.get_total_semester_attendance(semester.id)
-            semesters_and_attendance[semester]['uniqueAttendance'] = len(self.user.get_unique_session_attendance(semester.id))
-            semesters_and_attendance[semester]['enrolled'] = self.courses.get_enrolled_students_for_semester(semester.id)
-            semesters_and_attendance[semester]['percent'] = '{0}%'.format(round((semesters_and_attendance[semester]['uniqueAttendance'] /semesters_and_attendance[semester]['enrolled']) * 100, 1) if semesters_and_attendance[semester]['enrolled'] > 0 else 0)
+            unique_attendance = len(self.user.get_unique_session_attendance(semester.id))
+            enrolled = self.courses.get_enrolled_students_for_semester(semester.id)
+            semesters_and_attendance[semester] = {
+                'totalAttendance': self.schedule.get_total_semester_attendance(semester.id),
+                'uniqueAttendance': unique_attendance,
+                'enrolled': enrolled,
+                'percent': '{0}%'.format(round((unique_attendance / enrolled) * 100, 1) if enrolled > 0 else 0)
+            }
         return semesters_and_attendance
 
     @route('/session')
@@ -608,10 +610,11 @@ class ReportView(FlaskView):
         sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
         sessions_info = {}
         for lab_session in sessions:
-            sessions_info[lab_session] = {}
-            sessions_info[lab_session]['DOW'] = self.session_.get_dayofWeek_from_session(lab_session.id)
-            sessions_info[lab_session]['attendance'] = self.session_.get_number_of_student_sessions(lab_session.id)
-            sessions_info[lab_session]['tutors'] = self.session_.get_session_tutors(lab_session.id)
+            sessions_info[lab_session] = {
+                'DOW': self.session_.get_dayofWeek_from_session(lab_session.id),
+                'attendance': self.session_.get_number_of_student_sessions(lab_session.id),
+                'tutors': self.session_.get_session_tutors(lab_session.id)
+            }
         return render_template('reports/session.html', **locals())
 
     @route('/session/<int:session_id>')
@@ -628,17 +631,12 @@ class ReportView(FlaskView):
         student_s_list = self.session_.get_studentsession_from_session(session_id)
         session_students = self.session_.get_session_students(session_id)
         session_courses = self.session_.get_session_course_codes(session_id)
-        session_courses_and_attendance = {}
-        for course in session_courses:
-            session_courses_and_attendance[course] = self.session_.get_course_code_attendance(session_id, course.id)
+        session_courses_and_attendance = {course: self.session_.get_course_code_attendance(session_id, course.id) for course in session_courses}
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)
-        students_and_report_courses = {}
-        students_and_courses = {}
-        for student in session_students:
-            students_and_report_courses[student] = self.session_.get_report_student_session_courses(session_info.id, student.id)
-            students_and_courses[student] = self.session_.get_student_session_course_ids(session_info.id, student.id)
+        students_and_report_courses = {student: self.session_.get_report_student_session_courses(session_info.id, student.id) for student in session_students}
+        students_and_courses = {student: self.session_.get_student_session_course_ids(session_info.id, student.id) for student in session_students}
         return render_template('reports/view_session.html', **locals())
 
     def export_session_csv(self):
@@ -703,15 +701,17 @@ class ReportView(FlaskView):
 
         courses_and_attendance = {}
         for course, course_user in course_info:
-            courses_and_attendance[course] = {}
-            courses_and_attendance[course]['user'] = course_user
-            courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+            courses_and_attendance[course] = {
+                'user': course_user,
+                'attendance': self.user.get_students_in_course(course.id)
+            }
 
         if course_viewer_info:
             for course, course_user in course_viewer_info:
-                courses_and_attendance[course] = {}
-                courses_and_attendance[course]['user'] = course_user
-                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+                courses_and_attendance[course] = {
+                    'user': course_user,
+                    'attendance': self.user.get_students_in_course(course.id)
+                }
 
         return render_template('reports/course.html', **locals())
 
@@ -743,15 +743,17 @@ class ReportView(FlaskView):
 
         courses_and_attendance = {}
         for course, course_user in course_info:
-            courses_and_attendance[course] = {}
-            courses_and_attendance[course]['user'] = course_user
-            courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+            courses_and_attendance[course] = {
+                'user': course_user,
+                'attendance': self.user.get_students_in_course(course.id)
+            }
 
         if course_viewer_info:
             for course, course_user in course_viewer_info:
-                courses_and_attendance[course] = {}
-                courses_and_attendance[course]['user'] = course_user
-                courses_and_attendance[course]['attendance'] = self.user.get_students_in_course(course.id)
+                courses_and_attendance[course] = {
+                    'user': course_user,
+                    'attendance': self.user.get_students_in_course(course.id)
+                }
 
         ##### Adding data to CSV #####
         total_attendance = 0
@@ -786,9 +788,7 @@ class ReportView(FlaskView):
 
         active_semester = self.schedule.get_active_semester()
         current_courses = self.courses.get_semester_courses_with_section(active_semester.id)
-        courses_and_profs = {}
-        for course in current_courses:
-            courses_and_profs[course] = self.courses.get_profs_from_course(course.id)
+        courses_and_profs = {course: self.courses.get_profs_from_course(course.id) for course in current_courses}
 
         for course, profs in courses_and_profs.items():
             prof_list = ', '.join(profs)
