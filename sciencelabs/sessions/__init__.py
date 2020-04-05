@@ -152,7 +152,8 @@ class SessionView(FlaskView):
         form = request.form
         session_id = form.get('session-id')
         name = form.get('name')
-        room = form.get('room')
+        room = None if form.get('room') == 'None' else form.get('room')
+        url = None if form.get('url') == 'None' else form.get('url')
         semester_id = form.get('semester-select')
         if not semester_id:
             active_semester = self.schedule.get_active_semester()
@@ -172,7 +173,7 @@ class SessionView(FlaskView):
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
-                                                tutors, courses)
+                                                tutors, courses, url)
             self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
@@ -296,7 +297,8 @@ class SessionView(FlaskView):
 
         form = request.form
         name = form.get('name')
-        room = form.get('room')
+        room = None if form.get('room') == '' else form.get('room')
+        url = None if form.get('url') == '' else form.get('url')
         semester_id = form.get('semester-select')
         date = form.get('date')
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
@@ -321,7 +323,7 @@ class SessionView(FlaskView):
         try:
             self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end,
                                                       actual_start, actual_end, room, comments, anon_students, name,
-                                                      leads, tutors, courses)
+                                                      leads, tutors, courses, url)
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view
                 return redirect(url_for('SessionView:closed'))

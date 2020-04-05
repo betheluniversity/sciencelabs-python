@@ -408,19 +408,19 @@ class Session:
     ######################### CREATE SESSION METHODS #########################
 
     def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
-                           comments, anon_students, name, leads, tutors, courses):
+                           comments, anon_students, name, leads, tutors, courses, url):
         new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, actual_start,
-                                          actual_end, room, comments, anon_students, name)
+                                          actual_end, room, comments, anon_students, name, url)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
 
     def create_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
-                           comments, anon_students, name):
+                           comments, anon_students, name, url):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
                                     schedEndTime=scheduled_end, startTime=actual_start, endTime=actual_end, room=room,
                                     open=0, comments=comments, anonStudents=anon_students, name=name,
-                                    hash=self.base.get_hash())
+                                    hash=self.base.get_hash(), url=url)
         db_session.add(new_session)
         db_session.commit()
         return new_session
@@ -450,15 +450,15 @@ class Session:
     ######################### EDIT SESSION METHODS #########################
 
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-                     room, comments, anon_students, name, leads, tutors, courses):
+                     room, comments, anon_students, name, leads, tutors, courses, url):
         self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, actual_start,
-                               actual_end, room, comments, anon_students, name)
+                               actual_end, room, comments, anon_students, name, url)
         self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
         self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
         self.edit_session_courses(session_id, courses)
 
     def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-                     room, comments, anon_students, name):
+                     room, comments, anon_students, name, url):
         session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_edit.semester_id = semester_id
         session_to_edit.date = date
@@ -470,6 +470,7 @@ class Session:
         session_to_edit.comments = comments
         session_to_edit.anonStudents = anon_students
         session_to_edit.name = name
+        session_to_edit.url = url
         db_session.commit()
 
     def edit_session_leads(self, scheduled_start, scheduled_end, leads, session_id):
