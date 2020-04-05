@@ -44,6 +44,9 @@ class Session:
     def get_open_sessions(self):
         return db_session.query(Session_Table).filter(Session_Table.open == 1).all()
 
+    def get_open_online_sessions(self):
+        return db_session.query(Session_Table).filter(Session_Table.open == 1).filter(Session_Table.url != None).all()
+
     def get_session_tutors(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
                                 TutorSession_Table.timeIn, TutorSession_Table.timeOut, TutorSession_Table.schedTimeIn,
