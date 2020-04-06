@@ -375,10 +375,10 @@ class SessionView(FlaskView):
     @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def student_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
-            url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+            url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash, online=False))
 
-    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
-    def student_attendance(self, session_id, session_hash):
+    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>/<online>', methods=['get', 'post'])
+    def student_attendance(self, session_id, session_hash, online):
         self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
@@ -390,17 +390,17 @@ class SessionView(FlaskView):
         if app.config['ENVIRON'] == 'prod':
             submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user_type='student')
         else:
-            submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
+            submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=False)
 
         return render_template('sessions/student_attendance.html', **locals())
 
     @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
     def tutor_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
-            url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
+            url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=False))
 
-    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
-    def tutor_attendance(self, session_id, session_hash):
+    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>/<online>', methods=['get', 'post'])
+    def tutor_attendance(self, session_id, session_hash, online):
         self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
@@ -412,7 +412,7 @@ class SessionView(FlaskView):
         if app.config['ENVIRON'] == 'prod':
             submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_info.id, session_hash=session_info.hash, user_type='tutor')
         else:
-            submit_url = url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
+            submit_url = url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=False)
 
         return render_template('sessions/tutor_attendance.html', **locals())
 
@@ -452,8 +452,8 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
-    def student_sign_in(self, session_id, session_hash, card_id):
+    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>/<online>', methods=['get', 'post'])
+    def student_sign_in(self, session_id, session_hash, card_id, online):
         semester = self.schedule.get_active_semester()
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
@@ -491,6 +491,8 @@ class SessionView(FlaskView):
 
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
+            if online:
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash, online=True))
             self.slc.set_alert('danger', 'Student currently signed in')
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         student_courses = self.user.get_student_courses(student.id, semester.id)
@@ -547,8 +549,8 @@ class SessionView(FlaskView):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
-    def tutor_sign_in(self, session_id, session_hash, card_id):
+    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>/<online>', methods=['get', 'post'])
+    def tutor_sign_in(self, session_id, session_hash, card_id, online):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 tutor_info = self.wsapi.get_user_from_prox(card_id)
@@ -571,10 +573,14 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
+            if online:
+                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
             self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, tutor.id)
 
+        if online:
+            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])

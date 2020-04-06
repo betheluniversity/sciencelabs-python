@@ -36,18 +36,14 @@
                     <div class="col-md-6 text-right">
                         <div class="row">
                             <div class="btn-group">
-                                {% if 'Administrator' in session['USER-ROLES'] %}
-                                    <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
-                                        id="gray" class="btn btn-primary hover-bright">View Session</a>
+                                {% if 'Tutor' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] %}
+                                    <a href="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=True) }}" id="edit" class="btn btn-primary hover-bright">
+                                        Sign In as a Tutor
+                                    </a>
                                 {% endif %}
-                                {% if 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] %}
-                                    <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
-                                        id="edit" class="btn btn-primary hover-bright">Edit Session</a>
-                                    <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                        id="delete" class="btn btn-primary hover-bright">Close Session</a>
-                                {% endif %}
-                                    <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                        class="btn btn-primary sign-in">Sign In</a>
+                                <a href="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=True) }}" class="btn btn-primary sign-in">
+                                    Sign In {{ 'as a Student' if 'Tutor' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] }}
+                                </a>
                             </div>
                         </div>
                     </div>
