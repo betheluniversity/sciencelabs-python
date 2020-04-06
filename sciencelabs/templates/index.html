@@ -20,4 +20,35 @@
                 (such as MyBethel or Gmail) while running the help session sign in</li>
         </ol>
     </p>
+    <br>
+    {% if open_online_sessions %}
+        <div class="header card bottom-space">
+            <div class="card-body">
+                <p class="card-text">Open Online Sessions</p>
+            </div>
+        </div>
+        {% for session_info in open_online_sessions %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <h3>{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</h3>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="row">
+                            <div class="btn-group">
+                                {% if 'Tutor' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] %}
+                                    <a href="{{ url_for('SessionView:tutor_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=True) }}" id="edit" class="btn btn-primary hover-bright">
+                                        Sign In as a Tutor
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth', online=True) }}" class="btn btn-primary sign-in">
+                                    Sign In {{ 'as a Student' if 'Tutor' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

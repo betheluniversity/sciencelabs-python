@@ -111,6 +111,7 @@ class Session_Table(base):
     openerId = Column(Integer)
     anonStudents = Column(Integer)
     name = Column(String)
+    url = Column(String)
 
     
 class StudentSession_Table(base):

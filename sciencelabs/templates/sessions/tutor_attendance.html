@@ -1,10 +1,17 @@
 {% extends 'sessions/base.html' %}
 
 {% block subnav %}
-    <a id="student" class="nav-item nav-link disabled"
-       href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
-    <a id="tutor" class="nav-item nav-link active"
-       href="{{ url_for('SessionView:tutor_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
+    {% if online %}
+        <a id="student" class="nav-item nav-link disabled"
+           href="{{ url_for('SessionView:student_attendance', session_id=session_info.id, session_hash=session_info.hash, online=True) }}">Student</a>
+        <a id="tutor" class="nav-item nav-link active"
+           href="{{ url_for('SessionView:tutor_attendance', session_id=session_info.id, session_hash=session_info.hash, online=True) }}">Tutor</a>
+    {% else %}
+        <a id="student" class="nav-item nav-link disabled"
+           href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+        <a id="tutor" class="nav-item nav-link active"
+           href="{{ url_for('SessionView:tutor_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
+    {% endif %}
 {% endblock %}
 
 {% block header %}
@@ -32,7 +39,11 @@
                     <br>
                 {% endif %}
                 <div class="centered margin-bottom-10">
-                    <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign in as a Tutor</button>
+                    {% if online %}
+                        <a class="big-button btn btn-primary sign-in" href="{{ session_info.url }}" target="_blank">Join Webex Meeting</a>
+                    {% else %}
+                        <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign in as a Tutor</button>
+                    {% endif %}
                 </div>
             </form>
 
@@ -54,7 +65,7 @@
                                 <td>{{ tutor.timeOut|datetimeformat }}</td>
                             {% else %}
                                 <td>
-                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
+                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash, online=online) }}"
                                        class="delete btn btn-primary">Sign Out</a>
                                 </td>
                             {% endif %}

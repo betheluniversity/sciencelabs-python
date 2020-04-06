@@ -7,13 +7,16 @@ from flask_classy import FlaskView, route
 
 from sciencelabs import app
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs.db_repository.session_functions import Session
 
 
 class View(FlaskView):
     def __init__(self):
         self.slc = ScienceLabsController()
+        self.lab_session = Session()
 
     def index(self):
+        open_online_sessions = self.lab_session.get_open_online_sessions()
         return render_template('index.html', **locals())
 
     @route("/logout", methods=["GET"])
