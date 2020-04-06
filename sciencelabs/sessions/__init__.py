@@ -353,6 +353,8 @@ class SessionView(FlaskView):
                 self.session.tutor_sign_in(session_id, opener.id)
                 self.slc.set_alert('success', 'Session {0} ({1}) opened successfully'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
 
+                if lab_session.url:
+                    return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
             else:  # After alert is set it will jump down and return to the session home page
