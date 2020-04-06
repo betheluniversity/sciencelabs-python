@@ -65,7 +65,7 @@
                                 <td>{{ tutor.timeOut|datetimeformat }}</td>
                             {% else %}
                                 <td>
-                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash) }}"
+                                    <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash, online=online) }}"
                                        class="delete btn btn-primary">Sign Out</a>
                                 </td>
                             {% endif %}

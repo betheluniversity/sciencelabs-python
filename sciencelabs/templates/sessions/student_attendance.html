@@ -73,7 +73,7 @@
                     {% if student.timeOut %}
                         {{ student.timeOut|datetimeformat}}
                     {% else %}
-                        <a href="{{ url_for('SessionView:student_sign_out', session_id=session_info.id, student_id=student.id, session_hash=session_info.hash) }}"
+                        <a href="{{ url_for('SessionView:student_sign_out', session_id=session_info.id, student_id=student.id, session_hash=session_info.hash, online=online) }}"
                                    class="delete btn btn-primary">Sign Out</a>
                     {% endif %}
                 </td>

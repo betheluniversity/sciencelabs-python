@@ -544,9 +544,11 @@ class SessionView(FlaskView):
 
         return 'success'
 
-    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>', methods=['get'])
-    def student_sign_out(self, session_id, student_id, session_hash):
+    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>/<online>', methods=['get'])
+    def student_sign_out(self, session_id, student_id, session_hash, online):
         self.session.student_sign_out(session_id, student_id)
+        if online:
+            return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash, online=True))
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>/<online>', methods=['get', 'post'])
@@ -583,11 +585,13 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])
-    def tutor_sign_out(self, session_id, tutor_id, session_hash):
+    @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>/<online>', methods=['get'])
+    def tutor_sign_out(self, session_id, tutor_id, session_hash, online):
         result = self.session.tutor_sign_out(session_id, tutor_id)
         if not result:
             self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')
+        if online:
+            return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
     # Verifying here on the back end to hide the encoding for the id card numbers
