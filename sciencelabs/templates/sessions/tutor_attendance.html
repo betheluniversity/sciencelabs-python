@@ -39,7 +39,11 @@
                     <br>
                 {% endif %}
                 <div class="centered margin-bottom-10">
-                    <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign in as a Tutor</button>
+                    {% if online %}
+                        <a class="big-button btn btn-primary sign-in" href="{{ session_info.url }}">Join Webex Meeting</a>
+                    {% else %}
+                        <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign in as a Tutor</button>
+                    {% endif %}
                 </div>
             </form>
 
