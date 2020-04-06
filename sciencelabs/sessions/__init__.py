@@ -379,8 +379,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/student-attendance/<int:session_id>/<session_hash>/<online>', methods=['get', 'post'])
     def student_attendance(self, session_id, session_hash, online):
-        if not online:
-            self._session_clear_save_alert()
+        self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
@@ -402,8 +401,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>/<online>', methods=['get', 'post'])
     def tutor_attendance(self, session_id, session_hash, online):
-        if not online:
-            self._session_clear_save_alert()
+        self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
         course_info = self.course.get_active_course_info()
@@ -504,8 +502,7 @@ class SessionView(FlaskView):
         self.user.check_or_create_student_role(student.id)
 
         # clear the session
-        if not online:
-            self._session_clear_save_alert()
+        self._session_clear_save_alert()
 
         return render_template('sessions/student_sign_in.html', **locals())
 
@@ -576,8 +573,6 @@ class SessionView(FlaskView):
                 tutor = self.user.get_user(tutor_id)
         if not tutor or not self.user.user_is_tutor(tutor.id):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
-            if online:
-                return redirect(url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash, online=True))
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
             if online:
