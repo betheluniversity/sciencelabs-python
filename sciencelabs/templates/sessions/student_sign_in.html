@@ -85,11 +85,7 @@
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
                 $.post(url, signInInfo, function(result){
                     if(result === 'success') {
-                        if('{{ online }}' === 'True'){
-                            window.location.replace("{{ url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash, online=true) }}");
-                        }else{
-                            window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
-                        }
+                        window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
                     }else{
                         // The 'true' in this forces the reload no matter what
                         window.location.reload(true);
