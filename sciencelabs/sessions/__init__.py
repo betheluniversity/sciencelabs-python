@@ -312,6 +312,11 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
+        if not (url.startswith('https://') or url.startswith('http://')):
+            self.slc.set_alert('danger', 'The url is formatted incorrectly. It must start with either \'https://\' or '
+                                         '\'http://\'')
+            return redirect(url_for('SessionView:create'))
+
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
         if int(semester_id) != active_semester.id and (not actual_start or not actual_end):
