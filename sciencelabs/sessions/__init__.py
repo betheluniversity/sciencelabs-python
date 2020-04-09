@@ -170,6 +170,11 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
+        if url and not (url.startswith('https://') or url.startswith('http://')):
+            self.slc.set_alert('danger', 'The url is formatted incorrectly. It must start with either \'https://\' or '
+                                         '\'http://\'')
+            return redirect(url_for('SessionView:edit', session_id=session_id))
+
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
@@ -312,7 +317,7 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if not (url.startswith('https://') or url.startswith('http://')):
+        if url and not (url.startswith('https://') or url.startswith('http://')):
             self.slc.set_alert('danger', 'The url is formatted incorrectly. It must start with either \'https://\' or '
                                          '\'http://\'')
             return redirect(url_for('SessionView:create'))
