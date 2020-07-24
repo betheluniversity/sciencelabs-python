@@ -43,7 +43,12 @@ class StudentView(FlaskView):
 
         signed_in_sessions = []
         signed_in_courses = {}
+        session_courses = {}
         for session in open_sessions:
+            try:
+                session_courses[session.id].append((self.session.get_sess_courses(session.id, semester.id)))
+            except:
+                session_courses[session.id] = self.session.get_sess_courses(session.id, semester.id)
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)
