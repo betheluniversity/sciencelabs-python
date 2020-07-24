@@ -60,7 +60,6 @@ class StudentView(FlaskView):
     @route('/load_modal', methods=['POST'])
     def load_virtual_sign_on_modal(self):
         session_id = str(json.loads(request.data).get('session_id'))
-        session_courses = self.session.get_session_courses(session_id)
         semester = self.schedule.get_active_semester()
 
         student = self.user.get_user_by_username(flask_session['USERNAME'])
