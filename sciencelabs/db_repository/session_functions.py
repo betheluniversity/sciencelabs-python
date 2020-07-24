@@ -141,7 +141,6 @@ class Session:
         course_codes = self.get_session_course_codes(session_id)
         courses = []
         for course_code in course_codes:
-            print(course_code.id)
             courses.append(db_session.query(Course_Table)
                            .filter(Course_Table.course_code_id == course_code.id)
                            .filter(Course_Table.semester_id == semester_id)
