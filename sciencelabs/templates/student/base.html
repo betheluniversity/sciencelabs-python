@@ -2,6 +2,6 @@
 
 {% block subnav %}
     <a id="virtual-sign-on" class="nav-link {{ 'active' if 'sign-on' in request.path else 'disabled' }}"
-       href="{{ url_for('CourseView:index') }}">Virtual Sign On</a>
+       href="{{ url_for('StudentView:virtual_sign_on') }}">Virtual Sign On</a>
 {% endblock %}
 
