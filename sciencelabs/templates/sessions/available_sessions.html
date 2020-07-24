@@ -17,8 +17,8 @@
                         <div class="row">
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
-                                <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
-                                   id="gray" class="btn btn-primary hover-bright">View Session</a>
+                                    <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
+                                       id="gray" class="btn btn-primary hover-bright">View Session</a>
                                 {% endif %}
                                 <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
                                    id="edit" class="btn btn-primary hover-bright">Edit Session</a>
