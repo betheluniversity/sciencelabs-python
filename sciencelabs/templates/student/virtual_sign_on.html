@@ -15,6 +15,7 @@
                         <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
                         <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
                         <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Courses Available">Courses Available</th>
                         <th data-toggle="tooltip" data-placement="top" title="Sign Into a Virtual Session">Sign In/Out of a Virtual Session</th>
                     </tr>
                 </thead>
@@ -32,6 +33,15 @@
                             </td>
                             <td>
                                 {{ session.room }}
+                            </td>
+                            <td>
+                                <button type="button" class="show-courses blue btn btn-primary">Show</button>
+                                <div class="course-td text-left margin-top-10">
+                                    {% for course in session_courses[session.id] %}
+                                            {{ course.title }} ({{ course.dept }}{{ course.course_num }})
+                                            <br />
+                                    {% endfor %}
+                                </div>
                             </td>
                             <td>
                                 <div id="sign-in-sign-out">
