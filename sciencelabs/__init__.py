@@ -32,6 +32,7 @@ from sciencelabs.email_tab import EmailView
 from sciencelabs.course import CourseView
 from sciencelabs.schedule import ScheduleView
 from sciencelabs.profile import ProfileView
+from sciencelabs.student import StudentView
 from sciencelabs.sciencelabs_controller import ScienceLabsController as slc
 View.register(app)
 CronView.register(app)
@@ -43,6 +44,7 @@ EmailView.register(app)
 CourseView.register(app)
 ScheduleView.register(app)
 ProfileView.register(app)
+StudentView.register(app)
 
 
 # This makes these variables open to use everywhere
