@@ -52,13 +52,7 @@ class StudentView(FlaskView):
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)
-                # signed_in_courses[session.id] = self.session.get_student_session_courses(session.id, student.id)
-                student_courses = [40269, 40270, 40271, 40273]
-                for course_id in student_courses:
-                    try:
-                        signed_in_courses[session.id].append(self.course.get_course(course_id))
-                    except:
-                        signed_in_courses[session.id] = [self.course.get_course(course_id)]
+                signed_in_courses[session.id] = self.session.get_student_session_courses(session.id, student.id)
 
         return render_template('student/virtual_sign_on.html', **locals())
 
