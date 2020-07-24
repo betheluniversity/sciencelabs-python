@@ -48,7 +48,19 @@
             </table>
 
             <div id="virtual-sign-in-modal"></div>
-            <div id="course-zoom-urls">
+            <div>
+                {% if signed_in_sessions %}
+                    <h6>
+                        Make sure to sign out after you are done with the session or else your time attending will not be
+                        counted.
+                        <br/>
+                        <br/>
+                        Also, make sure not to bookmark the zoom url since it changes weekly and if you don't sign in your
+                        time will not be counted.
+                    </h6>
+                    <br/>
+                {% endif %}
+
                 {% for session in signed_in_sessions %}
                     <h5>
                     Courses for {{ session.name }} - {{ session.date.strftime('%m/%d/%Y') }} -
