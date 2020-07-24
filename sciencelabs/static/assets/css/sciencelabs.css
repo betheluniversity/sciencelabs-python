@@ -509,13 +509,13 @@ select:invalid {
     border-right: 2px solid #000000 !important;
 }
 
-.sign-in {
+.sign-in, .sign-out {
     background-color: #FFC600 !important;
     border-color: #FFC600 !important;
     color: black;
 }
 
-.sign-in:hover{
+.sign-in:hover, .sign-out:hover {
     background-color: #ffae1f !important;
     border-color: #ffae1f !important;
     color: black;
