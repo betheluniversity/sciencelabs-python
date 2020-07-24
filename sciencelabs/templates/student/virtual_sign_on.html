@@ -81,7 +81,6 @@
                         <thead>
                             <tr>
                                 <th data-toggle="tooltip" data-placement="top" title="Course Name">Course</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Course Section">Sec</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Course Code">Course Code</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
                             </tr>
@@ -90,10 +89,7 @@
                             {% for course in signed_in_courses[session.id] %}
                                 <tr>
                                     <td>
-                                        {{ course.title }}
-                                    </td>
-                                    <td>
-                                        {{ course.section }}
+                                        {{ course.courseName }}
                                     </td>
                                     <td>
                                         {{ course.dept + course.course_num }}
