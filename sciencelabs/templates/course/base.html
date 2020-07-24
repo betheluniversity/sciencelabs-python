@@ -1,8 +1,10 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-    <a id="administration" class="nav-link {{ 'active' if 'admin' in request.path else 'disabled'}}"
+    <a id="administration" class="nav-link {{ 'active' if 'admin' in request.path else 'disabled' }}"
        href="{{ url_for('CourseView:index') }}">Administration</a>
+    <a id="zoom-urls" class="nav-link {{ 'active' if 'zoom-urls' in request.path else 'disabled' }}"
+       href="{{ url_for('CourseView:zoom_urls') }}">Add Zoom Urls</a>
 {% endblock %}
 
 {% block body_content %}
