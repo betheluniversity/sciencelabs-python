@@ -489,8 +489,9 @@ class SessionView(FlaskView):
 
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
-            self.slc.set_alert('danger', 'Student currently signed in')
-            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+
+            return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                    session_hash=session_hash))
         student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
 
