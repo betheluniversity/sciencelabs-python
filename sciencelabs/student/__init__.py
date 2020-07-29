@@ -23,6 +23,10 @@ class StudentView(FlaskView):
         self.user = User()
         self.slc = ScienceLabsController()
 
+    @route('/reservations')
+    def reservations(self):
+        return render_template('student/reservations.html')
+
     @route('/zoom-sign-on')
     def virtual_sign_on(self):
         open_sessions = self.session.get_open_sessions()
