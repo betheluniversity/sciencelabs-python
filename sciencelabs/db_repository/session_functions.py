@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import db_session
@@ -381,6 +381,17 @@ class Session:
         return db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None)\
             .filter(StudentSession_Table.timeOut == None).one_or_none()
+
+    def get_reservation_sessions(self):
+        future_sessions = db_session.query(Session_Table).filter(Session_Table.date >= datetime.now().date())
+        valid_sessions = []
+        for session in future_sessions:
+            time = str(session.schedStartTime + timedelta(minutes=10))
+            dt = datetime.combine(session.date, datetime.strptime(time, '%H:%M:%S').time())
+            if dt >= datetime.now() and dt <= (datetime.now() + timedelta(days=1)):
+                valid_sessions.append(session)
+
+        return valid_sessions
 
     ######################### EDIT STUDENT METHODS #########################
 

@@ -25,6 +25,7 @@ class StudentView(FlaskView):
 
     @route('/reservations')
     def reservations(self):
+        sessions = self.session.get_reservation_sessions()
         return render_template('student/reservations.html')
 
     @route('/zoom-sign-on')
