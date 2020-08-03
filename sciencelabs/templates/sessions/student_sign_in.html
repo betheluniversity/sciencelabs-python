@@ -80,7 +80,8 @@
                     'jsonCourseIDs': jsonCourseIDs,
                     'otherCourseCheck': otherCourseCheck,
                     'otherCourseName': $('#course-name').val(),
-                    'timeIn': '{{ time_in }}'
+                    'timeIn': '{{ time_in }}',
+                    'virtual': 0
                 };
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
                 $.post(url, signInInfo, function(result){

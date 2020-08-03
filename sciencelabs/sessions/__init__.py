@@ -531,12 +531,13 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        virtual = form.get('virtual')
         if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
-        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
 
         return 'success'
 
