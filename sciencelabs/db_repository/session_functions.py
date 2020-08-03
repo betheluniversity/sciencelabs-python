@@ -137,6 +137,17 @@ class Session:
         return db_session.query(CourseCode_Table).filter(SessionCourseCodes_Table.session_id == session_id)\
             .filter(SessionCourseCodes_Table.coursecode_id == CourseCode_Table.id).all()
 
+    def get_sess_courses(self, session_id, semester_id):
+        course_codes = self.get_session_course_codes(session_id)
+        courses = []
+        for course_code in course_codes:
+            courses.append(db_session.query(Course_Table)
+                           .filter(Course_Table.course_code_id == course_code.id)
+                           .filter(Course_Table.semester_id == semester_id)
+                           .first())
+
+        return courses
+
     def get_student_session_course_ids(self, session_id, student_id):
         course_ids = []
         courses = self.get_student_session_courses(session_id, student_id)
