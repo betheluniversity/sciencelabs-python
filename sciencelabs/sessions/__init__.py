@@ -98,6 +98,7 @@ class SessionView(FlaskView):
         session_courses = self.session.get_studentsession_courses(student_session_id)
         session_course_ids = [course.id for course in session_courses]
         other_course = self.session.get_other_course(student_session_id)
+        studentsession = self.session.get_studentsession_by_id(student_session_id)
         return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
