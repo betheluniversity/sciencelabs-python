@@ -190,12 +190,17 @@ class SessionView(FlaskView):
         student_courses = form.getlist('course')
         other_check = form.get('other-check')
         other_course = form.get('other-name')
+        virtual = form.get('virtual-check')
         if not other_check:
             other_course = None
+        if virtual:
+            virtual = 1
+        else:
+            virtual = 0
         try:
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
-                                                        student_courses)
+                                                        student_courses, virtual)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
