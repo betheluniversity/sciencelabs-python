@@ -85,6 +85,11 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .one()
 
+    def get_studentsession_by_id(self, studentsession_id):
+        return db_session.query(StudentSession_Table)\
+            .filter(StudentSession_Table.id == studentsession_id)\
+            .one()
+
     def get_session_students(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
                              StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
@@ -384,16 +389,17 @@ class Session:
 
     ######################### EDIT STUDENT METHODS #########################
 
-    def edit_student_session(self, student_session_id, time_in, time_out, other_course, student_courses):
-        self.edit_student_session_info(student_session_id, time_in, time_out, other_course)
+    def edit_student_session(self, student_session_id, time_in, time_out, other_course, student_courses, virtual):
+        self.edit_student_session_info(student_session_id, time_in, time_out, other_course, virtual)
         self.edit_student_courses(student_session_id, student_courses)
 
-    def edit_student_session_info(self, student_session_id, time_in, time_out, other_course):
+    def edit_student_session_info(self, student_session_id, time_in, time_out, other_course, virtual):
         student_session_to_edit = db_session.query(StudentSession_Table) \
             .filter(StudentSession_Table.id == student_session_id) \
             .one()
         student_session_to_edit.timeIn = time_in
         student_session_to_edit.timeOut = time_out
+        student_session_to_edit.online = virtual
         if other_course:
             student_session_to_edit.otherCourse = 1
             student_session_to_edit.otherCourseName = other_course
@@ -566,12 +572,12 @@ class Session:
                                                                        datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
         return True
 
-    def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in):
+    def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in, virtual):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
         # Create student session
         new_student_session = StudentSession_Table(timeIn=db_time, studentId=student_id,
                                                    sessionId=session_id, otherCourse=other_course,
-                                                   otherCourseName=other_name)
+                                                   otherCourseName=other_name, online=virtual)
         db_session.add(new_student_session)
         db_session.commit()
         # Create student session courses
