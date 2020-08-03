@@ -459,7 +459,7 @@ class SessionView(FlaskView):
                 student_info = self.wsapi.get_user_from_prox(card_id)
                 username = student_info['username']
             except:
-                self.slc.set_alert('danger', 'Card not recognized. Please try again or or sign in/out manually.')
+                self.slc.set_alert('danger', 'Card not recognized. Please try again or ask a tutor to sign you in/out.')
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             student = self.user.get_user_by_username(username)
 
