@@ -26,25 +26,18 @@ class StudentView(FlaskView):
     @route('/reservations')
     def reservations(self):
         sessions = self.session.get_reservation_sessions()
-        return render_template('student/reservations.html')
+        # Check if student exists in the system
+        student = self.verify_student()
+
+        return render_template('student/reservations.html', **locals())
 
     @route('/zoom-sign-on')
     def virtual_sign_on(self):
         open_sessions = self.session.get_open_sessions()
         # Check if student exists in the system
         semester = self.schedule.get_active_semester()
-        username = flask_session['USERNAME']
-        student = self.user.get_user_by_username(username)
-        if not student:
-            student = self.user.create_user_at_sign_in(username, semester)
 
-        # Check if student has been deactivated at some point
-        if student.deletedAt != None:
-            self.user.activate_existing_user(student.username)
-            self.user.create_user_courses(student.username, student.id, semester.id)
-
-        # Check to make sure the user has the Student role, add it if they don't
-        self.user.check_or_create_student_role(student.id)
+        student = self.verify_student()
 
         signed_in_sessions = []
         signed_in_courses = {}
@@ -103,3 +96,20 @@ class StudentView(FlaskView):
         self.session.student_sign_out(session_id, student.id)
 
         return 'success'
+
+    def verify_student(self):
+        semester = self.schedule.get_active_semester()
+        student = self.user.get_user_by_username(flask_session['USERNAME'])
+
+        if not student:
+            student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
+
+        # Check if student has been deactivated at some point
+        if student.deletedAt != None:
+            self.user.activate_existing_user(student.username)
+            self.user.create_user_courses(student.username, student.id, semester.id)
+
+        # Check to make sure the user has the Student role, add it if they don't
+        self.user.check_or_create_student_role(student.id)
+
+        return student
