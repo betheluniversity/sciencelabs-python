@@ -70,11 +70,12 @@ class StudentView(FlaskView):
 
         time_in = datetime.now().strftime("%I:%M%p")
 
-        return render_template('student/virtual_sign_on_modal.html', **locals())
+        return render_template('student/course_selector_modal.html', **locals())
 
-    @route('/sign-on/confirm', methods=['POST'])
-    def virtual_sign_in_confirm(self):
+    @route('/reserve-sign-in/confirm', methods=['POST'])
+    def reserve_sign_in_confirm(self):
         form = request.form
+        reservation = form.get('reservation')
         session_id = form.get('sessionID')
         username = form.get('username')
         student_id = form.get('studentID')
@@ -88,7 +89,10 @@ class StudentView(FlaskView):
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
-        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+        if reservation:
+            pass
+        else:
+            self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
 
         return 'success'
 

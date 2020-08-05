@@ -35,11 +35,6 @@
 
 <script type="text/javascript">
     $(document).ready( function () {
-        $('#other').change(function(){
-            $('#other-label').toggleClass('hidden');
-            $('#course-name').toggleClass('hidden');
-        });
-
         $('#save-courses').click(function () {
             let courseIDs = [];
             $('.course-checkbox:checked').each(function(){
@@ -54,7 +49,12 @@
                 'jsonCourseIDs': jsonCourseIDs,
                 'timeIn': '{{ time_in }}'
             };
-            let url = '{{ url_for('StudentView:virtual_sign_in_confirm') }}';
+            let url = '{{ url_for('StudentView:reserve_sign_in_confirm') }}';
+            if (/reservations/.test(window.location.pathname)) {
+                signInInfo['reservation'] = true;
+            } else if (/zoom-sign-on/.test(window.location.pathname)) {
+                signInInfo['reservation'] = false;
+            }
             $.post(url, signInInfo, function(result){
                 // The 'true' in this forces the reload no matter what
                 window.location.reload(true);
