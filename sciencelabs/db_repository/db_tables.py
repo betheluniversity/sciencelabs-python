@@ -113,7 +113,15 @@ class Session_Table(base):
     anonStudents = Column(Integer)
     name = Column(String)
 
-    
+
+class SessionReservations_Table(base):
+    __tablename__ = 'SessionReservations'
+    id = Column(Integer, primary_key=True)
+    session_id = Column(Integer)
+    user_id = Column(Integer)
+    seat_number = Column(Integer)
+
+
 class StudentSession_Table(base):
     __tablename__ = 'StudentSession'
     id = Column(Integer, primary_key=True)
