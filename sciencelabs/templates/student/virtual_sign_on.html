@@ -57,7 +57,7 @@
                 </tbody>
             </table>
 
-            <div id="virtual-sign-in-modal"></div>
+            <div id="course-selector"></div>
             <div>
                 {% if signed_in_sessions %}
                     <h6>
@@ -121,7 +121,7 @@
                     }),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
-                        $('#virtual-sign-in-modal').html(response);
+                        $('#course-selector').html(response);
                         $('#sign-in-modal').modal('show');
                     },
                     error: function (error) {
