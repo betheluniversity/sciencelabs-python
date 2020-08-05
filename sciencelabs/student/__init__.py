@@ -34,20 +34,14 @@ class StudentView(FlaskView):
 
     @route('/zoom-sign-on')
     def virtual_sign_on(self):
-        open_sessions = self.session.get_open_sessions()
         # Check if student exists in the system
         semester = self.schedule.get_active_semester()
-
         student = self.verify_student()
 
+        open_sessions, session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
         signed_in_courses = {}
-        session_courses = {}
         for session in open_sessions:
-            try:
-                session_courses[session.id].append((self.session.get_sess_courses(session.id, semester.id)))
-            except:
-                session_courses[session.id] = self.session.get_sess_courses(session.id, semester.id)
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)
@@ -105,6 +99,32 @@ class StudentView(FlaskView):
         self.session.student_sign_out(session_id, student.id)
 
         return 'success'
+
+    def check_session_courses(self, sessions):
+        semester = self.schedule.get_active_semester()
+        student = self.user.get_user_by_username(flask_session['USERNAME'])
+
+        session_courses = {}
+        sessions_to_remove = []
+        for session in sessions:
+            courses_match = False
+            courses = self.session.get_sess_courses(session.id, semester.id)
+            for s_course in self.user.get_student_courses(student.id, semester.id):
+                for course in courses:
+                    if s_course == course:
+                        courses_match = True
+                        break
+                if courses_match:
+                    break
+            if courses_match:
+                session_courses[session.id] = courses
+            else:
+                sessions_to_remove.append(session)
+
+        for session in sessions_to_remove:
+            sessions.remove(session)
+
+        return sessions, session_courses
 
     def verify_student(self):
         semester = self.schedule.get_active_semester()
