@@ -46,9 +46,9 @@
                             <td>
                                 <div id="reserve-cancel">
                                     {% if is_reserved(session.id, student.id) %}
-                                        <button type="button" id="{{ session.id }}" class="btn btn-danger">Cancel</button>
+                                        <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
                                     {% else %}
-                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary">Reserve</button>
+                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
                                     {% endif %}
                                 </div>
                             </td>
@@ -56,7 +56,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-
+            <div id="virtual-sign-in-modal"></div>
 {#            <div>#}
 {#                {% if reserved_sessions %}#}
 {#                    <h6>#}
@@ -108,4 +108,24 @@
 {#            </div>#}
         {% endif %}
     </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.reserve').click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('StudentView:load_course_selector_modal') }}",
+                    data: JSON.stringify({
+                        'session_id': this.id,
+                    }),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        $('#virtual-sign-in-modal').html(response);
+                        $('#sign-in-modal').modal('show');
+                    },
+                    error: function (error) {
+                    }
+                });
+            });
+        })
+    </script>
 {% endblock %}
