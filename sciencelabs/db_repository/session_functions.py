@@ -4,7 +4,7 @@ from sqlalchemy import func, distinct
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table
+    SessionCourseCodes_Table, SessionReservations_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -393,6 +393,12 @@ class Session:
                 valid_sessions.append(session)
 
         return valid_sessions
+
+    def is_reserved(self, session_id, student_id):
+        db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
 
     ######################### EDIT STUDENT METHODS #########################
 

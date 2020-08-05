@@ -30,7 +30,7 @@ class StudentView(FlaskView):
         student = self.verify_student()
         sessions, session_courses = self.check_session_courses(sessions)
 
-        return render_template('student/reservations.html', **locals())
+        return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved)
 
     @route('/zoom-sign-on')
     def virtual_sign_on(self):
