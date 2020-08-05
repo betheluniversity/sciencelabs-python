@@ -65,6 +65,14 @@ class StudentView(FlaskView):
             self.slc.set_alert('danger', 'You are already signed in.')
             return redirect(url_for('StudentView:virtual_sign_on'))
         student_courses = self.user.get_student_courses(student.id, semester.id)
+        courses = self.session.get_sess_courses(session_id, semester.id)
+
+        matched_courses = []
+        for s_course in student_courses:
+            for course in courses:
+                if s_course.id == course.id:
+                    matched_courses.append(course)
+
         time_in = datetime.now().strftime("%I:%M%p")
 
         return render_template('student/virtual_sign_on_modal.html', **locals())
@@ -77,8 +85,8 @@ class StudentView(FlaskView):
         student_id = form.get('studentID')
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
-        other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
-        other_course_name = form.get('otherCourseName')
+        other_course_check = 0
+        other_course_name = ''
         time_in = form.get('timeIn')
         if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')

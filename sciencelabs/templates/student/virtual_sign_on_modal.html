@@ -18,7 +18,7 @@
                 <br/>
                 <div class="custom-default row">
                     <div class="col-md-12">
-                        {% for course in student_courses %}
+                        {% for course in matched_courses %}
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
                                        value="{{ course.id }}" name="course">
@@ -28,19 +28,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="custom-default row">
-                    <div class="col-md-7">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="other" name="other-check">
-                            <label class="custom-control-label" for="other">Other</label>
-                        </div>
-                        <label class="hidden" id="other-label" for="course-name">Course Name or Reason</label>
-                        <input type="text" class="form-control hidden" id="course-name" name="other-name" autocomplete="off">
-                    </div>
-                </div>
-
-
-
             </div>
             <div class="modal-footer">
                 <button id="save-courses" type="button" class="btn btn-primary">Save</button>
@@ -63,15 +50,12 @@
                 courseIDs.push($(this).val());
             });
             let jsonCourseIDs = JSON.stringify(courseIDs);
-            let otherCourseCheck = $('#other').prop('checked');
             let signInInfo = {
                 'sessionID': {{ session_id }},
                 'username': '{{ student.username }}',
                 'cardID': '{{ card_id }}',
                 'studentID': {{ student.id }},
                 'jsonCourseIDs': jsonCourseIDs,
-                'otherCourseCheck': otherCourseCheck,
-                'otherCourseName': $('#course-name').val(),
                 'timeIn': '{{ time_in }}'
             };
             let url = '{{ url_for('StudentView:virtual_sign_in_confirm') }}';
