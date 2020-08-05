@@ -35,8 +35,11 @@
                             </td>
                             <td>
                                 <div id="reserve-cancel">
-                                    <button type="button" id="{{ session.id }}" class="blue btn btn-primary">Reserve</button>
-                                    <button type="button" id="{{ session.id }}" class="btn btn-danger">Cancel</button>
+                                    {% if is_reserved(session.id, student.id) %}
+                                        <button type="button" id="{{ session.id }}" class="btn btn-danger">Cancel</button>
+                                    {% else %}
+                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary">Reserve</button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
