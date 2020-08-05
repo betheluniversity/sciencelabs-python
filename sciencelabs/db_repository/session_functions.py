@@ -386,9 +386,10 @@ class Session:
         future_sessions = db_session.query(Session_Table).filter(Session_Table.date >= datetime.now().date())
         valid_sessions = []
         for session in future_sessions:
-            time = str(session.schedStartTime + timedelta(minutes=10))
-            dt = datetime.combine(session.date, datetime.strptime(time, '%H:%M:%S').time())
-            if dt >= datetime.now() and dt <= (datetime.now() + timedelta(days=1)):
+            time = session.schedStartTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=15)), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
 
         return valid_sessions
