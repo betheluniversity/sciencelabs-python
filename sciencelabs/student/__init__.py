@@ -49,8 +49,8 @@ class StudentView(FlaskView):
 
         return render_template('student/virtual_sign_on.html', **locals())
 
-    @route('/load_modal', methods=['POST'])
-    def load_virtual_sign_on_modal(self):
+    @route('/load-modal', methods=['POST'])
+    def load_course_selector_modal(self):
         session_id = str(json.loads(request.data).get('session_id'))
         semester = self.schedule.get_active_semester()
 

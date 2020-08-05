@@ -115,7 +115,7 @@
             $('.sign-in').click(function () {
                 $.ajax({
                     type: "POST",
-                    url: "{{ url_for('StudentView:load_virtual_sign_on_modal') }}",
+                    url: "{{ url_for('StudentView:load_course_selector_modal') }}",
                     data: JSON.stringify({
                         'session_id': this.id,
                     }),
