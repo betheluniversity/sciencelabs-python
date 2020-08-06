@@ -30,7 +30,8 @@ class StudentView(FlaskView):
         student = self.verify_student()
         sessions, session_courses = self.check_session_courses(sessions)
 
-        return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved)
+        return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
+                               get_seats_remaining=self.session.get_seats_remaining)
 
     @route('/zoom-sign-on')
     def virtual_sign_on(self):
@@ -90,6 +91,16 @@ class StudentView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
         if reservation:
+            seats_remaining = self.session.get_seats_remaining(session_id)
+            if seats_remaining != 0:
+                capacity = self.session.get_session_capacity(session_id)
+                seat_number = capacity - seats_remaining + 1
+                self.session.reserve_session(session_id, student_id, seat_number)
+            else:
+                self.slc.set_alert('danger', 'There are no open seats. Try again later.')
+                # Need to set the username here because it gets cleared, but we need it to reload the page
+                flask_session['USERNAME'] = username
+                return 'failed'
             pass
         else:
             self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)

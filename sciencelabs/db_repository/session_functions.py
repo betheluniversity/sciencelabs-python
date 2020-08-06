@@ -400,6 +400,30 @@ class Session:
             .filter(SessionReservations_Table.user_id == student_id)\
             .one_or_none()
 
+    def reserve_session(self, session_id, student_id, seat_number):
+        new_reservation = SessionReservations_Table(session_id=session_id, user_id=student_id, seat_number=seat_number)
+        db_session.add(new_reservation)
+        db_session.commit()
+        return new_reservation
+
+    def get_session_capacity(self, session_id):
+        return db_session.query(Session_Table.capacity)\
+            .filter(Session_Table.id == session_id)\
+            .one()[0]
+
+    def get_seats_remaining(self, session_id):
+        capacity = db_session.query(Session_Table.capacity)\
+            .filter(Session_Table.id == session_id)\
+            .one()[0]
+
+        reserved_count = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .all()
+        reserved_count = len(reserved_count)
+
+        return capacity - reserved_count
+
+
     ######################### EDIT STUDENT METHODS #########################
 
     def edit_student_session(self, student_session_id, time_in, time_out, other_course, student_courses):
