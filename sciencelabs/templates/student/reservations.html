@@ -16,6 +16,7 @@
                         <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
                         <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
                         <th data-toggle="tooltip" data-placement="top" title="Courses Available">Courses Available</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Seats Remaining">Seats Available</th>
                         <th data-toggle="tooltip" data-placement="top" title="Reserve or cancel">Reserve or Cancel a Session</th>
                     </tr>
                 </thead>
@@ -44,13 +45,25 @@
                                 </div>
                             </td>
                             <td>
-                                <div id="reserve-cancel">
+                                {{ get_seats_remaining(session.id) }}
+                            </td>
+                            <td>
+                                {% if get_seats_remaining(session.id) != 0 %}
+                                    <div id="reserve-cancel">
+                                        {% if is_reserved(session.id, student.id) %}
+                                            <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
+                                        {% else %}
+                                            <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
                                     {% if is_reserved(session.id, student.id) %}
                                         <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
                                     {% else %}
-                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
+                                        No seats remaining. Please check back later or attend the session
+                                        <a class="no-decoration" href="{{ url_for('StudentView:virtual_sign_on') }}">virtually</a>
                                     {% endif %}
-                                </div>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
