@@ -112,6 +112,7 @@ class Session_Table(base):
     openerId = Column(Integer)
     anonStudents = Column(Integer)
     name = Column(String)
+    capacity = Column(Integer)
 
 
 class SessionReservations_Table(base):
