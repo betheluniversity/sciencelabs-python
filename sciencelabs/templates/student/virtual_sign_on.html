@@ -5,7 +5,8 @@
         <h3>Welome {{ student.firstName }} {{ student.lastName }}</h3>
         <br/>
         {% if not open_sessions %}
-            <h4>There are no virtual sessions currently running</h4>
+            <h4>There are no virtual sessions currently running. Please check back later. Virtually sessions will not
+                appear until the lead tutor has started the session.</h4>
         {% else %}
             <h4>Sign into virtual session</h4>
             <table id="available-table"  class="table table-striped table-bordered">
