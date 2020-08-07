@@ -121,6 +121,7 @@ class SessionReservations_Table(base):
     session_id = Column(Integer)
     user_id = Column(Integer)
     seat_number = Column(Integer)
+    reservation_courses_id = Column(Integer)
 
 
 class StudentSession_Table(base):
