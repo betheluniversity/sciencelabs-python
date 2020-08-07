@@ -46,6 +46,12 @@ class CourseViewer_Table(base):
     user_id = Column(Integer)
 
 
+class ReservationCourses_Table(base):
+    __tablename__ = 'ReservationCourses'
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer)
+
+
 class Role_Table(base):
     __tablename__ = 'Role'
     id = Column(Integer, primary_key=True)
