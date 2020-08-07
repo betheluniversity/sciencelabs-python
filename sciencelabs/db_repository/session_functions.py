@@ -428,12 +428,14 @@ class Session:
             .first()
         first_open_reservation.user_id = student_id
         db_session.commit()
+        self.create_reservation_courses(first_open_reservation.id, student_courses)
         return first_open_reservation
 
-    def get_session_capacity(self, session_id):
-        return db_session.query(Session_Table.capacity)\
-            .filter(Session_Table.id == session_id)\
-            .one()[0]
+    def create_reservation_courses(self, reservation_id, student_coures):
+        for course in student_coures:
+            new_reservation_course = ReservationCourses_Table(reservation_id=reservation_id, course_id=course.id)
+            db_session.add(new_reservation_course)
+        db_session.commit()
 
     def get_seats_remaining(self, session_id):
         capacity = db_session.query(Session_Table.capacity)\
