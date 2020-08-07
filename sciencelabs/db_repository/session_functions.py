@@ -259,8 +259,15 @@ class Session:
             .first()
 
     def delete_session(self, session_id):
+        self.delete_session_reservations(session_id)
         session_to_delete = self.get_session(session_id)
         session_to_delete.deletedAt = datetime.now()
+        db_session.commit()
+
+    def delete_session_reservations(self, session_id):
+        reservations = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).all()
+        for reservation in reservations:
+            db_session.delete(reservation)
         db_session.commit()
 
     def add_anonymous_to_session(self, session_id, anon_students):
@@ -418,6 +425,7 @@ class Session:
 
         reserved_count = db_session.query(SessionReservations_Table.session_id) \
             .filter(SessionReservations_Table.session_id == session_id) \
+            .filter(SessionReservations_Table.user_id == None) \
             .all()
         reserved_count = len(reserved_count)
 
@@ -461,6 +469,7 @@ class Session:
                            room, comments, anon_students, name, leads, tutors, courses):
         new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, actual_start,
                                           actual_end, room, comments, anon_students, name)
+        self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
@@ -474,6 +483,13 @@ class Session:
         db_session.add(new_session)
         db_session.commit()
         return new_session
+
+    def create_seats(self, session_id, capacity):
+        capacity = int(capacity) + 1
+        for i in range(1, capacity):
+            new_session_reservation = SessionReservations_Table(session_id=session_id, seat_number=i)
+            db_session.add(new_session_reservation)
+        db_session.commit()
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
         for lead in leads:
