@@ -163,14 +163,14 @@ class SessionView(FlaskView):
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
-        capacity = form.get('capacity')
+        capacity = int(form.get('capacity'))
         actual_start = form.get('actual-start') or None
         actual_end = form.get('actual-end') or None
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if int(capacity) == 0:
+        if capacity == 0:
             self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
@@ -309,14 +309,14 @@ class SessionView(FlaskView):
         scheduled_end = form.get('scheduled-end') or None
         leads = form.getlist('choose-leads')
         tutors = form.getlist('choose-tutors')
-        capacity = form.get('capacity')
+        capacity = int(form.get('capacity'))
         actual_start = form.get('actual-start') or None
         actual_end = form.get('actual-end') or None
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if int(capacity) == 0:
+        if capacity == 0:
             self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
             return redirect(url_for('SessionView:create'))
 

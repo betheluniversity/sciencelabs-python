@@ -500,8 +500,8 @@ class Session:
         return new_session
 
     def create_seats(self, session_id, capacity):
-        capacity = int(capacity) + 1
         for i in range(1, capacity):
+        capacity = capacity + 1
             new_session_reservation = SessionReservations_Table(session_id=session_id, seat_number=i)
             db_session.add(new_session_reservation)
         db_session.commit()
