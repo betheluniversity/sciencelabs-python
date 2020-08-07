@@ -390,7 +390,10 @@ class Session:
             .filter(StudentSession_Table.timeOut == None).one_or_none()
 
     def get_reservation_sessions(self):
-        future_sessions = db_session.query(Session_Table).filter(Session_Table.date >= datetime.now().date())
+        future_sessions = db_session.query(Session_Table)\
+            .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.deletedAt == None)\
+            .all()
         valid_sessions = []
         for session in future_sessions:
             time = session.schedStartTime
