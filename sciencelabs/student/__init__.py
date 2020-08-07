@@ -93,9 +93,7 @@ class StudentView(FlaskView):
         if reservation:
             seats_remaining = self.session.get_seats_remaining(session_id)
             if seats_remaining != 0:
-                capacity = self.session.get_session_capacity(session_id)
-                seat_number = capacity - seats_remaining + 1
-                self.session.reserve_session(session_id, student_id, seat_number)
+                self.session.reserve_session(session_id, student_id, student_courses)
             else:
                 self.slc.set_alert('danger', 'There are no open seats. Try again later.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
