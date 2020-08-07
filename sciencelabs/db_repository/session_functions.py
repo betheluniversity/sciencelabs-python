@@ -4,7 +4,7 @@ from sqlalchemy import func, distinct
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table, SessionReservations_Table
+    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -265,9 +265,20 @@ class Session:
         db_session.commit()
 
     def delete_session_reservations(self, session_id):
-        reservations = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).all()
+        reservations = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .all()
         for reservation in reservations:
+            self.delete_session_reservations(reservation.id)
             db_session.delete(reservation)
+        db_session.commit()
+
+    def delete_reservation_courses(self, session_id):
+        reservation_courses = db_session.query(ReservationCourses_Table)\
+            .filter(ReservationCourses_Table.reservation_id == SessionReservations_Table.id)\
+            .all()
+        for course in reservation_courses:
+            db_session.delete(course)
         db_session.commit()
 
     def add_anonymous_to_session(self, session_id, anon_students):
