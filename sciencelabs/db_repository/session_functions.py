@@ -438,17 +438,13 @@ class Session:
         db_session.commit()
 
     def get_seats_remaining(self, session_id):
-        capacity = db_session.query(Session_Table.capacity)\
-            .filter(Session_Table.id == session_id)\
-            .one()[0]
-
         reserved_count = db_session.query(SessionReservations_Table.session_id) \
             .filter(SessionReservations_Table.session_id == session_id) \
             .filter(SessionReservations_Table.user_id == None) \
             .all()
         reserved_count = len(reserved_count)
 
-        return capacity - reserved_count
+        return reserved_count
 
 
     ######################### EDIT STUDENT METHODS #########################
