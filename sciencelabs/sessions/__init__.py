@@ -170,6 +170,10 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
+        if int(capacity) == 0:
+            self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
+
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
@@ -311,6 +315,10 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+
+        if int(capacity) == 0:
+            self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
+            return redirect(url_for('SessionView:create'))
 
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
