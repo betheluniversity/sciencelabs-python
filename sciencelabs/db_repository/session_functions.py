@@ -273,9 +273,9 @@ class Session:
             db_session.delete(reservation)
         db_session.commit()
 
-    def delete_reservation_courses(self, session_id):
+    def delete_reservation_courses(self, reservation_id):
         reservation_courses = db_session.query(ReservationCourses_Table)\
-            .filter(ReservationCourses_Table.reservation_id == SessionReservations_Table.id)\
+            .filter(ReservationCourses_Table.reservation_id == reservation_id)\
             .all()
         for course in reservation_courses:
             db_session.delete(course)
@@ -421,11 +421,14 @@ class Session:
             .filter(SessionReservations_Table.user_id == student_id)\
             .one_or_none()
 
-    def reserve_session(self, session_id, student_id, seat_number):
-        new_reservation = SessionReservations_Table(session_id=session_id, user_id=student_id, seat_number=seat_number)
-        db_session.add(new_reservation)
+    def reserve_session(self, session_id, student_id, student_courses):
+        first_open_reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == None)\
+            .first()
+        first_open_reservation.user_id = student_id
         db_session.commit()
-        return new_reservation
+        return first_open_reservation
 
     def get_session_capacity(self, session_id):
         return db_session.query(Session_Table.capacity)\
