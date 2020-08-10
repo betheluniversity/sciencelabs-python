@@ -174,6 +174,14 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit session: Capacity should be greater than 0')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
+        session = self.session.get_session(session_id)
+        if session.capacity > capacity:
+            if session.capacity - self.session.get_seats_remaining(session_id) > capacity:
+                self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
+                                             'the new capacity allows.')
+                return redirect(url_for('SessionView:edit_session', session_id=session_id))
+        else:
+            self.session.create_seats(session.capacity, capacity)
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
