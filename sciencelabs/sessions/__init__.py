@@ -348,6 +348,14 @@ class SessionView(FlaskView):
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('sessions/view_session.html', **locals())
 
+    @route('/view-reservations/<int:session_id>')
+    def view_session_reservations(self, session_id):
+        reservation_sessions = self.session.get_session_reservations(session_id)
+        session = self.session.get_session(session_id)
+        return render_template('sessions/view_reservations.html', **locals(),
+                               get_reservation_courses=self.session.get_reservation_courses,
+                               get_user=self.user.get_user, get_course=self.course.get_course)
+
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 

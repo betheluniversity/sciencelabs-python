@@ -415,6 +415,17 @@ class Session:
 
         return valid_sessions
 
+    def get_session_reservations(self, session_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id != None)\
+            .all()
+
+    def get_reservation_courses(self, reservation_id):
+        return db_session.query(ReservationCourses_Table.course_id)\
+            .filter(ReservationCourses_Table.reservation_id == reservation_id)\
+            .all()
+
     def is_reserved(self, session_id, student_id):
         return db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
