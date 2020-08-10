@@ -444,10 +444,10 @@ class Session:
 
     def cancel_reservation(self, session_id, user_id):
         reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == user_id).one()
-
-        reservation.user_id = None
-        db_session.commit()
         self.delete_reservation_courses(reservation.id)
+        reservation.user_id = None
+
+        db_session.commit()
 
         return reservation
 
