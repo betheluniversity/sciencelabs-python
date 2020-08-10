@@ -171,7 +171,7 @@ class SessionView(FlaskView):
         anon_students = form.get('anon-students')
 
         if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
+            self.slc.set_alert('danger', 'Failed to edit session: Capacity should be greater than 0')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
         try:
