@@ -79,8 +79,12 @@
                             </div>
                         </td>
                         <td>
-                            <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
-                               class="btn btn-primary">View Reservations</a>
+                            {% if are_reservations(session_info.id) %}
+                                <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
+                                   class="btn btn-primary">View Reservations</a>
+                            {% else %}
+                                There is currently reservations for this session.
+                            {% endif %}
                         </td>
                         <td>
                             <div class="btn-group">

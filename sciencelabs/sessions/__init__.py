@@ -34,7 +34,7 @@ class SessionView(FlaskView):
         sessions = self.session.get_available_sessions(semester.id)
         open_sessions = self.session.get_open_sessions()
         sessions_and_tutors = {available_session: self.session.get_session_tutors(available_session.id) for available_session in sessions}
-        return render_template('sessions/available_sessions.html', **locals())
+        return render_template('sessions/available_sessions.html', **locals(), are_reservations=self.session.get_session_reservations)
 
     @route('/closed')
     def closed(self):
