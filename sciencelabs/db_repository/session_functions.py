@@ -431,6 +431,15 @@ class Session:
         self.create_reservation_courses(first_open_reservation.id, student_courses)
         return first_open_reservation
 
+    def cancel_reservation(self, session_id, user_id):
+        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == user_id).one()
+
+        reservation.user_id = None
+        db_session.commit()
+        self.delete_reservation_courses(reservation.id)
+
+        return reservation
+
     def create_reservation_courses(self, reservation_id, student_coures):
         for course in student_coures:
             new_reservation_course = ReservationCourses_Table(reservation_id=reservation_id, course_id=course.id)

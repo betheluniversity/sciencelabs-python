@@ -105,6 +105,14 @@ class StudentView(FlaskView):
 
         return 'success'
 
+    @route('/cancel-reservation', methods=['POST'])
+    def cancel_reservation(self):
+        session_id = str(json.loads(request.data).get('session_id'))
+        student_id = str(json.loads(request.data).get('student_id'))
+        self.session.cancel_reservation(session_id, student_id)
+
+        return 'success'
+
     @route('/sign-out', methods=['POST'])
     def virtual_sign_out(self):
         session_id = str(json.loads(request.data).get('session_id'))
