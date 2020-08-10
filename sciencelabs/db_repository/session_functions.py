@@ -416,7 +416,7 @@ class Session:
         return valid_sessions
 
     def is_reserved(self, session_id, student_id):
-        db_session.query(SessionReservations_Table)\
+        return db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == student_id)\
             .one_or_none()
