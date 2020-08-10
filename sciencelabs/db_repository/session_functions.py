@@ -441,8 +441,8 @@ class Session:
         return reservation
 
     def create_reservation_courses(self, reservation_id, student_coures):
-        for course in student_coures:
-            new_reservation_course = ReservationCourses_Table(reservation_id=reservation_id, course_id=course.id)
+        for course_id in student_coures:
+            new_reservation_course = ReservationCourses_Table(reservation_id=reservation_id, course_id=course_id)
             db_session.add(new_reservation_course)
         db_session.commit()
 
