@@ -71,26 +71,6 @@ class StudentView(FlaskView):
 
         return render_template('student/virtual_sign_on_modal.html', **locals())
 
-    @route('/sign-on/confirm', methods=['POST'])
-    def virtual_sign_in_confirm(self):
-        form = request.form
-        session_id = form.get('sessionID')
-        username = form.get('username')
-        student_id = form.get('studentID')
-        json_courses = form.get('jsonCourseIDs')
-        student_courses = json.loads(json_courses)
-        other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
-        other_course_name = form.get('otherCourseName')
-        time_in = form.get('timeIn')
-        if not student_courses and other_course_name == '':
-            self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
-            # Need to set the username here because it gets cleared, but we need it to reload the page
-            flask_session['USERNAME'] = username
-            return 'failed'
-        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
-
-        return 'success'
-
     @route('/sign-out', methods=['POST'])
     def virtual_sign_out(self):
         session_id = str(json.loads(request.data).get('session_id'))

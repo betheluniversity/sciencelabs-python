@@ -123,6 +123,7 @@ class StudentSession_Table(base):
     sessionId = Column(Integer)
     otherCourse = Column(Integer)
     otherCourseName = Column(String)
+    online = Column(Integer)
 
 
 class TutorSchedule_Table(base):
