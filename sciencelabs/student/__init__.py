@@ -73,6 +73,26 @@ class StudentView(FlaskView):
 
         return render_template('student/course_selector_modal.html', **locals())
 
+    @route('/reserve-confirm', methods=['POST'])
+    def reserve_confirm(self):
+        form = request.form
+        session_id = form.get('sessionID')
+        username = form.get('username')
+        student_id = form.get('studentID')
+        json_courses = form.get('jsonCourseIDs')
+        student_courses = json.loads(json_courses)
+        other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
+        other_course_name = form.get('otherCourseName')
+        time_in = form.get('timeIn')
+        if not student_courses and other_course_name == '':
+            self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
+            # Need to set the username here because it gets cleared, but we need it to reload the page
+            flask_session['USERNAME'] = username
+            return 'failed'
+        self.session.reserve_session(session_id, student_id, student_courses)
+
+        return 'success'
+
     @route('/cancel-reservation', methods=['POST'])
     def cancel_reservation(self):
         session_id = str(json.loads(request.data).get('session_id'))
