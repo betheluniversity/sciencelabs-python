@@ -485,8 +485,7 @@ class SessionView(FlaskView):
                 student_info = self.wsapi.get_user_from_prox(card_id)
                 username = student_info['username']
             except:
-                self.slc.set_alert('danger', 'Card not recognized. Please try again or click the button below to enter '
-                                             'your Bethel username and password.')
+                self.slc.set_alert('danger', 'Card not recognized. Please try again or ask a tutor to sign you in/out.')
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             student = self.user.get_user_by_username(username)
 
@@ -515,8 +514,9 @@ class SessionView(FlaskView):
 
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
-            self.slc.set_alert('danger', 'Student currently signed in')
-            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+
+            return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                    session_hash=session_hash))
         student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
 
@@ -577,8 +577,7 @@ class SessionView(FlaskView):
             try:
                 tutor_info = self.wsapi.get_user_from_prox(card_id)
             except:
-                self.slc.set_alert('danger', 'Card not recognized. Please try again or click the button below to enter '
-                                             'your Bethel username and password.')
+                self.slc.set_alert('danger', 'Card not recognized. Please try again or sign in/out manually.')
                 return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
             tutor = self.user.get_user_by_username(tutor_info['username'])
         else:
@@ -596,7 +595,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
             self.slc.set_alert('danger', 'Tutor currently signed in')
-            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, tutor.id)
 
         return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
