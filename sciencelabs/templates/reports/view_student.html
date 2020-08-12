@@ -165,6 +165,7 @@
                                 <th data-toggle="tooltip" data-placement="top" title="Courses Student Attended Session for">Courses</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Total Time in Session">Total Time</th>
                             </tr>
                         </thead>
@@ -186,6 +187,13 @@
                                 </td>
                                 <td>{{ studentsession.timeIn|datetimeformat }}</td>
                                 <td>{{ studentsession.timeOut|datetimeformat }}</td>
+                                <td>
+                                    {% if studentsession.online %}
+                                        Yes
+                                    {% else %}
+                                        No
+                                    {% endif %}
+                                </td>
                                 {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
                                 {% else %} <td>???</td>
                                 {% endif %}

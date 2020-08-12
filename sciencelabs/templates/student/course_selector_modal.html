@@ -47,14 +47,10 @@
                 'cardID': '{{ card_id }}',
                 'studentID': {{ student.id }},
                 'jsonCourseIDs': jsonCourseIDs,
-                'timeIn': '{{ time_in }}'
+                'timeIn': '{{ time_in }}',
+                'virtual': 1
             };
-            let url = '{{ url_for('StudentView:reserve_sign_in_confirm') }}';
-            if (/reservations/.test(window.location.pathname)) {
-                signInInfo['reservation'] = true;
-            } else if (/zoom-sign-on/.test(window.location.pathname)) {
-                signInInfo['reservation'] = false;
-            }
+            let url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
             $.post(url, signInInfo, function(result){
                 // The 'true' in this forces the reload no matter what
                 window.location.reload(true);

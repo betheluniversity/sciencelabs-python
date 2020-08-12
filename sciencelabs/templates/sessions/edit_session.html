@@ -129,6 +129,7 @@
                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                 <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
+                <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
                 <th></th>
             </thead>
             <tbody>
@@ -162,6 +163,13 @@
                             </ul>
                         </td>
                         <td>
+                            {% if student_session.online %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+                        <td>
                             <div class="btn-group">
                                 <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                    class="btn btn-primary hover-bright">Edit</a>
@@ -173,7 +181,7 @@
                 {% endfor %}
             </tbody>
             <tr>
-                <th colspan="4">Anonymous Students</th>
+                <th colspan="5">Anonymous Students</th>
                 <td class="text-right">{{ session_info.anonStudents }}</td>
             </tr>
         </table>
@@ -186,6 +194,7 @@
                     <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
                     <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                     <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
                     <th></th>
                 </thead>
                 <tbody>
@@ -205,6 +214,13 @@
                                         {{ student_session.timeOut|datetimeformat }}
                                     {% else %}
                                         ???
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student_session.online %}
+                                        Yes
+                                    {% else %}
+                                        No
                                     {% endif %}
                                 </td>
                                 <td>
@@ -328,6 +344,7 @@
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ null ] },
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ null ] },
                 ],
                 "order": [[0, 'asc'],[1, 'asc']],
@@ -339,6 +356,7 @@
 
             var courseTables = $('.course-table').dataTable({
                 "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },

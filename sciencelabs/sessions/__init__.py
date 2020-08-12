@@ -98,6 +98,7 @@ class SessionView(FlaskView):
         session_courses = self.session.get_studentsession_courses(student_session_id)
         session_course_ids = [course.id for course in session_courses]
         other_course = self.session.get_other_course(student_session_id)
+        studentsession = self.session.get_studentsession_by_id(student_session_id)
         return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
@@ -203,12 +204,17 @@ class SessionView(FlaskView):
         student_courses = form.getlist('course')
         other_check = form.get('other-check')
         other_course = form.get('other-name')
+        virtual = form.get('virtual-check')
         if not other_check:
             other_course = None
+        if virtual:
+            virtual = 1
+        else:
+            virtual = 0
         try:
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
-                                                        student_courses)
+                                                        student_courses, virtual)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
@@ -557,12 +563,13 @@ class SessionView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        virtual = form.get('virtual')
         if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
-        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in)
+        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
 
         return 'success'
 
