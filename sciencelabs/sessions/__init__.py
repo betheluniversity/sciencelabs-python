@@ -171,18 +171,41 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
+        # Don't allow capacities of 0 since then why even have a session?
         if capacity == 0:
             self.slc.set_alert('danger', 'Failed to edit session: Capacity should be greater than 0')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
         session = self.session.get_session(session_id)
+
         if session.capacity > capacity:
+            # If the session capacity is greater than the new capacity and more seats are reserved than the new
+            # capacity error out
             if session.capacity - self.session.get_seats_remaining(session_id) > capacity:
                 self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
                                              'the new capacity allows.')
                 return redirect(url_for('SessionView:edit_session', session_id=session_id))
-        else:
-            self.session.create_seats(session.capacity, capacity)
+            # Else this means there are less reservations than the new capacity so delete unused seats and shift
+            # students
+            else:
+                reservations = self.session.get_session_reservations(session_id)
+                capacity_issue = False
+                for reservation in reservations:
+                    if reservation.seat_number > capacity:
+                        capacity_issue = True
+                        break
+                if not capacity_issue:
+                    # TODO Delete seats
+                    pass
+                else:
+                    # TODO Fix capacity issue
+                    pass
+                pass
+
+        elif session.capacity < capacity > self.session.get_total_seats(session_id):
+            # If the new capacity is greater than the current session capacity and there are less seats than the new
+            # capacity, create new seats
+            self.session.create_seats(session_id, capacity, session.capacity + 1)
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                                 actual_start, actual_end, room, comments, anon_students, name, leads,
@@ -569,7 +592,11 @@ class SessionView(FlaskView):
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
-        self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
+        if virtual == 1:
+            self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
+        else:
+            # Check for reservation
+            pass
 
         return 'success'
 
