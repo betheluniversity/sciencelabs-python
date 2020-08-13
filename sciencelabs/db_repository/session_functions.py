@@ -471,6 +471,14 @@ class Session:
 
         return reserved_count
 
+    def get_total_seats(self, session_id):
+        total_seats = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .all()
+        total_seats = len(total_seats)
+
+        return total_seats
+
 
     ######################### EDIT STUDENT METHODS #########################
 
