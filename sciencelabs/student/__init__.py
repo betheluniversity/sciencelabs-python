@@ -30,7 +30,7 @@ class StudentView(FlaskView):
         student = self.verify_student()
         sessions, session_courses = self.check_session_courses(sessions)
 
-        open_sessions, session_courses = self.check_session_courses(self.session.get_open_sessions())
+        open_sessions, signed_in_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
