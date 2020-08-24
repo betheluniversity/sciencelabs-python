@@ -86,9 +86,13 @@
                 var url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
                 $.post(url, signInInfo, function(result){
                     if(result === 'success') {
+                        let audio = new Audio('{{ url_for('static', filename='sounds/success.mp3') }}')
+                        audio.play();
                         window.location.replace("{{ url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash) }}");
                     }else{
                         // The 'true' in this forces the reload no matter what
+                        let audio = new Audio('{{ url_for('static', filename='sounds/failure.mp3') }}')
+                        audio.play();
                         window.location.reload(true);
                     }
                 });
