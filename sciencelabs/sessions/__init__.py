@@ -442,9 +442,9 @@ class SessionView(FlaskView):
         all_students = self.user.get_all_current_students()
         # If prod, we send through a route to get CAS auth, else we go straight to student sign in
         # if app.config['ENVIRON'] == 'prod':
-        submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user_type='student')
-        # else:
-        #     submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
+            submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user_type='student')
+        else:
+            submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
 
         return render_template('sessions/student_attendance.html', **locals())
 
