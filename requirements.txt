@@ -8,3 +8,4 @@ Flask-Mail
 blinker
 mysqlclient
 requests
+simpleaudio
