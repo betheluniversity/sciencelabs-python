@@ -128,6 +128,16 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .all()
 
+    def get_student_session_courses_data(self, session_id, student_id):
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, Course_Table.zoom_url, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
+
     # This method must return the same data as above
     def get_session_courses(self, session_id):
         return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
