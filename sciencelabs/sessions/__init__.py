@@ -556,7 +556,31 @@ class SessionView(FlaskView):
         # clear the session
         self._session_clear_save_alert()
 
-        return render_template('sessions/student_sign_in.html', **locals())
+        # START OF COVID CHANGES #
+
+        reservation_based = True
+        if reservation_based:
+            reservations = self.session.get_session_reservations(session_id)
+            valid_reservation = False
+            for reservation in reservations:
+                if reservation.user_id == student.id:
+                    self.session.student_sign_in(session_id, student.id, student_courses, 0,
+                                                 None, time_in, 0)
+                    valid_reservation = True
+                    break
+            if not valid_reservation:
+                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is capacity '
+                                             'go reserve a space before the session begins or join the session'
+                                             ' virtually.')
+                # Need to set the username here because it gets cleared, but we need it to reload the page
+                flask_session['USERNAME'] = username
+                return redirect(url_for('SessionView:student_attendance', session_id, session_hash))
+
+            # END OF COVID CHANGES #
+
+            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        else:
+            return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
     @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
