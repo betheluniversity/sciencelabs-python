@@ -5,6 +5,7 @@ from flask import render_template, request, redirect, url_for
 from flask import session as flask_session
 from flask_classy import FlaskView, route
 from datetime import datetime
+from playsound import playsound
 
 # Local
 from sciencelabs.db_repository.course_functions import Course
@@ -25,6 +26,7 @@ class StudentView(FlaskView):
 
     @route('/reservations')
     def reservations(self):
+        playsound(url_for('static', filename='sounds/success.mp3'))
         sessions = self.session.get_reservation_sessions()
         # Check if student exists in the system
         student = self.verify_student()

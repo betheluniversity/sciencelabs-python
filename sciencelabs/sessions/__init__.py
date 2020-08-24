@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, json, make_response
 from flask import session as flask_session
 from flask_classy import FlaskView, route
-import simpleaudio as sa
 
 # Local
 from sciencelabs.db_repository.session_functions import Session
