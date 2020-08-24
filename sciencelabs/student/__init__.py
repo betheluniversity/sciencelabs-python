@@ -28,10 +28,6 @@ class StudentView(FlaskView):
         sessions = self.session.get_reservation_sessions()
         # Check if student exists in the system
         student = self.verify_student()
-        semester = self.schedule.get_active_semester()
-
-        self.user.create_user_courses(student.username, student.id, semester.id)
-        sessions, session_courses = self.check_session_courses(sessions)
 
         open_sessions, valid_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
