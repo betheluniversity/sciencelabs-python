@@ -109,6 +109,8 @@ class CourseView(FlaskView):
             cc_str += '{0}{1} ({2}); '.format(coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
         semester = self.schedule.get_active_semester()
 
+        self.slc.set_alert('success', 'Zoom urls saved successfully!')
+
         return render_template('course/add_zoom_url.html', **locals())
 
     @route('/save', methods=['POST', 'GET'])
