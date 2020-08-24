@@ -574,10 +574,11 @@ class SessionView(FlaskView):
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
-                return redirect(url_for('SessionView:student_attendance', session_id, session_hash))
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
             # END OF COVID CHANGES #
-
+            self.slc.set_alert('success', 'You have been successfully signed in!')
+            
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         else:
             return render_template('sessions/student_sign_in.html', **locals())
