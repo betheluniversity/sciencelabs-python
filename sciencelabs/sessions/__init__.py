@@ -441,7 +441,7 @@ class SessionView(FlaskView):
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         # If prod, we send through a route to get CAS auth, else we go straight to student sign in
-        # if app.config['ENVIRON'] == 'prod':
+        if app.config['ENVIRON'] == 'prod':
             submit_url = url_for('SessionView:authenticate_sign_in', session_id=session_id, session_hash=session_hash, user_type='student')
         else:
             submit_url = url_for('SessionView:student_sign_in', session_id=session_info.id, session_hash=session_info.hash, card_id='cas-auth')
