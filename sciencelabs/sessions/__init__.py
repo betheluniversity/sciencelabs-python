@@ -564,6 +564,10 @@ class SessionView(FlaskView):
             valid_reservation = False
             for reservation in reservations:
                 if reservation.user_id == student.id:
+                    courses = self.session.get_reservation_courses(reservation.id)
+                    student_courses = []
+                    for course in courses:
+                        student_courses.append(str(course[0]))
                     self.session.student_sign_in(session_id, student.id, student_courses, 0,
                                                  None, time_in, 0)
                     valid_reservation = True
@@ -578,7 +582,7 @@ class SessionView(FlaskView):
 
             # END OF COVID CHANGES #
             self.slc.set_alert('success', 'You have been successfully signed in!')
-            
+
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         else:
             return render_template('sessions/student_sign_in.html', **locals())
