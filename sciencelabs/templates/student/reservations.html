@@ -70,6 +70,55 @@
                 </tbody>
             </table>
             <div id="course-selector"></div>
+            <div>
+                {% if signed_in_sessions %}
+                    <h6>
+                        Make sure to sign out after you are done with the session or else your time attending will not be
+                        counted.
+                        <br/>
+                        <br/>
+                        Also, make sure not to bookmark the zoom url since it changes weekly and if you don't sign in your
+                        time will not be counted.
+                    </h6>
+                    <br/>
+                {% endif %}
+
+                {% for session in signed_in_sessions %}
+                    <h5>
+                    Courses for {{ session.name }} - {{ session.date.strftime('%m/%d/%Y') }} -
+                    ({{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}) -
+                    {{ session.room }}
+                    </h5>
+                    <table id="table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Name">Course</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Course Code">Course Code</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in signed_in_courses[session.id] %}
+                                <tr>
+                                    <td>
+                                        {{ course.courseName }}
+                                    </td>
+                                    <td>
+                                        {{ course.dept + course.course_num }}
+                                    </td>
+                                    <td>
+                                        {% if course.zoom_url %}
+                                            <a href="{{ course.zoom_url }}" target="_blank">Zoom Url</a>
+                                        {% else %}
+                                            No zoom session for this course
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
     <script type="text/javascript">
