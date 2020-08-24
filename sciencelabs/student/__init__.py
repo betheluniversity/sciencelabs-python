@@ -37,7 +37,7 @@ class StudentView(FlaskView):
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)
-                signed_in_courses[session.id] = self.session.get_student_session_courses(session.id, student.id)
+                signed_in_courses[session.id] = self.session.get_student_session_courses_data(session.id, student.id)
 
         return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
                                get_seats_remaining=self.session.get_seats_remaining)
