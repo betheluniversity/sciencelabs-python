@@ -29,6 +29,36 @@ class ScheduleView(FlaskView):
             }
         return render_template('schedule/schedules.html', **locals())
 
+    @route('zoom-setup')
+    def zoom_setup(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        active_semester = self.schedule.get_active_semester()
+        schedules = self.schedule.get_schedule_tab_info()
+        schedule_tutors_and_courses = {}
+        for schedule in schedules:
+            schedule_tutors_and_courses[schedule] = {
+                'tutors': self.schedule.get_schedule_tutors(schedule.id),
+                'courses': self.schedule.get_schedule_courses(schedule.id)
+            }
+
+        return render_template('schedule/zoom_setup.html', **locals(), get_zoom=self.schedule.get_first_session_by_schedule)
+
+    @route('save-zoom-urls', methods=['POST'])
+    def save_zoom_urls(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        schedules = self.schedule.get_schedule_tab_info()
+        form = request.form
+        for schedule_id in form:
+            sessions = self.schedule.get_sessions_by_schedule(schedule_id)
+            for session in sessions:
+                self.session.update_zoom_url(session.id, form[schedule_id])
+
+        self.slc.set_alert('success', 'The zoom urls were saved successfully!')
+
+        return redirect(url_for('ScheduleView:zoom_setup'))
+
     @route('/create')
     def create_new_schedule(self):
         self.slc.check_roles_and_route(['Administrator'])

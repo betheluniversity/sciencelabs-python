@@ -21,6 +21,12 @@ class Schedule:
             .filter(Schedule_Table.deletedAt == None) \
             .all()
 
+    def get_schedule_sessions(self):
+        return db_session.query(Session_Table).filter(Schedule_Table.id == Session_Table.schedule_id) \
+            .filter(Session_Table.semester_id == Semester_Table.id) \
+            .filter(Semester_Table.active == 1)\
+            .filter(Schedule_Table.deletedAt == None) \
+
     def get_yearly_schedule_tab_info(self, year, term):
         return db_session.query(Schedule_Table) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
@@ -310,6 +316,9 @@ class Schedule:
 
     def get_sessions_by_schedule(self, schedule_id):
         return db_session.query(Session_Table).filter(Session_Table.schedule_id == schedule_id).all()
+
+    def get_first_session_by_schedule(self, schedule_id):
+        return db_session.query(Session_Table).filter(Session_Table.schedule_id == schedule_id).first()
 
     def edit_schedule_info(self, schedule_id, name, room, start_time, end_time, day_of_week):
         schedule_to_edit = db_session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()

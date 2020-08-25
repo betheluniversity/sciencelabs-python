@@ -479,6 +479,12 @@ class Session:
 
         return total_seats
 
+    def update_zoom_url(self, session_id, zoom_url):
+        session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
+        session.zoom_url = zoom_url
+
+        db_session.commit()
+
 
     ######################### EDIT STUDENT METHODS #########################
 
