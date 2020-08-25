@@ -520,20 +520,20 @@ class Session:
 
     ######################### CREATE SESSION METHODS #########################
 
-    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, actual_start, actual_end,
-                           room, comments, anon_students, name, leads, tutors, courses):
-        new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, actual_start,
-                                          actual_end, room, comments, anon_students, name)
+    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+                           actual_end, room, comments, anon_students, name, leads, tutors, courses):
+        new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                                          actual_start, actual_end, room, comments, anon_students, name)
         self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
 
-    def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, actual_start, actual_end, room,
-                       comments, anon_students, name):
+    def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+                       actual_end, room, comments, anon_students, name):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
-                                    schedEndTime=scheduled_end, capacity=capacity, startTime=actual_start,
-                                    endTime=actual_end, room=room, open=0, comments=comments,
+                                    schedEndTime=scheduled_end, capacity=capacity, zoom_url=zoom_url,
+                                    startTime=actual_start, endTime=actual_end, room=room, open=0, comments=comments,
                                     anonStudents=anon_students, name=name, hash=self.base.get_hash())
         db_session.add(new_session)
         db_session.commit()
@@ -579,22 +579,23 @@ class Session:
 
     ######################### EDIT SESSION METHODS #########################
 
-    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, actual_start,
-                     actual_end, room, comments, anon_students, name, leads, tutors, courses):
-        self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, actual_start,
+    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                     actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses):
+        self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                                actual_end, room, comments, anon_students, name)
         self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
         self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
         self.edit_session_courses(session_id, courses)
 
-    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, actual_start,
-                          actual_end, room, comments, anon_students, name):
+    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                          actual_start, actual_end, room, comments, anon_students, name):
         session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_edit.semester_id = semester_id
         session_to_edit.date = date
         session_to_edit.schedStartTime = scheduled_start
         session_to_edit.schedEndTime = scheduled_end
         session_to_edit.capacity = capacity
+        session_to_edit.zoom_url = zoom_url
         session_to_edit.startTime = actual_start
         session_to_edit.endTime = actual_end
         session_to_edit.room = room

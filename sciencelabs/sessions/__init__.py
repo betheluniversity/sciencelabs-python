@@ -162,9 +162,10 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
+        capacity = int(form.get('capacity'))
+        zoom_url = form.get('zoom-url')
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
-        capacity = int(form.get('capacity'))
         actual_start = form.get('actual-start') or None
         actual_end = form.get('actual-end') or None
         courses = form.getlist('courses')
@@ -209,8 +210,8 @@ class SessionView(FlaskView):
             self.session.create_seats(session_id, capacity, session.capacity + 1, False)
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
-                                                actual_start, actual_end, room, comments, anon_students, name, leads,
-                                                tutors, courses)
+                                      zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
+                                      tutors, courses)
             self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
@@ -345,9 +346,10 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
+        capacity = int(form.get('capacity'))
+        zoom_url = form.get('zoom-url')
         leads = form.getlist('choose-leads')
         tutors = form.getlist('choose-tutors')
-        capacity = int(form.get('capacity'))
         actual_start = form.get('actual-start') or None
         actual_end = form.get('actual-end') or None
         courses = form.getlist('courses')
@@ -367,7 +369,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:create'))
 
         try:
-            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity,
+            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
