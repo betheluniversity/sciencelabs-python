@@ -96,11 +96,7 @@
                                         {{ course.dept + course.course_num }}
                                     </td>
                                     <td>
-                                        {% if course.zoom_url %}
-                                            <a href="{{ course.zoom_url }}" target="_blank">Zoom Url</a>
-                                        {% else %}
-                                            No zoom session for this course
-                                        {% endif %}
+{#                                        TODO ADD IN ZOOM #}
                                     </td>
                                 </tr>
                             {% endfor %}

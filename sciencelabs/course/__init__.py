@@ -97,33 +97,6 @@ class CourseView(FlaskView):
 
         return redirect(url_for('CourseView:index'))
 
-    @route('/zoom-urls')
-    def zoom_urls(self):
-        self.slc.check_roles_and_route(['Administrator'])
-
-        courses = self.course.get_current_courses()
-        courses_and_profs = {course: self.course.get_course_profs(course.id) for course in courses}
-        active_coursecodes = self.course.get_active_coursecode()
-        cc_str = ''
-        for coursecodes in active_coursecodes:
-            cc_str += '{0}{1} ({2}); '.format(coursecodes.dept, coursecodes.courseNum, coursecodes.courseName)
-        semester = self.schedule.get_active_semester()
-
-        return render_template('course/add_zoom_url.html', **locals())
-
-    @route('/save', methods=['POST', 'GET'])
-    def save_zoom_urls(self):
-        self.slc.check_roles_and_route(['Administrator'])
-
-        form = request.form
-
-        for course_id in form:
-            self.course.update_zoom_url(course_id, form[course_id])
-
-        self.slc.set_alert('success', 'Zoom urls saved successfully!')
-
-        return redirect(url_for('CourseView:zoom_urls'))
-
     def _dept_length(self, course_string):
         count = 0
         for character in course_string:

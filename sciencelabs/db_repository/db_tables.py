@@ -37,7 +37,6 @@ class Course_Table(base):
     course_code_id = Column(Integer)
     num_attendees = Column(Integer)
     room = Column(String)
-    zoom_url = Column(String)
 
 
 class CourseViewer_Table(base):

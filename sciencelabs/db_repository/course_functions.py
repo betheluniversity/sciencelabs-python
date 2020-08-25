@@ -333,11 +333,3 @@ class Course:
     def get_course_profs(self, course_id):
         return db_session.query(User_Table).filter(User_Table.id == CourseProfessors_Table.professor_id)\
             .filter(CourseProfessors_Table.course_id == course_id).all()
-
-    def update_zoom_url(self, course_id, zoom_url):
-        course = db_session.query(Course_Table)\
-            .filter(Course_Table.id == course_id)\
-            .one()
-        course.zoom_url = zoom_url
-        db_session.commit()
-
