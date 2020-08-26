@@ -4,7 +4,7 @@ import json
 from flask import render_template, request, redirect, url_for
 from flask import session as flask_session
 from flask_classy import FlaskView, route
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Local
 from sciencelabs.db_repository.course_functions import Course
@@ -94,6 +94,14 @@ class StudentView(FlaskView):
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
+        session = self.session.get_session(session_id)
+
+        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=15)), '%H:%M:%S').time())
+        if datetime.now() > start_time_plus_15:
+            self.slc.set_alert('danger', 'You can not reserve a session that has started more than 15 minutes ago.')
+            flask_session['USERNAME'] = username
+            return 'failed'
+
         if not student_courses and other_course_name == '':
             self.slc.set_alert('danger', 'You must pick the courses you are here for or select \'Other\' and fill in the field.')
             # Need to set the username here because it gets cleared, but we need it to reload the page
