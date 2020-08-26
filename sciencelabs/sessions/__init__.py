@@ -174,7 +174,7 @@ class SessionView(FlaskView):
 
         # Don't allow capacities of 0 since then why even have a session?
         if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to edit session: Capacity should be greater than 0')
+            self.slc.set_alert('danger', 'Failed to edit session: Room capacity should be greater than 0')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
         session = self.session.get_session(session_id)
@@ -186,7 +186,7 @@ class SessionView(FlaskView):
             # capacity error out
             if reserved_seats > capacity:
                 self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
-                                             'the new capacity allows.')
+                                             'the new room capacity allows.')
                 return redirect(url_for('SessionView:edit_session', session_id=session_id))
             # Else this means there are less reservations than the new capacity so delete unused seats and shift
             # students
@@ -357,7 +357,7 @@ class SessionView(FlaskView):
         anon_students = form.get('anon-students')
 
         if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to create session: Capacity should be greater than 0')
+            self.slc.set_alert('danger', 'Failed to create session: Room capacity should be greater than 0')
             return redirect(url_for('SessionView:create'))
 
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
@@ -575,8 +575,8 @@ class SessionView(FlaskView):
                     valid_reservation = True
                     break
             if not valid_reservation:
-                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is capacity '
-                                             'go reserve a space before the session begins or join the session'
+                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is room '
+                                             'capacity go reserve a space before the session begins or join the session'
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
@@ -636,8 +636,8 @@ class SessionView(FlaskView):
                     valid_reservation = True
                     break
             if not valid_reservation:
-                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is capacity '
-                                             'go reserve a space before the session begins or join the session'
+                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is room '
+                                             'capacity go reserve a space before the session begins or join the session'
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
