@@ -420,7 +420,6 @@ class SessionView(FlaskView):
         for seat in seats:
             self.session.update_seat_number(session_id, seat['user_id'], seat['seat_number'])
 
-
         self.slc.set_alert('success', 'Seats updated successfully.')
 
         return 'success'
