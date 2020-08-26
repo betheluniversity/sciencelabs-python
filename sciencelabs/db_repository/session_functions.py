@@ -452,6 +452,7 @@ class Session:
         reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == user_id).one()
         self.delete_reservation_courses(reservation.id)
         reservation.user_id = None
+        reservation.seat_number = None
 
         db_session.commit()
 
