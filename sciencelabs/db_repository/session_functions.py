@@ -543,7 +543,7 @@ class Session:
     def create_seats(self, session_id, capacity, start=1, commit=True):
         capacity = capacity + 1
         for i in range(start, capacity):
-            new_session_reservation = SessionReservations_Table(session_id=session_id, seat_number=i)
+            new_session_reservation = SessionReservations_Table(session_id=session_id)
             db_session.add(new_session_reservation)
         if commit:
             db_session.commit()
@@ -552,8 +552,8 @@ class Session:
         for i in range(start + 1, end + 1):
             seat = db_session.query(SessionReservations_Table)\
                 .filter(SessionReservations_Table.session_id == session_id)\
-                .filter(SessionReservations_Table.seat_number == i)\
-                .one()
+                .filter(SessionReservations_Table.user_id == None)\
+                .first()
             db_session.delete(seat)
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):

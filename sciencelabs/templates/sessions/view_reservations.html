@@ -35,7 +35,7 @@
                                 </div>
                             </td>
                             <td>
-                                {{ reservation.seat_number }}
+                                {% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}User has not signed yet{% endif %}
                             </td>
                         </tr>
                     {% endfor %}
