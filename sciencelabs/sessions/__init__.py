@@ -401,11 +401,18 @@ class SessionView(FlaskView):
         session_id = str(json.loads(request.data).get('session_id'))
         seats = json.loads(request.data).get('seats')
 
+        total_seats = self.session.get_total_seats(session_id)
+
         seat_numbers = {}
         for seat in seats:
             # If duplicate seat number that isn't 0 error out
             if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
-                self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'.format(seat['seat_number']))
+                self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'
+                                   .format(seat['seat_number']))
+                return 'error'
+            if seat['seat_number'] > total_seats:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} is larger than the total number of available '
+                                             'seats.'.format(seat['seat_number']))
                 return 'error'
 
             # or add the seat number to the dictionary to check for duplicates
