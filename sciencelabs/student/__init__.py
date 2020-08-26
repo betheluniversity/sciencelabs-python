@@ -106,6 +106,9 @@ class StudentView(FlaskView):
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
+
+        self.slc.set_alert('success', 'Your reservation has been confirmed.')
+
         self.session.reserve_session(session_id, student_id, student_courses)
 
         return 'success'
@@ -114,6 +117,9 @@ class StudentView(FlaskView):
     def cancel_reservation(self):
         session_id = str(json.loads(request.data).get('session_id'))
         student_id = str(json.loads(request.data).get('student_id'))
+
+        self.slc.set_alert('success', 'Your reservation has been cancelled successfully.')
+        
         self.session.cancel_reservation(session_id, student_id)
 
         return 'success'
