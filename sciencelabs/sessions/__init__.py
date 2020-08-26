@@ -593,6 +593,7 @@ class SessionView(FlaskView):
         if reservation_based:
             reservations = self.session.get_session_reservations(session_id)
             valid_reservation = False
+            seat_num = ''
             for reservation in reservations:
                 if reservation.user_id == student.id:
                     courses = self.session.get_reservation_courses(reservation.id)
@@ -601,7 +602,7 @@ class SessionView(FlaskView):
                         student_courses.append(str(course[0]))
                     self.session.student_sign_in(session_id, student.id, student_courses, 0,
                                                  None, time_in, 0)
-                    self.session.update_seat_number(session_id, student.id)
+                    seat_num = self.session.update_seat_number(session_id, student.id)
                     valid_reservation = True
                     break
             if not valid_reservation:
@@ -610,10 +611,13 @@ class SessionView(FlaskView):
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
-                return redirect(url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
+                return redirect(url_for('SessionView:student_attendance', session_id=session_id,
+                                        session_hash=session_hash))
 
-            self.slc.set_alert('success', 'You have been successfully signed in!')
-            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            self.slc.set_alert('success', 'You have been successfully signed in! Your seat number is {0}'
+                               .format(seat_num))
+            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                    session_hash=session_hash))
 
             # END OF COVID CHANGES #
         else:
