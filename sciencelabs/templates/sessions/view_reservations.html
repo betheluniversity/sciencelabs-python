@@ -52,7 +52,7 @@
                 for (let i = 0; i < seats.length; i++) {
                     seat_list.push({
                         'user_id': seats[i].id,
-                        'seat_number': seats[i].value
+                        'seat_number': parseInt(seats[i].value)
                     })
                 }
                 $.ajax({
