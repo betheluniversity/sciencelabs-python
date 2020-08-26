@@ -200,9 +200,9 @@ class SessionView(FlaskView):
                 if not capacity_issue:
                     self.session.delete_seats(session_id, capacity, session.capacity)
                 else:
-                    # TODO Fix capacity issue
-                    pass
-                pass
+                    self.slc.set_alert('danger', 'There are is an issue where someone has a seat number greater than '
+                                                 'the room capacity for the session.')
+                    return redirect(url_for('SessionView:view_session_reservations', session_id=session_id))
 
         elif session.capacity < capacity > self.session.get_total_seats(session_id):
             # If the new capacity is greater than the current session capacity and there are less seats than the new
