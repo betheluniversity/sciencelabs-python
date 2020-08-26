@@ -481,6 +481,19 @@ class Session:
 
         return total_seats
 
+    def update_seat_number(self, session_id, student_id, seat_number=-1):
+        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == student_id).one_or_none()
+        if seat_number != -1:
+            reservation.seat_number = seat_number
+            db_session.commit()
+        else:
+            for i in range(1, self.get_total_seats(session_id) + 1):
+                filled = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.seat_number == i).one_or_none()
+                if not filled:
+                    reservation.seat_number = i
+                    db_session.commit()
+                    break
+
     def update_zoom_url(self, session_id, zoom_url):
         session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
         session.zoom_url = zoom_url

@@ -396,6 +396,28 @@ class SessionView(FlaskView):
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course)
 
+    @route('/update-seats', methods=['POST'])
+    def update_assigned_seats(self):
+        session_id = str(json.loads(request.data).get('session_id'))
+        seats = json.loads(request.data).get('seats')
+
+        seat_numbers = {}
+        for seat in seats:
+            # If duplicate seat number that isn't 0 error out
+            if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'.format(seat['seat_number']))
+                return 'error'
+
+            # or add the seat number to the dictionary to check for duplicates
+            seat_numbers[seat['seat_number']] = seat['seat_number']
+        for seat in seats:
+            self.session.update_seat_number(session_id, seat['user_id'], seat['seat_number'])
+
+
+        self.slc.set_alert('success', 'Seats updated successfully.')
+
+        return 'success'
+
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -572,6 +594,7 @@ class SessionView(FlaskView):
                         student_courses.append(str(course[0]))
                     self.session.student_sign_in(session_id, student.id, student_courses, 0,
                                                  None, time_in, 0)
+                    self.session.update_seat_number(session_id, student.id)
                     valid_reservation = True
                     break
             if not valid_reservation:

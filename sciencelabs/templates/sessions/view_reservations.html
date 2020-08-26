@@ -12,7 +12,7 @@
                         <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
                         <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
                         <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Signed Up For</th>
-                        <th data-toggle="tooltip" data-placement="top" title="Seat Number Assigned">Seat Assigned</th></tr>
+                        <th data-toggle="tooltip" data-placement="top" title="Seat Number Assigned">Seat Assigned (0 if unassigned.)</th></tr>
                 </thead>
                 <tbody>
                     {% for reservation in reservation_sessions %}
@@ -35,12 +35,43 @@
                                 </div>
                             </td>
                             <td>
-                                {% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}User has not signed yet{% endif %}
+                                <input id="{{ user.id }}" class="seats" type="number" min="0" max="{{ session.capacity }}" value="{% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}0{% endif %}">
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% endif %}
+        <button type="button" class="btn blue btn-primary margin-top-10" id="edit-seats">Save Seat Edits</button>
     </div>
+    <script>
+        $(document).ready(function () {
+            $('#edit-seats').click(function () {
+                let seats = document.getElementsByClassName('seats')
+                let seat_list = []
+                for (let i = 0; i < seats.length; i++) {
+                    seat_list.push({
+                        'user_id': seats[i].id,
+                        'seat_number': seats[i].value
+                    })
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('SessionView:update_assigned_seats') }}",
+                    data: JSON.stringify({
+                        'seats': seat_list,
+                        'session_id': {{ session.id }}
+                    }),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        window.location.reload(true);
+                    },
+                    error: function (error) {
+                        window.location.reload(true);
+                    }
+                });
+            });
+
+        });
+    </script>
 {% endblock %}
