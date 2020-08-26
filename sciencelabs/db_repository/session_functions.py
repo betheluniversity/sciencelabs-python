@@ -489,7 +489,10 @@ class Session:
             db_session.commit()
         else:
             for i in range(1, self.get_total_seats(session_id) + 1):
-                filled = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.seat_number == i).one_or_none()
+                filled = db_session.query(SessionReservations_Table)\
+                    .filter(SessionReservations_Table.session_id == session_id)\
+                    .filter(SessionReservations_Table.seat_number == i)\
+                    .one_or_none()
                 if not filled:
                     reservation.seat_number = i
                     seat_num = i
