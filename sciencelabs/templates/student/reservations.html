@@ -81,39 +81,50 @@
                         time will not be counted.
                     </h6>
                     <br/>
-                {% endif %}
 
-                {% for session in signed_in_sessions %}
-                    <h5>
-                    Courses for {{ session.name }} - {{ session.date.strftime('%m/%d/%Y') }} -
-                    ({{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}) -
-                    {{ session.room }}
-                    </h5>
                     <table id="table" class="table table-striped table-bordered">
-                        <thead>
+                        <<thead>
                             <tr>
-                                <th data-toggle="tooltip" data-placement="top" title="Course Name">Course</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Course Code">Course Code</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
+                                <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Reserved</th>
                                 <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for course in signed_in_courses[session.id] %}
+                            {% for session in signed_in_sessions %}
                                 <tr>
                                     <td>
-                                        {{ course.courseName }}
+                                        {{ session.name }}
                                     </td>
                                     <td>
-                                        {{ course.dept + course.course_num }}
+                                        {{ session.date.strftime('%m/%d/%Y') }}
                                     </td>
                                     <td>
-{#                                        TODO ADD IN ZOOM URL #}
+                                        {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                                    </td>
+                                    <td>
+                                        {{ session.room }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="show-courses blue btn btn-primary">Show</button>
+                                        <div class="course-td text-left margin-top-10">
+                                            {% for course in signed_in_courses[session.id] %}
+                                                    {{ course.title }} ({{ course.dept }}{{ course.course_num }})
+                                                    <br />
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="url" class="form-control chosen-container chosen-format" value="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}" name="zoom-url">
                                     </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                {% endfor %}
+                {% endif %}
             </div>
         {% endif %}
     </div>
