@@ -409,6 +409,7 @@ class Session:
         future_sessions = db_session.query(Session_Table)\
             .filter(Session_Table.date >= datetime.now().date())\
             .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.endTime == None)\
             .all()
         valid_sessions = []
         for session in future_sessions:
