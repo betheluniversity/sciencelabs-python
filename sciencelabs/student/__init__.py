@@ -29,6 +29,7 @@ class StudentView(FlaskView):
         # Check if student exists in the system
         student = self.verify_student()
         sessions, session_courses = self.check_session_courses(sessions)
+        sessions, student_session_courses = self.check_session_courses(sessions)
 
         open_sessions, valid_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
@@ -48,7 +49,7 @@ class StudentView(FlaskView):
         semester = self.schedule.get_active_semester()
         student = self.verify_student()
 
-        open_sessions, session_courses = self.check_session_courses(self.session.get_open_sessions())
+        open_sessions, student_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
@@ -122,27 +123,26 @@ class StudentView(FlaskView):
         semester = self.schedule.get_active_semester()
         student = self.user.get_user_by_username(flask_session['USERNAME'])
 
-        session_courses = {}
+        student_session_courses = {}
         sessions_to_remove = []
         for session in sessions:
+            courses = []
             courses_match = False
-            courses = self.session.get_sess_courses(session.id, semester.id)
+            all_session_courses = self.session.get_sess_courses(session.id, semester.id)
             for s_course in self.user.get_student_courses(student.id, semester.id):
-                for course in courses:
+                for course in all_session_courses:
                     if s_course == course:
+                        courses.append(course)
                         courses_match = True
-                        break
-                if courses_match:
-                    break
             if courses_match:
-                session_courses[session.id] = courses
+                student_session_courses[session.id] = courses
             else:
                 sessions_to_remove.append(session)
 
         for session in sessions_to_remove:
             sessions.remove(session)
 
-        return sessions, session_courses
+        return sessions, student_session_courses
 
     def verify_student(self):
         semester = self.schedule.get_active_semester()
