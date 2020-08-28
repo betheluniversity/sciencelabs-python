@@ -609,6 +609,8 @@ class Session:
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
 
+        return new_session
+
     def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                        actual_end, room, comments, anon_students, name):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
