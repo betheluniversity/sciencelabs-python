@@ -162,6 +162,7 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
+        room_group = form.get('room-group')
         capacity = int(form.get('capacity'))
         zoom_url = form.get('zoom-url')
         leads = form.getlist('leads')
@@ -209,6 +210,14 @@ class SessionView(FlaskView):
             # capacity, create new seats
             self.session.create_seats(session_id, capacity, session.capacity + 1, False)
         try:
+            if session.date != db_date or session.schedStartTime != scheduled_start or \
+                    session.schedEndTime != scheduled_end or session.room != room or \
+                    (session.room_group_id != None and not room_group):
+                self.session.delete_session_room_grouping([session_id])
+
+            if session.room_group_id == None and room_group:
+                self.session.update_session_room_grouping([session_id])
+
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
                                       tutors, courses)
@@ -346,6 +355,7 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
+        room_group = form.get('room-group')
         capacity = int(form.get('capacity'))
         zoom_url = form.get('zoom-url')
         leads = form.getlist('choose-leads')
