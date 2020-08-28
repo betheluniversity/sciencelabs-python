@@ -147,3 +147,49 @@ class ScheduleView(FlaskView):
         self.slc.set_alert('success', 'The zoom urls were saved successfully!')
 
         return redirect(url_for('ScheduleView:zoom_setup'))
+
+    @route('room-grouping-setup')
+    def room_group_setup(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        active_semester = self.schedule.get_active_semester()
+        schedules = self.schedule.get_schedule_tab_info()
+        schedule_tutors_and_courses = {}
+        for schedule in schedules:
+            schedule_tutors_and_courses[schedule] = {
+                'tutors': self.schedule.get_schedule_tutors(schedule.id),
+                'courses': self.schedule.get_schedule_courses(schedule.id)
+            }
+
+        return render_template('schedule/room_group_setup.html', **locals(),
+                               get_session=self.schedule.get_first_session_by_schedule)
+
+    @route('save-room-groupings', methods=['POST'])
+    def save_room_groups(self):
+        self.slc.check_roles_and_route(['Administrator'])
+        form = request.form
+
+        schedules_to_delete = []
+        schedules = self.schedule.get_schedule_tab_info()
+
+        for schedule in schedules:
+            schedule_found = False
+            for schedule_id in form:
+                if int(schedule_id) == schedule.id:
+                    schedule_found = True
+                    break
+            if not schedule_found:
+                schedules_to_delete.append(schedule.id)
+
+        for schedule_id in form:
+            sessions = self.schedule.get_sessions_by_schedule(schedule_id)
+            session_ids = []
+            for session in sessions:
+                session_ids.append(session.id)
+            self.session.update_session_room_grouping(session_ids)
+
+        self.session.delete_schedule_room_grouping(schedules_to_delete)
+
+        self.slc.set_alert('success', 'The room groupings were updated successfully.')
+
+        return redirect(url_for('ScheduleView:room_group_setup'))
