@@ -227,7 +227,7 @@ class Schedule:
             schedule_session = Session_Table(semester_id=term_id, schedule_id=schedule_id,
                                              date=session_date, schedStartTime=start_time,
                                              schedEndTime=end_time, room=room, open=0, hash=self.base.get_hash(),
-                                             anonStudents=0, name=name)
+                                             anonStudents=0, name=name, capacity=0)
             db_session.add(schedule_session)
             db_session.commit()
             sessions.append(schedule_session)
