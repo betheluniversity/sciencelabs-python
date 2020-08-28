@@ -2,9 +2,11 @@ from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import db_session
+from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table
+    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table, RoomGrouping_Table
+
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -12,6 +14,53 @@ from sciencelabs import app
 class Session:
     def __init__(self):
         self.base = ScienceLabsController()
+        self.schedule = Schedule()
+
+    def update_session_room_grouping(self, session_ids):
+        # This def will either create a new room group if none exist for the session or add the session to the already
+        # existing room group
+        for session_id in session_ids:
+            got_room_group = False
+            session = self.get_session(session_id)
+            matched_sessions = db_session.query(Session_Table.room_group_id).filter(Session_Table.room == session.room).filter(Session_Table.date == session.date).filter(Session_Table.schedStartTime == session.schedStartTime).filter(Session_Table.schedEndTime == session.schedEndTime).all()
+            for room_group_id in matched_sessions:
+                if room_group_id[0]:
+                    got_room_group = True
+                    session.room_group_id = room_group_id[0]
+            if not got_room_group:
+                room_group_id = self.create_room_grouping()
+                session.room_group_id = room_group_id
+            db_session.commit()
+
+    def create_room_grouping(self):
+        room_group = RoomGrouping_Table()
+        db_session.add(room_group)
+        db_session.commit()
+        return room_group.id
+
+    def delete_schedule_room_grouping(self, schedule_ids):
+        session_ids = []
+        for schedule_id in schedule_ids:
+            sessions = self.schedule.get_sessions_by_schedule(schedule_id)
+            for session in sessions:
+                session_ids.append(session.id)
+
+        self.delete_session_room_grouping(session_ids)
+
+    def delete_session_room_grouping(self, session_ids):
+        for session_id in session_ids:
+            session = self.get_session(session_id)
+            temp_group_id = session.room_group_id
+            session.room_group_id = None
+            db_session.commit()
+            exists = db_session.query(Session_Table).filter(Session_Table.room_group_id == temp_group_id).all()
+            if not exists:
+                room_grouping = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == temp_group_id).one_or_none()
+                db_session.delete(room_grouping)
+                db_session.query()
+
+    def get_all_room_groupings(self):
+        return db_session.query(RoomGrouping_Table).all()
 
     def get_closed_sessions(self, semester_id):
         return db_session.query(Session_Table)\
