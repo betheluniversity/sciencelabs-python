@@ -54,7 +54,11 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-1">
+                <label for="Room Group">Room Group</label>
+                <input type="checkbox" class="form-control chosen-format chosen-container" id="room-group" name="room-group" {% if session_info.room_group_id %}checked{% endif %}>
+            </div>
+            <div class="form-group col-md-5">
                 <label for="capacity">Room Capacity</label>
                 <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ session_info.capacity }}" required>
             </div>
