@@ -81,7 +81,7 @@
                         <td>
                             {% if are_reservations(session_info.id) %}
                                 <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
-                                   class="btn btn-primary">View Reservations</a>
+                                   class="btn btn-primary">View Reservations/Assign Seats</a>
                             {% else %}
                                 There is currently reservations for this session.
                             {% endif %}
