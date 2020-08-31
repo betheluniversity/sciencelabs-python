@@ -69,10 +69,12 @@
                                     </div>
                                 </td>
                                 <td class="text-center btn-group">
-                                    <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
-                                       class="btn btn-primary hover-bright">Edit</a>
-                                    <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
-                                       class="btn btn-primary hover-bright">Delete</a>
+                                    {% if 'Administrator' in session['USER-ROLES'] %}
+                                        <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
+                                           class="btn btn-primary hover-bright">Edit</a>
+                                        <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
+                                           class="btn btn-primary hover-bright">Delete</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

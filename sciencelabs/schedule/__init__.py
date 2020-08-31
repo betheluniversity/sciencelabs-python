@@ -17,7 +17,7 @@ class ScheduleView(FlaskView):
         self.slc = ScienceLabsController()
 
     def index(self):
-        self.slc.check_roles_and_route(['Administrator'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor', 'Professor'])
 
         active_semester = self.schedule.get_active_semester()
         schedules = self.schedule.get_schedule_tab_info()
