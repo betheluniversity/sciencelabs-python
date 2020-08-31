@@ -69,8 +69,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    {% set session = get_session(schedule.id) %}
-                                    <input type="checkbox" name="{{ schedule.id }}" {% if session.room_group_id %}checked{% endif %}>
+                                    <input type="checkbox" name="{{ schedule.id }}" {% if room_group_check[schedule.id] %}checked{% endif %}>
                                 </td>
                             </tr>
                         {% endfor %}

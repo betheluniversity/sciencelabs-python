@@ -155,14 +155,15 @@ class ScheduleView(FlaskView):
         active_semester = self.schedule.get_active_semester()
         schedules = self.schedule.get_schedule_tab_info()
         schedule_tutors_and_courses = {}
+        room_group_check = {}
         for schedule in schedules:
+            room_group_check[schedule.id] = self.schedule.check_schedule_room_groupings(schedule.id)
             schedule_tutors_and_courses[schedule] = {
                 'tutors': self.schedule.get_schedule_tutors(schedule.id),
                 'courses': self.schedule.get_schedule_courses(schedule.id)
             }
 
-        return render_template('schedule/room_group_setup.html', **locals(),
-                               get_session=self.schedule.get_first_session_by_schedule)
+        return render_template('schedule/room_group_setup.html', **locals())
 
     @route('save-room-groupings', methods=['POST'])
     def save_room_groups(self):

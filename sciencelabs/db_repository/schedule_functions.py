@@ -13,6 +13,20 @@ class Schedule:
     def __init__(self):
         self.base = ScienceLabsController()
 
+    def check_schedule_room_groupings(self, schedule_id):
+        sessions = self.get_sessions_by_schedule(schedule_id)
+        num_sessions = len(sessions)
+        num_room_groups = 0
+        for session in sessions:
+            if session.room_group_id:
+                num_room_groups += 1
+
+        if num_sessions == num_room_groups:
+            return True
+        return False
+
+
+
     def get_schedule_tab_info(self):
         return db_session.query(Schedule_Table) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
