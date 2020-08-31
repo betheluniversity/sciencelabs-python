@@ -33,7 +33,7 @@ class Session:
             db_session.commit()
 
     def create_room_grouping(self):
-        room_group = RoomGrouping_Table()
+        room_group = RoomGrouping_Table(capacity=0)
         db_session.add(room_group)
         db_session.commit()
         return room_group.id
@@ -57,7 +57,7 @@ class Session:
             if not exists:
                 room_grouping = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == temp_group_id).one_or_none()
                 db_session.delete(room_grouping)
-                db_session.query()
+                db_session.commit()
 
     def get_all_room_groupings(self):
         return db_session.query(RoomGrouping_Table).all()
