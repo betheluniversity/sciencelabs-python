@@ -76,7 +76,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <button type="submit" class="btn blue btn-primary margin-top-10" id="submit-zoom-urls">Save Zoom Urls</button>
+                {% if 'Administrator' in session['USER-ROLES'] %}
+                    <button type="submit" class="btn blue btn-primary margin-top-10" id="submit-zoom-urls">Save Zoom Urls</button>
+                {% endif %}
             </form>
         </div>
         <div class="col-md-4">

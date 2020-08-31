@@ -1,10 +1,12 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
+    {% if 'Administrator' in session['USER-ROLES'] %}
         <a id="schedule-home" class="nav-link {{ 'active' if '/schedule/' == request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:index') }}">Schedules</a>
         <a id="create" class="nav-link {{ 'active' if 'create' in request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
+    {% endif %}
         <a id="zoom" class="nav-link {{ 'active' if 'zoom-setup' in request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:zoom_setup') }}">Zoom Setup</a>
 {% endblock %}
