@@ -44,10 +44,15 @@
                            href="{{ url_for('UsersView:index') }}">Users</a>
                     </li>
                 {% endif %}
-                {% if 'Administrator' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] or 'Tutor' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
+                {% if 'Administrator' in session['USER-ROLES'] %}
                     <li class="nav-item">
                         <a id="schedule" class="nav-link button {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint }}"
                            href="{{ url_for('ScheduleView:index') }}">Schedule</a>
+                    </li>
+                {% elif 'Lead Tutor' in session['USER-ROLES'] or 'Tutor' in session['USER-ROLES'] or 'Professor' in session['USER-ROLES'] %}
+                    <li class="nav-item">
+                        <a id="schedule" class="nav-link button {{ 'nav-bar-active' if 'ScheduleView' in request.url_rule.endpoint }}"
+                           href="{{ url_for('ScheduleView:zoom_setup') }}">Schedule</a>
                     </li>
                 {% endif %}
                 {% if 'Administrator' in session['USER-ROLES'] %}
