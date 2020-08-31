@@ -1,0 +1,107 @@
+{% extends 'sessions/base.html' %}
+
+{% block subnav %}{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="form-group col-md-8">
+            {% if not room_groupings %}
+                <h4>No room groupings exist.</h4>
+            {% else %}
+                <h4>View Room Groupings</h4>
+                <table id="available-table"  class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Name">Room Group Date</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Date">Room Group Time</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Time">Room Group Room</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Room">Room Group Sessions</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Courses Available">Room Group Capacity</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room_group in room_groupings %}
+                            {% set session = get_session(room_group.id) %}
+                            <tr>
+                                <td>
+                                    {{ session.date.strftime('%m/%d/%Y') }}
+                                </td>
+                                <td>
+                                    {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                                </td>
+                                <td>
+                                    {{ session.room }}
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <input type="number" min="0" class="form-control chosen-container chosen-format capacity" id="{{ room_group.id }}" name="capacity" value="{% if room_group.capacity %}{{ room_group.capacity }}{% else %}0{% endif %}" required>
+                                </td>
+                                <td>
+                                    <a id="delete" href='{{ url_for('SessionView:delete_room_grouping', room_group_id=room_group.id) }}'
+                                       class="btn btn-primary hover-bright">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="button" class="btn blue btn-primary margin-top-10" id="save-capacity">Save Room Group Capacity</button>
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <div class="sub-info card info">
+                <div class="card-body">
+                    <p class="card-text">
+                        This page is used to edit room group capacities and delete room groupings.
+                    </p>
+                    <p class="card-text">
+                        A <strong>room group</strong> is defined as all the sessions that have the exact same date, start time, end time, room number, and have been selected to be included in a room grouping.
+                    </p>
+                    <p class="card-text">
+                        Adding sessions to a room group will allow students from different sessions all to sign into their respective sessions using one login page.
+                        This is useful when you want to have multiple sessions in one room, but only want to use one laptop to sign people in.
+                    </p>
+                    <p class="card-text">
+                        To <strong>edit</strong> room group capacity simply input a number next to the room group you wish to change the capacity and hit the <span class="button-labels">Save Room Group Capacity</span> button.
+                        checkbox and hit the <span class="button-labels">Save</span> button.
+                    </p>
+                    <p class="card-text">
+                        To <strong>delete</strong> a room grouping, simply click the <span id="red" class="button-labels">Delete</span> button next to the corresponding room group.
+                        This will delete the room group but it will not delete the sessions associated with the room group. In order to do that go to the <a href="{{ url_for('SessionView:index') }}">Session Tab</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+           $('#save-capacity').click(function() {
+                let capacity = document.getElementsByClassName('capacity')
+                let capacity_list = []
+                for (let i = 0; i < capacity.length; i++) {
+                    capacity_list.push({
+                        'room_group_id': capacity[i].id,
+                        'capacity': parseInt(capacity[i].value)
+                    })
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('SessionView:save_room_group_capacity') }}",
+                    data: JSON.stringify({
+                        'capacities': capacity_list,
+                    }),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        window.location.reload(true);
+                    },
+                    error: function (error) {
+                        window.location.reload(true);
+                    }
+                });
+           });
+        });
+    </script>
+{% endblock %}

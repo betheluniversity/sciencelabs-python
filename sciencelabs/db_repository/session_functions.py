@@ -59,6 +59,16 @@ class Session:
                 db_session.delete(room_grouping)
                 db_session.commit()
 
+    def get_room_group_sessions(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .all()
+
+    def get_one_room_group_session(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .first()
+
     def get_all_room_groupings(self):
         return db_session.query(RoomGrouping_Table).all()
 

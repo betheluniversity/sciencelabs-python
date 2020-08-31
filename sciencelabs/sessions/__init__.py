@@ -27,6 +27,37 @@ class SessionView(FlaskView):
         self.email = EmailController()
         self.wsapi = WSAPIController()
 
+    @route('view-room-groupings')
+    def room_groupings(self):
+        room_groupings = self.session.get_all_room_groupings()
+
+        return render_template('sessions/view_room_groupings.html', **locals(),
+                               get_session=self.session.get_one_room_group_session,
+                               get_sessions=self.session.get_room_group_sessions)
+
+    @route('save-room-grouping', methods=['POST'])
+    def save_room_group_capacity(self):
+        room_group_capacities = json.loads(request.data).get('capacities')
+
+
+        print(room_group_capacities)
+
+        return 'success'
+
+    @route('delete-room-grouping/<int:room_group_id>')
+    def delete_room_grouping(self, room_group_id):
+
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        session_ids = []
+        for session in sessions:
+            session_ids.append(session.id)
+
+        self.session.delete_session_room_grouping(session_ids)
+
+        self.slc.set_alert('success', 'Successfully deleted the room grouping.')
+
+        return redirect(url_for('SessionView:room_groupings'))
+
     def index(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
