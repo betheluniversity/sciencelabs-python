@@ -98,9 +98,9 @@ class StudentView(FlaskView):
         time_in = form.get('timeIn')
         session = self.session.get_session(session_id)
 
-        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=15)), '%H:%M:%S').time())
-        if datetime.now() > start_time_plus_15:
-            self.slc.set_alert('danger', 'You can not reserve a session that has started more than 15 minutes ago.')
+        start_time_plus_10 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
+        if datetime.now() > start_time_plus_10:
+            self.slc.set_alert('danger', 'You can not reserve a session that has started more than 10 minutes ago.')
             flask_session['USERNAME'] = username
             return 'failed'
 
