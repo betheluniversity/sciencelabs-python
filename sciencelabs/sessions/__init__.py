@@ -706,7 +706,6 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
-            self.slc.set_alert('danger', 'Tutor currently signed in')
             return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id, session_hash=session_hash))
         self.session.tutor_sign_in(session_id, tutor.id)
 
