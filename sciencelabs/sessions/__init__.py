@@ -177,7 +177,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
-    @route('/save-session-edits', methods=['post'])
+    @route('/save-session-edits', methods=['POST'])
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -258,7 +258,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/save-student-edits/<int:session_id>', methods=['post'])
+    @route('/save-student-edits/<int:session_id>', methods=['POST'])
     def save_student_edits(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -286,7 +286,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
 
-    @route('/save-tutor-edits', methods=['post'])
+    @route('/save-tutor-edits', methods=['POST'])
     def save_tutor_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -325,7 +325,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete tutor: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/add-student-submit', methods=['post'])
+    @route('/add-student-submit', methods=['POST'])
     def add_student_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -340,7 +340,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_student', session_id=session_id))
 
-    @route('/add-anon-submit', methods=['post'])
+    @route('/add-anon-submit', methods=['POST'])
     def add_anon_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -355,7 +355,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit anonymous students: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
-    @route('/add-tutor-submit', methods=['post'])
+    @route('/add-tutor-submit', methods=['POST'])
     def add_tutor_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -374,7 +374,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
-    @route('/create-session-submit', methods=['post'])
+    @route('/create-session-submit', methods=['POST'])
     def create_session_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -500,18 +500,19 @@ class SessionView(FlaskView):
             return True  # Return true if session start time is within the hour
         return False
 
-    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def student_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
             url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def student_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in students}
+
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         # If prod, we send through a route to get CAS auth, else we go straight to student sign in
@@ -522,12 +523,12 @@ class SessionView(FlaskView):
 
         return render_template('sessions/student_attendance.html', **locals())
 
-    @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def tutor_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
             url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def tutor_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
@@ -544,7 +545,7 @@ class SessionView(FlaskView):
 
         return render_template('sessions/tutor_attendance.html', **locals())
 
-    @route('/close-session/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/close-session/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def close_open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -552,7 +553,7 @@ class SessionView(FlaskView):
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
 
-    @route('/no-cas/confirm-close', methods=['post'])
+    @route('/no-cas/confirm-close', methods=['POST'])
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -667,12 +668,12 @@ class SessionView(FlaskView):
             return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
-    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
+    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['GET', 'POST'])
     def authenticate_sign_in(self, session_id, session_hash, user_type):
         asdf = "This is jsut here to make a break point"
         return self._logout_open_session(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
-    @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
+    @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['GET'])
     def store_username(self, session_id, session_hash, user_type, username):
         # this entire method is used to store the username, then act as a passthrough
         flask_session['USERNAME'] = username
@@ -684,7 +685,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
-    @route('/no-cas/checkin/confirm', methods=['post'])
+    @route('/no-cas/checkin/confirm', methods=['POST'])
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
@@ -727,7 +728,7 @@ class SessionView(FlaskView):
         self.session.student_sign_out(session_id, student_id)
         return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
