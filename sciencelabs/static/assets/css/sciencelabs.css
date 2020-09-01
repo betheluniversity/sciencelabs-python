@@ -127,7 +127,7 @@ div.semester-selector {
     direction: rtl;
 }
 
-div.tutor-td, div.course-td{
+div.tutor-td, div.course-td, div.session-td{
     display: none;
     white-space: nowrap;
 }

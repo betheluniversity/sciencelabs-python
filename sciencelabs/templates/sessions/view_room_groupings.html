@@ -34,7 +34,13 @@
                                     {{ session.room }}
                                 </td>
                                 <td>
-
+                                    <button type="button" class="show-sessions blue btn btn-primary">Show</button>
+                                    <div class="session-td text-left margin-top-10">
+                                        {% for session in sessions[room_group.id] %}
+                                            <a href="{{ url_for('SessionView:edit_session', session_id=session.id) }}">{{ session.name }}</a>
+                                            <br />
+                                        {% endfor %}
+                                    </div>
                                 </td>
                                 <td>
                                     <input type="number" min="0" class="form-control chosen-container chosen-format capacity" id="{{ room_group.id }}" name="capacity" value="{% if room_group.capacity %}{{ room_group.capacity }}{% else %}0{% endif %}" required>
@@ -77,7 +83,7 @@
     </div>
     <script>
         $(document).ready(function () {
-           $('#save-capacity').click(function() {
+            $('#save-capacity').click(function() {
                 let capacity = document.getElementsByClassName('capacity')
                 let capacity_list = []
                 for (let i = 0; i < capacity.length; i++) {
@@ -101,7 +107,7 @@
                         window.location.reload(true);
                     }
                 });
-           });
+            });
         });
     </script>
 {% endblock %}
