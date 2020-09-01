@@ -664,8 +664,6 @@ class SessionView(FlaskView):
         else:
             return redirect(url_for('SessionView:index'))
 
-    # TODO add in way to close sessions
-
     @route('no-cas/student-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
     def student_room_group_attendance(self, room_group_id):
         students = []
@@ -818,7 +816,6 @@ class SessionView(FlaskView):
                         student_courses.append(str(course[0]))
                     self.session.student_sign_in(session_id, student.id, student_courses, 0,
                                                  None, time_in, 0)
-                    seat_num = self.session.update_seat_number(session_id, student.id)
                     valid_reservation = True
                     break
             if not valid_reservation:
