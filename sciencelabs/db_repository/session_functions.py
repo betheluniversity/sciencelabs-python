@@ -158,7 +158,7 @@ class Session:
     def get_session_students(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
                              StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
-                             StudentSession_Table.otherCourseName) \
+                             StudentSession_Table.otherCourseName, StudentSession_Table.online) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
