@@ -42,7 +42,7 @@ class StudentView(FlaskView):
         return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
                                get_seats_remaining=self.session.get_seats_remaining)
 
-    @route('/zoom-sign-on')
+    @route('/virtual-sign-on')
     def virtual_sign_on(self):
         # Check if student exists in the system
         semester = self.schedule.get_active_semester()
