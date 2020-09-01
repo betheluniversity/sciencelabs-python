@@ -446,6 +446,15 @@ class SessionView(FlaskView):
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course)
 
+    @route('/view-session-seats/<int:session_id>')
+    def view_session_seats(self, session_id):
+        students = self.session.get_session_students(session_id)
+        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in
+                                students}
+        session = self.session.get_session(session_id)
+
+        return render_template('sessions/view_session_seats.html', **locals(), get_reservation=self.session.get_reservation)
+
     @route('/view-room-group-reservations/<int:room_group_id>')
     def view_room_group_reservations(self, room_group_id):
         room_group = self.session.get_room_group_by_id(room_group_id)
@@ -457,6 +466,21 @@ class SessionView(FlaskView):
         return render_template('sessions/view_room_group_reservations.html', **locals(),
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course, get_session=self.session.get_one_room_group_session)
+
+    @route('/view-room-group-seats/<int:room_group_id>')
+    def view_room_group_seats(self, room_group_id):
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        students = []
+        students_and_courses = {}
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        for session in sessions:
+            students.extend(self.session.get_session_students(session.id))
+            students_and_courses.update({student: self.session.get_student_session_courses(session.id, student.id) for student in students})
+
+        return render_template('sessions/view_room_group_seats.html', **locals(), get_reservation=self.session.get_reservation_from_sessions)
+
 
     @route('/update-room-group-seats', methods=['POST'])
     def update_room_group_assigned_seats(self):

@@ -497,6 +497,19 @@ class Session:
 
         return valid_sessions
 
+    def get_reservation(self, session_id, student_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
+
+    def get_reservation_from_sessions(self, sessions, student_id):
+        for session in sessions:
+            session_reservations = self.get_session_reservations(session.id)
+            for reservation in session_reservations:
+                if reservation.user_id == student_id:
+                    return reservation
+
     def get_session_reservations(self, session_id):
         return db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
