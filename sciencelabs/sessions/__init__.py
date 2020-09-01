@@ -581,9 +581,92 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    # START OF ROOM GROUP UPDATES #
+
+    def open_room_group(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        errors = False
+        for session in sessions:
+            lab_session = self.session.get_session(session.id)
+
+            if lab_session.date.strftime("%m/%d/%Y") == datetime.now().strftime("%m/%d/%Y"):
+
+                if self._check_session_time(lab_session):  # returns true if session is started within an hour window
+                    opener = self.user.get_user_by_username(flask_session['USERNAME'])
+                    self.session.start_open_session(session.id, opener.id)
+                    self.session.tutor_sign_in(session.id, opener.id)
+                    self.slc.set_alert('success', 'Session {0} ({1}) opened successfully'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+                else:  # After alert is set it will jump down and return to the session home page
+                    errors = True
+                    self.slc.set_alert('danger', 'Session {0} ({1}) does not start at this time'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+            else:  # Set alert and return to session home page
+                errors = True
+                self.slc.set_alert('danger', 'Session {0} ({1}) is not scheduled for today'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        if not errors:
+            return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
+        else:
+            return redirect(url_for('SessionView:index'))
+
+    @route('no-cas/student-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
+    def student_room_group_attendance(self, room_group_id):
+        students = []
+        students_and_courses = {}
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        for session in sessions:
+            students.extend(self.session.get_session_students(session.id))
+            students_and_courses.update({student: self.session.get_student_session_courses(session.id, student.id) for student in students})
+
+        # This is for development - allows us to pick a student to sign in as
+        all_students = self.user.get_all_current_students()
+        all_students = []
+        # If prod, we send through a route to get CAS auth, else we go straight to student sign in
+        if app.config['ENVIRON'] == 'prod':
+            submit_url = url_for('SessionView:authenticate_room_group_sign_in', room_group_id=room_group_id, user_type='student')
+        else:
+            submit_url = url_for('SessionView:student_room_group_sign_in', room_group_id=room_group_id, card_id='cas-auth')
+
+        return render_template('sessions/student_room_group_attendance.html', **locals())
+
+    # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
+    @route('/authenticate-room-group-sign-in/<int:room_group_id>/<user_type>', methods=['GET', 'POST'])
+    def authenticate_room_group_sign_in(self, room_group_id, user_type):
+        asdf = "This is jsut here to make a break point"
+        return self._logout_open_session(url_for('SessionView:store_room_group_username', room_group_id=room_group_id, user_type=user_type, username=flask_session.get('USERNAME')))
+
+    @route('/no-cas/store-room-group-username/<room_group_id>/<user_type>/<username>', methods=['GET'])
+    def store_room_group_username(self, room_group_id, user_type, username):
+        # this entire method is used to store the username, then act as a passthrough
+        flask_session['USERNAME'] = username
+
+        if user_type == 'tutor':
+            route_url = 'SessionView:tutor_sign_in'
+        else:
+            route_url = 'SessionView:student_room_group_sign_in'
+
+        return redirect(url_for(route_url, room_group_id=room_group_id, card_id='cas-auth'))
+
+    @route('/no-cas/checkin/room-group/<int:room_group_id>/<card_id>', methods=['GET', 'POST'])
+    def student_room_group_sign_in(self, room_group_id, card_id):
+        return self.student_sign_in_helper(room_group_id=room_group_id, card_id=card_id)
+
+    @route('/no-cas/student-attendance-passthrough/<int:room_group_id>', methods=['GET', 'POST'])
+    def student_room_group_attendance_passthrough(self, room_group_id):
+        return self._logout_open_session(
+            url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
+
+    # END OF ROOM GROUP UPDATES
+
+    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def student_sign_in(self, session_id, session_hash, card_id):
+        return self.student_sign_in_helper(session_id=session_id, session_hash=session_hash, card_id=card_id)
+    def student_sign_in_helper(self, card_id, session_id=None, session_hash=None, room_group_id=None):
         semester = self.schedule.get_active_semester()
+
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
@@ -591,7 +674,11 @@ class SessionView(FlaskView):
                 username = student_info['username']
             except:
                 self.slc.set_alert('danger', 'Card not recognized. Please try again or ask a tutor to sign you in/out.')
-                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                if not room_group_id:
+                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                            session_hash=session_hash))
+                else:
+                    return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
             student = self.user.get_user_by_username(username)
 
         # No card so now we get the user via CAS
@@ -601,7 +688,11 @@ class SessionView(FlaskView):
                 student_choice = form.get('selected-student')
                 if student_choice == '-1':
                     self.slc.set_alert('danger', 'Invalid Student')
-                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                    if not room_group_id:
+                        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                                session_hash=session_hash))
+                    else:
+                        return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
                 student = self.user.get_user(student_choice)
                 username = student.username
             else:
@@ -617,11 +708,23 @@ class SessionView(FlaskView):
             self.user.activate_existing_user(student.username)
             self.user.create_user_courses(student.username, student.id, semester.id)
 
+        if room_group_id:
+            sessions = self.session.get_room_group_sessions(room_group_id)
+            for session in sessions:
+                reservations = self.session.get_session_reservations(session.id)
+                for reservation in reservations:
+                    if student.id == reservation.user_id:
+                        session_id = session.id
+                        session_hash = session.hash
+
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
-
-            return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
-                                    session_hash=session_hash))
+            if not room_group_id:
+                return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                        session_hash=session_hash))
+            else:
+                return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                        session_hash=session_hash, room_group_id=room_group_id))
         student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
 
@@ -655,13 +758,19 @@ class SessionView(FlaskView):
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
-                return redirect(url_for('SessionView:student_attendance', session_id=session_id,
-                                        session_hash=session_hash))
+                if not room_group_id:
+                    return redirect(url_for('SessionView:student_attendance', session_id=session_id,
+                                            session_hash=session_hash))
+                else:
+                    return redirect(url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
             self.slc.set_alert('success', 'You have been successfully signed in! Your seat number is {0}'
                                .format(seat_num))
-            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
-                                    session_hash=session_hash))
+            if not room_group_id:
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                        session_hash=session_hash))
+            else:
+                return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
 
             # END OF COVID CHANGES #
         else:
@@ -723,10 +832,13 @@ class SessionView(FlaskView):
 
         return 'success'
 
-    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>', methods=['get'])
-    def student_sign_out(self, session_id, student_id, session_hash):
-        self.session.student_sign_out(session_id, student_id)
-        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>/<room_group_id>', methods=['GET'])
+    def student_sign_out(self, session_id, student_id, session_hash, room_group_id=None):
+        # self.session.student_sign_out(session_id, student_id)
+        if not room_group_id:
+            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        else:
+            return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
 
     @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
