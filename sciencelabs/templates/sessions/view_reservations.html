@@ -26,8 +26,7 @@
                                 {{ session.date.strftime('%m/%d/%Y') }}
                             </td>
                             <td>
-                                <button type="button" class="show-courses blue btn btn-primary">Show</button>
-                                <div class="course-td text-left margin-top-10">
+                                <div class="text-left margin-top-10">
                                     {% for course in get_reservation_courses(reservation.id) %}
                                         {% set c = get_course(course[0]) %}
                                         {{ c.title }} ({{ c.dept }}{{ c.course_num }})
