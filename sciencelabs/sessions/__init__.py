@@ -664,6 +664,7 @@ class SessionView(FlaskView):
     @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def student_sign_in(self, session_id, session_hash, card_id):
         return self.student_sign_in_helper(session_id=session_id, session_hash=session_hash, card_id=card_id)
+
     def student_sign_in_helper(self, card_id, session_id=None, session_hash=None, room_group_id=None):
         semester = self.schedule.get_active_semester()
 
