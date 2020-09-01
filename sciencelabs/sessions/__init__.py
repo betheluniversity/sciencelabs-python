@@ -39,8 +39,11 @@ class SessionView(FlaskView):
     def save_room_group_capacity(self):
         room_group_capacities = json.loads(request.data).get('capacities')
 
+        for info in room_group_capacities:
+            self.session.update_room_group_capacity(info['room_group_id'], info['capacity'])
 
         print(room_group_capacities)
+        self.slc.set_alert('success', 'Successfully updated the room group capacities.')
 
         return 'success'
 

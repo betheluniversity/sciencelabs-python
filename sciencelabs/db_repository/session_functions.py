@@ -72,6 +72,12 @@ class Session:
     def get_all_room_groupings(self):
         return db_session.query(RoomGrouping_Table).all()
 
+    def update_room_group_capacity(self, room_group_id, capacity):
+        room_group = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
+        room_group.capacity = capacity
+        db_session.commit()
+
+
     def get_closed_sessions(self, semester_id):
         return db_session.query(Session_Table)\
                 .filter(Session_Table.semester_id == Semester_Table.id)\
