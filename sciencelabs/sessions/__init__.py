@@ -446,6 +446,52 @@ class SessionView(FlaskView):
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course)
 
+    @route('/view-room-group-reservations/<int:room_group_id>')
+    def view_room_group_reservations(self, room_group_id):
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        reservation_sessions = []
+        for session in sessions:
+            reservation_sessions.extend(self.session.get_session_reservations(session.id))
+
+        return render_template('sessions/view_room_group_reservations.html', **locals(),
+                               get_reservation_courses=self.session.get_reservation_courses,
+                               get_user=self.user.get_user, get_course=self.course.get_course, get_session=self.session.get_one_room_group_session)
+
+    @route('/update-room-group-seats', methods=['POST'])
+    def update_room_group_assigned_seats(self):
+        room_group_id = str(json.loads(request.data).get('room_group_id'))
+        seats = json.loads(request.data).get('seats')
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        total_seats = room_group.capacity
+
+        seat_numbers = {}
+        for seat in seats:
+            # If duplicate seat number that isn't 0 error out
+            if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'
+                                   .format(seat['seat_number']))
+                return 'error'
+            if seat['seat_number'] > total_seats:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} is larger than the total number of available '
+                                             'seats.'.format(seat['seat_number']))
+                return 'error'
+
+            # or add the seat number to the dictionary to check for duplicates
+            seat_numbers[seat['seat_number']] = seat['seat_number']
+        for seat in seats:
+            for session in sessions:
+                for reservation in self.session.get_session_reservations(session.id):
+                    if int(seat['user_id']) == reservation.user_id:
+                        self.session.update_seat_number(session.id, seat['user_id'], seat['seat_number'])
+
+        self.slc.set_alert('success', 'Seats updated successfully.')
+
+        return 'success'
+
     @route('/update-seats', methods=['POST'])
     def update_assigned_seats(self):
         session_id = str(json.loads(request.data).get('session_id'))

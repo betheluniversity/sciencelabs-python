@@ -77,6 +77,8 @@ class Session:
         room_group.capacity = capacity
         db_session.commit()
 
+    def get_room_group_by_id(self, room_group_id):
+        return db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
 
     def get_closed_sessions(self, semester_id):
         return db_session.query(Session_Table)\
