@@ -46,7 +46,6 @@ class SessionView(FlaskView):
         for info in room_group_capacities:
             self.session.update_room_group_capacity(info['room_group_id'], info['capacity'])
 
-        print(room_group_capacities)
         self.slc.set_alert('success', 'Successfully updated the room group capacities.')
 
         return 'success'
@@ -666,6 +665,21 @@ class SessionView(FlaskView):
         return self._logout_open_session(
             url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
+    @route('/no-cas/student-sign-out/<student_id>/<room_group_id>', methods=['GET'])
+    def student_room_group_sign_out_helper(self, student_id, room_group_id):
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        session_id = ''
+        session_hash = ''
+        for session in sessions:
+            reservations = self.session.get_session_reservations(session.id)
+            for reservation in reservations:
+                if student_id == reservation.user_id:
+                    session_id = session.id
+                    session_hash = session.hash
+
+        return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student_id,
+                                session_hash=session_hash, room_group_id=room_group_id))
+
     # END OF ROOM GROUP UPDATES
 
     @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
@@ -842,7 +856,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>/<room_group_id>', methods=['GET'])
     def student_sign_out(self, session_id, student_id, session_hash, room_group_id=None):
-        # self.session.student_sign_out(session_id, student_id)
+        self.session.student_sign_out(session_id, student_id)
         if not room_group_id:
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         else:
