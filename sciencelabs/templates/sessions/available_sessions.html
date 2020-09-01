@@ -10,16 +10,18 @@
         {% for session_info in open_sessions %}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-6 text-left">
+                    <div class="col-md-3 text-left">
                         <h3>{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</h3>
                     </div>
-                    <div class="col-md-6 text-right">
+                    <div class="col-md-9 text-right session_info_left">
                         <div class="row">
                             <div class="btn-group">
                                 {% if 'Administrator' in session['USER-ROLES'] %}
                                     <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
                                        id="gray" class="btn btn-primary hover-bright">View Session</a>
                                 {% endif %}
+                                <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
+                                   class="btn btn-primary">View Reservations/Assign Seats</a>
                                 <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
                                    id="edit" class="btn btn-primary hover-bright">Edit Session</a>
                                 <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"

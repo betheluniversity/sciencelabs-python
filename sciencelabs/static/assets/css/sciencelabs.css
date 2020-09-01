@@ -63,6 +63,10 @@ div.available-sessions{
     margin-bottom:15px;
 }
 
+div.session_info_left {
+    padding-left: 5.2%;
+}
+
 div.centered {
     text-align:center;
 }
