@@ -1,0 +1,93 @@
+{% extends 'sessions/base.html' %}
+
+{% block subnav %}
+{% endblock %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <h3 class="card-text text-center">Welcome to the Bethel University {{ lab_title }}</h3>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <form action="{{ submit_url }}" method="post">
+        {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
+            <div>
+                <label for="student-select">Select a student to sign in:</label>
+                <select id="student-select" name="selected-student">
+                    <option value="-1">Choose a Student</option>
+                    {% for student in all_students %}
+                        <option value="{{ student.id }}">{{ student.firstName }} {{ student.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+        {% endif %}
+        <div class="centered margin-bottom-10">
+            <button type="submit" class="big-button btn btn-primary sign-in">Scan ID or Click Here to Sign In</button>
+        </div>
+    </form>
+
+    <table id="student-attendance" class="table table-striped table-bordered">
+        <tr>
+            <th class="text-center" colspan="4">Attendance</th>
+        </tr>
+        <tr>
+            <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
+            <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
+        </tr>
+        {% for student, courses in students_and_courses.items() %}
+            <tr>
+                <td>{{ student.firstName }} {{ student.lastName }}</td>
+                <td>
+                    <ul>
+                        {% for course in courses %}
+                            <li>{{ course.dept }}{{ course.course_num }}</li>
+                        {% endfor %}
+                        {% if student.otherCourse and student.otherCourseName %}
+                            <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>{{ student.timeIn|datetimeformat }}</td>
+                <td>
+                    {% if student.timeOut %}
+                        {{ student.timeOut|datetimeformat}}
+                    {% else %}
+                        <a href="{{ url_for('SessionView:student_sign_out', room_group_id=room_group_id, student_id=student.id) }}"
+                                   class="delete btn btn-primary">Scan ID or Click Here to Sign Out</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <script>
+        $(document).ready(function(){
+
+            var input = "";
+
+            $(document).on('keydown', function(key){
+                if(key.keyCode == 13){
+                    var url = "{{ url_for('SessionView:verify_scanner') }}";
+                    var scannedInput = {
+                        'scan': input
+                    };
+                    $.post(url, scannedInput, function(success){
+                        if(success != 'failed'){
+                            window.location.replace("{{ lab_base_url }}/session/no-cas/checkin/room-group/{{ room_group_id }}/" + success);
+                        }else{
+                            input = "";
+                        }
+                    });
+                }else{
+                    input = input + key.key;
+                }
+            });
+
+        });
+    </script>
+{% endblock %}
