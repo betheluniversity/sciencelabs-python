@@ -51,15 +51,15 @@
                 <div class="form-row">
                     <div class="form-group col-md-1">
                         <label for="Room Group">Room Group</label>
-                        <input type="checkbox" class="form-control chosen-format chosen-container" id="room-group" name="room-group" {% if session_info.room_group_id %}checked{% endif %}>
+                        <input type="checkbox" class="form-control chosen-format chosen-container" id="room-group" name="room-group">
                     </div>
                     <div class="form-group col-md-5">
                         <label for="capacity">Room Capacity</label>
-                        <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ session_info.capacity }}" required>
+                        <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="zoom-url">Zoom Url</label>
-                        <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}" required>
+                        <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="" required>
                     </div>
                 </div>
                 <div class="form-row">
