@@ -13,6 +13,7 @@
                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                 <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
+                <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
             </tr>
         </thead>
         <tbody>
@@ -42,6 +43,13 @@
                                 <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
                             {% endif %}
                         </ul>
+                    </td>
+                    <td>
+                        {% if student.online %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
