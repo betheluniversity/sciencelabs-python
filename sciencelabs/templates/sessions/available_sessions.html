@@ -24,8 +24,13 @@
                                    id="edit" class="btn btn-primary hover-bright">Edit Session</a>
                                 <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
                                    id="delete" class="btn btn-primary hover-bright">Close Session</a>
-                                <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                   class="btn btn-primary sign-in">Enter Session</a>
+                                {% if not session_info.room_group_id %}
+                                    <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                       class="btn btn-primary sign-in">Enter Session</a>
+                                {% else %}
+                                        <a href="{{ url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=session_info.room_group_id) }}"
+                                       class="btn btn-primary sign-in">Enter Room Group</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -94,8 +99,13 @@
                                     <a href='{{ url_for('SessionView:delete_session', session_id=session_info.id) }}'
                                        id="delete" class="btn btn-primary hover-bright">Delete</a>
                                 {% endif %}
-                                <a href='{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}'
-                                   class="btn blue btn-primary">Start</a>
+                                {% if not session_info.room_group_id %}
+                                    <a href='{{ url_for('SessionView:open_session', session_id=session_info.id, session_hash=session_info.hash) }}'
+                                       class="btn blue btn-primary">Start</a>
+                                {% else %}
+                                    <a href='{{ url_for('SessionView:open_room_group', room_group_id=session_info.room_group_id) }}'
+                                       class="btn blue btn-primary">Start Room Group</a>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
