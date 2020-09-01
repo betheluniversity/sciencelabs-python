@@ -664,7 +664,7 @@ class SessionView(FlaskView):
         return self._logout_open_session(
             url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
-    @route('/no-cas/student-sign-out/<student_id>/<room_group_id>', methods=['GET'])
+    @route('/no-cas/student-sign-out-helper/<int:student_id>/<int:room_group_id>', methods=['GET'])
     def student_room_group_sign_out_helper(self, student_id, room_group_id):
         sessions = self.session.get_room_group_sessions(room_group_id)
         session_id = ''
