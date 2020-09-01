@@ -58,7 +58,7 @@
                     {% if student.timeOut %}
                         {{ student.timeOut|datetimeformat}}
                     {% else %}
-                        <a href="{{ url_for('SessionView:student_room_group_sign_out_helper', room_group_id=room_group_id, student_id=student.id) }}"
+                        <a href="{{ url_for('SessionView:student_room_group_sign_out_helper', student_id=student.id, room_group_id=room_group_id) }}"
                                    class="delete btn btn-primary">Scan ID or Click Here to Sign Out</a>
                     {% endif %}
                 </td>
