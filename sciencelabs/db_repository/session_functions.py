@@ -38,6 +38,7 @@ class Session:
             .filter(Session_Table.schedEndTime == end_time) \
             .filter(Session_Table.room == room) \
             .filter(Session_Table.deletedAt == None) \
+            .fitler(Session_Table.open == 0) \
             .all()
 
     def create_room_grouping(self, sessions):
