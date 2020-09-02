@@ -1,6 +1,8 @@
 # Packages
-from flask import render_template, redirect, url_for, request
+from datetime import datetime, timedelta
+from flask import render_template, redirect, url_for, request, json
 from flask_classy import FlaskView, route
+
 
 # Local
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -158,49 +160,37 @@ class ScheduleView(FlaskView):
 
         return redirect(url_for('ScheduleView:zoom_setup'))
 
-    @route('room-grouping-setup')
-    def room_group_setup(self):
-        self.slc.check_roles_and_route(['Administrator'])
+    @route('view-room-groupings')
+    def room_groupings(self):
+        room_groupings = self.session.get_all_room_groupings()
 
-        active_semester = self.schedule.get_active_semester()
-        schedules = self.schedule.get_schedule_tab_info()
-        schedule_tutors_and_courses = {}
-        room_group_check = {}
-        for schedule in schedules:
-            room_group_check[schedule.id] = self.schedule.check_schedule_room_groupings(schedule.id)
-            schedule_tutors_and_courses[schedule] = {
-                'tutors': self.schedule.get_schedule_tutors(schedule.id),
-                'courses': self.schedule.get_schedule_courses(schedule.id)
-            }
+        sessions = {}
+        for room_group in room_groupings:
+            sessions[room_group.id] = self.session.get_room_group_sessions(room_group.id)
 
-        return render_template('schedule/room_group_setup.html', **locals())
+        return render_template('schedule/view_room_groupings.html', **locals(),
+                               get_session=self.session.get_one_room_group_session,
+                               get_sessions=self.session.get_room_group_sessions)
 
-    @route('save-room-groupings', methods=['POST'])
-    def save_room_groups(self):
-        self.slc.check_roles_and_route(['Administrator'])
-        form = request.form
+    @route('save-room-grouping', methods=['POST'])
+    def save_room_group_capacity(self):
+        room_group_capacities = json.loads(request.data).get('capacities')
 
-        schedules_to_delete = []
-        schedules = self.schedule.get_schedule_tab_info()
+        for info in room_group_capacities:
+            capacity = 0
+            for session in self.session.get_room_group_sessions(info['room_group_id']):
+                capacity += session.capacity
+            start = (datetime.min + session.schedStartTime).time().strftime('%I:%M')
+            end = (datetime.min + session.schedEndTime).time().strftime('%I:%M')
+            if capacity > int(info['capacity']):
+                self.slc.set_alert('danger', 'Unable to set capacity for Room Group {0} {1} {2} since total session '
+                                             'capacity is greater than room group capacity. Please go fix the '
+                                             'capacities of the schedules/sessions.'
+                                   .format(session.date.strftime('%m/%d/%Y'), start + ' - ' + end, session.room))
 
-        for schedule in schedules:
-            schedule_found = False
-            for schedule_id in form:
-                if int(schedule_id) == schedule.id:
-                    schedule_found = True
-                    break
-            if not schedule_found:
-                schedules_to_delete.append(schedule.id)
+                return redirect(url_for('ScheduleView:room_groupings'))
+            self.session.update_room_group_capacity(info['room_group_id'], info['capacity'])
 
-        for schedule_id in form:
-            sessions = self.schedule.get_sessions_by_schedule(schedule_id)
-            session_ids = []
-            for session in sessions:
-                session_ids.append(session.id)
-            self.session.update_session_room_grouping(session_ids)
+        self.slc.set_alert('success', 'Successfully updated the room group capacities.')
 
-        self.session.delete_schedule_room_grouping(schedules_to_delete)
-
-        self.slc.set_alert('success', 'The room groupings were updated successfully.')
-
-        return redirect(url_for('ScheduleView:room_group_setup'))
+        return 'success'

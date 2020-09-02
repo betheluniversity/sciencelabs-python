@@ -6,7 +6,7 @@
         <a id="create" class="nav-link {{ 'active' if 'create' in request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
         <a id="room-group" class="nav-link {{ 'active' if 'room-grouping-setup' in request.path else 'disabled' }}"
-           href="{{ url_for('ScheduleView:room_group_setup') }}">Room Group Setup</a>
+           href="{{ url_for('ScheduleView:room_groupings') }}">Room Group Setup</a>
         <a id="zoom" class="nav-link {{ 'active' if 'zoom-setup' in request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:zoom_setup') }}">Zoom Setup</a>
 {% endblock %}

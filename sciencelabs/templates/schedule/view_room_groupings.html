@@ -17,7 +17,6 @@
                             <th data-toggle="tooltip" data-placement="top" title="Session Time">Room Group Room</th>
                             <th data-toggle="tooltip" data-placement="top" title="Session Room">Room Group Sessions</th>
                             <th data-toggle="tooltip" data-placement="top" title="Courses Available">Room Group Capacity</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,17 +36,13 @@
                                     <button type="button" class="show-sessions blue btn btn-primary">Show</button>
                                     <div class="session-td text-left margin-top-10">
                                         {% for session in sessions[room_group.id] %}
-                                            <a href="{{ url_for('SessionView:edit_session', session_id=session.id) }}">{{ session.name }}</a>
+                                            <p><a href="{{ url_for('SessionView:edit_session', session_id=session.id) }}">{{ session.name }}</a> - Capacity: {{ session.capacity }}</p>
                                             <br />
                                         {% endfor %}
                                     </div>
                                 </td>
                                 <td>
                                     <input type="number" min="0" class="form-control chosen-container chosen-format capacity" id="{{ room_group.id }}" name="capacity" value="{% if room_group.capacity %}{{ room_group.capacity }}{% else %}0{% endif %}" required>
-                                </td>
-                                <td>
-                                    <a id="delete" href='{{ url_for('SessionView:delete_room_grouping', room_group_id=room_group.id) }}'
-                                       class="btn btn-primary hover-bright">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -60,13 +55,13 @@
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        This page is used to edit room group capacities and delete room groupings.
+                        This page is used to edit room group capacities.
                     </p>
                     <p class="card-text">
-                        A <strong>room group</strong> is defined as all the sessions that have the exact same date, start time, end time, room number, and have been selected to be included in a room grouping.
+                        A <strong>room group</strong> is defined as all the sessions that have the exact same date, start time, end time, room number (including the same capitalization).
                     </p>
                     <p class="card-text">
-                        Adding sessions to a room group will allow students from different sessions all to sign into their respective sessions using one login page.
+                        Adding sessions to a room group will allow students from different sessions all to sign into their respective sessions using <strong>one login page on one laptop</strong>.
                         This is useful when you want to have multiple sessions in one room, but only want to use one laptop to sign people in.
                     </p>
                     <p class="card-text">
@@ -74,8 +69,7 @@
                         checkbox and hit the <span class="button-labels">Save</span> button.
                     </p>
                     <p class="card-text">
-                        To <strong>delete</strong> a room grouping, simply click the <span id="red" class="button-labels">Delete</span> button next to the corresponding room group.
-                        This will delete the room group but it will not delete the sessions associated with the room group. In order to do that go to the <a href="{{ url_for('SessionView:index') }}">Session Tab</a>.
+                        The total capacity of all sesssions in a room group should be less than or equal to the capacity of the room group.
                     </p>
                 </div>
             </div>
@@ -95,7 +89,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "{{ url_for('SessionView:save_room_group_capacity') }}",
+                    url: "{{ url_for('ScheduleView:save_room_group_capacity') }}",
                     data: JSON.stringify({
                         'capacities': capacity_list,
                     }),
