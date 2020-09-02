@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block body_content %}
-    {% if alert and alert[0]['type'] == 'danger' %}
+    {% if alert and alert[0]['type'] == 'danger' and 'You must have a reservation to attend this session' in alert[0]['message'] %}
         <div class="errors"></div>
     {% endif %}
     <form action="{{ submit_url }}" method="post">
