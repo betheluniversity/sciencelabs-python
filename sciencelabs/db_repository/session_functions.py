@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import db_session
-from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
     SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table, RoomGrouping_Table
@@ -14,7 +13,6 @@ from sciencelabs import app
 class Session:
     def __init__(self):
         self.base = ScienceLabsController()
-        self.schedule = Schedule()
 
     def update_session_room_grouping(self, session_ids):
         # This def will either create a new room group if none exist for the session or add the session to the already
