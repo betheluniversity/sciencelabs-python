@@ -17,7 +17,9 @@
 
 {% block body_content %}
     {{ alert }}
-    {{ alert[0]['type'] }}
+    {% if alert %}
+        {{ alert[0]['type'] }}
+    {% endif %}
     <form action="{{ submit_url }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
             <div>
