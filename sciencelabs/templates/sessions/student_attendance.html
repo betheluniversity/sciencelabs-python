@@ -85,7 +85,7 @@
         {% endfor %}
     </table>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
             if ($('.error')[0]) {
                 let audio = new Audio('{{ url_for('static', filename='sounds/error.mp3') }}')
                 audio.play();
@@ -104,13 +104,13 @@
 
             var input = "";
 
-            $(document).on('keydown', function(key){
-                if(key.keyCode == 13){
+            $(document).on('keydown', function(key) {
+                if(key.keyCode == 13) {
                     var url = "{{ url_for('SessionView:verify_scanner') }}";
                     var scannedInput = {
                         'scan': input
                     };
-                    $.post(url, scannedInput, function(success){
+                    $.post(url, scannedInput, function(success) {
                         if(success != 'failed'){
                             window.location.replace("{{ lab_base_url }}/session/no-cas/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
                         }else{
