@@ -28,7 +28,7 @@ class SessionView(FlaskView):
         self.wsapi = WSAPIController()
 
     def index(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
