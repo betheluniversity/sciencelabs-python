@@ -16,8 +16,10 @@
 {% endblock %}
 
 {% block body_content %}
-    {{ session['ALERT'] }}
-    {{ alert }}
+    {% if alert['type'] == 'danger' %}
+        YUPPERs
+    {% endif %}
+    {{ alert['type'] }}
     <form action="{{ submit_url }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
             <div>
