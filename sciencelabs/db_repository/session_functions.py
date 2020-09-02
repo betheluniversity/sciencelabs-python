@@ -14,6 +14,10 @@ class Session:
     def __init__(self):
         self.base = ScienceLabsController()
 
+    def check_all_room_groupings(self, sessions):
+        for session in sessions:
+            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+
     def check_room_grouping(self, date, start_time, end_time, room):
         sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
         if len(sessions) > 1:
@@ -58,6 +62,13 @@ class Session:
             sessions = self.get_room_group_sessions(room_group.id)
             if len(sessions) <= 1:
                 self.delete_session_room_grouping(room_group, sessions)
+            else:
+                for session in sessions:
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)):
+                        self.delete_session_room_grouping(room_group, sessions)
+                        self.check_all_room_groupings(sessions)
+                        break
+
 
     def delete_session_room_grouping(self, room_group, sessions):
         for session in sessions:
