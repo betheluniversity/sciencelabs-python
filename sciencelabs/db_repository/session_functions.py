@@ -14,28 +14,6 @@ class Session:
     def __init__(self):
         self.base = ScienceLabsController()
 
-    def update_session_room_grouping(self, session_ids):
-        # This def will either create a new room group if none exist for the session or add the session to the already
-        # existing room group
-        for session_id in session_ids:
-            got_room_group = False
-            session = self.get_session(session_id)
-            matched_sessions = db_session.query(Session_Table.room_group_id).filter(Session_Table.room == session.room).filter(Session_Table.date == session.date).filter(Session_Table.schedStartTime == session.schedStartTime).filter(Session_Table.schedEndTime == session.schedEndTime).all()
-            for room_group_id in matched_sessions:
-                if room_group_id[0]:
-                    got_room_group = True
-                    session.room_group_id = room_group_id[0]
-            if not got_room_group:
-                room_group_id = self.create_room_grouping()
-                session.room_group_id = room_group_id
-            db_session.commit()
-
-    def create_room_grouping(self):
-        room_group = RoomGrouping_Table(capacity=0)
-        db_session.add(room_group)
-        db_session.commit()
-        return room_group.id
-
     def delete_extra_room_groupings(self):
         room_groups = self.get_all_room_groupings()
         for room_group in room_groups:
