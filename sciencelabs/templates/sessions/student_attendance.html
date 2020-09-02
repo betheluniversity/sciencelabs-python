@@ -83,12 +83,17 @@
     </table>
     <script>
         $(document).ready(function(){
-            $('.errors').on('load', function () {
-                alert("YEET");
-            })
-            $('.alert').on('load', function () {
-                alert("YEEEET");
-            })
+            if ($('.errors')[0]) {
+                alert("YEET")
+            } else {
+                alert("NAW")
+            }
+
+            if ($('.alert')[0]) {
+                alert("YEEEEET")
+            } else {
+                alert("NAAAAW")
+            }
 
             var input = "";
 
