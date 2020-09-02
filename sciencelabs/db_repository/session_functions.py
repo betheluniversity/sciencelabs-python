@@ -95,7 +95,15 @@ class Session:
             .first()
 
     def get_all_room_groupings(self):
-        return db_session.query(RoomGrouping_Table).all()
+        today = datetime.now().date()
+        room_groups = db_session.query(RoomGrouping_Table).filter().all()
+        room_groupings = []
+        for room_group in room_groups:
+            session = self.get_one_room_group_session(room_group.id)
+            if session.date >= today:
+                room_groupings.append(room_group)
+
+        return room_groupings
 
     def update_room_group_capacity(self, room_group_id, capacity):
         room_group = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
