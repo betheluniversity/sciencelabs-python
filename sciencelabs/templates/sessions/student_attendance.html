@@ -16,6 +16,8 @@
 {% endblock %}
 
 {% block body_content %}
+    {{ alert }}
+    {{ session['ALERT'] }}
     {% if alert['type'] == 'danger' %}
         YUPPERs
     {% endif %}
