@@ -69,9 +69,9 @@
                                     </div>
                                 </td>
                                 <td class="text-center btn-group">
-                                    {% set session = get_zoom(schedule.id) %}
+                                    {% set session_info = get_zoom(schedule.id) %}
                                     <input type="url" class="form-control chosen-container chosen-format"
-                                           value="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}"
+                                           value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}"
                                            name="{{ schedule.id }}" {% if 'Lead Tutor' in session['USER-ROLES']
                                            or 'Tutor' in session['USER-ROLES']
                                            or 'Professor' in session['USER-ROLES'] %}readonly{% endif %}>
