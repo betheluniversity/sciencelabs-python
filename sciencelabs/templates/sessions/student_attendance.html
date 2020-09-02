@@ -17,8 +17,8 @@
 
 {% block body_content %}
     {{ alert }}
-    {% if alert %}
-        {{ alert[0]['type'] }}
+    {% if alert and alert[0]['type'] == 'danger' %}
+        POGGERS
     {% endif %}
     <form action="{{ submit_url }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
