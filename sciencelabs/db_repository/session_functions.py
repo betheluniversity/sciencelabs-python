@@ -46,10 +46,12 @@ class Session:
         room_group = RoomGrouping_Table(capacity=0)
         db_session.add(room_group)
         db_session.commit()
-
+        capacity = 0
         for session in sessions:
+            capacity += session.capacity
             session.room_group_id = room_group.id
 
+        room_group.capacity = capacity
         db_session.commit()
 
     def update_room_grouping(self, room_group_id, sessions):
