@@ -18,7 +18,7 @@
 {% block body_content %}
     {{ alert }}
     {% if alert and alert[0]['type'] == 'danger' %}
-        <div class="errors"></div>
+        <div class="errors">YUPPERS</div>
     {% endif %}
     <form action="{{ submit_url }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
@@ -86,6 +86,10 @@
             $('.errors').on('load', function () {
                 alert("YEET");
             })
+            $('.alert').on('load', function () {
+                alert("YEEEET");
+            })
+
             var input = "";
 
             $(document).on('keydown', function(key){
