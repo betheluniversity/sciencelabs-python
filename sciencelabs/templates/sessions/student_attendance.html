@@ -16,9 +16,8 @@
 {% endblock %}
 
 {% block body_content %}
-    {{ alert }}
     {% if alert and alert[0]['type'] == 'danger' %}
-        <div class="errors">YUPPERS</div>
+        <div class="errors"></div>
     {% endif %}
     <form action="{{ submit_url }}" method="post">
         {% if env != 'prod' %}  {# Can't sign in for other users in dev env, so dropdown to choose student #}
@@ -84,16 +83,13 @@
     <script>
         $(document).ready(function(){
             if ($('.errors')[0]) {
-                alert("YEET")
-            } else {
-                alert("NAW")
+               $(body).css('background-color', 'red');
+
+               setTimeout(function() {
+                   $(body).css('background-color', '#fafafa');
+               }, 2000);
             }
 
-            if ($('.alert')[0]) {
-                alert("YEEEEET")
-            } else {
-                alert("NAAAAW")
-            }
 
             var input = "";
 
