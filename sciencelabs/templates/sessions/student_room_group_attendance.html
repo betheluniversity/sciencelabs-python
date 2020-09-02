@@ -15,7 +15,7 @@
     {% if alert %}
         {% if alert[0]['type'] == 'danger' and 'reservation' in alert[0]['message'] %}
             <div class="error"></div>
-        {% elif alert[0]['type'] == 'success' %}
+        {% elif alert[0]['type'] == 'success' and 'signed in' in alert[0]['message'] %}
             <div class="success"></div>
         {% endif %}
     {% endif %}
