@@ -213,7 +213,7 @@ class SessionView(FlaskView):
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
                                       tutors, courses)
-
+            self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
@@ -375,6 +375,7 @@ class SessionView(FlaskView):
             new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
+            self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view

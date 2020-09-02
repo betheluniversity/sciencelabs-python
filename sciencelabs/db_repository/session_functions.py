@@ -14,6 +14,44 @@ class Session:
     def __init__(self):
         self.base = ScienceLabsController()
 
+    def check_room_grouping(self, date, start_time, end_time, room):
+        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
+        if len(sessions) > 1:
+            room_group_id = None
+            for session in sessions:
+                if session.room_group_id:
+                    room_group_id = session.room_group_id
+
+            if room_group_id:
+                self.update_room_grouping(room_group_id, sessions)
+            else:
+                self.create_room_grouping(sessions)
+
+    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
+        return db_session.query(Session_Table) \
+            .filter(Session_Table.date == date) \
+            .filter(Session_Table.schedStartTime == start_time) \
+            .filter(Session_Table.schedEndTime == end_time) \
+            .filter(Session_Table.room == room) \
+            .filter(Session_Table.deletedAt == None) \
+            .all()
+
+    def create_room_grouping(self, sessions):
+        room_group = RoomGrouping_Table(capacity=0)
+        db_session.add(room_group)
+        db_session.commit()
+
+        for session in sessions:
+            session.room_group_id = room_group.id
+
+        db_session.commit()
+
+    def update_room_grouping(self, room_group_id, sessions):
+        for session in sessions:
+            session.room_group_id = room_group_id
+
+        db_session.commit()
+
     def delete_extra_room_groupings(self):
         room_groups = self.get_all_room_groupings()
         for room_group in room_groups:
