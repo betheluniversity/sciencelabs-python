@@ -604,6 +604,9 @@ class SessionView(FlaskView):
 
         try:
             self.session.restore_deleted_session(session_id)
+            session = self.session.get_session(session_id)
+            self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))
         except Exception as error:
