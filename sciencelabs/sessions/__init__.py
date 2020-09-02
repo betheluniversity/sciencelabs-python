@@ -810,8 +810,8 @@ class SessionView(FlaskView):
                 else:
                     return redirect(url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
-            self.slc.set_alert('success', 'You have been successfully signed in! Your seat number is {0}'
-                               .format(seat_num))
+            self.slc.set_alert('success', 'You have been successfully signed in! Choose a seat that you sit in for the'
+                                          ' entire session.'
             if not room_group_id:
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
                                         session_hash=session_hash))
