@@ -787,7 +787,6 @@ class SessionView(FlaskView):
         if reservation_based:
             reservations = self.session.get_session_reservations(session_id)
             valid_reservation = False
-            seat_num = ''
             for reservation in reservations:
                 if reservation.user_id == student.id:
                     courses = self.session.get_reservation_courses(reservation.id)
@@ -811,7 +810,7 @@ class SessionView(FlaskView):
                     return redirect(url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
             self.slc.set_alert('success', 'You have been successfully signed in! Choose a seat that you sit in for the'
-                                          ' entire session.'
+                                          ' entire session.')
             if not room_group_id:
                 return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
                                         session_hash=session_hash))
