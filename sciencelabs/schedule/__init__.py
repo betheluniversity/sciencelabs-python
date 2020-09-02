@@ -87,8 +87,9 @@ class ScheduleView(FlaskView):
         courses = form.getlist('courses')
         try:
             # This returns True if it executes successfully
-            self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                        start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
+                                                   start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
 
@@ -120,8 +121,11 @@ class ScheduleView(FlaskView):
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
-            self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                    start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+                                                     start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            self.session.check_all_room_groupings(sessions)
+            self.session.delete_extra_room_groupings()
+
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
 
             if capacity == 0:

@@ -206,6 +206,8 @@ class Schedule:
         # Creates recurring session courses
         self.create_scheduled_session_courses(scheduled_sessions, courses)
 
+        return scheduled_sessions
+
     def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
         new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time,
                                       dayofWeek=day_of_week, term=term)
@@ -311,6 +313,8 @@ class Schedule:
         self.create_new_schedule_courses(schedule_id, courses)
         # Creates the new recurring session's courses
         self.create_scheduled_session_courses(new_sessions, courses)
+
+        return new_sessions
 
     def delete_old_scheduled_sessions(self, scheduled_sessions):
         # In here we want to check that we're not deleting sessions that have already happened, so check for a startTime
