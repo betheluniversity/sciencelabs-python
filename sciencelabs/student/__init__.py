@@ -179,7 +179,7 @@ class StudentView(FlaskView):
 
         if not student:
             student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
-            self.user.create_user_courses(student.username, student.id, semester.id)
+        self.user.create_user_courses(student.username, student.id, semester.id)
 
         # Check if student has been deactivated at some point
 
