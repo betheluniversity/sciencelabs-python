@@ -182,7 +182,7 @@ class SessionView(FlaskView):
             # capacity error out
             if reserved_seats > capacity:
                 self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
-                                             'the new room capacity allows.')
+                                             'the new session capacity allows.')
                 return redirect(url_for('SessionView:edit_session', session_id=session_id))
             # Else this means there are less reservations than the new capacity so delete unused seats and shift
             # students
@@ -197,7 +197,7 @@ class SessionView(FlaskView):
                     self.session.delete_seats(session_id, capacity, session.capacity)
                 else:
                     self.slc.set_alert('danger', 'There are is an issue where someone has a seat number greater than '
-                                                 'the room capacity for the session.')
+                                                 'the session capacity for the session.')
                     return redirect(url_for('SessionView:view_session_reservations', session_id=session_id))
 
         elif session.capacity < capacity > self.session.get_total_seats(session_id):

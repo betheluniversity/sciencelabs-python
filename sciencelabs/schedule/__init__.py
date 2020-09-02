@@ -94,7 +94,7 @@ class ScheduleView(FlaskView):
                 if reserved_seats > capacity:
                     self.slc.set_alert('danger',
                                        'Failed to edit session: More students have reserved this session than '
-                                       'the new room capacity allows.')
+                                       'the new session capacity allows.')
                     return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
                 # Else this means there are less reservations than the new capacity so delete unused seats and shift
                 # students
@@ -110,7 +110,7 @@ class ScheduleView(FlaskView):
                     else:
                         self.slc.set_alert('danger',
                                            'There are is an issue where someone has a seat number greater than '
-                                           'the room capacity for the session.')
+                                           'the session capacity for the session.')
                         return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
 
             elif session.capacity < capacity > self.session.get_total_seats(session.id):
