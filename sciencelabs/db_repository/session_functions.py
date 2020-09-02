@@ -51,8 +51,14 @@ class Session:
         db_session.commit()
 
     def update_room_grouping(self, room_group_id, sessions):
+        room_group = self.get_room_group_by_id(room_group_id)
+        capacity = 0
         for session in sessions:
+            capacity += session.capacity
             session.room_group_id = room_group_id
+
+        if room_group.capacity == 0 or room_group.capacity < capacity:
+            room_group.capacity = capacity
 
         db_session.commit()
 
