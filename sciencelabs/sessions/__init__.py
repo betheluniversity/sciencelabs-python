@@ -768,7 +768,7 @@ class SessionView(FlaskView):
         if self.session.student_currently_signed_in(session_id, student.id):
             if not room_group_id:
                 return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
-                                        session_hash=session_hash, room_group_id=None))
+                                        session_hash=session_hash, room_group_id=False))
             else:
                 return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
                                         session_hash=session_hash, room_group_id=room_group_id))
