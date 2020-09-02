@@ -51,7 +51,7 @@ class ScheduleView(FlaskView):
         tutor_ids = self.schedule.get_scheduled_tutor_ids(schedule_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
-        return render_template('schedule/edit_schedule.html', **locals())
+        return render_template('schedule/edit_schedule.html', **locals(), get_session=self.schedule.get_first_session_by_schedule)
 
     def delete_schedule(self, schedule_id):
         self.slc.check_roles_and_route(['Administrator'])
@@ -78,14 +78,19 @@ class ScheduleView(FlaskView):
         start_time = form.get('start-time')
         end_time = form.get('end-time')
         day_of_week = int(form.get('day-of-week'))
+        capacity = int(form.get('capacity'))
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
         courses = form.getlist('courses')
         try:
             # This returns True if it executes successfully
             self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                        start_time, end_time, day_of_week, leads, tutors, courses)
+                                        start_time, end_time, day_of_week, capacity, leads, tutors, courses)
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
+
+            if capacity == 0:
+                self.slc.set_alert('success', '{0} Schedule edited successfully! Be aware capacity set to 0.'.format(name))
+
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
@@ -107,12 +112,17 @@ class ScheduleView(FlaskView):
             start_time = form.get('start-time')
             end_time = form.get('end-time')
             day_of_week = int(form.get('day-of-week'))
+            capacity = int(form.get('capacity'))
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
             self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                    start_time, end_time, day_of_week, leads, tutors, courses)
+                                                    start_time, end_time, day_of_week, capacity, leads, tutors, courses)
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
+
+            if capacity == 0:
+                self.slc.set_alert('success', '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
+
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))
