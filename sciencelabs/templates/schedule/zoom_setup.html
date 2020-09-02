@@ -72,9 +72,9 @@
                                     {% set session_info = get_zoom(schedule.id) %}
                                     <input type="url" class="form-control chosen-container chosen-format"
                                            value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}"
-                                           name="{{ schedule.id }}" {% if 'Lead Tutor' in session['USER-ROLES']
+                                           name="{{ schedule.id }}" {% if ('Lead Tutor' in session['USER-ROLES']
                                            or 'Tutor' in session['USER-ROLES']
-                                           or 'Professor' in session['USER-ROLES'] %}readonly{% endif %}>
+                                           or 'Professor' in session['USER-ROLES']) and 'Administrator' not in session['USER-ROLES'] %}readonly{% endif %}>
                                 </td>
                             </tr>
                         {% endfor %}
