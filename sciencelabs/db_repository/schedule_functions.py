@@ -246,6 +246,7 @@ class Schedule:
             db_session.commit()
             sessions.append(schedule_session)
             session_date += timedelta(weeks=1)  # Add a week for next session
+
         return sessions
 
     def create_lead_scheduled_sessions(self, leads, start_time, end_time, scheduled_sessions):
