@@ -83,6 +83,8 @@
     <script>
         $(document).ready(function(){
             if ($('.errors')[0]) {
+                let audio = new Audio('{{ url_for('static', filename='sounds/failure.mp3') }}')
+                audio.play();
                $('body').css('background-color', 'red');
 
                setTimeout(function() {
