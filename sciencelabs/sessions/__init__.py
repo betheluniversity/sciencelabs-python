@@ -173,11 +173,6 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        # Don't allow capacities of 0 since then why even have a session?
-        if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to edit session: Room capacity should be greater than 0')
-            return redirect(url_for('SessionView:edit_session', session_id=session_id))
-
         session = self.session.get_session(session_id)
 
         reserved_seats = session.capacity - self.session.get_seats_remaining(session_id)
@@ -215,7 +210,10 @@ class SessionView(FlaskView):
                                       tutors, courses)
             self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
             self.session.delete_extra_room_groupings()
-            self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
+            self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
+
+            if capacity == 0:
+                self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
@@ -359,10 +357,6 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to create session: Room capacity should be greater than 0')
-            return redirect(url_for('SessionView:create'))
-
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
         if int(semester_id) != active_semester.id and (not actual_start or not actual_end):
@@ -375,9 +369,13 @@ class SessionView(FlaskView):
             new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
+
             self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+            if capacity == 0:
+                self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
+                                   .format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view
                 return redirect(url_for('SessionView:closed'))
             else:  # Future session, so go to available to view
