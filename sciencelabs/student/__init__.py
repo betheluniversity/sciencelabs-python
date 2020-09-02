@@ -28,6 +28,7 @@ class StudentView(FlaskView):
         sessions = self.session.get_reservation_sessions()
         # Check if student exists in the system
         student = self.verify_student()
+
         sessions, student_session_courses = self.check_session_courses(sessions)
 
         for session in sessions:
@@ -49,13 +50,14 @@ class StudentView(FlaskView):
         return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
                                get_seats_remaining=self.session.get_seats_remaining)
 
-    @route('/zoom-sign-on')
+    @route('/virtual-sign-on')
     def virtual_sign_on(self):
         # Check if student exists in the system
         semester = self.schedule.get_active_semester()
         student = self.verify_student()
 
         open_sessions, student_session_courses = self.check_session_courses(self.session.get_open_sessions())
+
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
@@ -70,8 +72,8 @@ class StudentView(FlaskView):
     def load_course_selector_modal(self):
         session_id = str(json.loads(request.data).get('session_id'))
         semester = self.schedule.get_active_semester()
-
         student = self.user.get_user_by_username(flask_session['USERNAME'])
+
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
             self.slc.set_alert('danger', 'You are already signed in.')
@@ -95,6 +97,7 @@ class StudentView(FlaskView):
         session_id = form.get('sessionID')
         username = form.get('username')
         student_id = form.get('studentID')
+
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
@@ -131,7 +134,7 @@ class StudentView(FlaskView):
         student_id = str(json.loads(request.data).get('student_id'))
 
         self.slc.set_alert('success', 'Your reservation has been cancelled successfully.')
-        
+
         self.session.cancel_reservation(session_id, student_id)
 
         return 'success'
@@ -140,6 +143,7 @@ class StudentView(FlaskView):
     def virtual_sign_out(self):
         session_id = str(json.loads(request.data).get('session_id'))
         student = self.user.get_user_by_username(flask_session['USERNAME'])
+
         self.session.student_sign_out(session_id, student.id)
 
         return 'success'
@@ -175,8 +179,10 @@ class StudentView(FlaskView):
 
         if not student:
             student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
+            self.user.create_user_courses(student.username, student.id, semester.id)
 
         # Check if student has been deactivated at some point
+
         if student.deletedAt != None:
             self.user.activate_existing_user(student.username)
             self.user.create_user_courses(student.username, student.id, semester.id)

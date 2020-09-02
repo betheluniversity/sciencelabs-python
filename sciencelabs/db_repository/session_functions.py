@@ -4,7 +4,8 @@ from sqlalchemy import func, distinct
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table
+    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table, RoomGrouping_Table
+
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -12,6 +13,105 @@ from sciencelabs import app
 class Session:
     def __init__(self):
         self.base = ScienceLabsController()
+
+    def check_all_room_groupings(self, sessions):
+        for session in sessions:
+            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+
+    def check_room_grouping(self, date, start_time, end_time, room):
+        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
+        if len(sessions) > 1:
+            room_group_id = None
+            for session in sessions:
+                if session.room_group_id:
+                    room_group_id = session.room_group_id
+
+            if room_group_id:
+                self.update_room_grouping(room_group_id, sessions)
+            else:
+                self.create_room_grouping(sessions)
+
+    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
+        return db_session.query(Session_Table) \
+            .filter(Session_Table.date == date) \
+            .filter(Session_Table.schedStartTime == start_time) \
+            .filter(Session_Table.schedEndTime == end_time) \
+            .filter(Session_Table.room == room) \
+            .filter(Session_Table.deletedAt == None) \
+            .filter(Session_Table.open == 0) \
+            .filter(Session_Table.openerId == None) \
+            .all()
+
+    def create_room_grouping(self, sessions):
+        room_group = RoomGrouping_Table(capacity=0)
+        db_session.add(room_group)
+        db_session.commit()
+
+        for session in sessions:
+            session.room_group_id = room_group.id
+
+        db_session.commit()
+
+    def update_room_grouping(self, room_group_id, sessions):
+        room_group = self.get_room_group_by_id(room_group_id)
+        capacity = 0
+        for session in sessions:
+            capacity += session.capacity
+            session.room_group_id = room_group_id
+
+        if room_group.capacity == 0 or room_group.capacity < capacity:
+            room_group.capacity = capacity
+
+        db_session.commit()
+
+    def delete_extra_room_groupings(self):
+        room_groups = self.get_all_room_groupings()
+        for room_group in room_groups:
+            sessions = self.get_room_group_sessions(room_group.id)
+            if len(sessions) <= 1:
+                self.delete_session_room_grouping(room_group, sessions)
+            else:
+                for session in sessions:
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)):
+                        self.delete_session_room_grouping(room_group, sessions)
+                        self.check_all_room_groupings(sessions)
+                        break
+
+
+    def delete_session_room_grouping(self, room_group, sessions):
+        for session in sessions:
+            session.room_group_id = None
+        db_session.delete(room_group)
+        db_session.commit()
+
+    def get_room_group_sessions(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .all()
+
+    def get_one_room_group_session(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .first()
+
+    def get_all_room_groupings(self):
+        today = datetime.now().date()
+        room_groups = db_session.query(RoomGrouping_Table).filter().all()
+        room_groupings = []
+        for room_group in room_groups:
+            session = self.get_one_room_group_session(room_group.id)
+            if session.date >= today:
+                room_groupings.append(room_group)
+
+        return room_groupings
+
+    def update_room_group_capacity(self, room_group_id, capacity):
+        room_group = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
+        room_group.capacity = capacity
+        db_session.commit()
+
+    def get_room_group_by_id(self, room_group_id):
+        return db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
 
     def get_closed_sessions(self, semester_id):
         return db_session.query(Session_Table)\
@@ -93,7 +193,7 @@ class Session:
     def get_session_students(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
                              StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
-                             StudentSession_Table.otherCourseName) \
+                             StudentSession_Table.otherCourseName, StudentSession_Table.online) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
@@ -430,6 +530,19 @@ class Session:
 
         return valid_sessions
 
+    def get_reservation(self, session_id, student_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
+
+    def get_reservation_from_sessions(self, sessions, student_id):
+        for session in sessions:
+            session_reservations = self.get_session_reservations(session.id)
+            for reservation in session_reservations:
+                if reservation.user_id == student_id:
+                    return reservation
+
     def get_session_reservations(self, session_id):
         return db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
@@ -559,6 +672,8 @@ class Session:
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
+
+        return new_session
 
     def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                        actual_end, room, comments, anon_students, name):

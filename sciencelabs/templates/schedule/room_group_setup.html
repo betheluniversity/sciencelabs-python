@@ -3,12 +3,12 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
-            <form role="form" action="{{ url_for('ScheduleView:save_zoom_urls') }}" method="POST">
+            <form role="form" action="{{ url_for('ScheduleView:save_room_groups') }}" method="POST">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p class="no-margin-padding">Change Zoom Urls for Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
+                                <p class="no-margin-padding">Set up Room Groupings for Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
                     </div>
@@ -23,7 +23,7 @@
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Room">Room</th>
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Courses">Courses</th>
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Tutors">Tutors</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Room Group">Add to Room Group</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,42 +68,40 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td class="text-center btn-group">
-                                    {% set session = get_zoom(schedule.id) %}
-                                    <input type="url" class="form-control chosen-container chosen-format"
-                                           value="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}"
-                                           name="{{ schedule.id }}" {% if 'Lead Tutor' in session['USER-ROLES']
-                                           or 'Tutor' in session['USER-ROLES']
-                                           or 'Professor' in session['USER-ROLES'] %}readonly{% endif %}>
+                                <td class="text-center">
+                                    <input type="checkbox" name="{{ schedule.id }}" {% if room_group_check[schedule.id] %}checked{% endif %}>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if 'Administrator' in session['USER-ROLES'] %}
-                    <button type="submit" class="btn blue btn-primary margin-top-10" id="submit-zoom-urls">Save Zoom Urls</button>
-                {% endif %}
+                <button type="submit" class="btn blue btn-primary margin-top-10" id="save-room-groupings">Save</button>
             </form>
         </div>
         <div class="col-md-4">
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        This page is used to add zoom urls to sessions in a schedule so that when a student joins a virtual
-                        help session, they have access to the session zoom url.
+                        This page is used to add all sessions in a schedule to a room grouping.
                     </p>
                     <p class="card-text">
-                        To <strong>add</strong> a zoom url to a schedule, simply type or paste the zoom url into the zoom
-                        url section and hit the <span class="button-labels">Save Zoom Urls</span> button to save the url.
-                        You can either do all urls at once and then hit save or do them one at a time.
+                        A <strong>room group</strong> is defined as all the sessions that have the exact same date, start time, end time, room number, and have been selected to be included in a room grouping.
                     </p>
                     <p class="card-text">
-                        To <strong>delete</strong> a zoom url, simply delete the zoom url for that course and hit
-                        <span class="button-labels">Save Zoom Urls</span>.
+                        Adding sessions to a room group will allow students from different sessions all to sign into their respective sessions using one login page.
+                        This is useful when you want to have multiple sessions in one room, but only want to use one laptop to sign people in.
                     </p>
                     <p class="card-text">
-                        To <strong>change</strong> a zoom url, simply paste a new zoom url where the previous one was
-                        and hit <span class="button-labels">Save Zoom Urls</span>.
+                        To <strong>add</strong> all sessions in a schedule to a room grouping, simply check the "Add to Room Group"
+                        checkbox and hit the <span class="button-labels">Save</span> button. This will automatically create a room group for all the sessions with the matching data listed above.
+                    </p>
+                    <p class="card-text">
+                        To <strong>delete</strong> all sessions in a schedule to a room grouping, simply uncheck the "Add to Room Group"
+                        checkbox and hit the <span class="button-labels">Save</span> button.
+                    </p>
+                    <p>
+                        <strong>WARNING:</strong> The schedules in this page will remain check as long as every single session in the schedule is part of a room grouping.
+                        If one session is removed from a room group it the session the box will then be unchecked.
                     </p>
                 </div>
             </div>

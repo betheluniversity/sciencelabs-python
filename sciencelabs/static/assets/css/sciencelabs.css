@@ -63,6 +63,10 @@ div.available-sessions{
     margin-bottom:15px;
 }
 
+div.session_info_left {
+    padding-left: 5.2%;
+}
+
 div.centered {
     text-align:center;
 }
@@ -127,7 +131,7 @@ div.semester-selector {
     direction: rtl;
 }
 
-div.tutor-td, div.course-td{
+div.tutor-td, div.course-td, div.session-td{
     display: none;
     white-space: nowrap;
 }

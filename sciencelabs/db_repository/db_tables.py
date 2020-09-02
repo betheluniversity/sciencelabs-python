@@ -60,6 +60,12 @@ class Role_Table(base):
     sort = Column(Integer)
 
 
+class RoomGrouping_Table(base):
+    __tablename__ = 'RoomGrouping'
+    id = Column(Integer, primary_key=True)
+    capacity = Column(Integer)
+
+
 class ScheduleCourseCodes_Table(base):
     __tablename__ = 'ScheduleCourseCodes'
     schedule_id = Column(Integer, primary_key=True)
@@ -120,6 +126,7 @@ class Session_Table(base):
     name = Column(String)
     zoom_url = Column(String)
     capacity = Column(Integer)
+    room_group_id = Column(Integer)
 
 
 class SessionReservations_Table(base):

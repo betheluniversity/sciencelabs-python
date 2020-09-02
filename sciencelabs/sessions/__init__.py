@@ -28,7 +28,7 @@ class SessionView(FlaskView):
         self.wsapi = WSAPIController()
 
     def index(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
         semester = self.schedule.get_active_semester()
         sessions = self.session.get_available_sessions(semester.id)
@@ -140,13 +140,14 @@ class SessionView(FlaskView):
 
         try:
             self.session.delete_session(session_id)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session deleted successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
-    @route('/save-session-edits', methods=['post'])
+    @route('/save-session-edits', methods=['POST'])
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -171,11 +172,6 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
-
-        # Don't allow capacities of 0 since then why even have a session?
-        if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to edit session: Room capacity should be greater than 0')
-            return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
         session = self.session.get_session(session_id)
 
@@ -212,13 +208,18 @@ class SessionView(FlaskView):
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
                                       tutors, courses)
-            self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
+            self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
+            self.session.delete_extra_room_groupings()
+            self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
+
+            if capacity == 0:
+                self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/save-student-edits/<int:session_id>', methods=['post'])
+    @route('/save-student-edits/<int:session_id>', methods=['POST'])
     def save_student_edits(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -246,7 +247,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
 
-    @route('/save-tutor-edits', methods=['post'])
+    @route('/save-tutor-edits', methods=['POST'])
     def save_tutor_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -285,7 +286,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete tutor: {0}'.format(str(error)))
         return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
-    @route('/add-student-submit', methods=['post'])
+    @route('/add-student-submit', methods=['POST'])
     def add_student_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -300,7 +301,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add student: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_student', session_id=session_id))
 
-    @route('/add-anon-submit', methods=['post'])
+    @route('/add-anon-submit', methods=['POST'])
     def add_anon_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -315,7 +316,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to edit anonymous students: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_anonymous', session_id=session_id))
 
-    @route('/add-tutor-submit', methods=['post'])
+    @route('/add-tutor-submit', methods=['POST'])
     def add_tutor_submit(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -334,7 +335,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add tutor: {0}'.format(str(error)))
             return redirect(url_for('SessionView:add_tutor', session_id=session_id))
 
-    @route('/create-session-submit', methods=['post'])
+    @route('/create-session-submit', methods=['POST'])
     def create_session_submit(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -356,10 +357,6 @@ class SessionView(FlaskView):
         comments = form.get('comments')
         anon_students = form.get('anon-students')
 
-        if capacity == 0:
-            self.slc.set_alert('danger', 'Failed to create session: Room capacity should be greater than 0')
-            return redirect(url_for('SessionView:create'))
-
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
         if int(semester_id) != active_semester.id and (not actual_start or not actual_end):
@@ -369,10 +366,16 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:create'))
 
         try:
-            self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
+            new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
+
+            self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
+
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+            if capacity == 0:
+                self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
+                                   .format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view
                 return redirect(url_for('SessionView:closed'))
             else:  # Future session, so go to available to view
@@ -390,14 +393,29 @@ class SessionView(FlaskView):
 
     @route('/view-reservations/<int:session_id>')
     def view_session_reservations(self, session_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
         reservation_sessions = self.session.get_session_reservations(session_id)
         session = self.session.get_session(session_id)
         return render_template('sessions/view_reservations.html', **locals(),
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course)
 
+    @route('/view-session-seats/<int:session_id>')
+    def view_session_seats(self, session_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        students = self.session.get_session_students(session_id)
+        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in
+                                students}
+        session = self.session.get_session(session_id)
+
+        return render_template('sessions/view_session_seats.html', **locals(), get_reservation=self.session.get_reservation)
+
     @route('/update-seats', methods=['POST'])
     def update_assigned_seats(self):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
         session_id = str(json.loads(request.data).get('session_id'))
         seats = json.loads(request.data).get('seats')
 
@@ -419,6 +437,72 @@ class SessionView(FlaskView):
             seat_numbers[seat['seat_number']] = seat['seat_number']
         for seat in seats:
             self.session.update_seat_number(session_id, seat['user_id'], seat['seat_number'])
+
+        self.slc.set_alert('success', 'Seats updated successfully.')
+
+        return 'success'
+
+    @route('/view-room-group-reservations/<int:room_group_id>')
+    def view_room_group_reservations(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        reservation_sessions = []
+        for session in sessions:
+            reservation_sessions.extend(self.session.get_session_reservations(session.id))
+
+        return render_template('sessions/view_room_group_reservations.html', **locals(),
+                               get_reservation_courses=self.session.get_reservation_courses,
+                               get_user=self.user.get_user, get_course=self.course.get_course, get_session=self.session.get_one_room_group_session)
+
+    @route('/view-room-group-seats/<int:room_group_id>')
+    def view_room_group_seats(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        students = []
+        students_and_courses = {}
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        for session in sessions:
+            students.extend(self.session.get_session_students(session.id))
+            students_and_courses.update({student: self.session.get_student_session_courses(session.id, student.id) for student in students})
+
+        return render_template('sessions/view_room_group_seats.html', **locals(), get_reservation=self.session.get_reservation_from_sessions)
+
+    @route('/update-room-group-seats', methods=['POST'])
+    def update_room_group_assigned_seats(self):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        room_group_id = str(json.loads(request.data).get('room_group_id'))
+        seats = json.loads(request.data).get('seats')
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        total_seats = room_group.capacity
+
+        seat_numbers = {}
+        for seat in seats:
+            # If duplicate seat number that isn't 0 error out
+            if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'
+                                   .format(seat['seat_number']))
+                return 'error'
+            if seat['seat_number'] > total_seats:
+                self.slc.set_alert('danger', 'Error! Seat number: {0} is larger than the total number of available '
+                                             'seats.'.format(seat['seat_number']))
+                return 'error'
+
+            # or add the seat number to the dictionary to check for duplicates
+            seat_numbers[seat['seat_number']] = seat['seat_number']
+        for seat in seats:
+            for session in sessions:
+                for reservation in self.session.get_session_reservations(session.id):
+                    if int(seat['user_id']) == reservation.user_id:
+                        self.session.update_seat_number(session.id, seat['user_id'], seat['seat_number'])
 
         self.slc.set_alert('success', 'Seats updated successfully.')
 
@@ -456,18 +540,19 @@ class SessionView(FlaskView):
             return True  # Return true if session start time is within the hour
         return False
 
-    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance-passthrough/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def student_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
             url_for('SessionView:student_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/student-attendance/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def student_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
         session_info = self.session.get_session(session_id)
         students = self.session.get_session_students(session_id)
         students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in students}
+
         # This is for development - allows us to pick a student to sign in as
         all_students = self.user.get_all_current_students()
         # If prod, we send through a route to get CAS auth, else we go straight to student sign in
@@ -478,12 +563,12 @@ class SessionView(FlaskView):
 
         return render_template('sessions/student_attendance.html', **locals())
 
-    @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/tutor-attendance-passthrough/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def tutor_attendance_passthrough(self, session_id, session_hash):
         return self._logout_open_session(
             url_for('SessionView:tutor_attendance', session_id=session_id, session_hash=session_hash))
 
-    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/no-cas/tutor-attendance/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def tutor_attendance(self, session_id, session_hash):
         self._session_clear_save_alert()
 
@@ -500,7 +585,7 @@ class SessionView(FlaskView):
 
         return render_template('sessions/tutor_attendance.html', **locals())
 
-    @route('/close-session/<int:session_id>/<session_hash>', methods=['get', 'post'])
+    @route('/close-session/<int:session_id>/<session_hash>', methods=['GET', 'POST'])
     def close_open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -508,7 +593,7 @@ class SessionView(FlaskView):
         course_info = self.course.get_active_course_info()
         return render_template('sessions/close_open_session.html', **locals())
 
-    @route('/no-cas/confirm-close', methods=['post'])
+    @route('/no-cas/confirm-close', methods=['POST'])
     def confirm_close(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -530,15 +615,118 @@ class SessionView(FlaskView):
 
         try:
             self.session.restore_deleted_session(session_id)
+            session = self.session.get_session(session_id)
+            self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
 
-    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    # START OF ROOM GROUP UPDATES #
+
+    def open_room_group(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        errors = False
+        for session in sessions:
+            lab_session = self.session.get_session(session.id)
+
+            if lab_session.date.strftime("%m/%d/%Y") == datetime.now().strftime("%m/%d/%Y"):
+
+                if self._check_session_time(lab_session):  # returns true if session is started within an hour window
+                    opener = self.user.get_user_by_username(flask_session['USERNAME'])
+                    self.session.start_open_session(session.id, opener.id)
+                    self.session.tutor_sign_in(session.id, opener.id)
+                    self.slc.set_alert('success', 'Session {0} ({1}) opened successfully'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+                else:  # After alert is set it will jump down and return to the session home page
+                    errors = True
+                    self.slc.set_alert('danger', 'Session {0} ({1}) does not start at this time'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+            else:  # Set alert and return to session home page
+                errors = True
+                self.slc.set_alert('danger', 'Session {0} ({1}) is not scheduled for today'.format(lab_session.name, lab_session.date.strftime('%m/%d/%Y')))
+
+        if not errors:
+            return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
+        else:
+            return redirect(url_for('SessionView:index'))
+
+    # TODO add in way to close sessions
+
+    @route('no-cas/student-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
+    def student_room_group_attendance(self, room_group_id):
+        students = []
+        students_and_courses = {}
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        for session in sessions:
+            students.extend(self.session.get_session_students(session.id))
+            students_and_courses.update({student: self.session.get_student_session_courses(session.id, student.id) for student in students})
+
+        # This is for development - allows us to pick a student to sign in as
+        all_students = self.user.get_all_current_students()
+        # If prod, we send through a route to get CAS auth, else we go straight to student sign in
+        if app.config['ENVIRON'] == 'prod':
+            submit_url = url_for('SessionView:authenticate_room_group_sign_in', room_group_id=room_group_id, user_type='student')
+        else:
+            submit_url = url_for('SessionView:student_room_group_sign_in', room_group_id=room_group_id, card_id='cas-auth')
+
+        return render_template('sessions/student_room_group_attendance.html', **locals())
+
+    # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
+    @route('/authenticate-room-group-sign-in/<int:room_group_id>/<user_type>', methods=['GET', 'POST'])
+    def authenticate_room_group_sign_in(self, room_group_id, user_type):
+        asdf = "This is jsut here to make a break point"
+        return self._logout_open_session(url_for('SessionView:store_room_group_username', room_group_id=room_group_id, user_type=user_type, username=flask_session.get('USERNAME')))
+
+    @route('/no-cas/store-room-group-username/<room_group_id>/<user_type>/<username>', methods=['GET'])
+    def store_room_group_username(self, room_group_id, user_type, username):
+        # this entire method is used to store the username, then act as a passthrough
+        flask_session['USERNAME'] = username
+
+        if user_type == 'tutor':
+            route_url = 'SessionView:tutor_sign_in'
+        else:
+            route_url = 'SessionView:student_room_group_sign_in'
+
+        return redirect(url_for(route_url, room_group_id=room_group_id, card_id='cas-auth'))
+
+    @route('/no-cas/checkin/room-group/<int:room_group_id>/<card_id>', methods=['GET', 'POST'])
+    def student_room_group_sign_in(self, room_group_id, card_id):
+        return self.student_sign_in_helper(room_group_id=room_group_id, card_id=card_id)
+
+    @route('/no-cas/student-attendance-passthrough/<int:room_group_id>', methods=['GET', 'POST'])
+    def student_room_group_attendance_passthrough(self, room_group_id):
+        return self._logout_open_session(
+            url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
+
+    @route('/no-cas/student-sign-out-helper/<int:student_id>/<int:room_group_id>', methods=['GET'])
+    def student_room_group_sign_out_helper(self, student_id, room_group_id):
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        session_id = ''
+        session_hash = ''
+        for session in sessions:
+            reservations = self.session.get_session_reservations(session.id)
+            for reservation in reservations:
+                if student_id == reservation.user_id:
+                    session_id = session.id
+                    session_hash = session.hash
+
+        return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student_id,
+                                session_hash=session_hash, room_group_id=room_group_id))
+
+    # END OF ROOM GROUP UPDATES
+
+    @route('/no-cas/checkin/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def student_sign_in(self, session_id, session_hash, card_id):
+        return self.student_sign_in_helper(session_id=session_id, session_hash=session_hash, card_id=card_id)
+
+    def student_sign_in_helper(self, card_id, session_id=None, session_hash=None, room_group_id=None):
         semester = self.schedule.get_active_semester()
+
         # Card id gets passed in as none if not used, otherwise its a 5-digit number
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
@@ -546,7 +734,11 @@ class SessionView(FlaskView):
                 username = student_info['username']
             except:
                 self.slc.set_alert('danger', 'Card not recognized. Please try again or ask a tutor to sign you in/out.')
-                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                if not room_group_id:
+                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                            session_hash=session_hash))
+                else:
+                    return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
             student = self.user.get_user_by_username(username)
 
         # No card so now we get the user via CAS
@@ -556,7 +748,11 @@ class SessionView(FlaskView):
                 student_choice = form.get('selected-student')
                 if student_choice == '-1':
                     self.slc.set_alert('danger', 'Invalid Student')
-                    return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                    if not room_group_id:
+                        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                                session_hash=session_hash))
+                    else:
+                        return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
                 student = self.user.get_user(student_choice)
                 username = student.username
             else:
@@ -572,11 +768,23 @@ class SessionView(FlaskView):
             self.user.activate_existing_user(student.username)
             self.user.create_user_courses(student.username, student.id, semester.id)
 
+        if room_group_id:
+            sessions = self.session.get_room_group_sessions(room_group_id)
+            for session in sessions:
+                reservations = self.session.get_session_reservations(session.id)
+                for reservation in reservations:
+                    if student.id == reservation.user_id:
+                        session_id = session.id
+                        session_hash = session.hash
+
         # Check if student is already signed in
         if self.session.student_currently_signed_in(session_id, student.id):
-
-            return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
-                                    session_hash=session_hash))
+            if not room_group_id:
+                return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                        session_hash=session_hash, room_group_id=False))
+            else:
+                return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student.id,
+                                        session_hash=session_hash, room_group_id=room_group_id))
         student_courses = self.user.get_student_courses(student.id, semester.id)
         time_in = datetime.now().strftime("%I:%M%p")
 
@@ -592,7 +800,6 @@ class SessionView(FlaskView):
         if reservation_based:
             reservations = self.session.get_session_reservations(session_id)
             valid_reservation = False
-            seat_num = ''
             for reservation in reservations:
                 if reservation.user_id == student.id:
                     courses = self.session.get_reservation_courses(reservation.id)
@@ -601,7 +808,6 @@ class SessionView(FlaskView):
                         student_courses.append(str(course[0]))
                     self.session.student_sign_in(session_id, student.id, student_courses, 0,
                                                  None, time_in, 0)
-                    seat_num = self.session.update_seat_number(session_id, student.id)
                     valid_reservation = True
                     break
             if not valid_reservation:
@@ -610,25 +816,31 @@ class SessionView(FlaskView):
                                              ' virtually.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
-                return redirect(url_for('SessionView:student_attendance', session_id=session_id,
-                                        session_hash=session_hash))
+                if not room_group_id:
+                    return redirect(url_for('SessionView:student_attendance', session_id=session_id,
+                                            session_hash=session_hash))
+                else:
+                    return redirect(url_for('SessionView:student_room_group_attendance', room_group_id=room_group_id))
 
-            self.slc.set_alert('success', 'You have been successfully signed in! Your seat number is {0}'
-                               .format(seat_num))
-            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
-                                    session_hash=session_hash))
+            self.slc.set_alert('success', 'You have been successfully signed in! Choose a seat that you sit in for the'
+                                          ' entire session.')
+            if not room_group_id:
+                return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id,
+                                        session_hash=session_hash))
+            else:
+                return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
 
             # END OF COVID CHANGES #
         else:
             return render_template('sessions/student_sign_in.html', **locals())
 
     # This method is CAS authenticated to get the user's info, but none of the other sign in methods are
-    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['get', 'post'])
+    @route('/authenticate-sign-in/<session_id>/<session_hash>/<user_type>', methods=['GET', 'POST'])
     def authenticate_sign_in(self, session_id, session_hash, user_type):
         asdf = "This is jsut here to make a break point"
         return self._logout_open_session(url_for('SessionView:store_username', session_id=session_id, session_hash=session_hash, user_type=user_type, username=flask_session.get('USERNAME')))
 
-    @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['get'])
+    @route('/no-cas/store-username/<session_id>/<session_hash>/<user_type>/<username>', methods=['GET'])
     def store_username(self, session_id, session_hash, user_type, username):
         # this entire method is used to store the username, then act as a passthrough
         flask_session['USERNAME'] = username
@@ -640,7 +852,7 @@ class SessionView(FlaskView):
 
         return redirect(url_for(route_url, session_id=session_id, session_hash=session_hash, card_id='cas-auth'))
 
-    @route('/no-cas/checkin/confirm', methods=['post'])
+    @route('/no-cas/checkin/confirm', methods=['POST'])
     def student_sign_in_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
@@ -678,12 +890,15 @@ class SessionView(FlaskView):
 
         return 'success'
 
-    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>', methods=['get'])
-    def student_sign_out(self, session_id, student_id, session_hash):
+    @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>/<room_group_id>', methods=['GET'])
+    def student_sign_out(self, session_id, student_id, session_hash, room_group_id=None):
         self.session.student_sign_out(session_id, student_id)
-        return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        if room_group_id == 'False' or not room_group_id:
+            return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        else:
+            return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
 
-    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['get', 'post'])
+    @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:

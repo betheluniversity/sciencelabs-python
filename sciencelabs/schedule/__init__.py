@@ -1,6 +1,8 @@
 # Packages
-from flask import render_template, redirect, url_for, request
+from datetime import datetime, timedelta
+from flask import render_template, redirect, url_for, request, json
 from flask_classy import FlaskView, route
+
 
 # Local
 from sciencelabs.db_repository.schedule_functions import Schedule
@@ -51,13 +53,14 @@ class ScheduleView(FlaskView):
         tutor_ids = self.schedule.get_scheduled_tutor_ids(schedule_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
-        return render_template('schedule/edit_schedule.html', **locals())
+        return render_template('schedule/edit_schedule.html', **locals(), get_session=self.schedule.get_first_session_by_schedule)
 
     def delete_schedule(self, schedule_id):
         self.slc.check_roles_and_route(['Administrator'])
 
         try:
             self.schedule.delete_schedule(schedule_id)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete schedule: {0}'.format(str(error)))
@@ -78,14 +81,21 @@ class ScheduleView(FlaskView):
         start_time = form.get('start-time')
         end_time = form.get('end-time')
         day_of_week = int(form.get('day-of-week'))
+        capacity = int(form.get('capacity'))
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
         courses = form.getlist('courses')
         try:
             # This returns True if it executes successfully
-            self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                        start_time, end_time, day_of_week, leads, tutors, courses)
+            sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
+                                                   start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            self.session.check_all_room_groupings(sessions)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
+
+            if capacity == 0:
+                self.slc.set_alert('success', '{0} Schedule edited successfully! Be aware capacity set to 0.'.format(name))
+
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
@@ -107,12 +117,20 @@ class ScheduleView(FlaskView):
             start_time = form.get('start-time')
             end_time = form.get('end-time')
             day_of_week = int(form.get('day-of-week'))
+            capacity = int(form.get('capacity'))
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
-            self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                    start_time, end_time, day_of_week, leads, tutors, courses)
+            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+                                                     start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            self.session.check_all_room_groupings(sessions)
+            self.session.delete_extra_room_groupings()
+
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
+
+            if capacity == 0:
+                self.slc.set_alert('success', '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
+
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to create schedule: {0}'.format(str(error)))
@@ -147,3 +165,38 @@ class ScheduleView(FlaskView):
         self.slc.set_alert('success', 'The zoom urls were saved successfully!')
 
         return redirect(url_for('ScheduleView:zoom_setup'))
+
+    @route('view-room-groupings')
+    def room_groupings(self):
+        room_groupings = self.session.get_all_room_groupings()
+
+        sessions = {}
+        for room_group in room_groupings:
+            sessions[room_group.id] = self.session.get_room_group_sessions(room_group.id)
+
+        return render_template('schedule/view_room_groupings.html', **locals(),
+                               get_session=self.session.get_one_room_group_session,
+                               get_sessions=self.session.get_room_group_sessions)
+
+    @route('save-room-grouping', methods=['POST'])
+    def save_room_group_capacity(self):
+        room_group_capacities = json.loads(request.data).get('capacities')
+
+        for info in room_group_capacities:
+            capacity = 0
+            for session in self.session.get_room_group_sessions(info['room_group_id']):
+                capacity += session.capacity
+            start = (datetime.min + session.schedStartTime).time().strftime('%I:%M')
+            end = (datetime.min + session.schedEndTime).time().strftime('%I:%M')
+            if capacity > int(info['capacity']):
+                self.slc.set_alert('danger', 'Unable to set capacity for Room Group {0} {1} {2} since total session '
+                                             'capacity is greater than room group capacity. Please go fix the '
+                                             'capacities of the schedules/sessions.'
+                                   .format(session.date.strftime('%m/%d/%Y'), start + ' - ' + end, session.room))
+
+                return redirect(url_for('ScheduleView:room_groupings'))
+            self.session.update_room_group_capacity(info['room_group_id'], info['capacity'])
+
+        self.slc.set_alert('success', 'Successfully updated the room group capacities.')
+
+        return 'success'

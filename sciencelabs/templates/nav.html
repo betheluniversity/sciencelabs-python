@@ -20,7 +20,7 @@
                     <a id="virtual-sign-on-nav" class="nav-link button {{ 'nav-bar-active' if 'StudentView:virtual_sign_on' in request.url_rule.endpoint }}"
                        href="{{ url_for('StudentView:virtual_sign_on') }}">Virtual Sign On</a>
                 </li>
-                {% if 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] %}
+                {% if 'Lead Tutor' in session['USER-ROLES'] or 'Administrator' in session['USER-ROLES'] or 'Tutor' in session['USER-ROLES'] %}
                 <li class="nav-item">
                     <a id="session" class="nav-link button {{ 'nav-bar-active' if 'SessionView' in request.url_rule.endpoint }}"
                        href="{{ url_for('SessionView:index') }}">Session</a>
