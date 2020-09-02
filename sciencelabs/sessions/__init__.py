@@ -880,7 +880,7 @@ class SessionView(FlaskView):
     @route('/no-cas/student-sign-out/<session_id>/<student_id>/<session_hash>/<room_group_id>', methods=['GET'])
     def student_sign_out(self, session_id, student_id, session_hash, room_group_id=None):
         self.session.student_sign_out(session_id, student_id)
-        if room_group_id != 'False' or not room_group_id:
+        if room_group_id == 'False' or not room_group_id:
             return redirect(url_for('SessionView:student_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         else:
             return redirect(url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id))
