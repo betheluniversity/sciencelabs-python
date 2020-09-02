@@ -38,26 +38,18 @@ class Session:
         db_session.commit()
         return room_group.id
 
-    def delete_schedule_room_grouping(self, schedule_ids):
-        session_ids = []
-        for schedule_id in schedule_ids:
-            sessions = self.schedule.get_sessions_by_schedule(schedule_id)
-            for session in sessions:
-                session_ids.append(session.id)
+    def delete_extra_room_groupings(self):
+        room_groups = self.get_all_room_groupings()
+        for room_group in room_groups:
+            sessions = self.get_room_group_sessions(room_group.id)
+            if len(sessions) <= 1:
+                self.delete_session_room_grouping(room_group, sessions)
 
-        self.delete_session_room_grouping(session_ids)
-
-    def delete_session_room_grouping(self, session_ids):
-        for session_id in session_ids:
-            session = self.get_session(session_id)
-            temp_group_id = session.room_group_id
+    def delete_session_room_grouping(self, room_group, sessions):
+        for session in sessions:
             session.room_group_id = None
-            db_session.commit()
-            exists = db_session.query(Session_Table).filter(Session_Table.room_group_id == temp_group_id).all()
-            if not exists:
-                room_grouping = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == temp_group_id).one_or_none()
-                db_session.delete(room_grouping)
-                db_session.commit()
+        db_session.delete(room_group)
+        db_session.commit()
 
     def get_room_group_sessions(self, room_group_id):
         return db_session.query(Session_Table)\

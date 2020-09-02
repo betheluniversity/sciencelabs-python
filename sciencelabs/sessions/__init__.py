@@ -154,6 +154,7 @@ class SessionView(FlaskView):
 
         try:
             self.session.delete_session(session_id)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session deleted successfully!')
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
@@ -176,7 +177,6 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
-        room_group = form.get('room-group')
         capacity = int(form.get('capacity'))
         zoom_url = form.get('zoom-url')
         leads = form.getlist('leads')
@@ -224,17 +224,11 @@ class SessionView(FlaskView):
             # capacity, create new seats
             self.session.create_seats(session_id, capacity, session.capacity + 1, False)
         try:
-            if session.date != db_date or session.schedStartTime != scheduled_start or \
-                    session.schedEndTime != scheduled_end or session.room != room or \
-                    (session.room_group_id != None and not room_group):
-                self.session.delete_session_room_grouping([session_id])
-
-            if session.room_group_id == None and room_group:
-                self.session.update_session_room_grouping([session_id])
-
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
                                       tutors, courses)
+
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} ({1}) edited successfully!'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
@@ -369,7 +363,6 @@ class SessionView(FlaskView):
         db_date = datetime.strptime(date, "%m/%d/%Y").strftime("%Y-%m-%d")
         scheduled_start = form.get('scheduled-start') or None
         scheduled_end = form.get('scheduled-end') or None
-        room_group = form.get('room-group')
         capacity = int(form.get('capacity'))
         zoom_url = form.get('zoom-url')
         leads = form.getlist('choose-leads')
@@ -396,8 +389,6 @@ class SessionView(FlaskView):
             new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
-            if room_group:
-                self.session.update_session_room_grouping([new_session.id])
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view

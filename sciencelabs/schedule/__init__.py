@@ -60,6 +60,7 @@ class ScheduleView(FlaskView):
 
         try:
             self.schedule.delete_schedule(schedule_id)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Deleted schedule successfully!')
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete schedule: {0}'.format(str(error)))
@@ -88,6 +89,7 @@ class ScheduleView(FlaskView):
             # This returns True if it executes successfully
             self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
                                         start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
 
             if capacity == 0:
