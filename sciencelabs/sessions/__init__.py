@@ -452,7 +452,7 @@ class SessionView(FlaskView):
         for session in sessions:
             reservation_sessions.extend(self.session.get_session_reservations(session.id))
 
-        return render_template('sessions/view_room_group_reservations.html', **locals(),
+        return render_template('sessions/view_reservations.html', **locals(),
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course, get_session=self.session.get_one_room_group_session)
 
