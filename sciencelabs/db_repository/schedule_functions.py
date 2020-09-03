@@ -249,7 +249,17 @@ class Schedule:
             sessions.append(schedule_session)
             session_date += timedelta(weeks=1)  # Add a week for next session
 
+            self.create_seats(schedule_session.id, capacity)
+
         return sessions
+
+    def create_seats(self, session_id, capacity, start=1, commit=True):
+        capacity = capacity + 1
+        for i in range(start, capacity):
+            new_session_reservation = SessionReservations_Table(session_id=session_id)
+            db_session.add(new_session_reservation)
+        if commit:
+            db_session.commit()
 
     def create_lead_scheduled_sessions(self, leads, start_time, end_time, scheduled_sessions):
         for new_session in scheduled_sessions:
