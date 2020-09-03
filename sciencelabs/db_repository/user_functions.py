@@ -441,7 +441,7 @@ class User:
                     .filter(CourseCode_Table.dept == course['subject']) \
                     .filter(CourseCode_Table.courseName == course['title']) \
                     .filter(CourseCode_Table.active == 1) \
-                    .first():
+                    .one_or_none():
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
                     .filter(Course_Table.semester_id == semester_id).one_or_none()
                 if course_entry:
