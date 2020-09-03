@@ -399,7 +399,8 @@ class SessionView(FlaskView):
         session = self.session.get_session(session_id)
         return render_template('sessions/view_reservations.html', **locals(),
                                get_reservation_courses=self.session.get_reservation_courses,
-                               get_user=self.user.get_user, get_course=self.course.get_course)
+                               get_user=self.user.get_user, get_course=self.course.get_course,
+                               is_signed_in=self.session.student_currently_signed_in)
 
     @route('/view-session-seats/<int:session_id>')
     def view_session_seats(self, session_id):
@@ -454,7 +455,9 @@ class SessionView(FlaskView):
 
         return render_template('sessions/view_reservations.html', **locals(),
                                get_reservation_courses=self.session.get_reservation_courses,
-                               get_user=self.user.get_user, get_course=self.course.get_course, get_session=self.session.get_one_room_group_session)
+                               get_user=self.user.get_user, get_course=self.course.get_course,
+                               get_session=self.session.get_one_room_group_session,
+                               is_signed_in=self.session.student_currently_signed_in)
 
     @route('/view-room-group-seats/<int:room_group_id>')
     def view_room_group_seats(self, room_group_id):

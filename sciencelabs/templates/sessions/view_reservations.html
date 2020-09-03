@@ -85,6 +85,7 @@
                     <tr>
                         <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
                         <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Signed Up For</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Is User Currently Signed In to Session">Currently Signed In</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,6 +103,13 @@
                                         <br />
                                     {% endfor %}
                                 </div>
+                            </td>
+                            <td>
+                                {% if is_signed_in(reservation.session_id, reservation.user_id) %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
