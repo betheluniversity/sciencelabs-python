@@ -82,7 +82,7 @@
                             <td>
                                 {% if not student.online %}
                                     {% set reservation = get_reservation(sessions, student.id) %}
-                                    <input id="{{ user.id }}" class="seats" type="number" min="0" max="{{ session.capacity }}" value="{% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}0{% endif %}">
+                                    <input id="{{ student.id }}" class="seats" type="number" min="0" max="{{ session.capacity }}" value="{% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}0{% endif %}">
                                 {% else %}
                                     N/A
                                 {% endif %}
