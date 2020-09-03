@@ -881,9 +881,8 @@ class SessionView(FlaskView):
                     valid_reservation = True
                     break
             if not valid_reservation:
-                self.slc.set_alert('danger', 'You must have a reservation to attend this session. If there is room '
-                                             'capacity go reserve a space before the session begins or join the session'
-                                             ' virtually.')
+                self.slc.set_alert('danger', 'We haven\'t found a reservation for you.  Please step aside and go to '
+                                             'tutorlabs.bethel.edu to make a reservation if space is available.')
                 # Need to set the username here because it gets cleared, but we need it to reload the page
                 flask_session['USERNAME'] = username
                 return 'failed'
