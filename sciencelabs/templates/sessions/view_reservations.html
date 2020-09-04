@@ -108,7 +108,12 @@
                                 {% if is_signed_in(reservation.session_id, reservation.user_id) %}
                                     Yes
                                 {% else %}
-                                    No
+                                    {% if is_after_10(reservation.session_id) %}
+                                        <a id="delete" href="{{ url_for('SessionView:delete_reservation', reservation_id=reservation.id) }}"
+                                            class="big-button btn hover-bright">Delete</a>
+                                    {% else %}
+                                        No
+                                    {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
