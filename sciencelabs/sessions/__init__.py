@@ -513,6 +513,30 @@ class SessionView(FlaskView):
 
         return 'success'
 
+    @route('/delete-reservation/<int:reservation_id>')
+    def delete_reservation(self, reservation_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        reservation = self.session.get_reservation_by_id(reservation_id)
+        session = self.session.get_session(reservation.session_id)
+
+        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
+        if datetime.now() < start_time_plus_15:
+            if session.room_group_id:
+                self.slc.set_alert('danger',
+                                   'You can not delete this reservation since the session started less than 10 minutes ago.')
+                return redirect(
+                    url_for('SessionView:view_room_group_reservations', room_group_id=session.room_group_id))
+            self.slc.set_alert('danger',
+                               'You can not delete this reservation since the session started less than 10 minutes ago.')
+            return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
+
+        self.session.delete_session_reservation(reservation.id)
+        if session.room_group_id:
+            return redirect(url_for('SessionView:view_room_group_reservations', room_group_id=session.room_group_id))
+
+        return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
+
     def open_session(self, session_id, session_hash):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
@@ -600,7 +624,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/confirm-close', methods=['POST'])
     def confirm_close(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')

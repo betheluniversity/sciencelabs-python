@@ -397,6 +397,14 @@ class Session:
             db_session.delete(course)
         db_session.commit()
 
+    def delete_session_reservation(self, reservation_id):
+        reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
+            .one_or_none()
+        self.delete_reservation_courses(reservation.id)
+        db_session.delete(reservation)
+        db_session.commit()
+
     def add_anonymous_to_session(self, session_id, anon_students):
         session_to_edit = db_session.query(Session_Table)\
             .filter(Session_Table.id == session_id)\
@@ -532,10 +540,27 @@ class Session:
 
         return valid_sessions
 
+    def is_reservation_after_10_minutes(self, session_id):
+        session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
+
+        if not session:
+            return False
+        time = session.schedStartTime
+        reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=10)),
+                                                                                 '%H:%M:%S').time())
+        if reservations_end_time <= datetime.now():
+            return True
+        return False
+
     def get_reservation(self, session_id, student_id):
         return db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
+
+    def get_reservation_by_id(self, reservation_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
             .one_or_none()
 
     def get_reservation_from_sessions(self, sessions, student_id):
