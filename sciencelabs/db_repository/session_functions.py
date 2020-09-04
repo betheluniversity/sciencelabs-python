@@ -385,7 +385,7 @@ class Session:
             .filter(SessionReservations_Table.session_id == session_id)\
             .all()
         for reservation in reservations:
-            self.delete_session_reservations(reservation.id)
+            self.delete_reservation_courses(reservation.id)
             db_session.delete(reservation)
         db_session.commit()
 
