@@ -695,7 +695,8 @@ class Session:
                            actual_end, room, comments, anon_students, name, leads, tutors, courses):
         new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
                                           actual_start, actual_end, room, comments, anon_students, name)
-        self.create_seats(new_session.id, capacity)
+        if room.lower() != 'virtual':
+            self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
