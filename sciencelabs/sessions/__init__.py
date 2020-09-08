@@ -627,7 +627,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/confirm-close', methods=['POST'])
     def confirm_close(self):
-        # self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
