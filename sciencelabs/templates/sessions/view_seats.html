@@ -125,11 +125,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% if not room_group %}
-                <button type="button" class="btn blue btn-primary margin-top-10" id="edit-seats">Save Seat Edits</button>
-            {% else %}
-                <button type="button" class="btn blue btn-primary margin-top-10" id="edit-seats">Save Seat Edits</button>
-            {% endif %}
+            <button type="button" class="btn blue btn-primary margin-top-10" id="edit-seats">Save Seat Edits</button>
         {% endif %}
     </div>
     <script>
@@ -146,16 +142,16 @@
                 let room_id = $('.room-cap').attr("id");
 
                 if (room_id) {
-                    var url = "{{ url_for('SessionView:update_assigned_seats') }}";
+                    var url = "{{ url_for('SessionView:update_room_group_assigned_seats') }}";
                     var data = {
                         'seats': seat_list,
                         'room_group_id': room_id
                     };
                 } else {
-                    var url = "{{ url_for('SessionView:update_room_group_assigned_seats') }}";
+                    var url = "{{ url_for('SessionView:update_assigned_seats') }}";
                     var data = {
                         'seats': seat_list,
-                        'session_id': {{ session_id }}
+                        'session_id': {{ session.id }}
                     };
                 }
 
