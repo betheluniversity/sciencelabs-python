@@ -12,7 +12,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                {% if 'SessionView:student_room_group_attendance' not in request.url_rule.endpoint and 'SessionView:student_attendance' not in request.url_rule.endpoint %}
+                {% if 'SessionView:student_room_group_attendance' not in request.url_rule.endpoint and 'SessionView:student_attendance' not in request.url_rule.endpoint and lab_title != 'cslab' %}
                     <li class="nav-item">
                         <a id="reservations-nav" class="nav-link button {{ 'nav-bar-active' if 'StudentView:reservations' in request.url_rule.endpoint }}"
                             href="{{ url_for('StudentView:reservations') }}">Reservations</a>
