@@ -1,6 +1,10 @@
 {% extends 'sessions/base.html' %}
 
 {% block subnav %}
+    <a id="student" class="nav-item nav-link active"
+       href="{{ url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id) }}">Student</a>
+    <a id="tutor" class="nav-item nav-link disabled"
+       href="{{ url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
