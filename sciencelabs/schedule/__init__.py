@@ -113,11 +113,12 @@ class ScheduleView(FlaskView):
                                                'There are is an issue where someone has a seat number greater than '
                                                'the session capacity for the session.')
                             return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
-
                 elif session.capacity < capacity > self.session.get_total_seats(session.id):
                     # If the new capacity is greater than the current session capacity and there are less seats than the new
                     # capacity, create new seats
                     self.session.create_seats(session.id, capacity, session.capacity + 1, False)
+                elif len(self.session.get_all_session_reservations(session.id)) == 0:
+                    self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
             else:
                 self.schedule.delete_session_reservations(session.id)
         try:

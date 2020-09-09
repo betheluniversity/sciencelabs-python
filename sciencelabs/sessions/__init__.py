@@ -204,6 +204,8 @@ class SessionView(FlaskView):
                 # If the new capacity is greater than the current session capacity and there are less seats than the new
                 # capacity, create new seats
                 self.session.create_seats(session_id, capacity, session.capacity + 1, False)
+            elif len(self.session.get_all_session_reservations(session_id)) == 0:
+                self.session.create_seats(session_id=session_id, capacity=capacity, commit=False)
         else:
             self.session.delete_session_reservations(session_id)
         try:

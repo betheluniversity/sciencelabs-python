@@ -579,6 +579,11 @@ class Session:
             .filter(SessionReservations_Table.user_id != None)\
             .all()
 
+    def get_all_session_reservations(self, session_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .all()
+
     def get_reservation_courses(self, reservation_id):
         return db_session.query(ReservationCourses_Table.course_id)\
             .filter(ReservationCourses_Table.reservation_id == reservation_id)\
