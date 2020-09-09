@@ -26,10 +26,11 @@ class Session:
                 if session.room_group_id:
                     room_group_id = session.room_group_id
 
-            if room_group_id:
-                self.update_room_grouping(room_group_id, sessions)
-            else:
-                self.create_room_grouping(sessions)
+            if room.lower() != 'virtual':
+                if room_group_id:
+                    self.update_room_grouping(room_group_id, sessions)
+                else:
+                    self.create_room_grouping(sessions)
 
     def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
         return db_session.query(Session_Table) \
@@ -102,7 +103,9 @@ class Session:
         room_groupings = []
         for room_group in room_groups:
             session = self.get_one_room_group_session(room_group.id)
-            if session.date >= today:
+            if not session:
+                self.delete_extra_room_groupings()
+            elif session.date >= today:
                 room_groupings.append(room_group)
 
         return room_groupings
