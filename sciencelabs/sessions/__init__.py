@@ -690,7 +690,6 @@ class SessionView(FlaskView):
         else:
             return redirect(url_for('SessionView:index'))
 
-    # TODO add in way to close sessions
 
     @route('no-cas/student-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
     def student_room_group_attendance(self, room_group_id):
