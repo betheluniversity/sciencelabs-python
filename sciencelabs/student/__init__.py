@@ -29,11 +29,12 @@ class StudentView(FlaskView):
         # Check if student exists in the system
         student = self.verify_student()
 
-        sessions, student_session_courses = self.check_session_courses(sessions)
+        result_sessions, student_session_courses = self.check_session_courses(sessions)
 
-        for session in sessions:
-            if session.room.lower() == 'virtual':
-                sessions.remove(session)
+        sessions = []
+        for session in result_sessions:
+            if session.room.lower() != 'virtual':
+                sessions.append(session)
 
         open_sessions, valid_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
