@@ -690,9 +690,34 @@ class SessionView(FlaskView):
         else:
             return redirect(url_for('SessionView:index'))
 
+    @route('/no-cas/tutor-room-group-attendance-passthrough/<int:room_group_id>', methods=['GET', 'POST'])
+    def tutor_room_group_attendance_passthrough(self, room_group_id):
+        return self._logout_open_session(
+            url_for('SessionView:tutor_room_group_attendance', room_group_id=room_group_id))
+
+    @route('/no-cas/tutor-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
+    def tutor_room_group_attendance(self, room_group_id):
+        self._session_clear_save_alert()
+
+        tutors = []
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        for session in sessions:
+            tutors.extend(self.session.get_session_tutors(session.id))
+        course_info = self.course.get_active_course_info()
+        # This is for development - allows us to pick a tutor to sign in as
+        all_tutors = self.user.get_all_current_tutors()
+        # If prod, we send through a route to get CAS auth, else we go straight to tutor sign in
+        if app.config['ENVIRON'] == 'prod':
+            submit_url = url_for('SessionView:authenticate_room_group_sign_in', room_group_id=room_group_id, user_type='tutor')
+        else:
+            submit_url = url_for('SessionView:tutor_room_group_sign_in', room_group_id=room_group_id, card_id='cas-auth')
+
+        return render_template('sessions/tutor_room_group_attendance.html', **locals(), get_session_tutors=self.session.get_session_tutors)
 
     @route('no-cas/student-room-group-attendance/<int:room_group_id>', methods=['GET', 'POST'])
     def student_room_group_attendance(self, room_group_id):
+        self._session_clear_save_alert()
+
         students = []
         students_and_courses = {}
         sessions = self.session.get_room_group_sessions(room_group_id)
@@ -722,7 +747,7 @@ class SessionView(FlaskView):
         flask_session['USERNAME'] = username
 
         if user_type == 'tutor':
-            route_url = 'SessionView:tutor_sign_in'
+            route_url = 'SessionView:tutor_room_group_sign_in'
         else:
             route_url = 'SessionView:student_room_group_sign_in'
 
@@ -731,6 +756,10 @@ class SessionView(FlaskView):
     @route('/no-cas/checkin/room-group/<int:room_group_id>/<card_id>', methods=['GET', 'POST'])
     def student_room_group_sign_in(self, room_group_id, card_id):
         return self.student_sign_in_helper(room_group_id=room_group_id, card_id=card_id)
+
+    @route('/no-cas/tutor-sign-in/room-group/<int:room_group_id>/<card_id>', methods=['GET', 'POST'])
+    def tutor_room_group_sign_in(self, room_group_id, card_id):
+        return self.tutor_sign_in_helper(room_group_id=room_group_id, card_id=card_id)
 
     @route('/no-cas/student-attendance-passthrough/<int:room_group_id>', methods=['GET', 'POST'])
     def student_room_group_attendance_passthrough(self, room_group_id):
@@ -750,6 +779,22 @@ class SessionView(FlaskView):
                     session_hash = session.hash
 
         return redirect(url_for('SessionView:student_sign_out', session_id=session_id, student_id=student_id,
+                                session_hash=session_hash, room_group_id=room_group_id))
+
+    @route('/no-cas/tutor-sign-out-helper/<int:tutor_id>/<int:room_group_id>', methods=['GET'])
+    def tutor_room_group_sign_out_helper(self, tutor_id, room_group_id):
+        sessions = self.session.get_room_group_sessions(room_group_id)
+        session_id = ''
+        session_hash = ''
+
+        for session in sessions:
+            tutor_sessions = self.session.get_tutor_sessions(session.id)
+            for tutor_session in tutor_sessions:
+                if tutor_session.tutorId == tutor_id:
+                    session_id = session.id
+                    session_hash = session.hash
+
+        return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor_id,
                                 session_hash=session_hash, room_group_id=room_group_id))
 
     # END OF ROOM GROUP UPDATES
@@ -933,12 +978,18 @@ class SessionView(FlaskView):
 
     @route('/no-cas/tutor-sign-in/<int:session_id>/<session_hash>/<card_id>', methods=['GET', 'POST'])
     def tutor_sign_in(self, session_id, session_hash, card_id):
+        return self.tutor_sign_in_helper(session_id=session_id, session_hash=session_hash, card_id=card_id)
+
+    def tutor_sign_in_helper(self, card_id, session_id=None, session_hash=None, room_group_id=None):
         if card_id != 'cas-auth':  # This is the same regardless of prod/dev
             try:
                 tutor_info = self.wsapi.get_user_from_prox(card_id)
             except:
                 self.slc.set_alert('danger', 'Card not recognized. Please try again or sign in/out manually.')
-                return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                if not room_group_id:
+                    return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                else:
+                    return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
             tutor = self.user.get_user_by_username(tutor_info['username'])
         else:
             if app.config['ENVIRON'] == 'prod':
@@ -948,23 +999,53 @@ class SessionView(FlaskView):
                 tutor_id = form.get('selected-tutor')
                 if tutor_id == '-1':
                     self.slc.set_alert('danger', 'Invalid Tutor')
-                    return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                    if not room_group_id:
+                        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+                    else:
+                        return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
                 tutor = self.user.get_user(tutor_id)
         if not tutor or not self.user.user_is_tutor(tutor.id):
             self.slc.set_alert('danger', 'This user is not a registered tutor (did you mean to sign in as a student?)')
-            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            if not room_group_id:
+                return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            else:
+                return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
+
+        if room_group_id:
+            sessions = self.session.get_room_group_sessions(room_group_id)
+            for session in sessions:
+                tutor_sessions = self.session.get_tutor_sessions(session.id)
+                for tutor_session in tutor_sessions:
+                    if tutor.id == tutor_session.tutorId:
+                        session_id = session.id
+                        session_hash = session.hash
+
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
-            return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id, session_hash=session_hash))
+            if not room_group_id:
+                return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id,
+                                        session_hash=session_hash, room_group_id=False))
+            else:
+                return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id,
+                                        session_hash=session_hash, room_group_id=room_group_id))
+
         self.session.tutor_sign_in(session_id, tutor.id)
 
-        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        if not room_group_id:
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        else:
+            return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
 
-    @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>', methods=['get'])
-    def tutor_sign_out(self, session_id, tutor_id, session_hash):
+    @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>/<room_group_id>', methods=['get'])
+    def tutor_sign_out(self, session_id, tutor_id, session_hash, room_group_id=None):
         result = self.session.tutor_sign_out(session_id, tutor_id)
+
         if not result:
-            self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')
-        return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')\
+
+        if room_group_id == 'False' or not room_group_id:
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+        else:
+            return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
 
     # Verifying here on the back end to hide the encoding for the id card numbers
     # TODO: refactor to redirect from here instead of in the JS
