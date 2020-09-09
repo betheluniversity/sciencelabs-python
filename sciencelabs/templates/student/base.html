@@ -1,10 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-    {% if lab_title != 'Computer Science Lab' %}
-        <a id="reservations" class="nav-link {{ 'active' if 'reservation' in request.path else 'disabled' }}"
-        href="{{ url_for('StudentView:reservations') }}">Reservations</a>
-    {% endif %}
+    <a id="reservations" class="nav-link {{ 'active' if 'reservation' in request.path else 'disabled' }}"
+       href="{{ url_for('StudentView:reservations') }}">Reservations</a>
     <a id="virtual-sign-on" class="nav-link {{ 'active' if 'sign-on' in request.path else 'disabled' }}"
        href="{{ url_for('StudentView:virtual_sign_on') }}">Virtual Sign On</a>
 {% endblock %}
