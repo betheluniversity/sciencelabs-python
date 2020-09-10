@@ -422,7 +422,7 @@ class Session:
         db_session.commit()
 
     def add_student_to_session(self, session_id, student_id):
-        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id)
+        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id, online=0)
         db_session.add(new_student_session)
         db_session.commit()
 
