@@ -180,17 +180,12 @@ class StudentView(FlaskView):
 
         if not student:
             student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
-            self.user.create_user_courses(student.username, student.id, semester.id)
-        if 'Student' in flask_session['USER-ROLES'] and ('Tutor' in flask_session['USER-ROLES']
-                                                         or 'Lead Tutor' in flask_session['USER-ROLES']
-                                                         or 'Tutor' in flask_session['USER-ROLES']):
-            self.user.create_user_courses(student.username, student.id, semester.id)
 
         # Check if student has been deactivated at some point
-
         if student.deletedAt != None:
             self.user.activate_existing_user(student.username)
-            self.user.create_user_courses(student.username, student.id, semester.id)
+
+        self.user.create_user_courses(student.username, student.id, semester.id)
 
         # Check to make sure the user has the Student role, add it if they don't
         self.user.check_or_create_student_role(student.id)
