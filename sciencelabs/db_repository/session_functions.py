@@ -745,6 +745,7 @@ class Session:
                 .filter(SessionReservations_Table.user_id == None)\
                 .first()
             db_session.delete(seat)
+            db_session.commit()
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
         for lead in leads:
