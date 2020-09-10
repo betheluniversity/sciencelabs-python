@@ -7,6 +7,7 @@
     {% else %}
         <a id="room-group-reservations" class="nav-link {{ 'active' if 'view-room-group-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_reservations', room_group_id=room_group.id) }}">View Reservations</a>
         <a id="room-group-seats" class="nav-link {{ 'active' if 'view-room-group-seats' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_seats', room_group_id=room_group.id) }}">Assign Seats</a>
+        <a id="room-group-capacities" class="nav-link {{ 'active' if 'view-room-group-capacities' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_capacities', room_group_id=room_group.id) }}">Edit Capacities</a>
     {% endif %}
 {% endblock %}
 
