@@ -533,9 +533,23 @@ class SessionView(FlaskView):
     def update_room_group_capacities(self):
         capacities_list = json.loads(request.data).get('capacities')
         room_group_id = json.loads(request.data).get('room_group_id')
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        room_group_capacity = room_group.capacity
 
+        total_capacity = 0
         for session_capacity in capacities_list:
+            total_capacity += int(session_capacity['capacity'])
+
+        if total_capacity > room_group_capacity:
+            self.slc.set_alert('danger', 'Unable to set capacity for the sessions since total session '
+                                         'capacity is greater than room group capacity.')
+            return 'failure'
+        for session_capacity in capacities_list:
+            capacity_issue = False
             session = self.session.get_session(session_capacity['session_id'])
+            leads = self.session.get_session_lead_ids(session.id)
+            tutors = self.session.get_session_tutor_ids(session.id)
+            courses = self.course.get_session_course_ids(session.id)
             capacity = int(session_capacity['capacity'])
 
             reserved_seats = self.session.get_num_reserved_seats(session.id)
@@ -546,23 +560,23 @@ class SessionView(FlaskView):
                     self.slc.set_alert('danger',
                                        'Failed to edit session: More students have reserved this session than '
                                        'the new session capacity allows.')
-                    return redirect(url_for('SessionView:view_room_group_capacities', room_group_id=room_group_id))
+                    return 'failure'
                 # Else this means there are less reservations than the new capacity so delete unused seats and shift
                 # students
                 elif reserved_seats <= capacity:
                     reservations = self.session.get_session_reservations(session.id)
-                    capacity_issue = False
                     for reservation in reservations:
-                        if reservation.seat_number > capacity:
-                            capacity_issue = True
-                            break
+                        if reservation.seat_number:
+                            if reservation.seat_number > room_group_capacity:
+                                capacity_issue = True
+                                break
                     if not capacity_issue:
                         self.session.delete_seats(session.id, capacity, session.capacity)
                     else:
                         self.slc.set_alert('danger',
                                            'There are is an issue where someone has a seat number greater than '
                                            'the session capacity for the session.')
-                        return redirect(url_for('SessionView:view_room_group_seats', room_group_id=room_group_id))
+                        return 'failure'
 
             elif session.capacity < capacity > self.session.get_total_seats(session.id):
                 # If the new capacity is greater than the current session capacity and there are less seats than the new
@@ -580,6 +594,8 @@ class SessionView(FlaskView):
                     self.session.create_seats(session.id, capacity, session.capacity + 1, True)
                 self.slc.set_alert('danger', 'Failed to edit capacities: {0}'.format(str(error)))
                 return 'failure'
+
+        self.slc.set_alert('success', 'Successfully updated the capacities.')
 
         return 'success'
 
