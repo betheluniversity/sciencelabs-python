@@ -60,10 +60,10 @@
                                 </div>
                             </td>
                             <td>
-                                {{ get_seats_remaining(session.id) }}
+                                {{ get_seats_available(session.id) }}
                             </td>
                             <td>
-                                {% if get_seats_remaining(session.id) != 0 %}
+                                {% if get_seats_available(session.id) != 0 %}
                                     <div id="reserve-cancel">
                                         {% if is_reserved(session.id, student.id) %}
                                             <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>

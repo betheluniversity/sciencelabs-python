@@ -88,7 +88,7 @@ class ScheduleView(FlaskView):
         sessions = self.schedule.get_sessions_by_schedule(schedule_id)
         for session in sessions:
             if room.lower() != 'virtual':
-                reserved_seats = session.capacity - self.session.get_seats_remaining(session.id)
+                reserved_seats = self.session.get_num_reserved_seats(session.id)
                 if session.capacity > capacity:
                     # If the session capacity is greater than the new capacity and more seats are reserved than the new
                     # capacity error out
