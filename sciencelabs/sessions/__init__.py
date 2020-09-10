@@ -518,6 +518,59 @@ class SessionView(FlaskView):
 
         return 'success'
 
+    @route('/view-room-group-capacities/<int:room_group_id>')
+    def view_room_group_capacities(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        return render_template('sessions/view_room_group_capacities.html', **locals(), get_seats_available=self.session.get_num_seats_available)
+
+    @route('/update-room-group-capacities', methods=['POST'])
+    def update_room_group_capacities(self):
+        capacities_list = json.loads(request.data).get('capacities')
+        room_group_id = json.loads(request.data).get('room_group_id')
+
+        for session_capacity in capacities_list:
+            session = self.session.get_session(session_capacity['session_id'])
+            capacity = int(session_capacity['capacity'])
+
+            reserved_seats = self.session.get_num_reserved_seats(session.id)
+            if session.capacity > capacity:
+                # If the session capacity is greater than the new capacity and more seats are reserved than the new
+                # capacity error out
+                if reserved_seats > capacity:
+                    self.slc.set_alert('danger',
+                                       'Failed to edit session: More students have reserved this session than '
+                                       'the new session capacity allows.')
+                    return redirect(url_for('SessionView:view_room_group_capacities', room_group_id=room_group_id))
+                # Else this means there are less reservations than the new capacity so delete unused seats and shift
+                # students
+                elif reserved_seats <= capacity:
+                    reservations = self.session.get_session_reservations(session.id)
+                    capacity_issue = False
+                    for reservation in reservations:
+                        if reservation.seat_number > capacity:
+                            capacity_issue = True
+                            break
+                    if not capacity_issue:
+                        self.session.delete_seats(session.id, capacity, session.capacity)
+                    else:
+                        self.slc.set_alert('danger',
+                                           'There are is an issue where someone has a seat number greater than '
+                                           'the session capacity for the session.')
+                        return redirect(url_for('SessionView:view_room_group_seats', room_group_id=room_group_id))
+
+            elif session.capacity < capacity > self.session.get_total_seats(session.id):
+                # If the new capacity is greater than the current session capacity and there are less seats than the new
+                # capacity, create new seats
+                self.session.create_seats(session.id, capacity, session.capacity + 1, False)
+            elif len(self.session.get_all_session_reservations(session.id)) == 0:
+                self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
+
+        return 'success'
+
     @route('/delete-reservation/<int:reservation_id>')
     def delete_reservation(self, reservation_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
