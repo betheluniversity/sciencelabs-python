@@ -621,14 +621,23 @@ class Session:
             db_session.add(new_reservation_course)
         db_session.commit()
 
-    def get_seats_remaining(self, session_id):
+    def get_num_reserved_seats(self, session_id):
         reserved_count = db_session.query(SessionReservations_Table.session_id) \
             .filter(SessionReservations_Table.session_id == session_id) \
-            .filter(SessionReservations_Table.user_id == None) \
+            .filter(SessionReservations_Table.user_id != None) \
             .all()
         reserved_count = len(reserved_count)
 
         return reserved_count
+
+    def get_num_seats_available(self, session_id):
+        available_count = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .filter(SessionReservations_Table.user_id == None) \
+            .all()
+        available_count = len(available_count)
+
+        return available_count
 
     def get_total_seats(self, session_id):
         total_seats = db_session.query(SessionReservations_Table.session_id) \
@@ -736,6 +745,7 @@ class Session:
                 .filter(SessionReservations_Table.user_id == None)\
                 .first()
             db_session.delete(seat)
+            db_session.commit()
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
         for lead in leads:

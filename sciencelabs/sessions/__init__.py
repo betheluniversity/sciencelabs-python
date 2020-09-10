@@ -175,8 +175,9 @@ class SessionView(FlaskView):
 
         session = self.session.get_session(session_id)
 
+        capacity_issue = False
         if room.lower() != 'virtual':
-            reserved_seats = session.capacity - self.session.get_seats_remaining(session_id)
+            reserved_seats = self.session.get_num_reserved_seats(session.id)
             if session.capacity > capacity:
                 # If the session capacity is greater than the new capacity and more seats are reserved than the new
                 # capacity error out
@@ -188,7 +189,6 @@ class SessionView(FlaskView):
                 # students
                 elif reserved_seats <= capacity:
                     reservations = self.session.get_session_reservations(session_id)
-                    capacity_issue = False
                     for reservation in reservations:
                         if reservation.seat_number > capacity:
                             capacity_issue = True
@@ -221,6 +221,8 @@ class SessionView(FlaskView):
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
+            if not capacity_issue and session.room.lower() != 'virtual':
+                self.session.create_seats(session.id, capacity, session.capacity + 1, True)
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
@@ -515,6 +517,85 @@ class SessionView(FlaskView):
                         self.session.update_seat_number(session.id, seat['user_id'], seat['seat_number'])
 
         self.slc.set_alert('success', 'Seats updated successfully.')
+
+        return 'success'
+
+    @route('/view-room-group-capacities/<int:room_group_id>')
+    def view_room_group_capacities(self, room_group_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
+
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        sessions = self.session.get_room_group_sessions(room_group_id)
+
+        return render_template('sessions/view_room_group_capacities.html', **locals(), get_seats_available=self.session.get_num_seats_available)
+
+    @route('/update-room-group-capacities', methods=['POST'])
+    def update_room_group_capacities(self):
+        capacities_list = json.loads(request.data).get('capacities')
+        room_group_id = json.loads(request.data).get('room_group_id')
+        room_group = self.session.get_room_group_by_id(room_group_id)
+        room_group_capacity = room_group.capacity
+
+        total_capacity = 0
+        for session_capacity in capacities_list:
+            total_capacity += int(session_capacity['capacity'])
+
+        if total_capacity > room_group_capacity:
+            self.slc.set_alert('danger', 'Unable to set capacity for the sessions since total session '
+                                         'capacity is greater than room group capacity.')
+            return 'failure'
+        for session_capacity in capacities_list:
+            capacity_issue = False
+            session = self.session.get_session(session_capacity['session_id'])
+            leads = self.session.get_session_lead_ids(session.id)
+            tutors = self.session.get_session_tutor_ids(session.id)
+            courses = self.course.get_session_course_ids(session.id)
+            capacity = int(session_capacity['capacity'])
+
+            reserved_seats = self.session.get_num_reserved_seats(session.id)
+            if session.capacity > capacity:
+                # If the session capacity is greater than the new capacity and more seats are reserved than the new
+                # capacity error out
+                if reserved_seats > capacity:
+                    self.slc.set_alert('danger',
+                                       'Failed to edit session: More students have reserved this session than '
+                                       'the new session capacity allows.')
+                    return 'failure'
+                # Else this means there are less reservations than the new capacity so delete unused seats and shift
+                # students
+                elif reserved_seats <= capacity:
+                    reservations = self.session.get_session_reservations(session.id)
+                    for reservation in reservations:
+                        if reservation.seat_number:
+                            if reservation.seat_number > room_group_capacity:
+                                capacity_issue = True
+                                break
+                    if not capacity_issue:
+                        self.session.delete_seats(session.id, capacity, session.capacity)
+                    else:
+                        self.slc.set_alert('danger',
+                                           'There are is an issue where someone has a seat number greater than '
+                                           'the session capacity for the session.')
+                        return 'failure'
+
+            elif session.capacity < capacity > self.session.get_total_seats(session.id):
+                # If the new capacity is greater than the current session capacity and there are less seats than the new
+                # capacity, create new seats
+                self.session.create_seats(session.id, capacity, session.capacity + 1, False)
+            elif len(self.session.get_all_session_reservations(session.id)) == 0:
+                self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
+            try:
+                self.session.edit_session(session.id, session.semester_id, session.date, session.schedStartTime,
+                                          session.schedEndTime, capacity, session.zoom_url, session.startTime,
+                                          session.endTime, session.room, session.comments, session.anonStudents,
+                                          session.name, leads, tutors, courses)
+            except Exception as error:
+                if not capacity_issue and session.room.lower() != 'virtual':
+                    self.session.create_seats(session.id, capacity, session.capacity + 1, True)
+                self.slc.set_alert('danger', 'Failed to edit capacities: {0}'.format(str(error)))
+                return 'failure'
+
+        self.slc.set_alert('success', 'Successfully updated the capacities.')
 
         return 'success'
 

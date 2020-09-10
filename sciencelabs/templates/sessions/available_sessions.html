@@ -10,10 +10,10 @@
         {% for session_info in open_sessions %}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-3 text-left">
+                    <div class="col-md-4 text-left">
                         <h3>{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</h3>
                     </div>
-                    <div class="col-md-9 text-right session_info_left">
+                    <div class="col-md-8 text-right session_info_left">
                         <div class="row">
                             <div class="btn-group">
                                 <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
@@ -21,7 +21,7 @@
                                 <a href='{% if not session_info.room_group_id %}
                                    {{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}
                                    {% else %}{{ url_for('SessionView:view_room_group_reservations', room_group_id=session_info.room_group_id) }}{% endif %}'
-                                   class="btn btn-primary">View Reservations/Assign Seats</a>
+                                   class="btn btn-primary">Session Control</a>
                                 {% if 'Administrator' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] %}
                                     <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
                                        id="edit" class="btn btn-primary hover-bright">Edit Session</a>
@@ -94,7 +94,7 @@
                             <td>
                                 {% if are_reservations(session_info.id) %}
                                     <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
-                                       class="btn btn-primary">View Reservations/Assign Seats</a>
+                                       class="btn btn-primary">View Reservations</a>
                                 {% else %}
                                     There are no reservations for this session at this time.
                                 {% endif %}

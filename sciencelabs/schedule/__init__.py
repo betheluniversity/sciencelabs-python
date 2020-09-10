@@ -88,7 +88,7 @@ class ScheduleView(FlaskView):
         sessions = self.schedule.get_sessions_by_schedule(schedule_id)
         for session in sessions:
             if room.lower() != 'virtual':
-                reserved_seats = session.capacity - self.session.get_seats_remaining(session.id)
+                reserved_seats = self.session.get_num_reserved_seats(session.id)
                 if session.capacity > capacity:
                     # If the session capacity is greater than the new capacity and more seats are reserved than the new
                     # capacity error out
@@ -135,6 +135,17 @@ class ScheduleView(FlaskView):
 
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
+            for session in sessions:
+                reserved_seats = self.session.get_num_reserved_seats(session.id)
+                if reserved_seats <= capacity and session.room.lower() != 'virtual':
+                    reservations = self.session.get_session_reservations(session.id)
+                    capacity_issue = False
+                    for reservation in reservations:
+                        if reservation.seat_number > capacity:
+                            capacity_issue = True
+                            break
+                    if not capacity_issue:
+                        self.session.create_seats(session.id, capacity, session.capacity + 1, True)
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
@@ -160,9 +171,7 @@ class ScheduleView(FlaskView):
             courses = form.getlist('courses')
             sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                      start_time, end_time, day_of_week, capacity, leads, tutors, courses)
-            for session in sessions:
-                if room.lower() != 'virtual':
-                    self.session.create_seats(session.id, capacity)
+
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
