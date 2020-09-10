@@ -621,10 +621,10 @@ class Session:
             db_session.add(new_reservation_course)
         db_session.commit()
 
-    def get_seats_remaining(self, session_id):
+    def get_num_reserved_seats(self, session_id):
         reserved_count = db_session.query(SessionReservations_Table.session_id) \
             .filter(SessionReservations_Table.session_id == session_id) \
-            .filter(SessionReservations_Table.user_id == None) \
+            .filter(SessionReservations_Table.user_id != None) \
             .all()
         reserved_count = len(reserved_count)
 
