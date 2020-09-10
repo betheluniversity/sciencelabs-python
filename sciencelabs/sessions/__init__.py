@@ -175,6 +175,7 @@ class SessionView(FlaskView):
 
         session = self.session.get_session(session_id)
 
+        capacity_issue = False
         if room.lower() != 'virtual':
             reserved_seats = self.session.get_num_reserved_seats(session.id)
             if session.capacity > capacity:
@@ -188,7 +189,6 @@ class SessionView(FlaskView):
                 # students
                 elif reserved_seats <= capacity:
                     reservations = self.session.get_session_reservations(session_id)
-                    capacity_issue = False
                     for reservation in reservations:
                         if reservation.seat_number > capacity:
                             capacity_issue = True
@@ -221,6 +221,8 @@ class SessionView(FlaskView):
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
+            if not capacity_issue and session.room.lower() != 'virtual':
+                self.session.create_seats(session.id, capacity, session.capacity + 1, True)
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
 
@@ -568,6 +570,16 @@ class SessionView(FlaskView):
                 self.session.create_seats(session.id, capacity, session.capacity + 1, False)
             elif len(self.session.get_all_session_reservations(session.id)) == 0:
                 self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
+            try:
+                self.session.edit_session(session.id, session.semester_id, session.date, session.schedStartTime,
+                                          session.schedEndTime, capacity, session.zoom_url, session.startTime,
+                                          session.endTime, session.room, session.comments, session.anonStudents,
+                                          session.name, leads, tutors, courses)
+            except Exception as error:
+                if not capacity_issue and session.room.lower() != 'virtual':
+                    self.session.create_seats(session.id, capacity, session.capacity + 1, True)
+                self.slc.set_alert('danger', 'Failed to edit capacities: {0}'.format(str(error)))
+                return 'failure'
 
         return 'success'
 

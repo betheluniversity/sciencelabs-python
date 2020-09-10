@@ -135,6 +135,17 @@ class ScheduleView(FlaskView):
 
             return redirect(url_for('ScheduleView:index'))
         except Exception as error:
+            for session in sessions:
+                reserved_seats = self.session.get_num_reserved_seats(session.id)
+                if reserved_seats <= capacity and session.room.lower() != 'virtual':
+                    reservations = self.session.get_session_reservations(session.id)
+                    capacity_issue = False
+                    for reservation in reservations:
+                        if reservation.seat_number > capacity:
+                            capacity_issue = True
+                            break
+                    if not capacity_issue:
+                        self.session.create_seats(session.id, capacity, session.capacity + 1, True)
             self.slc.set_alert('danger', 'Failed to edit schedule: {0}'.format(str(error)))
             return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
 
