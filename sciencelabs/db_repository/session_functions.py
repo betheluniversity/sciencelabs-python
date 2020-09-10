@@ -630,6 +630,15 @@ class Session:
 
         return reserved_count
 
+    def get_num_seats_available(self, session_id):
+        available_count = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .filter(SessionReservations_Table.user_id == None) \
+            .all()
+        available_count = len(available_count)
+
+        return available_count
+
     def get_total_seats(self, session_id):
         total_seats = db_session.query(SessionReservations_Table.session_id) \
             .filter(SessionReservations_Table.session_id == session_id) \
