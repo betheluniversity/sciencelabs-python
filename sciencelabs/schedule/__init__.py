@@ -160,9 +160,7 @@ class ScheduleView(FlaskView):
             courses = form.getlist('courses')
             sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                      start_time, end_time, day_of_week, capacity, leads, tutors, courses)
-            for session in sessions:
-                if room.lower() != 'virtual':
-                    self.session.create_seats(session.id, capacity)
+
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
