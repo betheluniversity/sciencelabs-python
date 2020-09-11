@@ -39,7 +39,6 @@ class Session:
             .filter(Session_Table.schedEndTime == end_time) \
             .filter(Session_Table.room == room) \
             .filter(Session_Table.deletedAt == None) \
-            .filter(Session_Table.open == 0) \
             .filter(Session_Table.openerId == None) \
             .all()
 
@@ -75,7 +74,7 @@ class Session:
                 self.delete_session_room_grouping(room_group, sessions)
             else:
                 for session in sessions:
-                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)):
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)) and session.openerId == None:
                         self.delete_session_room_grouping(room_group, sessions)
                         self.check_all_room_groupings(sessions)
                         break
@@ -422,7 +421,7 @@ class Session:
         db_session.commit()
 
     def add_student_to_session(self, session_id, student_id):
-        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id)
+        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id, online=0)
         db_session.add(new_student_session)
         db_session.commit()
 
