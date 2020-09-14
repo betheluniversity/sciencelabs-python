@@ -22,6 +22,10 @@
                        {% endfor %}
                     </select>
                 </div>
+                <div class="form-group">
+                   <label for="seat">Seat Number (0 if unassigned)</label>
+                   <input id="seat" name="seat" type="number" min="0" max="{{ session.capacity }}" value="0"\>
+                </div>
                 <button id="add-student" type="submit" class="btn blue btn-primary">Submit</button>
             </form>
         </div>

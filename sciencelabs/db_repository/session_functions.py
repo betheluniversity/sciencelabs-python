@@ -425,6 +425,15 @@ class Session:
         db_session.add(new_student_session)
         db_session.commit()
 
+    def add_student_to_reservation(self, session_id, student_id):
+        open_reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == None)\
+            .first()
+
+        open_reservation.user_id = student_id
+        db_session.commit()
+
     def delete_student_from_session(self, student_session_id):
         student_session_to_delete = db_session.query(StudentSession_Table)\
             .filter(StudentSession_Table.id == student_session_id)\

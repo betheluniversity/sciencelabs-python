@@ -104,7 +104,7 @@ class SessionView(FlaskView):
     @route('/attendance/student/<int:session_id>')
     def add_student(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
-
+        session = self.session.get_session(session_id)
         student_list = self.schedule.get_registered_students()
         return render_template('sessions/add_student.html', **locals())
 
@@ -300,7 +300,23 @@ class SessionView(FlaskView):
         form = request.form
         session_id = form.get('session-id')
         student_id = form.get('choose-student')
+        seat_number = form.get('seat')
+
+        session_reservations = self.session.get_session_reservations(session_id)
+
+        for reservation in session_reservations:
+            if reservation.seat_number != 0 and reservation.seat_number == int(seat_number):
+                self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
+                                             'again with a different seat number')
+                return redirect(url_for('SessionView:add_student', session_id=session_id))
+        seats_available = self.session.get_num_seats_available(session_id)
+        if seats_available == 0:
+            self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
+                                         'wish to add another student')
+            return redirect(url_for('SessionView:add_student', session_id=session_id))
+
         try:
+            self.session.add_student_to_reservation(session_id, student_id)
             self.session.add_student_to_session(session_id, student_id)
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
