@@ -192,7 +192,8 @@ class Schedule:
         new_schedule = self.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
         # Creates the recurring sessions for the schedule and returns them in an array
         scheduled_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                            new_schedule.id, start_time, end_time, capacity, room, name)
+                                                            new_schedule.id, start_time, end_time, capacity, None, room,
+                                                            name)
         # Creates leads tutor schedules
         self.create_new_lead_schedules(new_schedule.id, start_time, end_time, leads)
         # Creates leads recurring tutor sessions
@@ -236,14 +237,14 @@ class Schedule:
         db_session.commit()
 
     def create_scheduled_sessions(self, term_start_date, term_end_date, day_of_week, term_id, schedule_id, start_time,
-                                  end_time, capacity, room, name):
+                                  end_time, capacity, zoom_url, room, name):
         sessions = []
         session_date = self.get_first_session_date(day_of_week, term_start_date)
         while session_date <= term_end_date:  # Loop through until our session date is after the end date of the term
             schedule_session = Session_Table(semester_id=term_id, schedule_id=schedule_id,
                                              date=session_date, schedStartTime=start_time,
                                              schedEndTime=end_time, room=room, open=0, hash=self.base.get_hash(),
-                                             anonStudents=0, name=name, capacity=capacity)
+                                             anonStudents=0, name=name, capacity=capacity, zoom_url=zoom_url)
             db_session.add(schedule_session)
             db_session.commit()
             sessions.append(schedule_session)
@@ -302,6 +303,12 @@ class Schedule:
                       end_time, day_of_week, capacity, leads, tutors, courses):
         # Gets an array of sessions based on the schedule id
         scheduled_sessions = self.get_sessions_by_schedule(schedule_id)
+
+        zoom_url = ''
+        for session in scheduled_sessions:
+            if session.zoom_url:
+                zoom_url = session.zoom_url
+
         # Deletes the old sessions so we can create new sessions
         self.delete_old_scheduled_sessions(scheduled_sessions)
         # Deletes the old TutorSchedule and ScheduleCourseCodes entries
@@ -310,7 +317,7 @@ class Schedule:
         self.edit_schedule_info(schedule_id, name, room, start_time, end_time, day_of_week)
         # Creates the new recurring sessions for the schedule
         new_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                      schedule_id, start_time, end_time, capacity, room, name)
+                                                      schedule_id, start_time, end_time, capacity, zoom_url, room, name)
         # Edits the lead's schedule
         self.create_new_lead_schedules(schedule_id, start_time, end_time, leads)
         # Creates the new recurring sessions for the lead
