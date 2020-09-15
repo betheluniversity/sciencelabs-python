@@ -80,12 +80,12 @@ class StudentView(FlaskView):
             self.slc.set_alert('danger', 'You are already signed in.')
             return redirect(url_for('StudentView:virtual_sign_on'))
         student_courses = self.user.get_student_courses(student.id, semester.id)
-        courses = self.session.get_sess_courses(session_id, semester.id)
+        course_codes = self.session.get_session_course_codes(session_id)
 
         matched_courses = []
-        for s_course in student_courses:
-            for course in courses:
-                if s_course.id == course.id:
+        for course in student_courses:
+            for course_code in course_codes:
+                if course.course_code_id == course_code.id:
                     matched_courses.append(course)
 
         time_in = datetime.now().strftime("%I:%M%p")
@@ -158,10 +158,11 @@ class StudentView(FlaskView):
         for session in sessions:
             courses = []
             courses_match = False
-            all_session_courses = self.session.get_sess_courses(session.id, semester.id)
-            for s_course in self.user.get_student_courses(student.id, semester.id):
-                for course in all_session_courses:
-                    if s_course == course:
+            
+            all_session_course_codes = self.session.get_session_course_codes(session.id)
+            for course in self.user.get_student_courses(student.id, semester.id):
+                for course_code in all_session_course_codes:
+                    if course.course_code_id == course_code.id:
                         courses.append(course)
                         courses_match = True
             if courses_match:

@@ -87,6 +87,7 @@
                         <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
                         <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Signed Up For</th>
                         <th data-toggle="tooltip" data-placement="top" title="Is User Currently Signed In to Session">Currently Signed In</th>
+                        <th>Delete Reservation</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,11 +110,14 @@
                                 {% if is_signed_in(reservation.session_id, reservation.user_id) %}
                                     Yes
                                 {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not is_signed_in(reservation.session_id, reservation.user_id) %}
                                     {% if is_after_10(reservation.session_id) %}
                                         <a id="delete" href="{{ url_for('SessionView:delete_reservation', reservation_id=reservation.id) }}"
                                             class="big-button btn hover-bright">Delete</a>
-                                    {% else %}
-                                        No
                                     {% endif %}
                                 {% endif %}
                             </td>
