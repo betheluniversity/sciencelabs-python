@@ -425,13 +425,14 @@ class Session:
         db_session.add(new_student_session)
         db_session.commit()
 
-    def add_student_to_reservation(self, session_id, student_id):
+    def add_student_to_reservation(self, session_id, student_id, seat_number):
         open_reservation = db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == None)\
             .first()
 
         open_reservation.user_id = student_id
+        open_reservation.seat_number = seat_number
         db_session.commit()
 
     def delete_student_from_session(self, student_session_id):
@@ -544,7 +545,24 @@ class Session:
         valid_sessions = []
         for session in future_sessions:
             time = session.schedStartTime
-            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=15)), '%H:%M:%S').time())
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=20)), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
+
+        return valid_sessions
+
+    def get_upcoming_sessions(self):
+        future_sessions = db_session.query(Session_Table)\
+            .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.endTime == None)\
+            .filter(Session_Table.openerId == None)\
+            .all()
+        valid_sessions = []
+        for session in future_sessions:
+            time = session.schedStartTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
             reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
             if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
@@ -674,6 +692,14 @@ class Session:
                     break
 
         return seat_num
+
+    def update_reservation_seat_number(self, reservation_id, seat_number):
+        reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
+            .one()
+
+        reservation.seat_number = seat_number
+        db_session.commit()
 
     def update_zoom_url(self, session_id, zoom_url):
         session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()

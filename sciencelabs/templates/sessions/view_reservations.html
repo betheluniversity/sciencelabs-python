@@ -2,7 +2,7 @@
 
 {% block subnav %}
     {% if not room_group %}
-    <a id="session-reservations" class="nav-link {{ 'active' if 'view-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_session_reservations', session_id=session.id) }}">View Reservations</a>
+    <a id="session-reservations" class="nav-link {{ 'active' if 'view-session-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_session_reservations', session_id=session.id) }}">View Reservations</a>
     <a id="session-seats" class="nav-link {{ 'active' if 'view-session-seats' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_session_seats', session_id=session.id) }}">Assign Seats</a>
     {% else %}
         <a id="room-group-reservations" class="nav-link {{ 'active' if 'view-room-group-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_reservations', room_group_id=room_group.id) }}">View Reservations</a>

@@ -25,11 +25,10 @@ class StudentView(FlaskView):
 
     @route('/reservations')
     def reservations(self):
-        sessions = self.session.get_reservation_sessions()
         # Check if student exists in the system
         student = self.verify_student()
 
-        result_sessions, student_session_courses = self.check_session_courses(sessions)
+        result_sessions, student_session_courses = self.check_session_courses(self.session.get_reservation_sessions())
 
         sessions = []
         for session in result_sessions:
@@ -54,10 +53,13 @@ class StudentView(FlaskView):
     @route('/virtual-sign-on')
     def virtual_sign_on(self):
         # Check if student exists in the system
-        semester = self.schedule.get_active_semester()
         student = self.verify_student()
 
-        open_sessions, student_session_courses = self.check_session_courses(self.session.get_open_sessions())
+        semester = self.schedule.get_active_semester()
+
+        sessions, student_session_courses = self.check_session_courses(self.session.get_upcoming_sessions())
+
+        open_sessions, open_student_session_courses = self.check_session_courses(self.session.get_open_sessions())
 
         signed_in_sessions = []
         signed_in_courses = {}
@@ -111,8 +113,8 @@ class StudentView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
 
-        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=15)), '%H:%M:%S').time())
-        if datetime.now() > start_time_plus_15:
+        start_time_plus_20 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=20)), '%H:%M:%S').time())
+        if datetime.now() > start_time_plus_20:
             self.slc.set_alert('danger', 'You can not reserve a session that has started more than 10 minutes ago.')
             flask_session['USERNAME'] = username
             return 'failed'

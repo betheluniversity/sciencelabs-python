@@ -298,14 +298,17 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
-        session_id = form.get('session-id')
-        student_id = form.get('choose-student')
-        seat_number = form.get('seat')
+        session_id = int(form.get('session-id'))
+        student_id = int(form.get('choose-student'))
+        seat_number = int(form.get('seat'))
 
         session_reservations = self.session.get_session_reservations(session_id)
 
+        already_reserved = None
         for reservation in session_reservations:
-            if reservation.seat_number != 0 and reservation.seat_number == int(seat_number):
+            if reservation.user_id == student_id:
+                already_reserved = reservation
+            if reservation.seat_number != 0 and reservation.seat_number == seat_number:
                 self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:add_student', session_id=session_id))
@@ -314,9 +317,11 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
                                          'wish to add another student')
             return redirect(url_for('SessionView:add_student', session_id=session_id))
-
         try:
-            self.session.add_student_to_reservation(session_id, student_id)
+            if not already_reserved:
+                self.session.add_student_to_reservation(session_id, student_id, seat_number)
+            else:
+                self.session.update_reservation_seat_number(already_reserved.id, seat_number)
             self.session.add_student_to_session(session_id, student_id)
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -414,7 +419,7 @@ class SessionView(FlaskView):
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('sessions/view_session.html', **locals())
 
-    @route('/view-reservations/<int:session_id>')
+    @route('/view-session-reservations/<int:session_id>')
     def view_session_reservations(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
@@ -433,6 +438,7 @@ class SessionView(FlaskView):
         students = self.session.get_session_students(session_id)
         students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in
                                 students}
+
         session = self.session.get_session(session_id)
 
         return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation)
@@ -622,8 +628,8 @@ class SessionView(FlaskView):
         reservation = self.session.get_reservation_by_id(reservation_id)
         session = self.session.get_session(reservation.session_id)
 
-        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
-        if datetime.now() < start_time_plus_15:
+        start_time_plus_10 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
+        if datetime.now() < start_time_plus_10:
             if session.room_group_id:
                 self.slc.set_alert('danger',
                                    'You can not delete this reservation since the session started less than 10 minutes ago.')
@@ -1046,6 +1052,11 @@ class SessionView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
         if virtual == 1:
+            if not student_courses:
+                self.slc.set_alert('danger', 'You must pick the courses you are here for.')
+                # Need to set the username here because it gets cleared, but we need it to reload the page
+                flask_session['USERNAME'] = username
+                return 'failed'
             self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
         else:
             reservations = self.session.get_session_reservations(session_id)
