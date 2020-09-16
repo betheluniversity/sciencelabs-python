@@ -431,8 +431,9 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
         students = self.session.get_session_students(session_id)
-        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in
+        students_and_courses = {student: self.session.get_student_session_courses_for_reservations(session_id, student.id) for student in
                                 students}
+
         session = self.session.get_session(session_id)
 
         return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation)
