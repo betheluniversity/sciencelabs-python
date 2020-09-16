@@ -552,6 +552,23 @@ class Session:
 
         return valid_sessions
 
+    def get_upcoming_sessions(self):
+        future_sessions = db_session.query(Session_Table)\
+            .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.endTime == None)\
+            .filter(Session_Table.openerId == None)\
+            .all()
+        valid_sessions = []
+        for session in future_sessions:
+            time = session.schedStartTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
+
+        return valid_sessions
+
     def is_reservation_after_10_minutes(self, session_id):
         session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
 
