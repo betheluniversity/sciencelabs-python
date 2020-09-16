@@ -628,8 +628,8 @@ class SessionView(FlaskView):
         reservation = self.session.get_reservation_by_id(reservation_id)
         session = self.session.get_session(reservation.session_id)
 
-        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
-        if datetime.now() < start_time_plus_15:
+        start_time_plus_10 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=10)), '%H:%M:%S').time())
+        if datetime.now() < start_time_plus_10:
             if session.room_group_id:
                 self.slc.set_alert('danger',
                                    'You can not delete this reservation since the session started less than 10 minutes ago.')
