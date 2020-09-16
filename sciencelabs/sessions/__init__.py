@@ -1052,6 +1052,11 @@ class SessionView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
         if virtual == 1:
+            if not student_courses:
+                self.slc.set_alert('danger', 'You must pick the courses you are here for.')
+                # Need to set the username here because it gets cleared, but we need it to reload the page
+                flask_session['USERNAME'] = username
+                return 'failed'
             self.session.student_sign_in(session_id, student_id, student_courses, other_course_check, other_course_name, time_in, virtual)
         else:
             reservations = self.session.get_session_reservations(session_id)
