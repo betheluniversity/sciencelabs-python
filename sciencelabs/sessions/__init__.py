@@ -414,7 +414,7 @@ class SessionView(FlaskView):
         session_tutors = self.session.get_session_tutors(session_id)
         return render_template('sessions/view_session.html', **locals())
 
-    @route('/view-reservations/<int:session_id>')
+    @route('/view-session-reservations/<int:session_id>')
     def view_session_reservations(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
