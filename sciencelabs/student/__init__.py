@@ -53,10 +53,13 @@ class StudentView(FlaskView):
     @route('/virtual-sign-on')
     def virtual_sign_on(self):
         # Check if student exists in the system
-        semester = self.schedule.get_active_semester()
         student = self.verify_student()
 
-        open_sessions, student_session_courses = self.check_session_courses(self.session.get_open_sessions())
+        semester = self.schedule.get_active_semester()
+
+        sessions, student_session_courses = self.check_session_courses(self.session.get_reservation_sessions())
+
+        open_sessions, open_student_session_courses = self.check_session_courses(self.session.get_open_sessions())
 
         signed_in_sessions = []
         signed_in_courses = {}
