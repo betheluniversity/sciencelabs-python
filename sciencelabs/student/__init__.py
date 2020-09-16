@@ -111,8 +111,8 @@ class StudentView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
 
-        start_time_plus_15 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=15)), '%H:%M:%S').time())
-        if datetime.now() > start_time_plus_15:
+        start_time_plus_20 = datetime.combine(session.date, datetime.strptime(str(session.schedStartTime + timedelta(minutes=20)), '%H:%M:%S').time())
+        if datetime.now() > start_time_plus_20:
             self.slc.set_alert('danger', 'You can not reserve a session that has started more than 10 minutes ago.')
             flask_session['USERNAME'] = username
             return 'failed'
