@@ -25,11 +25,10 @@ class StudentView(FlaskView):
 
     @route('/reservations')
     def reservations(self):
-        sessions = self.session.get_reservation_sessions()
         # Check if student exists in the system
         student = self.verify_student()
 
-        result_sessions, student_session_courses = self.check_session_courses(sessions)
+        result_sessions, student_session_courses = self.check_session_courses(self.session.get_reservation_sessions())
 
         sessions = []
         for session in result_sessions:
