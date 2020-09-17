@@ -25,8 +25,6 @@ class Schedule:
             return True
         return False
 
-
-
     def get_schedule_tab_info(self):
         return db_session.query(Schedule_Table) \
             .filter(Schedule_Table.id == Session_Table.schedule_id) \
