@@ -628,7 +628,7 @@ class ReportView(FlaskView):
         total_attendance = self.session_.get_number_of_student_sessions(session_id)
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
-        student_s_list = self.session_.get_studentsession_from_session(session_id)
+        student_session_list = self.session_.get_studentsession_from_session(session_id)
         session_courses = self.session_.get_session_course_codes(session_id)
         session_courses_and_attendance = {course: self.session_.get_course_code_attendance(session_id, course.id) for course in session_courses}
         opener = None
