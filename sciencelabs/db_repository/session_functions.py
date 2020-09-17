@@ -232,6 +232,15 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .all()
 
+    def get_student_session_courses_by_student_session(self, student_session_id):
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.id == student_session_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
+
     def get_signed_in_courses(self, session_id, student_id):
         return db_session.query(Course_Table)\
             .filter(StudentSession_Table.sessionId == session_id)\
@@ -271,6 +280,15 @@ class Session:
         courses = self.get_student_session_courses(session_id, student_id)
         for course in courses:
             course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
+                .filter(CourseCode_Table.id == course.course_code_id).one()
+            course_ids.append(course_code.id)
+        return course_ids
+
+    def get_stududent_session_coure_ids_by_student_session(self, student_session_id):
+        course_ids = []
+        courses = self.get_student_session_courses_by_student_session(student_session_id)
+        for course in courses:
+            course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName) \
                 .filter(CourseCode_Table.id == course.course_code_id).one()
             course_ids.append(course_code.id)
         return course_ids
