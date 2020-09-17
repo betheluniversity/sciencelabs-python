@@ -372,7 +372,7 @@ class Session:
                 prof_students.append(student)
         return prof_students
 
-    def get_studentsession_from_session(self, session_id):
+    def get_student_session_from_session(self, session_id):
         return db_session.query(User_Table, StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\
             .filter(StudentSession_Table.sessionId == session_id)\

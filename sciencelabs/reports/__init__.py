@@ -144,7 +144,7 @@ class ReportView(FlaskView):
                 avg_total_time += ((ss.timeOut - ss.timeIn).total_seconds() / 3600)
 
         for unscheduled_session in self.session_.get_unscheduled_sessions(sem.year, sem.term):
-            for user, studentsession in self.session_.get_studentsession_from_session(unscheduled_session.id):
+            for user, studentsession in self.session_.get_student_session_from_session(unscheduled_session.id):
                 if studentsession.timeIn and studentsession.timeOut:
                     avg_total_time += ((studentsession.timeOut - studentsession.timeIn).total_seconds() / 3600)
 
@@ -628,7 +628,7 @@ class ReportView(FlaskView):
         total_attendance = self.session_.get_number_of_student_sessions(session_id)
         session_info = self.session_.get_session(session_id)
         tutors = self.session_.get_session_tutors(session_id)
-        student_session_list = self.session_.get_studentsession_from_session(session_id)
+        student_session_list = self.session_.get_student_session_from_session(session_id)
         session_courses = self.session_.get_session_course_codes(session_id)
         session_courses_and_attendance = {course: self.session_.get_course_code_attendance(session_id, course.id) for course in session_courses}
         opener = None
