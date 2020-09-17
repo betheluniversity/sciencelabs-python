@@ -436,12 +436,12 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])
 
         students = self.session.get_session_students(session_id)
-        students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in
-                                students}
+        student_session_list = self.session.get_student_session_from_session(session_id)
 
         session = self.session.get_session(session_id)
 
-        return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation)
+        return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation,
+                               get_courses=self.session.get_student_session_courses_by_student_session)
 
     @route('/update-seats', methods=['POST'])
     def update_assigned_seats(self):

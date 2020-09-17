@@ -77,7 +77,7 @@
             </tbody>
         </table>
         <br/>
-        {% if not students_and_courses %}
+        {% if not student_session_list %}
             <h4>No students have signed in yet.</h4>
         {% else %}
             <h4>Signed In Students:</h4>
@@ -90,9 +90,10 @@
                         <th data-toggle="tooltip" data-placement="top" title="Seat Number Assigned">Seat Assigned (0 if unassigned - N/A if virtual)</th></tr>
                 </thead>
                 <tbody>
-                    {% for student, courses in students_and_courses.items() %}
+                    {% for student, student_session in student_session_list %}
                         <tr>
                             <td>{{ student.firstName }} {{ student.lastName }}</td>
+                            {% set courses = get_courses(student_session.id) %}
                             <td>
                                 <ul>
                                     {% for course in courses %}
@@ -104,14 +105,14 @@
                                 </ul>
                             </td>
                             <td>
-                                {% if student.online %}
+                                {% if student_session.online %}
                                     Yes
                                 {% else %}
                                     No
                                 {% endif %}
                             </td>
                             <td>
-                                {% if not student.online %}
+                                {% if not student_session.online %}
                                     {% if not room_group %}
                                         {% set reservation = get_reservation(session.id, student.id) %}
                                     {% else %}
