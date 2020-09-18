@@ -562,9 +562,10 @@ class Session:
             .all()
         valid_sessions = []
         for session in future_sessions:
-            time = session.schedStartTime
-            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=20)), '%H:%M:%S').time())
-            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            start_time = session.schedStartTime
+            end_time = session.schedEndTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
             if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
 
