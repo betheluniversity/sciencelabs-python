@@ -5,14 +5,14 @@
         <h3>Welcome {{ student.firstName }} {{ student.lastName }}</h3>
         <br/>
         {% if not sessions %}
-            <h4>There are no sessions available for your course(s) in the next 24 hours.</h4>
+            <h4>There are no sessions available for your course(s) in the next 3 days.</h4>
             <br/>
             <br/>
             <br/>
         {% else %}
             <h4>{{ lab_title }} Reservations</h4>
             <p><b>To make a reservation</b>:  Select a session from the list of sessions available for your course(s),
-                within the next 24 hours.</p>
+                within the next 3 days.</p>
             <p><b>To cancel a reservation</b>:  Use the red “Cancel” button to cancel a reservation,
                 so others can use your spot.</p>
             <p><b>Attending a Face-to-Face Session:</b>
