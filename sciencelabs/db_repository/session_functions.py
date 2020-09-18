@@ -582,7 +582,7 @@ class Session:
             time = session.schedStartTime
             reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
             reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
 
         return valid_sessions
