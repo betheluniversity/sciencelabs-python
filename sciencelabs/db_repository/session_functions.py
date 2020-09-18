@@ -232,6 +232,15 @@ class Session:
             .filter(CourseCode_Table.id == Course_Table.course_code_id)\
             .all()
 
+    def get_student_session_courses_by_student_session(self, student_session_id):
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.id == student_session_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
+
     def get_signed_in_courses(self, session_id, student_id):
         return db_session.query(Course_Table)\
             .filter(StudentSession_Table.sessionId == session_id)\
@@ -271,6 +280,15 @@ class Session:
         courses = self.get_student_session_courses(session_id, student_id)
         for course in courses:
             course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
+                .filter(CourseCode_Table.id == course.course_code_id).one()
+            course_ids.append(course_code.id)
+        return course_ids
+
+    def get_stududent_session_coure_ids_by_student_session(self, student_session_id):
+        course_ids = []
+        courses = self.get_student_session_courses_by_student_session(student_session_id)
+        for course in courses:
+            course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName) \
                 .filter(CourseCode_Table.id == course.course_code_id).one()
             course_ids.append(course_code.id)
         return course_ids
@@ -354,7 +372,7 @@ class Session:
                 prof_students.append(student)
         return prof_students
 
-    def get_studentsession_from_session(self, session_id):
+    def get_student_session_from_session(self, session_id):
         return db_session.query(User_Table, StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\
             .filter(StudentSession_Table.sessionId == session_id)\
@@ -544,10 +562,11 @@ class Session:
             .all()
         valid_sessions = []
         for session in future_sessions:
-            time = session.schedStartTime
-            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=20)), '%H:%M:%S').time())
-            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
+            start_time = session.schedStartTime
+            end_time = session.schedEndTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
 
         return valid_sessions
@@ -564,7 +583,7 @@ class Session:
             time = session.schedStartTime
             reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
             reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-            if (reservations_start_time - timedelta(days=1)) <= datetime.now() <= reservations_end_time:
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
                 valid_sessions.append(session)
 
         return valid_sessions

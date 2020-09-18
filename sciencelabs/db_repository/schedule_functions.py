@@ -4,7 +4,7 @@ from sqlalchemy import func, or_
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Schedule_Table, Session_Table, Semester_Table, StudentSession_Table, \
     ScheduleCourseCodes_Table, CourseCode_Table, User_Table, TutorSchedule_Table, user_role_Table, Role_Table, \
-    TutorSession_Table, SessionReservations_Table, SessionCourseCodes_Table
+    TutorSession_Table, SessionReservations_Table, SessionCourseCodes_Table, ReservationCourses_Table
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 
 
@@ -24,8 +24,6 @@ class Schedule:
         if num_sessions == num_room_groups:
             return True
         return False
-
-
 
     def get_schedule_tab_info(self):
         return db_session.query(Schedule_Table) \
@@ -351,8 +349,16 @@ class Schedule:
             .filter(SessionReservations_Table.session_id == session_id)\
             .all()
         for reservation in reservations:
-            self.delete_session_reservations(reservation.id)
+            self.delete_reservation_courses(reservation.id)
             db_session.delete(reservation)
+        db_session.commit()
+
+    def delete_reservation_courses(self, reservation_id):
+        reservation_courses = db_session.query(ReservationCourses_Table) \
+            .filter(ReservationCourses_Table.reservation_id == reservation_id) \
+            .all()
+        for course in reservation_courses:
+            db_session.delete(course)
         db_session.commit()
 
     def delete_old_schedule_tutors_and_courses(self, schedule_id):
