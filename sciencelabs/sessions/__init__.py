@@ -429,6 +429,7 @@ class SessionView(FlaskView):
                                get_reservation_courses=self.session.get_reservation_courses,
                                get_user=self.user.get_user, get_course=self.course.get_course,
                                is_signed_in=self.session.student_currently_signed_in,
+                               previously_signed_in=self.session.student_previously_signed_in,
                                is_after_10=self.session.is_reservation_after_10_minutes)
 
     @route('/view-session-seats/<int:session_id>')
@@ -488,6 +489,7 @@ class SessionView(FlaskView):
                                get_user=self.user.get_user, get_course=self.course.get_course,
                                get_session=self.session.get_one_room_group_session,
                                is_signed_in=self.session.student_currently_signed_in,
+                               previously_signed_in=self.session.student_previously_signed_in,
                                is_after_10=self.session.is_reservation_after_10_minutes)
 
     @route('/view-room-group-seats/<int:room_group_id>')
@@ -637,6 +639,15 @@ class SessionView(FlaskView):
                     url_for('SessionView:view_room_group_reservations', room_group_id=session.room_group_id))
             self.slc.set_alert('danger',
                                'You can not delete this reservation since the session started less than 10 minutes ago.')
+            return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
+
+        if self.session.student_previously_signed_in(session.id, reservation.user_id) \
+                or self.session.student_currently_signed_in(session.id, reservation.user_id):
+            self.slc.set_alert('danger', 'You can\'t delete the reservation of someone who is currently or has '
+                                         'previously signed in.')
+            if session.room_group_id:
+                return redirect(
+                    url_for('SessionView:view_room_group_reservations', room_group_id=session.room_group_id))
             return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
 
         self.session.delete_session_reservation(reservation.id)
