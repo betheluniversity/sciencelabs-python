@@ -114,7 +114,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if not is_signed_in(reservation.session_id, reservation.user_id) %}
+                                {% if not is_signed_in(reservation.session_id, reservation.user_id) and not previously_signed_in(reservation.session_id, reservation.user_id) %}
                                     {% if is_after_10(reservation.session_id) %}
                                         <a id="delete" href="{{ url_for('SessionView:delete_reservation', reservation_id=reservation.id) }}"
                                             class="big-button btn hover-bright">Delete</a>
