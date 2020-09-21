@@ -136,6 +136,7 @@
                 <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                 <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
                 <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+                <th data-toggle="tooltip" data-placement="top" title="Seat Assigned">Seat Assigned</th>
                 <th></th>
             </thead>
             <tbody>
@@ -176,6 +177,13 @@
                             {% endif %}
                         </td>
                         <td>
+                            {% if student_session.online %}
+                                N/A
+                            {% else %}
+                                {{ get_reservation(session_info.id, info['student'].id).seat_number }}
+                            {% endif %}
+                        </td>
+                        <td>
                             <div class="btn-group">
                                 <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                    class="btn btn-primary hover-bright">Edit</a>
@@ -201,6 +209,7 @@
                     <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                     <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
                     <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Seat Assigned">Seat Assigned</th>
                     <th></th>
                 </thead>
                 <tbody>
@@ -228,6 +237,9 @@
                                     {% else %}
                                         No
                                     {% endif %}
+                                </td>
+                                <td>
+                                    {{ get_reservation(session_info.id, info['student'].id).seat_number }}
                                 </td>
                                 <td>
                                     <div class="btn-group">
@@ -351,6 +363,7 @@
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ null ] },
                 ],
                 "order": [[0, 'asc'],[1, 'asc']],
@@ -362,6 +375,7 @@
 
             var courseTables = $('.course-table').dataTable({
                 "aoColumns": [
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
