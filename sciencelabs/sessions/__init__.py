@@ -252,7 +252,7 @@ class SessionView(FlaskView):
 
         session_reservations = self.session.get_session_reservations(session_id)
         for reservation in session_reservations:
-            if reservation.seat_number != 0 and reservation.seat_number == seat_number:
+            if reservation.seat_number != 0 and reservation.seat_number == seat_number and reservation.user_id != student_id:
                 self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
