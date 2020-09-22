@@ -907,7 +907,12 @@ class Session:
                                                           datetime.now().strftime("%H:%M:%S")))
 
     def close_open_session(self, session_id, comments):
-        session_to_close = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_close = db_session.query(Session_Table)\
+            .filter(Session_Table.id == session_id)\
+            .filter(Session_Table.open == 1)\
+            .one_or_none()
+        if not session_to_close:
+            return False
         session_to_close.open = 0
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
@@ -915,6 +920,7 @@ class Session:
         self.log_session('{0} ({1}) closed at {2}'.format(session_to_close.name,
                                                           session_to_close.date.strftime("%m/%d/%Y"),
                                                           datetime.now().strftime("%H:%M:%S")))
+        return True
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
