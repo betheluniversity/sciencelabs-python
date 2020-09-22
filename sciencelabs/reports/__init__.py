@@ -679,6 +679,51 @@ class ReportView(FlaskView):
 
         return self.export_csv(my_list, csv_name)
 
+    def export_view_room_group_csv(self, room_group_id):
+        self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+
+        sessions = self.session_.get_room_group_sessions(room_group_id)
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        term = sem.term[:2]
+        year = sem.year
+        lab_acronym = ''
+        for letter in app.config['LAB_TITLE'].split():
+            lab_acronym += letter[0]
+
+
+        csv_name = '{0}_{1}_RoomGroupReport'.format(sessions[0].date.strftime('%m-%d-%Y'), lab_acronym)
+
+        my_list = [['Session Name', 'Session Date', 'Session Start Time', 'Session End Time', 'Session Room', '', '']]
+
+        for session in sessions:
+            start = (datetime.min + session.schedStartTime).time().strftime('%I:%M %p')
+            end = (datetime.min + session.schedEndTime).time().strftime('%I:%M %p')
+            my_list.append([session.name, session.date.strftime('%m-%d-%Y'), start, end, session.room, '', ''])
+
+        my_list.append(['', '', '', '', '', '', ''])
+        my_list.append(['Last', 'First', 'Email', 'Time In', 'Time Out', 'Attended Virtually', 'Seat Number'])
+
+        for session in sessions:
+            student_session_list = self.session_.get_student_session_from_session(session.id)
+            for student, student_session in student_session_list:
+                virtual = 'No'
+                seat_number = 'N/A'
+                time_in = student_session.timeIn
+                time_out = student_session.timeOut
+                if student_session.online:
+                    virtual = 'Yes'
+                if virtual == 'No':
+                    seat_number = self.session_.get_reservation(session.id, student.id).seat_number
+                    if not seat_number:
+                        seat_number = 'N/A'
+                if not time_in:
+                    time_in = 'N/A'
+                if not time_out:
+                    time_out = 'N/A'
+                my_list.append([student.lastName, student.firstName, student.email, time_in, time_out, virtual, seat_number])
+
+        return self.export_csv(my_list, csv_name)
+
     def export_session_csv(self):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
 

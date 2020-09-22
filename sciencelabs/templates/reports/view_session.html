@@ -5,6 +5,9 @@
         <div class="card-body btn-group">
             <p class="no-margin-padding">{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</p>
             <a href="{{ url_for('ReportView:export_view_session_csv', session_id=session_info.id) }}" class="csv-button btn btn-primary">CSV Export</a>
+            {% if session_info.room_group_id %}
+                <a href="{{ url_for('ReportView:export_view_room_group_csv', room_group_id=session_info.room_group_id) }}" class="csv-button btn btn-primary">Room CSV Export</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
