@@ -768,10 +768,11 @@ class SessionView(FlaskView):
         session_hash = form.get('session-hash')
         comments = form.get('comments')
         try:
-            self.session.close_open_session(session_id, comments)
-            self.email.close_session_email(session_id)
-            self.slc.set_alert('success', 'Session closed successfully!')
-            return redirect(url_for("SessionView:index"))
+            success = self.session.close_open_session(session_id, comments)
+            if success:
+                self.email.close_session_email(session_id)
+                self.slc.set_alert('success', 'Session closed successfully!')
+                return redirect(url_for("SessionView:index"))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to close session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
