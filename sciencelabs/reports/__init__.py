@@ -651,7 +651,13 @@ class ReportView(FlaskView):
 
         csv_name = '{0}_{1}_{2}_SessionReport'.format(session.name, session.date.strftime('%m-%d-%Y'), lab_acronym)
 
-        my_list = [['Last', 'First', 'Email', 'Time In', 'Time Out', 'Attended Virtually', 'Seat Number']]
+        start = (datetime.min + session.schedStartTime).time().strftime('%I:%M %p')
+        end = (datetime.min + session.schedEndTime).time().strftime('%I:%M %p')
+        my_list = [['Session Name', 'Session Date', 'Session Start Time', 'Session End Time', 'Session Room', '', '']]
+        my_list.append([session.name, session.date.strftime('%m-%d-%Y'), start, end, session.room, '', ''])
+
+        my_list.append(['', '', '', '', '', '', ''])
+        my_list.append(['Last', 'First', 'Email', 'Time In', 'Time Out', 'Attended Virtually', 'Seat Number'])
 
         student_session_list = self.session_.get_student_session_from_session(session_id)
         for student, student_session in student_session_list:
