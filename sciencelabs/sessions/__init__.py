@@ -776,6 +776,8 @@ class SessionView(FlaskView):
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to close session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:close_open_session', session_id=session_id, session_hash=session_hash))
+        self.slc.set_alert('danger', 'Failed to close session since it has already been closed.')
+        return redirect(url_for('SessionView:index'))
 
     def restore_deleted_session(self, session_id):
         self.slc.check_roles_and_route(['Administrator'])
