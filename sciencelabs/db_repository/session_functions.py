@@ -942,9 +942,26 @@ class Session:
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
-        self.log_session('{0} {1} signed out as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
-                                                                       datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        self.log_session('{0} {1} signed out as a tutor of session {2} at {3}'.format(tutor.firstName, tutor.lastName,
+                                                                                      session_id,
+                                                                                      datetime.now()
+                                                                                      .strftime("%m/%d/%Y %H:%M:%S")))
         return True
+
+    def tutor_room_group_sign_out(self, room_group_id, tutor_id):
+        room_group_sessions = self.get_room_group_sessions(room_group_id)
+        for session in room_group_sessions:
+            tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session.id)\
+                .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).one_or_none()
+            if tutor_session:
+                tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
+                db_session.commit()
+                tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
+                self.log_session('{0} {1} signed out as a tutor of session {2} at {3}'.format(tutor.firstName,
+                                                                                              tutor.lastName,
+                                                                                              session.id,
+                                                                                              datetime.now()
+                                                                                              .strftime("%m/%d/%Y %H:%M:%S")))
 
     def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in, virtual):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
