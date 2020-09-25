@@ -1177,14 +1177,14 @@ class SessionView(FlaskView):
 
     @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>/<room_group_id>', methods=['get'])
     def tutor_sign_out(self, session_id, tutor_id, session_hash, room_group_id=None):
-        result = self.session.tutor_sign_out(session_id, tutor_id)
-
-        if not result:
-            self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')\
-
         if room_group_id == 'False' or not room_group_id:
-            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
+            result = self.session.tutor_sign_out(session_id, tutor_id)
+            if not result:
+                self.slc.set_alert('danger', 'Tutor sign out failed. Please try again.')
+            return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id,
+                                    session_hash=session_hash))
         else:
+            self.session.tutor_room_group_sign_out(room_group_id, tutor_id)
             return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
 
     # Verifying here on the back end to hide the encoding for the id card numbers
