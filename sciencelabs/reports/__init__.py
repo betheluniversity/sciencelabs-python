@@ -668,9 +668,11 @@ class ReportView(FlaskView):
             if student_session.online:
                 virtual = 'Yes'
             if virtual == 'No':
-                seat_number = self.session_.get_reservation(session.id, student.id).seat_number
-                if not seat_number:
-                    seat_number = 'N/A'
+                reservation = self.session_.get_reservation(session.id, student.id)
+                if reservation:
+                    seat_number = reservation.seat_number
+                    if not seat_number:
+                        seat_number = 'N/A'
             if not time_in:
                 time_in = 'N/A'
             if not time_out:
@@ -713,9 +715,11 @@ class ReportView(FlaskView):
                 if student_session.online:
                     virtual = 'Yes'
                 if virtual == 'No':
-                    seat_number = self.session_.get_reservation(session.id, student.id).seat_number
-                    if not seat_number:
-                        seat_number = 'N/A'
+                    reservation = self.session_.get_reservation(session.id, student.id)
+                    if reservation:
+                        seat_number = reservation.seat_number
+                        if not seat_number:
+                            seat_number = 'N/A'
                 if not time_in:
                     time_in = 'N/A'
                 if not time_out:
