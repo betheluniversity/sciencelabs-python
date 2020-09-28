@@ -125,9 +125,9 @@ class StudentView(FlaskView):
             flask_session['USERNAME'] = username
             return 'failed'
 
-        self.slc.set_alert('success', 'Your reservation has been confirmed.')
-
         self.session.reserve_session(session_id, student_id, student_courses)
+
+        self.slc.set_alert('success', 'Your reservation has been confirmed.')
 
         return 'success'
 
