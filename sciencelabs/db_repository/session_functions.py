@@ -653,16 +653,25 @@ class Session:
         first_open_reservation.user_id = student_id
         db_session.commit()
         self.create_reservation_courses(first_open_reservation.id, student_courses)
+
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('{0} {1} reserved a space for session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                  session_id,
+                                                                                  datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
         return first_open_reservation
 
-    def cancel_reservation(self, session_id, user_id):
-        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == user_id).one()
+    def cancel_reservation(self, session_id, student_id):
+        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == student_id).one()
         self.delete_reservation_courses(reservation.id)
         reservation.user_id = None
         reservation.seat_number = None
 
         db_session.commit()
 
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('{0} {1} cancelled a reservation for session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                         session_id,
+                                                                                         datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
         return reservation
 
     def create_reservation_courses(self, reservation_id, student_coures):

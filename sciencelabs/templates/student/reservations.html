@@ -4,12 +4,69 @@
     <div class="form-group col-md-12">
         <h3>Welcome {{ student.firstName }} {{ student.lastName }}</h3>
         <br/>
+        <div>
+            {% if signed_in_sessions %}
+                <h4>Session you are currently attending:</h4>
+                <h6>
+                    Make sure to sign out after you are done with the session or else your time attending will not be
+                    counted.
+                    <br/>
+                    <br/>
+                    Make sure you don't bookmark the Zoom url, since it changes daily. After you're done with your Zoom
+                    session, don't forget to return to this page to sign out, so your attendance record is accurate.
+                </h6>
+                <br/>
+
+                <table id="signed-in-table" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Reserved</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in signed_in_sessions %}
+                            <tr>
+                                <td>
+                                    {{ session.name }}
+                                </td>
+                                <td>
+                                    {{ session.date.strftime('%m/%d/%Y') }}
+                                </td>
+                                <td>
+                                    {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                                </td>
+                                <td>
+                                    {{ session.room }}
+                                </td>
+                                <td>
+                                    <div class="text-left margin-top-10">
+                                        {% for course in signed_in_courses[session.id] %}
+                                                {{ course.title }} ({{ course.dept }}{{ course.course_num }})
+                                                <br />
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
         {% if not sessions %}
             <h4>There are no sessions available for your course(s) in the next 3 days.</h4>
             <br/>
             <br/>
             <br/>
         {% else %}
+            <br/>
             <h4>{{ lab_title }} Reservations</h4>
             <p><b>To make a reservation</b>:  Select a session from the list of sessions available for your course(s),
                 within the next 3 days.</p>
@@ -20,8 +77,9 @@
                     <li>Check your email before a session to assure there have not been any last minute cancellations.
                     </li>
                     <li>Bring your ID to the session when you attend, as your reservation will be checked.</li>
-                    <li>Make sure you arrive during the first 10 minutes, as there is no admittance after this entry
-                        time.</li>
+                    <li>Please try to arrive at the start of the session, as it's easier to work through problems
+                        together as a group. However, you may arrive at any time during the session, as long as there
+                        is space.</li>
                 </ul>
             </p>
             <table id="available-table"  class="table table-striped table-bordered">
@@ -86,65 +144,26 @@
             </table>
         {% endif %}
         <div id="course-selector"></div>
-        <div>
-            {% if signed_in_sessions %}
-                <h4>Session you are currently attending:</h4>
-                <h6>
-                    Make sure to sign out after you are done with the session or else your time attending will not be
-                    counted.
-                    <br/>
-                    <br/>
-                    Also, make sure not to bookmark the zoom url since it changes weekly and if you don't sign in your
-                    time will not be counted.
-                </h6>
-                <br/>
-
-                <table id="table" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Reserved</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for session in signed_in_sessions %}
-                            <tr>
-                                <td>
-                                    {{ session.name }}
-                                </td>
-                                <td>
-                                    {{ session.date.strftime('%m/%d/%Y') }}
-                                </td>
-                                <td>
-                                    {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
-                                </td>
-                                <td>
-                                    {{ session.room }}
-                                </td>
-                                <td>
-                                    <div class="text-left margin-top-10">
-                                        {% for course in signed_in_courses[session.id] %}
-                                                {{ course.title }} ({{ course.dept }}{{ course.course_num }})
-                                                <br />
-                                        {% endfor %}
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
-        </div>
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
+            var table = $('#available-table').DataTable( {
+                "aoColumns": [
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
+                ],
+                "order": [[1, 'asc']],
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false
+            });
+
             $('.reserve').click(function () {
                 $.ajax({
                     type: "POST",
