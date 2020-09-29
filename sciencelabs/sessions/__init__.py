@@ -473,6 +473,9 @@ class SessionView(FlaskView):
 
         seat_numbers = {}
         for seat in seats:
+            if not seat['seat_number']:
+                self.slc.set_alert('danger', 'Error! Invalid seat number entered. Please try again.')
+                return 'error'
             # If duplicate seat number that isn't 0 error out
             if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
                 self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'
