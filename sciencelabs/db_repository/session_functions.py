@@ -421,9 +421,16 @@ class Session:
         reservation = db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.id == reservation_id)\
             .one_or_none()
+        student_id = reservation.user_id
+        session_id = reservation.session_id
         self.delete_reservation_courses(reservation.id)
         db_session.delete(reservation)
         db_session.commit()
+
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('Tutor deleted {0} {1}\'s reservation for session {3} at {4}'.format(student.firstName, student.lastName,
+                                                                                              session_id,
+                                                                                              datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def add_anonymous_to_session(self, session_id, anon_students):
         session_to_edit = db_session.query(Session_Table)\
