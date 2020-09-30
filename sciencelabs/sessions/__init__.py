@@ -521,13 +521,14 @@ class SessionView(FlaskView):
         sessions = self.session.get_room_group_sessions(room_group_id)
 
         students = []
-        students_and_courses = {}
+        student_session_list = []
         sessions = self.session.get_room_group_sessions(room_group_id)
         for session in sessions:
             students.extend(self.session.get_session_students(session.id))
-            students_and_courses.update({student: self.session.get_student_session_courses(session.id, student.id) for student in students})
+            student_session_list.extend(self.session.get_student_session_from_session(session.id))
 
-        return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation_from_sessions)
+        return render_template('sessions/view_seats.html', **locals(), get_reservation=self.session.get_reservation_from_sessions,
+                               get_courses=self.session.get_student_session_courses_by_student_session)
 
     @route('/update-room-group-seats', methods=['POST'])
     def update_room_group_assigned_seats(self):
