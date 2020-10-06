@@ -52,7 +52,7 @@
             };
             let url = ''
             if (/reservations/.test(window.location.pathname)) {
-                url = '{{ url_for('StudentView:reserve_confirm') }}'
+                url = '{{ url_for('StudentView:reservation_confirm') }}'
             } else if (/virtual-sign-on/.test(window.location.pathname)) {
                 url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
             }

@@ -94,12 +94,12 @@ class StudentView(FlaskView):
 
         return render_template('student/course_selector_modal.html', **locals())
 
-    @route('/reserve-confirm', methods=['POST'])
-    def reserve_confirm(self):
+    @route('/reservation-confirm', methods=['POST'])
+    def reservation_confirm(self):
         form = request.form
         session_id = form.get('sessionID')
         username = form.get('username')
-        student_id = form.get('studentID')
+        student_id = int(form.get('studentID'))
 
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
@@ -124,6 +124,12 @@ class StudentView(FlaskView):
             # Need to set the username here because it gets cleared, but we need it to reload the page
             flask_session['USERNAME'] = username
             return 'failed'
+
+        session_reservations = self.session.get_session_reservations(session_id)
+        for reservation in session_reservations:
+            if reservation.user_id == student_id:
+                self.slc.set_alert('danger', 'You have already reserved this session. You can\'t reserve it again.')
+                return 'failed'
 
         self.session.reserve_session(session_id, student_id, student_courses)
 
