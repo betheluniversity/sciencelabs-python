@@ -915,8 +915,8 @@ class ReportView(FlaskView):
 
         return render_template('reports/view_course.html', **locals())
 
-    @route('/course-session/<int:course_id>/<string:date>')
-    def view_course_session(self, course_id, date):
+    @route('/course-session/<int:session_id>/<int:course_id>/<string:date>')
+    def view_course_session(self, session_id, course_id, date):
         sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         month = self._get_selected_month()
         year = sem.year
@@ -926,11 +926,8 @@ class ReportView(FlaskView):
         course_profs = self.courses.get_course_profs(course_id)
 
         sessions = self.session_.get_sessions(course_id)
-        student_sessions = {}
-        for lab_session in sessions:
-            if lab_session.date == date:
-                student_sessions = self.session_.get_student_sessions_for_course(course_id, lab_session.id)
-                break
+
+        student_sessions = self.session_.get_student_sessions_for_course(course_id, session_id)
 
         students = []
         for ss in student_sessions:
