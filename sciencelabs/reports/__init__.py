@@ -929,8 +929,11 @@ class ReportView(FlaskView):
         student_sessions = {}
         for lab_session in sessions:
             if lab_session.date == date:
-                student_sessions = self.session_.get_student_sessions_for_course(course_id, lab_session.id)
-                break
+                session_courses = self.session_.get_session_courses(lab_session.id)
+                for c in session_courses:
+                    if c.id == course_id:
+                        student_sessions = self.session_.get_student_sessions_for_course(course_id, lab_session.id)
+                        break
 
         students = []
         for ss in student_sessions:
