@@ -267,7 +267,8 @@ class SessionView(FlaskView):
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
-            self.session.update_reservation_seat_number(current_reservation.id, seat_number)
+            if session.room.lower() != 'virtual':
+                self.session.update_reservation_seat_number(current_reservation.id, seat_number)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
@@ -340,10 +341,11 @@ class SessionView(FlaskView):
                                          'wish to add another student')
             return redirect(url_for('SessionView:add_student', session_id=session_id))
         try:
-            if not already_reserved:
-                self.session.add_student_to_reservation(session_id, student_id, seat_number)
-            else:
-                self.session.update_reservation_seat_number(already_reserved.id, seat_number)
+            if session.room.lower() != 'virtual':
+                if not already_reserved:
+                    self.session.add_student_to_reservation(session_id, student_id, seat_number)
+                else:
+                    self.session.update_reservation_seat_number(already_reserved.id, seat_number)
             self.session.add_student_to_session(session_id, student_id)
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
