@@ -968,9 +968,9 @@ class Session:
     def tutor_room_group_sign_out(self, room_group_id, tutor_id):
         room_group_sessions = self.get_room_group_sessions(room_group_id)
         for session in room_group_sessions:
-            tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session.id)\
-                .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).one_or_none()
-            if tutor_session:
+            tutor_sessions = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session.id)\
+                .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).all()
+            for tutor_session in tutor_sessions:
                 tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
                 db_session.commit()
                 tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
