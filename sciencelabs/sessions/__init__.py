@@ -246,6 +246,8 @@ class SessionView(FlaskView):
             virtual = 1
         else:
             virtual = 0
+
+        session = self.session.get_session(session_id)
         student_sesssion = self.session.get_studentsession_by_id(student_session_id)
         student_id = student_sesssion.studentId
         current_reservation = self.session.get_reservation(session_id, student_id)
@@ -257,7 +259,7 @@ class SessionView(FlaskView):
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
         seats_available = self.session.get_num_seats_available(session_id)
-        if seats_available == 0:
+        if seats_available == 0 and session.room.lower() != 'virtual':
             self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
                                          'wish to add another student')
             return redirect(url_for('SessionView:add_student', session_id=session_id))
@@ -320,6 +322,8 @@ class SessionView(FlaskView):
         student_id = int(form.get('choose-student'))
         seat_number = int(form.get('seat'))
 
+        session = self.session.get_session(session_id)
+
         session_reservations = self.session.get_session_reservations(session_id)
 
         already_reserved = None
@@ -331,7 +335,7 @@ class SessionView(FlaskView):
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:add_student', session_id=session_id))
         seats_available = self.session.get_num_seats_available(session_id)
-        if seats_available == 0:
+        if seats_available == 0 and session.room.lower() != 'virtual':
             self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
                                          'wish to add another student')
             return redirect(url_for('SessionView:add_student', session_id=session_id))
