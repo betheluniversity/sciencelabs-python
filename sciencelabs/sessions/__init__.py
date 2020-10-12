@@ -656,6 +656,18 @@ class SessionView(FlaskView):
 
         return 'success'
 
+    @route('admin/room-groups')
+    def view_room_groupings(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        room_groups = self.session.get_all_room_groupings()
+
+        room_group_sessions = {}
+        for room_group in room_groups:
+            room_group_sessions[room_group.id] = self.session.get_room_group_sessions(room_group.id)
+
+        return render_template('sessions/view_all_room_groups.html', **locals(), get_session=self.session.get_one_room_group_session)
+
     @route('/delete-reservation/<int:reservation_id>')
     def delete_reservation(self, reservation_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor', 'Tutor'])

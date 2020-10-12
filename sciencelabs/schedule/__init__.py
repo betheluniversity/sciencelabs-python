@@ -218,7 +218,7 @@ class ScheduleView(FlaskView):
 
     @route('view-room-groupings')
     def room_groupings(self):
-        room_groupings = self.session.get_all_room_groupings()
+        room_groupings = self.session.get_all_future_room_groupings()
 
         sessions = {}
         for room_group in room_groupings:

@@ -67,7 +67,7 @@ class Session:
         db_session.commit()
 
     def delete_extra_room_groupings(self):
-        room_groups = self.get_all_room_groupings()
+        room_groups = self.get_all_future_room_groupings()
         for room_group in room_groups:
             sessions = self.get_room_group_sessions(room_group.id)
             if len(sessions) <= 1:
@@ -96,7 +96,7 @@ class Session:
             .filter(Session_Table.room_group_id == room_group_id)\
             .first()
 
-    def get_all_room_groupings(self):
+    def get_all_future_room_groupings(self):
         today = datetime.now().date()
         room_groups = db_session.query(RoomGrouping_Table).filter().all()
         room_groupings = []
@@ -108,6 +108,9 @@ class Session:
                 room_groupings.append(room_group)
 
         return room_groupings
+
+    def get_all_room_groupings(self):
+        return db_session.query(RoomGrouping_Table).filter().all()
 
     def update_room_group_capacity(self, room_group_id, capacity):
         room_group = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
