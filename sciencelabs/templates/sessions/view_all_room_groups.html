@@ -57,13 +57,14 @@
         $(document).ready(function () {
             var table = $('#room-groups-table').DataTable( {
                 "aoColumns": [
-                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ "asc", "desc" ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] }
                 ],
+                "aaSorting": [1, 'asc'],
                 "bPaginate": false,
                 "bLengthChange": false,
                 "bFilter": false,
