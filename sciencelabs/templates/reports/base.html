@@ -2,25 +2,25 @@
 
 {% block subnav %}
         {% if 'Administrator' in session['USER-ROLES'] or 'Academic Counselor' in session['USER-ROLES'] %}
-            <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
+            <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:course') }}">Course</a>
-            <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
+            <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:student') }}">Student</a>
-            <a id="session-report" class="nav-link {{ 'active' if '/session' in request.path else 'disabled'}}"
+            <a id="session-report" class="nav-link {{ 'active' if '/session' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:session') }}">Session</a>
-            <a id="monthly" class="nav-link {{ 'active' if 'month' in request.path else 'disabled'}}"
-               href="{{ url_for('ReportView:month', year=year, month=month) }}">Monthly</a>
-            <a id="term" class="nav-link {{ 'active' if 'semester' in request.path else 'disabled'}}"
+            <a id="monthly" class="nav-link {{ 'active' if 'month' in request.path else 'disabled' }}"
+               href="{{ url_for('ReportView:month_no_params') }}">Monthly</a>
+            <a id="term" class="nav-link {{ 'active' if 'semester' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:semester') }}">Term</a>
-            <a id="cumulative" class="nav-link {{ 'active' if 'annual' in request.path else 'disabled'}}"
+            <a id="cumulative" class="nav-link {{ 'active' if 'annual' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:annual') }}">Historical Attendance</a>
             <a id="enrollment" class="nav-link {{ 'active' if 'enrollment' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:enrollment') }}">Enrollment vs. Attendance</a>
         {% endif %}
         {% if 'Professor' in session['USER-ROLES'] and 'Administrator' not in session['USER-ROLES'] %}
-            <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled'}}"
+            <a id="student" class="nav-link {{ 'active' if 'student' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:student') }}">Student</a>
-            <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled'}}"
+            <a id="course" class="nav-link {{ 'active' if 'course' in request.path else 'disabled' }}"
                href="{{ url_for('ReportView:course') }}">Course</a>
         {% endif %}
 {% endblock %}
