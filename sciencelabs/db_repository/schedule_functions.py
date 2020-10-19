@@ -370,7 +370,8 @@ class Schedule:
         return db_session.query(Session_Table).filter(Session_Table.schedule_id == schedule_id).all()
 
     def get_first_session_by_schedule(self, schedule_id):
-        return db_session.query(Session_Table).filter(Session_Table.schedule_id == schedule_id).first()
+        now = datetime.now()
+        return db_session.query(Session_Table).filter(Session_Table.schedule_id == schedule_id).filter(Session_Table.date >= now).first()
 
     def edit_schedule_info(self, schedule_id, name, room, start_time, end_time, day_of_week):
         schedule_to_edit = db_session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
