@@ -567,7 +567,7 @@ class Session:
     def student_previously_signed_in(self, session_id, student_id):
         return db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id) \
             .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None) \
-            .filter(StudentSession_Table.timeOut != None).one_or_none()
+            .filter(StudentSession_Table.timeOut != None).all()
 
     def get_reservation_sessions(self):
         future_sessions = db_session.query(Session_Table)\
