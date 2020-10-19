@@ -258,11 +258,6 @@ class SessionView(FlaskView):
                 self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
-        seats_available = self.session.get_num_seats_available(session_id)
-        if seats_available == 0 and session.room.lower() != 'virtual':
-            self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
-                                         'wish to add another student')
-            return redirect(url_for('SessionView:add_student', session_id=session_id))
         try:
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
