@@ -848,6 +848,13 @@ class Session:
 
     ######################### EDIT SESSION METHODS #########################
 
+    def edit_session_capacity(self, session_id, capacity):
+        session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
+
+        session_to_edit.capacity = capacity
+
+        db_session.commit()
+
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
                      actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses):
         self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,

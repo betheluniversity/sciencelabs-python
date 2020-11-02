@@ -605,9 +605,6 @@ class SessionView(FlaskView):
         for session_capacity in capacities_list:
             capacity_issue = False
             session = self.session.get_session(session_capacity['session_id'])
-            leads = self.session.get_session_lead_ids(session.id)
-            tutors = self.session.get_session_tutor_ids(session.id)
-            courses = self.course.get_session_course_ids(session.id)
             capacity = int(session_capacity['capacity'])
 
             reserved_seats = self.session.get_num_reserved_seats(session.id)
@@ -643,10 +640,7 @@ class SessionView(FlaskView):
             elif len(self.session.get_all_session_reservations(session.id)) == 0:
                 self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
             try:
-                self.session.edit_session(session.id, session.semester_id, session.date, session.schedStartTime,
-                                          session.schedEndTime, capacity, session.zoom_url, session.startTime,
-                                          session.endTime, session.room, session.comments, session.anonStudents,
-                                          session.name, leads, tutors, courses)
+                self.session.edit_session_capacity(session.id, capacity)
             except Exception as error:
                 if not capacity_issue and session.room.lower() != 'virtual':
                     self.session.create_seats(session.id, capacity, session.capacity + 1, True)
