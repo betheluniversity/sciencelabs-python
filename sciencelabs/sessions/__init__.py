@@ -260,8 +260,6 @@ class SessionView(FlaskView):
                 return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
         try:
             # Returns True if successful
-            strrr = "ss_id: {0} --- time_in: {1} --- time_out: {2} --- other_course: {3} --- student_courses: {4} --- virtual: {5} --- current res: {6} --- seat: {7}".format(student_session_id, time_in, time_out, other_course, student_courses, virtual, current_reservation, seat_number)
-            self.session.log_session(strrr)
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
             if session.room.lower() != 'virtual':
