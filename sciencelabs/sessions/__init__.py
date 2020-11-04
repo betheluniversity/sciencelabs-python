@@ -262,7 +262,7 @@ class SessionView(FlaskView):
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
-            if session.room.lower() != 'virtual':
+            if session.room.lower() != 'virtual' and virtual == 0:
                 self.session.update_reservation_seat_number(current_reservation.id, seat_number)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
