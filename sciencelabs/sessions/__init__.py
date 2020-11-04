@@ -220,7 +220,7 @@ class SessionView(FlaskView):
 
             if capacity == 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
-            return redirect(url_for('SessionView:closed'))
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
             if not capacity_issue and session.room.lower() != 'virtual':
                 self.session.create_seats(session.id, capacity, session.capacity + 1, True)
