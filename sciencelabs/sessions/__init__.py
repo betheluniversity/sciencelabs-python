@@ -488,6 +488,12 @@ class SessionView(FlaskView):
                 if seat['seat_number'] != 0:
                     self.slc.set_alert('danger', 'Error! Invalid seat number entered. Please try again.')
                     return 'error'
+            if type(seat['seat_number']) is not int:
+                try:
+                    seat['seat_number'] = int(seat['seat_number'])
+                except Exception as e:
+                    self.slc.set_alert('danger', 'Number must be int!')
+                    return 'error'
             # If duplicate seat number that isn't 0 error out
             if seat['seat_number'] in seat_numbers and seat['seat_number'] != 0:
                 self.slc.set_alert('danger', 'Error! Seat number: {0} already assigned to another user.'
@@ -609,9 +615,6 @@ class SessionView(FlaskView):
         for session_capacity in capacities_list:
             capacity_issue = False
             session = self.session.get_session(session_capacity['session_id'])
-            leads = self.session.get_session_lead_ids(session.id)
-            tutors = self.session.get_session_tutor_ids(session.id)
-            courses = self.course.get_session_course_ids(session.id)
             capacity = int(session_capacity['capacity'])
 
             reserved_seats = self.session.get_num_reserved_seats(session.id)
@@ -647,10 +650,7 @@ class SessionView(FlaskView):
             elif len(self.session.get_all_session_reservations(session.id)) == 0:
                 self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
             try:
-                self.session.edit_session(session.id, session.semester_id, session.date, session.schedStartTime,
-                                          session.schedEndTime, capacity, session.zoom_url, session.startTime,
-                                          session.endTime, session.room, session.comments, session.anonStudents,
-                                          session.name, leads, tutors, courses)
+                self.session.edit_session_capacity(session.id, capacity)
             except Exception as error:
                 if not capacity_issue and session.room.lower() != 'virtual':
                     self.session.create_seats(session.id, capacity, session.capacity + 1, True)
@@ -1192,6 +1192,12 @@ class SessionView(FlaskView):
                         session_id = session.id
                         session_hash = session.hash
 
+        if not session_id and not session_hash and room_group_id:
+            # This means a sub is signing in to a room group
+            room_group = self.session.get_room_group_by_id(room_group_id)
+            return render_template('sessions/room_group_subs.html', **locals())
+
+
         if self.session.tutor_currently_signed_in(session_id, tutor.id):
             if not room_group_id:
                 return redirect(url_for('SessionView:tutor_sign_out', session_id=session_id, tutor_id=tutor.id,
@@ -1206,6 +1212,15 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:tutor_attendance_passthrough', session_id=session_id, session_hash=session_hash))
         else:
             return redirect(url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id))
+
+    @route('select-sub-session', methods=['POST'])
+    def select_sub_session(self):
+        session_id = json.loads(request.data).get('session_id')
+        tutor_id = json.loads(request.data).get('tutor_id')
+
+        self.session.tutor_sign_in(session_id, tutor_id)
+
+        return 'success'
 
     @route('/no-cas/tutor-sign-out/<session_id>/<tutor_id>/<session_hash>/<room_group_id>', methods=['get'])
     def tutor_sign_out(self, session_id, tutor_id, session_hash, room_group_id=None):
