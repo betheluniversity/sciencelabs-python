@@ -143,6 +143,11 @@ class SessionView(FlaskView):
             self.session.delete_session(session_id)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session deleted successfully!')
+
+            # send email
+            recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+            self.email.reservation_created_or_deleted(session_id, recipient, True)
+
             return redirect(url_for('SessionView:closed'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
@@ -420,6 +425,11 @@ class SessionView(FlaskView):
                 self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+
+            # send email
+            recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+            self.email.reservation_created_or_deleted(new_session.id, recipient)
+
             if capacity == 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
                                    .format(name, date))
