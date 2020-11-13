@@ -143,7 +143,7 @@ class SessionView(FlaskView):
             self.session.delete_session(session_id)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session deleted successfully!')
-            return redirect(url_for('SessionView:closed'))
+            return redirect(url_for('SessionView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
