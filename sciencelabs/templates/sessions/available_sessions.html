@@ -190,9 +190,10 @@
                        success: function (response) {
                            if (response === 'failure') {
                                window.location.assign("{{ url_for('SessionView:index') }}")
+                           } else {
+                               $('.body-content').empty()
+                               $('.body-content').append(response)
                            }
-                           $('.body-content').empty()
-                           $('.body-content').append(response)
                        },
                        error: function (error) {
 
