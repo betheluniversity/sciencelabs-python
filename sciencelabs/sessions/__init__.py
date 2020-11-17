@@ -155,7 +155,7 @@ class SessionView(FlaskView):
         session_ids = json.loads(request.data).get('session_ids')
 
         if len(session_ids) == 0:
-            self.slc.set_alert('danger', 'Failed to delete sessions')
+            self.slc.set_alert('danger', 'Error! No sessions selected to delete.')
             return 'failure'
 
         return render_template('sessions/delete_sessions.html', **locals(), get_session=self.session.get_session)
