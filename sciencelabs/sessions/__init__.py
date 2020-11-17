@@ -148,6 +148,32 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
+    @route('/delete-sessions', methods=['POST'])
+    def delete_sessions(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        session_ids = json.loads(request.data).get('session_ids')
+
+        if len(session_ids) == 0:
+            self.slc.set_alert('danger', 'Error! No sessions selected to delete.')
+            return 'failure'
+
+        return render_template('sessions/delete_sessions.html', **locals(), get_session=self.session.get_session)
+
+    def delete_sessions_confirmed(self, session_ids):
+        self.slc.check_roles_and_route(['Administrator'])
+        # For some reason the list is being past as a string from html so this fixes it (str to list)
+        session_ids = session_ids.replace('[', '').replace(']', '').replace('\'', '').replace(' ', '').split(',')
+        try:
+            for session_id in session_ids:
+                self.session.delete_session(session_id)
+                self.session.delete_extra_room_groupings()
+            self.slc.set_alert('success', 'Session deleted successfully!')
+            return redirect(url_for('SessionView:index'))
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to delete sessions: {0}'.format(str(error)))
+            return redirect(url_for('SessionView:index'))
+
     @route('/save-session-edits', methods=['POST'])
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
