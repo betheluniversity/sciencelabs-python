@@ -571,7 +571,7 @@ select:invalid {
     background-color: #0F2C52;
 }
 
-#deactivate-users {
+#deactivate-users, #delete-sessions {
     color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
