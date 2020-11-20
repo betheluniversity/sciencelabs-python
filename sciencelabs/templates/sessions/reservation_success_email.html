@@ -1,8 +1,10 @@
 <h3>F2F Session Reservation was successful: {{ sess.name }} on {{ sess.date.strftime('%m/%d/%Y') }}</h3>
 
 <h4>You have requested help in the following course(s):</h4>
+<ul>
 {% for course in courses %}
-    {{ course.title }} ({{ course.dept }} {{ course.course_num }})
+    <li>{{ course.title }} ({{ course.dept }} {{ course.course_num }})</li>
     <br />
 {% endfor %}
+</ul>
 

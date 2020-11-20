@@ -1,1 +1,9 @@
 <h3>F2F Session Reservation was cancelled successfully: {{ sess.name }} on {{ sess.date.strftime('%m/%d/%Y') }}</h3>
+
+<h4>The session was for the following course(s):</h4>
+<ul>
+{% for course in courses %}
+    <li>{{ course.title }} ({{ course.dept }} {{ course.course_num }})</li>
+    <br />
+{% endfor %}
+</ul>

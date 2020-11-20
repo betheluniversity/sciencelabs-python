@@ -68,13 +68,17 @@ class EmailController:
 
     def reservation_confirm_or_cancel(self, session_id, recipient, student_courses=None, deleted=False):
         sess = self.session.get_session(session_id)
+        reservation = self.session.get_reservation(sess.id, recipient.id)
+        courses_ids = self.session.get_reservation_courses(reservation.id)
+
+        courses = []
+        for course_id in courses_ids:
+            courses.append(self.course.get_course(course_id))
+
         if deleted:
             subject = 'F2F Reservation Cancelled, {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
             return self.send_message(subject, render_template('sessions/reservation_cancel_email.html', **locals()), recipient.email, None, True)
         else:
-            courses = []
-            for course_id in student_courses:
-                courses.append(self.course.get_course(course_id))
             subject = 'F2F Reservation Scheduled Successfully, {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
 
             return self.send_message(subject, render_template('sessions/reservation_success_email.html', **locals()), recipient.email, None, True)
