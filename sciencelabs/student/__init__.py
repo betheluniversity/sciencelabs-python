@@ -105,7 +105,6 @@ class StudentView(FlaskView):
 
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
-        print(student_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
