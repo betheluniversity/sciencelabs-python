@@ -1,2 +1,12 @@
 <h3>New Session Reservation was successful: {{ sess.name }} on {{ sess.date }}</h3>
-<p>Join this session at: {{ sess.zoomUrl }}</p>
+
+{% if sess.zoom_url %}
+    <p>Join the session here: <a href="{{ sess.zoom_url }}">Zoom Url</a></p>
+{% endif %}
+
+<h4>You have requested help in the following course(s):</h4>
+{% for course in courses %}
+    {{ course.title }} ({{ course.dept }} {{ course.course_num }})
+    <br />
+{% endfor %}
+

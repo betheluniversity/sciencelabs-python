@@ -12,6 +12,7 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 from sciencelabs.db_repository.session_functions import Session
 from sciencelabs.db_repository.user_functions import User
 from sciencelabs.sciencelabs_controller import ScienceLabsController
+from sciencelabs.email_tab import EmailController
 
 
 class StudentView(FlaskView):
@@ -22,6 +23,7 @@ class StudentView(FlaskView):
         self.session = Session()
         self.user = User()
         self.slc = ScienceLabsController()
+        self.email = EmailController()
 
     @route('/reservations')
     def reservations(self):
@@ -103,6 +105,7 @@ class StudentView(FlaskView):
 
         json_courses = form.get('jsonCourseIDs')
         student_courses = json.loads(json_courses)
+        print(student_courses)
         other_course_check = 1 if form.get('otherCourseCheck') == 'true' else 0
         other_course_name = form.get('otherCourseName')
         time_in = form.get('timeIn')
@@ -132,8 +135,11 @@ class StudentView(FlaskView):
                 return 'failed'
 
         self.session.reserve_session(session_id, student_id, student_courses)
-
         self.slc.set_alert('success', 'Your reservation has been confirmed.')
+
+        # send email
+        recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+        self.email.reservation_confirm_or_cancel(session_id, recipient, student_courses)
 
         return 'success'
 
@@ -143,6 +149,10 @@ class StudentView(FlaskView):
         student_id = str(json.loads(request.data).get('student_id'))
 
         self.slc.set_alert('success', 'Your reservation has been cancelled successfully.')
+
+        # send email
+        recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+        self.email.reservation_confirm_or_cancel(session_id, recipient, None, True)
 
         self.session.cancel_reservation(session_id, student_id)
 
