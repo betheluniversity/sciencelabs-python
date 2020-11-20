@@ -6,3 +6,4 @@
     <li>{{ course.title }} ({{ course.dept }} {{ course.course_num }})</li>
 {% endfor %}
 </ul>
+<p>View other available sessions at: <a href="{{ url_for('StudentView:reservations') }}"></a></p>
