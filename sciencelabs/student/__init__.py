@@ -137,7 +137,7 @@ class StudentView(FlaskView):
         self.slc.set_alert('success', 'Your reservation has been confirmed.')
 
         # send email
-        recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+        recipient = self.user.get_user_by_username(flask_session.get('USERNAME'))
         self.email.reservation_confirm_or_cancel(session_id, recipient, student_courses)
 
         return 'success'
@@ -150,7 +150,7 @@ class StudentView(FlaskView):
         self.slc.set_alert('success', 'Your reservation has been cancelled successfully.')
 
         # send email
-        recipient = self.user.get_user_by_username(flask_session.get('USERNAME')).email
+        recipient = self.user.get_user_by_username(flask_session.get('USERNAME'))
         self.email.reservation_confirm_or_cancel(session_id, recipient, None, True)
 
         self.session.cancel_reservation(session_id, student_id)
