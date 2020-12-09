@@ -55,6 +55,59 @@ class ScheduleView(FlaskView):
         tutor_list = self.schedule.get_registered_tutors()
         return render_template('schedule/edit_schedule.html', **locals(), get_session=self.schedule.get_first_session_by_schedule)
 
+    @route("/duplicate/<int:schedule_id>")
+    def duplicate_schedule(self, schedule_id):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        schedule = self.schedule.get_schedule(schedule_id)
+        schedule_courses = self.schedule.get_schedule_courses(schedule_id)
+
+        schedule_session = self.schedule.get_first_session_by_schedule(schedule_id)
+
+        tutor_sessions = self.session.get_tutor_sessions(schedule_session.id)
+
+        leads = []
+        tutors = []
+        for tutor_session in tutor_sessions:
+            if tutor_session.isLead == 1:
+                leads.append(tutor_session.tutorId)
+            else:
+                tutors.append(tutor_session.tutorId)
+
+        try:
+            active_semester = self.schedule.get_active_semester()
+            term = active_semester.term
+            term_start_date = active_semester.startDate
+            term_end_date = active_semester.endDate
+            term_id = active_semester.id
+            name = schedule.name
+            room = schedule.room
+            start_time = schedule.startTime
+            end_time = schedule.endTime
+            day_of_week = schedule.dayofWeek
+            capacity = schedule_session.capacity
+            leads = leads
+            tutors = tutors
+            courses = schedule_courses
+            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
+                                                     start_time, end_time, day_of_week, capacity, leads, tutors,
+                                                     courses)
+
+            if room.lower() != 'virtual':
+                self.session.check_all_room_groupings(sessions)
+            self.session.delete_extra_room_groupings()
+
+            self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
+
+            if capacity == 0:
+                self.slc.set_alert('success',
+                                   '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
+
+            return redirect(url_for('ScheduleView:index'))
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to duplicate schedule: {0}'.format(str(error)))
+            return redirect(url_for('ScheduleView:index'))
+
     def delete_schedule(self, schedule_id):
         self.slc.check_roles_and_route(['Administrator'])
 

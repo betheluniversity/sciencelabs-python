@@ -71,6 +71,8 @@
                                 <td class="text-center btn-group">
                                     <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
                                        class="btn btn-primary hover-bright">Edit</a>
+                                    <a id="duplicate" href="{{ url_for('ScheduleView:duplicate_schedule', schedule_id=schedule.id) }}"
+                                       class="btn btn-primary hover-bright">Duplicate</a>
                                     <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
                                        class="btn btn-primary hover-bright">Delete</a>
                                 </td>
