@@ -79,6 +79,9 @@ class Session:
                         self.check_all_room_groupings(sessions)
                         break
 
+    def delete_extra_room_grouping(self, room_group_id):
+        room_group = self.get_room_group_by_id(room_group_id)
+        self.delete_session_room_grouping(room_group, [])
 
     def delete_session_room_grouping(self, room_group, sessions):
         for session in sessions:
@@ -103,7 +106,7 @@ class Session:
         for room_group in room_groups:
             session = self.get_one_room_group_session(room_group.id)
             if not session:
-                self.delete_extra_room_groupings()
+                self.delete_extra_room_grouping(room_group.id)
             elif session.date >= today:
                 room_groupings.append(room_group)
 
