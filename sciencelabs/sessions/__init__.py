@@ -149,6 +149,93 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
+    def email_all_reservations(self, session_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        lead_ids = self.session.get_session_lead_ids(session_id)
+        tutor_ids = self.session.get_session_tutor_ids(session_id)
+        all_tutor_ids = lead_ids + tutor_ids
+        reservations = self.session.get_session_reservations(session_id)
+
+        user_list = self.user.get_all_current_users()
+        reservation_list = []
+        tutor_list = []
+        tutor_list_json = []
+        for user in reservations:
+            reservation_list.append(self.user.get_user(user.user_id))
+        for tutor_id in all_tutor_ids:
+            tutor_list.append(self.user.get_user(tutor_id))
+            tutor_dict = self.user.get_user(tutor_id).__dict__
+            del tutor_dict["_sa_instance_state"]
+            tutor_list_json.append(json.dumps(tutor_dict))
+
+        return render_template('sessions/email_all_reservations.html', **locals())
+
+    @route('/confirm/<int:session_id>', methods=['post'])
+    def email_all_reservations_confirm(self, session_id):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        lead_ids = self.session.get_session_lead_ids(session_id)
+        tutor_ids = self.session.get_session_tutor_ids(session_id)
+        all_tutor_ids = lead_ids + tutor_ids
+        reservations = self.session.get_session_reservations(session_id)
+
+        reservation_list = []
+        for user in reservations:
+            reservation_list.append(self.user.get_user(user.user_id))
+        tutor_list = []
+        for tutor_id in all_tutor_ids:
+            tutor_list.append(self.user.get_user(tutor_id))
+
+        form = request.form
+        form_reservation_ids = form.getlist('user_reservations')
+        selected_reservations = []
+        for recipient_id in form_reservation_ids:  # Need to convert strings to ints for template comparison
+            selected_reservations.append(int(recipient_id))
+
+        form_tutor_ids = form.getlist('tutors')
+        selected_tutors = []
+        for tutor_id in form_tutor_ids:
+            selected_tutors.append(int(tutor_id))
+
+        form_user_ids = form.getlist('users')
+        selected_users = []
+        for user_id in form_user_ids:
+            selected_users.append(int(user_id))
+
+        subject = form.get('subject')
+        message = form.get('message')
+        user_list = self.user.get_all_current_users()
+        return render_template('sessions/email_all_reservations_confirm.html', **locals())
+
+    @route('/send', methods=['post'])
+    def send_all_reservations_email(self):
+        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        form = request.form
+        message = form.get('message')
+        subject = '{{{0}}} {1}'.format(app.config['LAB_TITLE'], form.get('subject'))
+
+        form_reservation_ids = form.getlist('user_reservations')
+        reservation_list = []
+        for user in form_reservation_ids:  # Need to convert strings to ints for template comparison
+            reservation_list.append(int(user))
+        recipients = self.user.get_recipient_emails(reservation_list)
+
+        form_tutor_ids = form.getlist('tutors')
+        form_user_ids = form.getlist('users')
+        selected_tutors_and_users = []
+        for tutor_id in form_tutor_ids:
+            selected_tutors_and_users.append(int(tutor_id))
+        for user_id in form_user_ids:
+            selected_tutors_and_users.append(int(user_id))
+
+        bcc_emails = self.user.get_recipient_emails(selected_tutors_and_users)
+
+        success = self.email.send_message(subject, message, recipients, bcc_emails, False)
+        if success:
+            self.slc.set_alert('success', 'Email sent successfully')
+        else:
+            self.slc.set_alert('danger', 'Failed to send email')
+        return redirect(url_for('SessionView:index'))
+
     @route('/save-session-edits', methods=['POST'])
     def save_session_edits(self):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])

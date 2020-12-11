@@ -1,0 +1,79 @@
+{% extends 'sessions/email_all_reservations.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Review your email. If all information is correct, press send.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <form action="{{ url_for('SessionView:send_all_reservations_email') }}" method="post">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="choose-recipients">Students (User Reservations)</label>
+                <select name="user_reservations" id="choose-recipients" multiple="true">
+                    {% for user in reservation_list %}
+                        <option value="{{ user.id }}" {{ 'selected' if user.id in selected_reservations }}>{{ user.firstName }} {{ user.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="subject">Subject</label>
+                <input name="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off" value="{{ subject }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div id="bcc-div" class="form-group col-md-12 chosen-container">
+                <label for="choose-tutors">Add Tutors</label>
+                <select name="tutors" id="choose-tutors" multiple="true">
+                    {% for tutor in tutor_list %}
+                        <option value="{{ tutor.id }}" {{ 'selected' if tutor.id in selected_tutors }}>{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div id="user-div" class="form-group col-md-12 chosen-container">
+                <label for="choose-users">Add Users</label>
+                <select name="users" id="choose-users" multiple="true">
+                    {% for user in user_list %}
+                        <option value="{{ user.id }}" {{ 'selected' if user.id in selected_users }}>{{ user.firstName }} {{ user.lastName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="subject">Message</label>
+                <textarea name="message" class="form-control" rows="15" cols="67">{{ message }}</textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="send-email">Send</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        var reservations = new SlimSelect({
+            select: "#choose-recipients",
+            placeholder: "Add students...",
+            closeOnSelect: false
+        });
+
+        var tutors = new SlimSelect({
+            select: "#choose-tutors",
+            placeholder: 'Add Tutors...',
+            closeOnSelect: false
+        });
+
+        var users = new SlimSelect({
+            select: "#choose-users",
+            placeholder: 'Add Users...',
+            closeOnSelect: false
+        });
+    </script>
+{% endblock %}
