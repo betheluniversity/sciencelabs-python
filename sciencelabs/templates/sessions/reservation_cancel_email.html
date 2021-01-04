@@ -1,9 +1,10 @@
-<h3>F2F Session Reservation was cancelled successfully: {{ sess.name }} on {{ sess.date.strftime('%m/%d/%Y') }}</h3>
-
-<h4>The session was for the following course(s):</h4>
+<h4>You have successfully cancelled your reservation for the {{ sess.name }} Math Lab session for the following course(s):</h4>
 <ul>
 {% for course in courses %}
     <li>{{ course.title }} ({{ course.dept }} {{ course.course_num }})</li>
 {% endfor %}
 </ul>
-<p>View other available sessions <a href="https://tutorlabs.bethel.edu/mathlab/student/reservations">here</a></p>
+<p>
+    View other available face to face sessions <a href="https://tutorlabs.bethel.edu/mathlab/student/reservations">here</a>
+    or virtual sessions <a href="https://tutorlabs.bethel.edu/mathlab/student/virtual-sign-on">here</a>.
+</p>
