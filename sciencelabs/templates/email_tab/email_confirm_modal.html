@@ -31,7 +31,7 @@
             if (/email-all-reservations/.test(window.location.pathname)) {
                 url = '{{ url_for('SessionView:send_email_all_reservations') }}';
                 redirect_url = '{{ url_for('SessionView:index') }}';
-            } else if (/create-email/.test(window.location.pathname)) {
+            } else if (/create/.test(window.location.pathname)) {
                 url = '{{ url_for('EmailView:send') }}';
                 redirect_url = '{{ url_for('EmailView:index') }}';
             }
