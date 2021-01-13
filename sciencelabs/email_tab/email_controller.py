@@ -76,10 +76,10 @@ class EmailController:
             courses.append(self.course.get_course(course_id))
 
         if deleted:
-            subject = 'Math Lab reservation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
+            subject = '{0} reservation: {1} ({2})'.format(app.config['LAB_TITLE'], sess.name, sess.date.strftime('%m/%d/%Y'))
             return self.send_message(subject, render_template('sessions/reservation_cancel_email.html', **locals()), recipient.email, None, True)
         else:
-            subject = 'Math Lab reservation cancellation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
+            subject = '{0}} reservation cancellation: {1} ({2})'.format(app.config['LAB_TITLE'], sess.name, sess.date.strftime('%m/%d/%Y'))
             return self.send_message(subject, render_template('sessions/reservation_success_email.html', **locals()), recipient.email, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
