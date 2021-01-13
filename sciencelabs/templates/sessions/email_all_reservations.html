@@ -82,25 +82,25 @@
         });
 
         $('#confirm-email').click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "{{ url_for('SessionView:email_all_reservations_confirm') }}",
-                    data: JSON.stringify({
-                        'subject': $('#subject').val(),
-                        'message': $('#message').val(),
-                        'selected_reservations': $('#choose-reservations').val(),
-                        'selected_tutors': $('#choose-tutors').val(),
-                        'selected_users': $('#choose-users').val()
-                    }),
-                    contentType: 'application/json;charset=UTF-8',
-                    success: function (response) {
-                        $('#send-email-modal').html(response);
-                        $('#email-send').modal('show');
-                    },
-                    error: function (error) {
-                    }
-                });
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('SessionView:email_all_reservations_confirm') }}",
+                data: JSON.stringify({
+                    'subject': $('#subject').val(),
+                    'message': $('#message').val(),
+                    'selected_reservations': $('#choose-reservations').val(),
+                    'selected_tutors': $('#choose-tutors').val(),
+                    'selected_users': $('#choose-users').val()
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    $('#send-email-modal').html(response);
+                    $('#email-send').modal('show');
+                },
+                error: function (error) {
+                }
             });
+        });
 
         function toggle_tutors(checkbox, tutor_list_json) {
             //remove select items and re-add them (no good way to select/deselect items in a slim select from javascript)

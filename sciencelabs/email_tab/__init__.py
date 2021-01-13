@@ -17,7 +17,7 @@ class EmailView(FlaskView):
         self.user = User()
         self.slc = ScienceLabsController()
 
-    @route('/create')
+    @route('/create-email')
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
@@ -29,52 +29,45 @@ class EmailView(FlaskView):
     def email_redirect(self):
         return redirect(url_for('EmailView:index'))
 
-    @route('/confirm', methods=['post'])
+    @route('/email-tab-confirm', methods=['post'])
     def send_email_confirm(self):
         self.slc.check_roles_and_route(['Administrator'])
+        data = request.get_json()
 
-        form = request.form
-        group_id_strings = form.getlist('groups')
+        subject = data['subject']
+        message = data['message']
+        group_id_strings = data['selected_recipients']
+        cc_ids = data['selected_cc']
+        bcc_ids = data['selected_bcc']
+
         groups = []
         for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, and bcc)
             groups.append(int(group))
-        subject = form.get('subject')
-        cc_ids = form.getlist('cc')
         cc = []
         for cc_id in cc_ids:
             cc.append(int(cc_id))
-        bcc_ids = form.getlist('bcc')
         bcc = []
         for bcc_id in bcc_ids:
             bcc.append(int(bcc_id))
-        message = form.get('message')
-        role_list = self.user.get_all_roles()
-        user_list = self.user.get_all_current_users()
-        return render_template('email_tab/send_email_confirm.html', **locals())
+
+        recipients = self.user.get_recipient_emails(cc)
+        bcc_emails = self.user.get_bcc_emails(groups, bcc)
+
+        return render_template('email_tab/email_confirm_modal.html', **locals())
 
     @route('/send', methods=['post'])
     def send(self):
         self.slc.check_roles_and_route(['Administrator'])
-        form = request.form
-        message = form.get('message')
-        subject = '{{{0}}} {1}'.format(app.config['LAB_TITLE'], form.get('subject'))
-        group_id_strings = form.getlist('groups')
-        groups = []
-        for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, bcc)
-            groups.append(int(group))
-        cc_ids = form.getlist('cc')
-        cc = []
-        for cc_id in cc_ids:
-            cc.append(int(cc_id))
-        recipients = self.user.get_recipient_emails(cc)
-        bcc_ids = form.getlist('bcc')
-        bcc = []
-        for bcc_id in bcc_ids:
-            bcc.append(int(bcc_id))
-        bcc_emails = self.user.get_bcc_emails(groups, bcc)
-        success = self.base.send_message(subject, message, recipients, bcc_emails, False)
+
+        data = request.get_json()
+        subject = data['subject']
+        message = data['message']
+        recipients = data['recipients']
+        bcc = data['bcc']
+
+        success = self.base.send_message(subject, message, recipients, bcc, False)
         if success:
             self.slc.set_alert('success', 'Email sent successfully')
         else:
             self.slc.set_alert('danger', 'Failed to send email')
-        return redirect(url_for('EmailView:index'))
+        return 'success'

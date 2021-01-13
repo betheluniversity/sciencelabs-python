@@ -149,6 +149,7 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
+    @route('/email-all-reservations/<int:session_id>')
     def email_all_reservations(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
         lead_ids = self.session.get_session_lead_ids(session_id)
@@ -193,7 +194,7 @@ class SessionView(FlaskView):
             selected_tutors_and_users.append(int(user_id))
 
         bcc_emails = self.user.get_recipient_emails(selected_tutors_and_users)
-        return render_template('sessions/email_all_reservations_confirm_modal.html', **locals())
+        return render_template('email_tab/email_confirm_modal.html', **locals())
 
     @route('/send-session-email', methods=['post'])
     def send_email_all_reservations(self):
