@@ -17,7 +17,7 @@ class EmailView(FlaskView):
         self.user = User()
         self.slc = ScienceLabsController()
 
-    @route('/create-email')
+    @route('/create')
     def index(self):
         self.slc.check_roles_and_route(['Administrator'])
 
