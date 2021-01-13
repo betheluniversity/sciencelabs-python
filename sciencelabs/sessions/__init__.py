@@ -151,7 +151,7 @@ class SessionView(FlaskView):
 
     @route('/email-all-reservations/<int:session_id>')
     def email_all_reservations(self, session_id):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator'])
         lead_ids = self.session.get_session_lead_ids(session_id)
         tutor_ids = self.session.get_session_tutor_ids(session_id)
         all_tutor_ids = lead_ids + tutor_ids
@@ -173,7 +173,7 @@ class SessionView(FlaskView):
 
     @route('/confirm-session-email', methods=['post'])
     def email_all_reservations_confirm(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator'])
         data = request.get_json()
 
         subject = data['subject']
@@ -198,7 +198,7 @@ class SessionView(FlaskView):
 
     @route('/send-session-email', methods=['post'])
     def send_email_all_reservations(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        self.slc.check_roles_and_route(['Administrator'])
         data = request.get_json()
         subject = data['subject']
         message = data['message']
