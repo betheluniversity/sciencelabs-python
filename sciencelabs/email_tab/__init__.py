@@ -29,7 +29,7 @@ class EmailView(FlaskView):
     def email_redirect(self):
         return redirect(url_for('EmailView:index'))
 
-    @route('/email-tab-confirm', methods=['post'])
+    @route('/confirm-email', methods=['post'])
     def send_email_confirm(self):
         self.slc.check_roles_and_route(['Administrator'])
         data = request.get_json()
