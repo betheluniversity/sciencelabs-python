@@ -64,7 +64,7 @@ class EmailController:
                     attendance = attendance + 1
             if attendance > 0 or 'Administrator' in recipient_role_names:
                 # send an email
-                self.send_message(subject, render_template('sessions/email.html', **locals()), recipient.email, None, True)
+                self.send_message(subject, render_template('email_tab/email.html', **locals()), recipient.email, None, True)
 
     def reservation_confirm_or_cancel(self, session_id, recipient, student_courses=None, deleted=False):
         sess = self.session.get_session(session_id)
@@ -76,11 +76,11 @@ class EmailController:
             courses.append(self.course.get_course(course_id))
 
         if deleted:
-            subject = '{0} reservation: {1} ({2})'.format(app.config['LAB_TITLE'], sess.name, sess.date.strftime('%m/%d/%Y'))
-            return self.send_message(subject, render_template('sessions/reservation_cancel_email.html', **locals()), recipient.email, None, True)
+            subject = 'Math Lab reservation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
+            return self.send_message(subject, render_template('email_tab/reservation_cancel_email.html', **locals()), recipient.email, None, True)
         else:
-            subject = '{0} reservation cancellation: {1} ({2})'.format(app.config['LAB_TITLE'], sess.name, sess.date.strftime('%m/%d/%Y'))
-            return self.send_message(subject, render_template('sessions/reservation_success_email.html', **locals()), recipient.email, None, True)
+            subject = 'Math Lab reservation cancellation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
+            return self.send_message(subject, render_template('email_tab/reservation_success_email.html', **locals()), recipient.email, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':

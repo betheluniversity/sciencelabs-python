@@ -169,7 +169,7 @@ class SessionView(FlaskView):
             del tutor_dict["_sa_instance_state"]
             tutor_list_json.append(json.dumps(tutor_dict))
 
-        return render_template('sessions/email_all_reservations.html', **locals())
+        return render_template('email_tab/email_all_reservations.html', **locals())
 
     @route('/confirm-session-email', methods=['post'])
     def email_all_reservations_confirm(self):
