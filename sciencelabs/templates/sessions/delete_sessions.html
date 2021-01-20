@@ -1,0 +1,20 @@
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Deleting</p>
+            {% for session_id in session_ids %}
+                {% set session = get_session(session_id) %}
+                {{ session.name }} ({{ session.date.strftime('%m/%d/%Y') }})
+                <br/>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+<br/>
+{% block body_content %}
+    <div class="centered">
+        <a id="edit" href='{{ url_for('SessionView:closed') }}' class="big-button btn btn-primary hover-bright">Cancel</a>
+        <a id="delete" href="{{ url_for('SessionView:delete_sessions_confirmed', session_ids=session_ids) }}"
+           class="big-button btn btn-primary hover-bright">Delete</a>
+    </div>
+{% endblock %}

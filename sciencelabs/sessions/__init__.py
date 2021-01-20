@@ -143,8 +143,7 @@ class SessionView(FlaskView):
             self.session.delete_session(session_id)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session deleted successfully!')
-
-            return redirect(url_for('SessionView:closed'))
+            return redirect(url_for('SessionView:index'))
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
@@ -211,6 +210,32 @@ class SessionView(FlaskView):
         else:
             self.slc.set_alert('danger', 'Failed to send email')
         return 'success'
+
+    @route('/delete-sessions', methods=['POST'])
+    def delete_sessions(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        session_ids = json.loads(request.data).get('session_ids')
+
+        if len(session_ids) == 0:
+            self.slc.set_alert('danger', 'Error! No sessions selected to delete.')
+            return 'failure'
+
+        return render_template('sessions/delete_sessions.html', **locals(), get_session=self.session.get_session)
+
+    def delete_sessions_confirmed(self, session_ids):
+        self.slc.check_roles_and_route(['Administrator'])
+        # For some reason the list is being past as a string from html so this fixes it (str to list)
+        session_ids = session_ids.replace('[', '').replace(']', '').replace('\'', '').replace(' ', '').split(',')
+        try:
+            for session_id in session_ids:
+                self.session.delete_session(session_id)
+                self.session.delete_extra_room_groupings()
+            self.slc.set_alert('success', 'Session deleted successfully!')
+            return redirect(url_for('SessionView:index'))
+        except Exception as error:
+            self.slc.set_alert('danger', 'Failed to delete sessions: {0}'.format(str(error)))
+            return redirect(url_for('SessionView:index'))
 
     @route('/save-session-edits', methods=['POST'])
     def save_session_edits(self):
@@ -284,7 +309,7 @@ class SessionView(FlaskView):
 
             if capacity == 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
-            return redirect(url_for('SessionView:closed'))
+            return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
             if not capacity_issue and session.room.lower() != 'virtual':
                 self.session.create_seats(session.id, capacity, session.capacity + 1, True)
@@ -326,7 +351,7 @@ class SessionView(FlaskView):
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
-            if session.room.lower() != 'virtual':
+            if session.room.lower() != 'virtual' and virtual == 0:
                 self.session.update_reservation_seat_number(current_reservation.id, seat_number)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
