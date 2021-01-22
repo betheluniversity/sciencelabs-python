@@ -1,8 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
-           href="{{ url_for('EmailView:index') }}">Create Email</a>
+    <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+       href="{{ url_for('EmailView:index') }}">Create Email</a>
 {% endblock %}
 
 {% block header %}
@@ -15,13 +15,13 @@
 
 {% block body_content %}
     <div class="custom-default row">
-    <div class="col-md-8">
+        <div class="col-md-8">
             <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="choose-recipients">Recipient Groups</label>
-                    <select name="groups" id="choose-recipients" multiple="true">
-                        {% for role in role_list %}
-                            <option value="{{ role.id }}">{{ role.name }}</option>
+                <div id="cc-div" class="form-group col-md-6">
+                    <label for="choose-recipients">Add Recipients</label>
+                    <select name="cc" id="choose-recipients" multiple="true">
+                        {% for user in user_list %}
+                            <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -31,24 +31,23 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-3 btn-group">
-                    <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC</button>
-                    <button type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC</button>
-                </div>
-            </div>
-            <div class="form-row">
-                <div id="cc-div" class="form-group col-md-12 chosen-container email">
-                    <label for="choose-cc">CC</label>
-                    <select name="cc" id="choose-cc" multiple="true">
-                        {% for user in user_list %}
-                            <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                <div class="form-group col-md-12 chosen-container">
+                    <label for="choose-recipients">BCC Groups</label>
+                    <select name="groups" id="choose-bcc-groups" multiple="true">
+                        {% for role in role_list %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3 btn-group">
+                        <button type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC Individuals</button>
+                    </div>
                 </div>
             </div>
             <div class="form-row">
                 <div id="bcc-div" class="form-group col-md-12 chosen-container email">
-                    <label for="choose-bcc">BCC</label>
+                    <label for="choose-bcc">Add BCC</label>
                     <select name="bcc" id="choose-bcc" multiple="true">
                         {% for user in user_list %}
                             <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
@@ -85,14 +84,14 @@
     </div>
     <script>
         var recipients = new SlimSelect({
-            select: "#choose-recipients",
-            placeholder: "Choose recipients...",
+            select: '#choose-recipients',
+            placeholder: 'Choose recipients...',
             closeOnSelect: false
         });
 
-        var cc = new SlimSelect({
-            select: '#choose-cc',
-            placeholder: 'Choose CC recipients...',
+        var bbc_groups = new SlimSelect({
+            select: "#choose-bcc-groups",
+            placeholder: "Choose BCC groups...",
             closeOnSelect: false
         });
 
@@ -102,9 +101,6 @@
             closeOnSelect: false
         });
 
-        function ccFunction() {
-            document.getElementById('cc-div').style.display = 'block';
-        }
         function bccFunction() {
             document.getElementById('bcc-div').style.display = 'block';
         }
@@ -117,7 +113,7 @@
                     'subject': $('#subject').val(),
                     'message': $('#message').val(),
                     'selected_recipients': $('#choose-recipients').val(),
-                    'selected_cc': $('#choose-cc').val(),
+                    'selected_groups': $('#choose-bcc-groups').val(),
                     'selected_bcc': $('#choose-bcc').val()
                 }),
                 contentType: 'application/json;charset=UTF-8',

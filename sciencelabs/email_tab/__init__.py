@@ -36,21 +36,21 @@ class EmailView(FlaskView):
 
         subject = data['subject']
         message = data['message']
-        group_id_strings = data['selected_recipients']
-        cc_ids = data['selected_cc']
+        recipient_ids = data['selected_recipients']
+        group_id_strings = data['selected_groups']
         bcc_ids = data['selected_bcc']
 
+        recipients = []
+        for recipient_id in recipient_ids:
+            recipients.append(int(recipient_id)) # Need to convert strings to ints for template comparison (groups, recipients, and bcc)
         groups = []
-        for group in group_id_strings:  # Need to convert strings to ints for template comparison (groups, cc, and bcc)
+        for group in group_id_strings:
             groups.append(int(group))
-        cc = []
-        for cc_id in cc_ids:
-            cc.append(int(cc_id))
         bcc = []
         for bcc_id in bcc_ids:
             bcc.append(int(bcc_id))
 
-        recipients = self.user.get_recipient_emails(cc)
+        recipients = self.user.get_recipient_emails(recipients)
         bcc_emails = self.user.get_bcc_emails(groups, bcc)
 
         return render_template('email_tab/email_confirm_modal.html', **locals())
