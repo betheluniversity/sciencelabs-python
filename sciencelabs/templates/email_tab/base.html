@@ -18,22 +18,22 @@
         <div class="col-md-8">
             <div class="form-row">
                 <div id="cc-div" class="form-group col-md-6">
-                    <label for="choose-recipients">Add Recipients</label>
-                    <select name="cc" id="choose-recipients" multiple="true">
+                    <label>Add Recipients</label>
+                    <select id="choose-recipients" multiple="true">
                         {% for user in user_list %}
                             <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="subject">Subject</label>
+                    <label>Subject</label>
                     <input name="subject" id="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-12 chosen-container">
-                    <label for="choose-recipients">BCC Groups</label>
-                    <select name="groups" id="choose-bcc-groups" multiple="true">
+                    <label>BCC Groups</label>
+                    <select id="choose-bcc-groups" multiple="true">
                         {% for role in role_list %}
                             <option value="{{ role.id }}">{{ role.name }}</option>
                         {% endfor %}
@@ -47,8 +47,8 @@
             </div>
             <div class="form-row">
                 <div id="bcc-div" class="form-group col-md-12 chosen-container email">
-                    <label for="choose-bcc">Add BCC</label>
-                    <select name="bcc" id="choose-bcc" multiple="true">
+                    <label>Add BCC</label>
+                    <select id="choose-bcc" multiple="true">
                         {% for user in user_list %}
                             <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
                         {% endfor %}
