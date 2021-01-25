@@ -96,6 +96,7 @@
         <th style="padding:2px 10px">Time Out</th>
         <th style="padding:2px 10px">Time in Lab</th>
         <th style="padding:2px 10px">Course(s)</th>
+        <th style="padding:2px 10px">Attendance</th>
     </tr>
     {% for student, courses in students_and_courses.items() %}
         {% if student_attendance.append(student_attendance.pop() + (1)) %}{% endif %}
@@ -127,6 +128,13 @@
                 {% endfor %}
                 {% if student.otherCourse and student.otherCourseName %}
                     {{ student.otherCourseName }}
+                {% endif %}
+            </td>
+            <td>
+                {% if student.online %}
+                    Online
+                {% else %}
+                    In Person
                 {% endif %}
             </td>
         </tr>
