@@ -1,0 +1,12 @@
+<h4>You have successfully made a reservation for the {{ sess.name }} {{ lab_title }} session for the following course(s):</h4>
+<ul>
+{% for course in courses %}
+    <li>{{ course.title }} ({{ course.dept }} {{ course.course_num }})</li>
+{% endfor %}
+</ul>
+<p>Come to {{ sess.room }} and don't forget to bring your ID to sign in.</p>
+<p>
+    You may view or cancel this reservation <a href="https://tutorlabs.bethel.edu/mathlab/student/reservations">here</a>
+    and join the virtual option <a href="https://tutorlabs.bethel.edu/mathlab/student/virtual-sign-on">here</a> if needed.
+    We look forward to seeing you!
+</p>

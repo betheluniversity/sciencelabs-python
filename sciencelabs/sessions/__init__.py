@@ -148,6 +148,69 @@ class SessionView(FlaskView):
             self.slc.set_alert('danger', 'Failed to delete session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:delete_session', session_id=session_id))
 
+    @route('/email-all-reservations/<int:session_id>')
+    def email_all_reservations(self, session_id):
+        self.slc.check_roles_and_route(['Administrator'])
+        lead_ids = self.session.get_session_lead_ids(session_id)
+        tutor_ids = self.session.get_session_tutor_ids(session_id)
+        all_tutor_ids = lead_ids + tutor_ids
+        reservations = self.session.get_session_reservations(session_id)
+
+        user_list = self.user.get_all_current_users()
+        reservation_list = []
+        tutor_list = []
+        tutor_list_json = []
+        for user in reservations:
+            reservation_list.append(self.user.get_user(user.user_id))
+        for tutor_id in all_tutor_ids:
+            tutor_list.append(self.user.get_user(tutor_id))
+            tutor_dict = self.user.get_user(tutor_id).__dict__
+            del tutor_dict["_sa_instance_state"]
+            tutor_list_json.append(json.dumps(tutor_dict))
+
+        return render_template('email_tab/email_all_reservations.html', **locals())
+
+    @route('/confirm-session-email', methods=['post'])
+    def email_all_reservations_confirm(self):
+        self.slc.check_roles_and_route(['Administrator'])
+        data = request.get_json()
+
+        subject = data['subject']
+        message = data['message']
+        selected_reservation_ids = data['selected_reservations']
+        selected_tutor_ids = data['selected_tutors']
+        selected_user_ids = data['selected_users']
+
+        selected_reservations = []
+        for recipient_id in selected_reservation_ids:  # Need to convert strings to ints for template comparison
+            selected_reservations.append(int(recipient_id))
+        recipients = self.user.get_recipient_emails(selected_reservations)
+
+        selected_tutors_and_users = []
+        for tutor_id in selected_tutor_ids:
+            selected_tutors_and_users.append(int(tutor_id))
+        for user_id in selected_user_ids:
+            selected_tutors_and_users.append(int(user_id))
+
+        bcc_emails = self.user.get_recipient_emails(selected_tutors_and_users)
+        return render_template('email_tab/email_confirm_modal.html', **locals())
+
+    @route('/send-session-email', methods=['post'])
+    def send_email_all_reservations(self):
+        self.slc.check_roles_and_route(['Administrator'])
+        data = request.get_json()
+        subject = data['subject']
+        message = data['message']
+        recipients = data['recipients']
+        bcc = data['bcc']
+
+        success = self.email.send_message(subject, message, recipients, bcc, False)
+        if success:
+            self.slc.set_alert('success', 'Email sent successfully')
+        else:
+            self.slc.set_alert('danger', 'Failed to send email')
+        return 'success'
+
     @route('/delete-sessions', methods=['POST'])
     def delete_sessions(self):
         self.slc.check_roles_and_route(['Administrator'])
@@ -446,6 +509,7 @@ class SessionView(FlaskView):
                 self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
+
             if capacity == 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
                                    .format(name, date))

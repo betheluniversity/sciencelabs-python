@@ -1,0 +1,121 @@
+{% extends 'sciencelabs_base.html' %}
+
+{% block header %}
+    <div class="header card">
+        <div class="card-body">
+            <p class="card-text">Email All Session Reservations</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_content %}
+    <div class="custom-default row">
+        <div class="col-md-12">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="choose-recipients">Students (User Reservations)</label>
+                    <select name="user_reservations" id="choose-reservations" multiple="true">
+                        {% for user in reservation_list %}
+                            <option value="{{ user.id }}" selected="selected">{{ user.firstName }} {{ user.lastName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="subject">Subject</label>
+                    <input name="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-row">
+                <div id="tutor-div" class="form-group col-md-12 chosen-container">
+                    <label class="w-25" for="include_tutors">
+                        Toggle Tutors <input class="w-25" id="include_tutors" type="checkbox" checked="true" onchange="toggle_tutors(this, {{ tutor_list_json }})">
+                    </label>
+                    <label for="choose-tutors">Add Tutors</label>
+                    <select name="tutors" id="choose-tutors" multiple="true">
+                        {% for tutor in tutor_list %}
+                            <option value="{{ tutor.id }}" selected="selected">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div id="user-div" class="form-group col-md-12 chosen-container">
+                    <label for="choose-users">Add Users</label>
+                    <select name="users" id="choose-users" multiple="true">
+                        {% for user in user_list %}
+                            <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="subject">Message</label>
+                    <textarea name="message" id="message" class="form-control" rows="15" cols="67"></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <button type="submit" class="btn blue btn-primary" id="confirm-email">Confirm</button>
+                </div>
+            </div>
+        </div>
+        <div id="send-email-modal"></div>
+    </div>
+    <script>
+        var reservations = new SlimSelect({
+            select: "#choose-reservations",
+            placeholder: "Add students...",
+            closeOnSelect: false
+        });
+
+        var tutors = new SlimSelect({
+            select: "#choose-tutors",
+            placeholder: 'Add Tutors...',
+            closeOnSelect: false
+        });
+
+        var users = new SlimSelect({
+            select: "#choose-users",
+            placeholder: 'Add Users...',
+            closeOnSelect: false
+        });
+
+        $('#confirm-email').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('SessionView:email_all_reservations_confirm') }}",
+                data: JSON.stringify({
+                    'subject': $('#subject').val(),
+                    'message': $('#message').val(),
+                    'selected_reservations': $('#choose-reservations').val(),
+                    'selected_tutors': $('#choose-tutors').val(),
+                    'selected_users': $('#choose-users').val()
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    $('#send-email-modal').html(response);
+                    $('#email-send').modal('show');
+                },
+                error: function (error) {
+                }
+            });
+        });
+
+        function toggle_tutors(checkbox, tutor_list_json) {
+            //remove select items and re-add them (no good way to select/deselect items in a slim select from javascript)
+            let tutor_select = document.getElementById("choose-tutors");
+            tutor_select.length = 0;
+
+            tutor_list_json.forEach((tutor) => {
+               let tutor_json = JSON.parse(tutor);
+               let tutor_option = document.createElement("option");
+
+               tutor_option.value = tutor_json.id;
+               tutor_option.innerHTML = tutor_json.firstName + " " + tutor_json.lastName;
+               checkbox.checked? tutor_option.selected = true: tutor_option.selected = false;
+               tutor_select.append(tutor_option);
+            });
+        }
+    </script>
+{% endblock %}

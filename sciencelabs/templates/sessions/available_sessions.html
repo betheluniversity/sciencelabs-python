@@ -109,6 +109,10 @@
                                     {% if are_reservations(session_info.id) %}
                                         <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
                                            class="btn btn-primary">View Reservations</a>
+                                        {% if 'Administrator' in session['USER-ROLES'] %}
+                                            <a href='{{ url_for('SessionView:email_all_reservations', session_id=session_info.id) }}'
+                                               id="email_all" class="btn btn-primary hover-bright">Email All</a>
+                                    {% endif %}
                                     {% else %}
                                         There are no reservations for this session at this time.
                                     {% endif %}

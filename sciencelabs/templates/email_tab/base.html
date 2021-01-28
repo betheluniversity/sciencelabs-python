@@ -1,8 +1,8 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
-           href="{{ url_for('EmailView:index') }}">Create Email</a>
+    <a id="create_email" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+       href="{{ url_for('EmailView:index') }}">Create Email</a>
 {% endblock %}
 
 {% block header %}
@@ -16,59 +16,56 @@
 {% block body_content %}
     <div class="custom-default row">
         <div class="col-md-8">
-            <form action="{{ url_for('EmailView:send_email_confirm') }}" method="post">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="choose-recipients">Recipient Groups</label>
-                        <select name="groups" id="choose-recipients" multiple="true">
-                            {% for role in role_list %}
-                                <option value="{{ role.id }}">{{ role.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="subject">Subject</label>
-                        <input name="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off">
-                    </div>
+            <div class="form-row">
+                <div id="cc-div" class="form-group col-md-6">
+                    <label>Add Recipients</label>
+                    <select id="choose-recipients" multiple="true">
+                        {% for user in user_list %}
+                            <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Subject</label>
+                    <input name="subject" id="subject" type="text" class="form-control chosen-container chosen-format" id="subject" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12 chosen-container">
+                    <label>BCC Groups</label>
+                    <select id="choose-bcc-groups" multiple="true">
+                        {% for role in role_list %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3 btn-group">
-                        <button type="button" class="button-curved blue btn btn-primary" id="show-cc" onclick="ccFunction()">CC</button>
-                        <button type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC</button>
+                        <button type="button" class="button-curved blue btn btn-primary" id="show-bcc" onclick="bccFunction()">BCC Individuals</button>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div id="cc-div" class="form-group col-md-12 chosen-container email">
-                        <label for="choose-cc">CC</label>
-                        <select name="cc" id="choose-cc" multiple="true">
-                            {% for user in user_list %}
-                                <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            </div>
+            <div class="form-row">
+                <div id="bcc-div" class="form-group col-md-12 chosen-container email">
+                    <label>Add BCC</label>
+                    <select id="choose-bcc" multiple="true">
+                        {% for user in user_list %}
+                            <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div id="bcc-div" class="form-group col-md-12 chosen-container email">
-                        <label for="choose-bcc">BCC</label>
-                        <select name="bcc" id="choose-bcc" multiple="true">
-                            {% for user in user_list %}
-                                <option value="{{ user.id }}">{{ user.firstName }} {{ user.lastName }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="subject">Message</label>
+                    <textarea name="message" id="message" class="form-control" rows="15" cols="67"></textarea>
                 </div>
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        <label for="subject">Message</label>
-                        <textarea name="message" class="form-control" rows="15" cols="67"></textarea>
-                    </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <button type="submit" class="btn blue btn-primary" id="confirm-email">Confirm</button>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <button type="submit" class="btn blue btn-primary" id="send-email">Send</button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
         <div class="col-md-4">
             <div class="sub-info card info">
@@ -83,17 +80,18 @@
                 </div>
             </div>
         </div>
+        <div id="send-email-modal"></div>
     </div>
     <script>
         var recipients = new SlimSelect({
-            select: "#choose-recipients",
-            placeholder: "Choose recipients...",
+            select: '#choose-recipients',
+            placeholder: 'Choose recipients...',
             closeOnSelect: false
         });
 
-        var cc = new SlimSelect({
-            select: '#choose-cc',
-            placeholder: 'Choose CC recipients...',
+        var bbc_groups = new SlimSelect({
+            select: "#choose-bcc-groups",
+            placeholder: "Choose BCC groups...",
             closeOnSelect: false
         });
 
@@ -103,12 +101,29 @@
             closeOnSelect: false
         });
 
-
-        function ccFunction() {
-            document.getElementById('cc-div').style.display = 'block';
-        }
         function bccFunction() {
             document.getElementById('bcc-div').style.display = 'block';
         }
+
+        $('#confirm-email').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('EmailView:send_email_confirm') }}",
+                data: JSON.stringify({
+                    'subject': $('#subject').val(),
+                    'message': $('#message').val(),
+                    'selected_recipients': $('#choose-recipients').val(),
+                    'selected_groups': $('#choose-bcc-groups').val(),
+                    'selected_bcc': $('#choose-bcc').val()
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    $('#send-email-modal').html(response);
+                    $('#email-send').modal('show');
+                },
+                error: function (error) {
+                }
+            });
+        });
     </script>
 {% endblock %}
