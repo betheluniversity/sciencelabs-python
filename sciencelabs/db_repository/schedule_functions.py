@@ -184,6 +184,14 @@ class Schedule:
 
     ######################## CREATE SCHEDULE METHODS #########################
 
+    def get_coursecode_ids(self, courses):
+        course_list = []
+        for course in courses:
+            dept, course_num = course.split(' ')
+            course_list.extend(db_session.query(CourseCode_Table.id).filter(CourseCode_Table.dept == dept).filter(CourseCode_Table.courseNum == course_num).one())
+
+        return course_list
+
     def create_schedule(self, term, term_start_date, term_end_date, term_id, name, room, start_time, end_time,
                         day_of_week, capacity, leads, tutors, courses):
         # Creates the schedule and returns it

@@ -61,6 +61,7 @@ class ScheduleView(FlaskView):
 
         schedule = self.schedule.get_schedule(schedule_id)
         schedule_courses = self.schedule.get_schedule_courses(schedule_id)
+        schedule_courses = self.schedule.get_coursecode_ids(schedule_courses)
 
         schedule_session = self.schedule.get_first_session_by_schedule(schedule_id)
 
