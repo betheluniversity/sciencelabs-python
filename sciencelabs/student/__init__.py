@@ -203,7 +203,7 @@ class StudentView(FlaskView):
         if student.deletedAt != None:
             self.user.activate_existing_user(student.username)
 
-        # self.user.create_user_courses(student.username, student.id, semester.id)
+        self.user.create_user_courses(student.username, student.id, semester.id)
 
         # Check to make sure the user has the Student role, add it if they don't
         self.user.check_or_create_student_role(student.id)
