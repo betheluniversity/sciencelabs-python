@@ -443,6 +443,7 @@ class User:
                     .filter(CourseCode_Table.active == 1) \
                     .one_or_none():
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
+                    .filter(course['section'] == Course_Table.section) \
                     .filter(Course_Table.semester_id == semester_id).one_or_none()
                 if course_entry:
                     user_course_entry = db_session.query(user_course_Table)\
