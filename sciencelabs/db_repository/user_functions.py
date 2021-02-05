@@ -440,7 +440,6 @@ class User:
                     .filter(CourseCode_Table.courseNum is course['cNumber']) \
                     .filter(CourseCode_Table.dept == course['subject']) \
                     .filter(CourseCode_Table.courseName == course['title']) \
-                    .filter(CourseCode_Table.underived == course['subject'] + course['cNumber']) \
                     .filter(CourseCode_Table.active == 1) \
                     .one_or_none():
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
