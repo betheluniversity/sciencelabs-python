@@ -266,44 +266,41 @@ class SessionView(FlaskView):
         session = self.session.get_session(session_id)
 
         capacity_issue = False
-        if room.lower() != 'virtual':
-            reserved_seats = self.session.get_num_reserved_seats(session.id)
-            if session.capacity > capacity:
-                # If the session capacity is greater than the new capacity and more seats are reserved than the new
-                # capacity error out
-                if reserved_seats > capacity:
-                    self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
-                                                 'the new session capacity allows.')
-                    return redirect(url_for('SessionView:edit_session', session_id=session_id))
-                # Else this means there are less reservations than the new capacity so delete unused seats and shift
-                # students
-                elif reserved_seats <= capacity:
-                    reservations = self.session.get_session_reservations(session_id)
-                    for reservation in reservations:
-                        if reservation.seat_number > capacity:
-                            capacity_issue = True
-                            break
-                    if not capacity_issue:
-                        self.session.delete_seats(session_id, capacity, session.capacity)
-                    else:
-                        self.slc.set_alert('danger', 'There are is an issue where someone has a seat number greater than '
-                                                     'the session capacity for the session.')
-                        return redirect(url_for('SessionView:view_session_reservations', session_id=session_id))
+        reserved_seats = self.session.get_num_reserved_seats(session.id)
+        if session.capacity > capacity:
+            # If the session capacity is greater than the new capacity and more seats are reserved than the new
+            # capacity error out
+            if reserved_seats > capacity:
+                self.slc.set_alert('danger', 'Failed to edit session: More students have reserved this session than '
+                                             'the new session capacity allows.')
+                return redirect(url_for('SessionView:edit_session', session_id=session_id))
+            # Else this means there are less reservations than the new capacity so delete unused seats and shift
+            # students
+            elif reserved_seats <= capacity:
+                reservations = self.session.get_session_reservations(session_id)
+                for reservation in reservations:
+                    if reservation.seat_number > capacity:
+                        capacity_issue = True
+                        break
+                if not capacity_issue:
+                    self.session.delete_seats(session_id, capacity, session.capacity)
+                else:
+                    self.slc.set_alert('danger', 'There are is an issue where someone has a seat number greater than '
+                                                 'the session capacity for the session.')
+                    return redirect(url_for('SessionView:view_session_reservations', session_id=session_id))
 
-            elif session.capacity < capacity > self.session.get_total_seats(session_id):
-                # If the new capacity is greater than the current session capacity and there are less seats than the new
-                # capacity, create new seats
-                self.session.create_seats(session_id, capacity, session.capacity + 1, False)
-            elif len(self.session.get_all_session_reservations(session_id)) == 0:
-                self.session.create_seats(session_id=session_id, capacity=capacity, commit=False)
-        else:
-            self.session.delete_session_reservations(session_id)
+        elif session.capacity < capacity > self.session.get_total_seats(session_id):
+            # If the new capacity is greater than the current session capacity and there are less seats than the new
+            # capacity, create new seats
+            self.session.create_seats(session_id, capacity, session.capacity + 1, False)
+        elif len(self.session.get_all_session_reservations(session_id)) == 0:
+            self.session.create_seats(session_id=session_id, capacity=capacity, commit=False)
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
                                       tutors, courses)
-            if room.lower() != 'virtual':
-                self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
+
+            self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
 
@@ -311,7 +308,7 @@ class SessionView(FlaskView):
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
-            if not capacity_issue and session.room.lower() != 'virtual':
+            if not capacity_issue:
                 self.session.create_seats(session.id, capacity, session.capacity + 1, True)
             self.slc.set_alert('danger', 'Failed to edit session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -351,7 +348,7 @@ class SessionView(FlaskView):
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
-            if session.room.lower() != 'virtual' and virtual == 0:
+            if virtual == 0:
                 self.session.update_reservation_seat_number(current_reservation.id, seat_number)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -420,16 +417,15 @@ class SessionView(FlaskView):
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:add_student', session_id=session_id))
         seats_available = self.session.get_num_seats_available(session_id)
-        if seats_available == 0 and session.room.lower() != 'virtual':
+        if seats_available == 0:
             self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
                                          'wish to add another student')
             return redirect(url_for('SessionView:add_student', session_id=session_id))
         try:
-            if session.room.lower() != 'virtual':
-                if not already_reserved:
-                    self.session.add_student_to_reservation(session_id, student_id, seat_number)
-                else:
-                    self.session.update_reservation_seat_number(already_reserved.id, seat_number)
+            if not already_reserved:
+                self.session.add_student_to_reservation(session_id, student_id, seat_number)
+            else:
+                self.session.update_reservation_seat_number(already_reserved.id, seat_number)
             self.session.add_student_to_session(session_id, student_id)
             self.slc.set_alert('success', 'Student added successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -505,8 +501,8 @@ class SessionView(FlaskView):
             new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
                                                       leads, tutors, courses)
-            if room.lower() != 'virtual':
-                self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
+
+            self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
 
@@ -732,7 +728,7 @@ class SessionView(FlaskView):
             try:
                 self.session.edit_session_capacity(session.id, capacity)
             except Exception as error:
-                if not capacity_issue and session.room.lower() != 'virtual':
+                if not capacity_issue:
                     self.session.create_seats(session.id, capacity, session.capacity + 1, True)
                 self.slc.set_alert('danger', 'Failed to edit capacities: {0}'.format(str(error)))
                 return 'failure'
@@ -897,8 +893,7 @@ class SessionView(FlaskView):
         try:
             self.session.restore_deleted_session(session_id)
             session = self.session.get_session(session_id)
-            if session.room.lower() != 'virtual':
-                self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+            self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
 
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))

@@ -26,11 +26,10 @@ class Session:
                 if session.room_group_id:
                     room_group_id = session.room_group_id
 
-            if room.lower() != 'virtual':
-                if room_group_id:
-                    self.update_room_grouping(room_group_id, sessions)
-                else:
-                    self.create_room_grouping(sessions)
+            if room_group_id:
+                self.update_room_grouping(room_group_id, sessions)
+            else:
+                self.create_room_grouping(sessions)
 
     def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
         return db_session.query(Session_Table) \
@@ -792,8 +791,8 @@ class Session:
                            actual_end, room, comments, anon_students, name, leads, tutors, courses):
         new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
                                           actual_start, actual_end, room, comments, anon_students, name)
-        if room.lower() != 'virtual':
-            self.create_seats(new_session.id, capacity)
+
+        self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
