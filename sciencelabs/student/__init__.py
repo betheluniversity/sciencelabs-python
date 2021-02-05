@@ -196,16 +196,16 @@ class StudentView(FlaskView):
         semester = self.schedule.get_active_semester()
         student = self.user.get_user_by_username(flask_session['USERNAME'])
 
-        # if not student:
-        #     student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
-        #
-        # # Check if student has been deactivated at some point
-        # if student.deletedAt != None:
-        #     self.user.activate_existing_user(student.username)
-        #
+        if not student:
+            student = self.user.create_user_at_sign_in(flask_session['USERNAME'], semester)
+
+        # Check if student has been deactivated at some point
+        if student.deletedAt != None:
+            self.user.activate_existing_user(student.username)
+
         # self.user.create_user_courses(student.username, student.id, semester.id)
-        #
-        # # Check to make sure the user has the Student role, add it if they don't
-        # self.user.check_or_create_student_role(student.id)
+
+        # Check to make sure the user has the Student role, add it if they don't
+        self.user.check_or_create_student_role(student.id)
 
         return student
