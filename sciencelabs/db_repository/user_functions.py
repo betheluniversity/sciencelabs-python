@@ -1,6 +1,7 @@
 from flask import abort
 from datetime import datetime
 from sqlalchemy import func, distinct, orm, or_
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table, Session_Table, Semester_Table, \
@@ -436,12 +437,21 @@ class User:
     def create_user_courses(self, username, user_id, semester_id):
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            if db_session.query(CourseCode_Table) \
-                    .filter(or_(CourseCode_Table.courseNum == course['cNumber'], CourseCode_Table.courseNum is course['cNumber'])) \
+            try:
+                course_code = db_session.query(CourseCode_Table)\
+                    .filter(CourseCode_Table.courseNum == course['cNumber'])\
+                    .filter(CourseCode_Table.dept == course['subject'])\
+                    .filter(CourseCode_Table.courseName == course['title'])\
+                    .filter(CourseCode_Table.active == 1)\
+                    .one_or_none()
+            except MultipleResultsFound:
+                course_code = db_session.query(CourseCode_Table) \
+                    .filter(CourseCode_Table.courseNum is course['cNumber']) \
                     .filter(CourseCode_Table.dept == course['subject']) \
                     .filter(CourseCode_Table.courseName == course['title']) \
                     .filter(CourseCode_Table.active == 1) \
-                    .one_or_none():
+                    .one_or_none()
+            if course_code:
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
                     .filter(course['section'] == Course_Table.section) \
                     .filter(Course_Table.semester_id == semester_id).one_or_none()
