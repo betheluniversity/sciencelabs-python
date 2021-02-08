@@ -118,10 +118,16 @@
                                 </div>
                             </td>
                             <td>
-                                {{ get_seats_available(session.id) }}
+                            {% set seats_avail = get_seats_available(session.id) %}
+                            {% set room_group_seats_avail = get_room_group_seats_available(session.room_group_id) %}
+                                {% if session.room_group_id and seats_avail == 0 %}
+                                    {{ room_group_seats_avail }}
+                                {% else %}
+                                    {{ seats_avail }}
+                                {% endif %}
                             </td>
                             <td>
-                                {% if get_seats_available(session.id) != 0 %}
+                                {% if seats_avail != 0 %}
                                     <div id="reserve-cancel">
                                         {% if is_reserved(session.id, student.id) %}
                                             <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
@@ -133,8 +139,12 @@
                                     {% if is_reserved(session.id, student.id) %}
                                         <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
                                     {% else %}
-                                        No seats remaining. Please check back later or attend the session
-                                        <a class="no-decoration" href="{{ url_for('StudentView:virtual_sign_on') }}">virtually</a>
+                                        {% if session.room_group_id and seats_avail == 0 and room_group_seats_avail != 0 %}
+                                            <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
+                                        {% else %}
+                                            No seats remaining. Please check back later or attend the session
+                                            <a class="no-decoration" href="{{ url_for('StudentView:virtual_sign_on') }}">virtually</a>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
                             </td>
