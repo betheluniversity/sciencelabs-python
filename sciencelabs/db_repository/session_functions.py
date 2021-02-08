@@ -730,7 +730,9 @@ class Session:
         available_count = room_group.capacity
 
         for session in sessions:
+            reservations = self.get_session_reservations(session.id)
             available_count -= session.capacity
+            available_count -= len(reservations)
 
         return available_count
 
