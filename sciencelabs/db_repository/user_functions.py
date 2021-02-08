@@ -437,7 +437,7 @@ class User:
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
             if db_session.query(CourseCode_Table) \
-                    .filter(or_(CourseCode_Table.courseNum == course['cNumber'], CourseCode_Table.courseNum is course['cNumber'])) \
+                    .filter(CourseCode_Table.courseNum is course['cNumber']) \
                     .filter(CourseCode_Table.dept == course['subject']) \
                     .filter(CourseCode_Table.courseName == course['title']) \
                     .filter(CourseCode_Table.active == 1) \
