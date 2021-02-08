@@ -119,9 +119,8 @@
                             </td>
                             <td>
                             {% set seats_avail = get_seats_available(session.id) %}
-                            {% set room_group_seats_avail = get_room_group_seats_available(session.room_group_id) %}
                                 {% if session.room_group_id and seats_avail == 0 %}
-                                    {{ room_group_seats_avail }}
+                                    {{ get_room_group_seats_available(session.room_group_id) }}
                                 {% else %}
                                     {{ seats_avail }}
                                 {% endif %}
@@ -139,7 +138,7 @@
                                     {% if is_reserved(session.id, student.id) %}
                                         <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
                                     {% else %}
-                                        {% if session.room_group_id and seats_avail == 0 and room_group_seats_avail != 0 %}
+                                        {% if session.room_group_id and seats_avail == 0 and get_room_group_seats_available(session.room_group_id) != 0 %}
                                             <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
                                         {% else %}
                                             No seats remaining. Please check back later or attend the session
