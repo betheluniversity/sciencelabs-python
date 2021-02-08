@@ -659,10 +659,17 @@ class Session:
             .one_or_none()
 
     def reserve_session(self, session_id, student_id, student_courses):
+        session = self.get_session(session_id)
+
+        if session.room_group_id and self.get_num_seats_available(session_id) == 0 \
+                and self.get_room_group_num_seats_available(session.room_group_id) != 0:
+            self.create_seats(session_id, session.capacity + 1, session.capacity + 1, True)
+
         first_open_reservation = db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == None)\
             .first()
+
         first_open_reservation.user_id = student_id
         db_session.commit()
         self.create_reservation_courses(first_open_reservation.id, student_courses)
@@ -678,6 +685,11 @@ class Session:
         self.delete_reservation_courses(reservation.id)
         reservation.user_id = None
         reservation.seat_number = None
+
+        session = self.get_session(session_id)
+        reservations = self.get_session_reservations(session_id)
+        if session.capacity < len(reservations):
+            db_session.delete(reservation)
 
         db_session.commit()
 
@@ -708,6 +720,17 @@ class Session:
             .filter(SessionReservations_Table.user_id == None) \
             .all()
         available_count = len(available_count)
+
+        return available_count
+
+    def get_room_group_num_seats_available(self, room_group_id):
+        room_group = self.get_room_group_by_id(room_group_id)
+        sessions = self.get_room_group_sessions(room_group_id)
+
+        available_count = room_group.capacity
+
+        for session in sessions:
+            available_count -= session.capacity
 
         return available_count
 
