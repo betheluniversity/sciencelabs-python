@@ -48,9 +48,6 @@ class StudentView(FlaskView):
                 signed_in_sessions.append(session)
                 signed_in_courses[session.id] = self.session.get_student_session_courses(session.id, student.id)
 
-        for s in sessions:
-            if s.room.lower() == 'virtual' and self.session.is_reserved(s.id, student.id):
-                sessions.remove(s)
         return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
                                get_seats_available=self.session.get_num_seats_available)
 
