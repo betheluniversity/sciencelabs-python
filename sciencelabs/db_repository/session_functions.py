@@ -121,8 +121,6 @@ class Session:
         db_session.commit()
 
     def get_room_group_by_id(self, room_group_id):
-        msg = "test right here {0}".format(room_group_id)
-        self.log_session(msg)
         return db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
 
     def get_closed_sessions(self, semester_id):
