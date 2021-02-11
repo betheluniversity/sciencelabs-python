@@ -106,6 +106,8 @@ class SessionView(FlaskView):
     def add_student(self, session_id):
         self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
         session = self.session.get_session(session_id)
+        if session.room_group_id:
+            room_group = self.session.get_room_group_by_id(session.room_group_id)
         student_list = self.schedule.get_registered_students()
         return render_template('sessions/add_student.html', **locals())
 
@@ -420,6 +422,8 @@ class SessionView(FlaskView):
                                              'again with a different seat number')
                 return redirect(url_for('SessionView:add_student', session_id=session_id))
         seats_available = self.session.get_num_seats_available(session_id)
+        if session.room_group_id:
+            seats_available = self.session.get_room_group_num_seats_available(session.room_group_id)
         if seats_available == 0 and session.room.lower() != 'virtual':
             self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
                                          'wish to add another student')

@@ -457,10 +457,18 @@ class Session:
         db_session.commit()
 
     def add_student_to_reservation(self, session_id, student_id, seat_number):
+        session = self.get_session(session_id)
         open_reservation = db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == None)\
             .first()
+
+        if not open_reservation:
+            self.create_seats(session_id, session.capacity + 1, session.capacity + 1, True)
+            open_reservation = db_session.query(SessionReservations_Table) \
+                .filter(SessionReservations_Table.session_id == session_id) \
+                .filter(SessionReservations_Table.user_id == None) \
+                .first()
 
         open_reservation.user_id = student_id
         open_reservation.seat_number = seat_number
