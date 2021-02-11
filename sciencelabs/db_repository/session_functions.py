@@ -121,8 +121,6 @@ class Session:
         db_session.commit()
 
     def get_room_group_by_id(self, room_group_id):
-        msg = "test right here {0}".format(room_group_id)
-        self.log_session(msg)
         return db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
 
     def get_closed_sessions(self, semester_id):
@@ -459,10 +457,18 @@ class Session:
         db_session.commit()
 
     def add_student_to_reservation(self, session_id, student_id, seat_number):
+        session = self.get_session(session_id)
         open_reservation = db_session.query(SessionReservations_Table)\
             .filter(SessionReservations_Table.session_id == session_id)\
             .filter(SessionReservations_Table.user_id == None)\
             .first()
+
+        if not open_reservation:
+            self.create_seats(session_id, session.capacity + 1, session.capacity + 1, True)
+            open_reservation = db_session.query(SessionReservations_Table) \
+                .filter(SessionReservations_Table.session_id == session_id) \
+                .filter(SessionReservations_Table.user_id == None) \
+                .first()
 
         open_reservation.user_id = student_id
         open_reservation.seat_number = seat_number
