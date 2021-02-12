@@ -183,7 +183,7 @@ class User:
             student_courses = self.wsapi.get_student_courses(student.username)
             for key, course in student_courses.items():
                 # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
-                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
+                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == str(course['cNumber']))\
                         .filter(CourseCode_Table.dept == course['subject'])\
                         .filter(CourseCode_Table.active == 1).one_or_none():
                     course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
