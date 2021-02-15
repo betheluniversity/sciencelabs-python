@@ -457,6 +457,7 @@ class User:
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
             self.log_session('FIRST: {0} {1} {2}'.format(course['cNumber'], course['subject'], course['title']))
+            print(course)
             try:
                 course_code = db_session.query(CourseCode_Table)\
                     .filter(CourseCode_Table.courseNum == course['cNumber'])\
@@ -464,6 +465,7 @@ class User:
                     .filter(CourseCode_Table.courseName == course['title'])\
                     .filter(CourseCode_Table.active == 1)\
                     .one_or_none()
+                self.log_session('1course_course {0}'.format(course_code))
             except MultipleResultsFound:
                 course_code = db_session.query(CourseCode_Table) \
                     .filter(CourseCode_Table.courseNum is course['cNumber']) \
@@ -471,7 +473,8 @@ class User:
                     .filter(CourseCode_Table.courseName == course['title']) \
                     .filter(CourseCode_Table.active == 1) \
                     .one_or_none()
-            self.log_session('course_course {0}'.format(course_code))
+                self.log_session('2course_course {0}'.format(course_code))
+            self.log_session('3course_course {0}'.format(course_code))
             if course_code:
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
                     .filter(course['section'] == Course_Table.section) \
