@@ -183,20 +183,12 @@ class User:
             student_courses = self.wsapi.get_student_courses(student.username)
             for key, course in student_courses.items():
                 # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
-                try:
-                    course_code = db_session.query(CourseCode_Table) \
-                        .filter(CourseCode_Table.courseNum == course['cNumber']) \
-                        .filter(CourseCode_Table.dept == course['subject']) \
-                        .filter(CourseCode_Table.courseName == course['title']) \
-                        .filter(CourseCode_Table.active == 1) \
-                        .one_or_none()
-                except MultipleResultsFound:
-                    course_code = db_session.query(CourseCode_Table) \
-                        .filter(CourseCode_Table.courseNum is course['cNumber']) \
-                        .filter(CourseCode_Table.dept == course['subject']) \
-                        .filter(CourseCode_Table.courseName == course['title']) \
-                        .filter(CourseCode_Table.active == 1) \
-                        .one_or_none()
+                course_code = db_session.query(CourseCode_Table) \
+                    .filter(CourseCode_Table.courseNum == course['cNumber']) \
+                    .filter(CourseCode_Table.dept == course['subject']) \
+                    .filter(CourseCode_Table.courseName == course['title']) \
+                    .filter(CourseCode_Table.active == 1) \
+                    .one_or_none()
                 if course_code:
                     course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
                         .filter(Course_Table.semester_id == active_semester.id).one_or_none()
