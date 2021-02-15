@@ -451,7 +451,7 @@ class User:
         for key, course in user_courses.items():
             try:
                 course_code = db_session.query(CourseCode_Table)\
-                    .filter(CourseCode_Table.courseNum == course['cNumber'])\
+                    .filter(CourseCode_Table.courseNum == str(course['cNumber']))\
                     .filter(CourseCode_Table.dept == course['subject'])\
                     .filter(CourseCode_Table.courseName == course['title'])\
                     .filter(CourseCode_Table.active == 1)\
