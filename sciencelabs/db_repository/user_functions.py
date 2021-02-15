@@ -9,8 +9,6 @@ from sciencelabs.db_repository.db_tables import User_Table, StudentSession_Table
     SessionCourses_Table, CourseProfessors_Table, CourseViewer_Table
 from sciencelabs.wsapi.wsapi_controller import WSAPIController
 
-from sciencelabs import app
-
 
 class User:
     def __init__(self):
@@ -448,33 +446,15 @@ class User:
         self.create_user_courses(username, student.id, semester.id)
         return student
 
-    def log_session(self, message):
-        session_log = open(app.config['INSTALL_LOCATION'] + '/session_info.log', 'a')
-        session_log.write(message + '\n')
-        session_log.close()
-
     def create_user_courses(self, username, user_id, semester_id):
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            self.log_session('FIRST: {0} {1} {2}'.format(course['cNumber'], course['subject'], course['title']))
-            print(course)
-            try:
-                course_code = db_session.query(CourseCode_Table)\
-                    .filter(CourseCode_Table.courseNum == course['cNumber'])\
-                    .filter(CourseCode_Table.dept == course['subject'])\
-                    .filter(CourseCode_Table.courseName == course['title'])\
-                    .filter(CourseCode_Table.active == 1)\
-                    .one_or_none()
-                self.log_session('1course_course {0}'.format(course_code))
-            except MultipleResultsFound:
-                course_code = db_session.query(CourseCode_Table) \
-                    .filter(CourseCode_Table.courseNum is course['cNumber']) \
-                    .filter(CourseCode_Table.dept == course['subject']) \
-                    .filter(CourseCode_Table.courseName == course['title']) \
-                    .filter(CourseCode_Table.active == 1) \
-                    .one_or_none()
-                self.log_session('2course_course {0}'.format(course_code))
-            self.log_session('3course_course {0}'.format(course_code))
+            course_code = db_session.query(CourseCode_Table)\
+                .filter(CourseCode_Table.courseNum == course['cNumber'])\
+                .filter(CourseCode_Table.dept == course['subject'])\
+                .filter(CourseCode_Table.courseName == course['title'])\
+                .filter(CourseCode_Table.active == 1)\
+                .one_or_none()
             if course_code:
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
                     .filter(course['section'] == Course_Table.section) \
