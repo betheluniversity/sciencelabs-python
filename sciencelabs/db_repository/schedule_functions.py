@@ -255,8 +255,7 @@ class Schedule:
             db_session.commit()
             sessions.append(schedule_session)
             session_date += timedelta(weeks=1)  # Add a week for next session
-            if room.lower() != 'virtual':
-                self.create_seats(schedule_session.id, capacity)
+            self.create_seats(schedule_session.id, capacity)
 
         return sessions
 
