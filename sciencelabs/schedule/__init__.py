@@ -172,6 +172,8 @@ class ScheduleView(FlaskView):
                     self.session.create_seats(session.id, capacity, session.capacity + 1, False)
                 elif len(self.session.get_all_session_reservations(session.id)) == 0:
                     self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
+            else:
+                self.schedule.delete_session_reservations(session.id)
         try:
             # This returns True if it executes successfully
             sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
@@ -222,7 +224,6 @@ class ScheduleView(FlaskView):
             courses = form.getlist('courses')
             sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
                                                      start_time, end_time, day_of_week, capacity, leads, tutors, courses)
-
 
             self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
