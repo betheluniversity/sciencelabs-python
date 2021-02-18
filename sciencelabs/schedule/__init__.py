@@ -140,37 +140,38 @@ class ScheduleView(FlaskView):
         courses = form.getlist('courses')
         sessions = self.schedule.get_sessions_by_schedule(schedule_id)
         for session in sessions:
-            reserved_seats = self.session.get_num_reserved_seats(session.id)
-            if session.capacity > capacity:
-                # If the session capacity is greater than the new capacity and more seats are reserved than the new
-                # capacity error out
-                if reserved_seats > capacity:
-                    self.slc.set_alert('danger',
-                                       'Failed to edit session: More students have reserved this session than '
-                                       'the new session capacity allows.')
-                    return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
-                # Else this means there are less reservations than the new capacity so delete unused seats and shift
-                # students
-                elif reserved_seats <= capacity:
-                    reservations = self.session.get_session_reservations(session.id)
-                    capacity_issue = False
-                    for reservation in reservations:
-                        if reservation.seat_number > capacity:
-                            capacity_issue = True
-                            break
-                    if not capacity_issue:
-                        self.session.delete_seats(session.id, capacity, session.capacity)
-                    else:
+            if session.date >= datetime.now().date():
+                reserved_seats = self.session.get_num_reserved_seats(session.id)
+                if session.capacity > capacity:
+                    # If the session capacity is greater than the new capacity and more seats are reserved than the new
+                    # capacity error out
+                    if reserved_seats > capacity:
                         self.slc.set_alert('danger',
-                                           'There are is an issue where someone has a seat number greater than '
-                                           'the session capacity for the session.')
-                        return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
-            elif session.capacity < capacity > self.session.get_total_seats(session.id):
-                # If the new capacity is greater than the current session capacity and there are less seats than the new
-                # capacity, create new seats
-                self.session.create_seats(session.id, capacity, session.capacity + 1, False)
-            elif len(self.session.get_all_session_reservations(session.id)) == 0:
-                self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
+                                           'Failed to edit session: More students have reserved this session than '
+                                           'the new session capacity allows.')
+                        return redirect(url_for('ScheduleView:edit_schedule', schedule_id=schedule_id))
+                    # Else this means there are less reservations than the new capacity so delete unused seats and shift
+                    # students
+                    elif reserved_seats <= capacity:
+                        reservations = self.session.get_session_reservations(session.id)
+                        capacity_issue = False
+                        for reservation in reservations:
+                            if reservation.seat_number > capacity:
+                                capacity_issue = True
+                                break
+                        if not capacity_issue:
+                            self.session.delete_seats(session.id, capacity, session.capacity)
+                        else:
+                            self.slc.set_alert('danger',
+                                               'There are is an issue where someone has a seat number greater than '
+                                               'the session capacity for the session.')
+                            return redirect(url_for('SessionView:view_session_reservations', session_id=session.id))
+                elif session.capacity < capacity > self.session.get_total_seats(session.id):
+                    # If the new capacity is greater than the current session capacity and there are less seats than the new
+                    # capacity, create new seats
+                    self.session.create_seats(session.id, capacity, session.capacity + 1, False)
+                elif len(self.session.get_all_session_reservations(session.id)) == 0:
+                    self.session.create_seats(session_id=session.id, capacity=capacity, commit=False)
         try:
             # This returns True if it executes successfully
             sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
