@@ -74,7 +74,6 @@ class StudentView(FlaskView):
                 signed_in_sessions.append(session)
                 signed_in_courses[session.id] = self.session.get_signed_in_courses(session.id, student.id)
 
-
         return render_template('student/virtual_sign_on.html', **locals())
 
     @route('/load-modal', methods=['POST'])
