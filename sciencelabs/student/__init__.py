@@ -49,7 +49,8 @@ class StudentView(FlaskView):
                 signed_in_courses[session.id] = self.session.get_student_session_courses(session.id, student.id)
 
         return render_template('student/reservations.html', **locals(), is_reserved=self.session.is_reserved,
-                               get_seats_available=self.session.get_num_seats_available)
+                               get_seats_available=self.session.get_num_seats_available,
+                               get_room_group_seats_available=self.session.get_room_group_num_seats_available)
 
     @route('/virtual-sign-on')
     def virtual_sign_on(self):
