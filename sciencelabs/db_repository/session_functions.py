@@ -23,7 +23,7 @@ class Session:
         if len(sessions) > 1:
             room_group_id = None
             for session in sessions:
-                if session.room_group_id:
+                if session.room_group_id and session.room.lower() != 'virtual':
                     room_group_id = session.room_group_id
 
             if room_group_id:
