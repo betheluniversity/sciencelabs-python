@@ -34,8 +34,7 @@ class StudentView(FlaskView):
 
         sessions = []
         for session in result_sessions:
-            if session.room.lower() != 'virtual':
-                sessions.append(session)
+            sessions.append(session)
 
         open_sessions, valid_session_courses = self.check_session_courses(self.session.get_open_sessions())
         signed_in_sessions = []
@@ -67,11 +66,16 @@ class StudentView(FlaskView):
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
+            if session.room.lower() == 'virtual' and not self.session.is_reserved(session.id, student.id):
+                open_sessions.remove(session)
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)
                 signed_in_courses[session.id] = self.session.get_signed_in_courses(session.id, student.id)
 
+        for s in sessions:
+            if s.room.lower() == 'virtual' and not self.session.is_reserved(s.id, student.id):
+                sessions.remove(s)
         return render_template('student/virtual_sign_on.html', **locals())
 
     @route('/load-modal', methods=['POST'])
