@@ -28,6 +28,7 @@
         $('#send-email').click(function () {
             let url = '';
             let redirect_url = '';
+            alert('test');
             if (/email-all-reservations/.test(window.location.pathname)) {
                 url = '{{ url_for('SessionView:send_email_all_reservations') }}';
                 redirect_url = '{{ url_for('SessionView:index') }}';
@@ -35,6 +36,7 @@
                 url = '{{ url_for('EmailView:send') }}';
                 redirect_url = '{{ url_for('EmailView:index') }}';
             }
+            alert('got here');
             $.ajax({
                 type: "POST",
                 url: url,
