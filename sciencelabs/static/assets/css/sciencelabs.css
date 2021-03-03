@@ -567,6 +567,10 @@ select:invalid {
     float: left;
 }
 
+.zoom-2 {
+    zoom: 2;
+}
+
 #darkblue {
     background-color: #0F2C52;
 }

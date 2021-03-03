@@ -496,6 +496,11 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+        in_person = form.get('in-person')
+        if in_person is None:
+            in_person = 0
+        else:
+            in_person = 1
 
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
@@ -508,7 +513,7 @@ class SessionView(FlaskView):
         try:
             new_session = self.session.create_new_session(semester_id, db_date, scheduled_start, scheduled_end, capacity, zoom_url,
                                                       actual_start, actual_end, room, comments, anon_students, name,
-                                                      leads, tutors, courses)
+                                                      leads, tutors, courses, in_person)
             if room.lower() != 'virtual':
                 self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
 

@@ -592,7 +592,7 @@ class Session:
             end_time = session.schedEndTime
             reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
             reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
-            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time and session.in_person is False:
                 valid_sessions.append(session)
 
         return valid_sessions
@@ -609,7 +609,7 @@ class Session:
             time = session.schedStartTime
             reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
             reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time and session.in_person is False:
                 valid_sessions.append(session)
 
         return valid_sessions
@@ -822,9 +822,10 @@ class Session:
     ######################### CREATE SESSION METHODS #########################
 
     def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
-                           actual_end, room, comments, anon_students, name, leads, tutors, courses):
+                           actual_end, room, comments, anon_students, name, leads, tutors, courses, in_person):
         new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
-                                          actual_start, actual_end, room, comments, anon_students, name)
+                                          actual_start, actual_end, room, comments, anon_students, name, in_person)
+
         if room.lower() != 'virtual':
             self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
@@ -834,11 +835,11 @@ class Session:
         return new_session
 
     def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
-                       actual_end, room, comments, anon_students, name):
+                       actual_end, room, comments, anon_students, name, in_person):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
                                     schedEndTime=scheduled_end, capacity=capacity, zoom_url=zoom_url,
                                     startTime=actual_start, endTime=actual_end, room=room, open=0, comments=comments,
-                                    anonStudents=anon_students, name=name, hash=self.base.get_hash())
+                                    anonStudents=anon_students, name=name, in_person=in_person, hash=self.base.get_hash())
         db_session.add(new_session)
         db_session.commit()
         return new_session

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 
 from sciencelabs.db_repository import base
 
@@ -127,6 +127,7 @@ class Session_Table(base):
     zoom_url = Column(String)
     capacity = Column(Integer)
     room_group_id = Column(Integer)
+    in_person = Column(Boolean)
 
 
 class SessionReservations_Table(base):
