@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from sqlalchemy import orm
-from sqlalchemy.orm.exc import MultipleResultsFound
 from flask import session as flask_session, abort
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import User_Table, Course_Table, CourseProfessors_Table, Semester_Table, \
@@ -296,18 +295,11 @@ class Course:
         return session_course_ids
 
     def new_term_course_code(self, course_info):
-        try:
-            existing_course_code = db_session.query(CourseCode_Table)\
-                .filter(CourseCode_Table.dept == course_info['0']['subject'])\
-                .filter(CourseCode_Table.courseNum == course_info['0']['cNumber'])\
-                .filter(CourseCode_Table.courseName == course_info['0']['title'])\
-                .one_or_none()
-        except MultipleResultsFound:
-            existing_course_code = db_session.query(CourseCode_Table)\
-                .filter(CourseCode_Table.dept == course_info['0']['subject'])\
-                .filter(CourseCode_Table.courseNum is course_info['0']['cNumber'])\
-                .filter(CourseCode_Table.courseName == course_info['0']['title'])\
-                .one_or_none()
+        existing_course_code = db_session.query(CourseCode_Table)\
+            .filter(CourseCode_Table.dept == course_info['0']['subject'])\
+            .filter(CourseCode_Table.courseNum == course_info['0']['cNumber'])\
+            .filter(CourseCode_Table.courseName == course_info['0']['title'])\
+            .one_or_none()
 
         if existing_course_code:
             if existing_course_code.active == 0:
