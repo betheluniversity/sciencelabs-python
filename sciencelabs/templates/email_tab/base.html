@@ -111,7 +111,7 @@
                 url: "{{ url_for('EmailView:send_email_confirm') }}",
                 data: JSON.stringify({
                     'subject': $('#subject').val(),
-                    'message': $('#message').val(),
+                    'message': JSON.stringify($('#message').val()),
                     'selected_recipients': $('#choose-recipients').val(),
                     'selected_groups': $('#choose-bcc-groups').val(),
                     'selected_bcc': $('#choose-bcc').val()

@@ -75,7 +75,7 @@ class EmailController:
         for course_id in courses_ids:
             courses.append(self.course.get_course(course_id))
 
-        if deleted:
+        if not deleted:
             subject = 'Math Lab reservation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
             return self.send_message(subject, render_template('email_tab/reservation_cancel_email.html', **locals()), recipient.email, None, True)
         else:
