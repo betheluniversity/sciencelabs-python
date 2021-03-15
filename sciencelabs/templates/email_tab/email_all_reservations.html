@@ -87,7 +87,7 @@
                 url: "{{ url_for('SessionView:email_all_reservations_confirm') }}",
                 data: JSON.stringify({
                     'subject': $('#subject').val(),
-                    'message': $('#message').val(),
+                    'message': JSON.stringify($('#message').val()),
                     'selected_reservations': $('#choose-reservations').val(),
                     'selected_tutors': $('#choose-tutors').val(),
                     'selected_users': $('#choose-users').val()
