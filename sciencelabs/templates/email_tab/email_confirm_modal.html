@@ -40,7 +40,7 @@
                 url: url,
                 data: JSON.stringify({
                     'subject': '{{ subject }}',
-                    'message': '{{ message }}',
+                    'message': {{ message|safe }},
                     'recipients': {{ recipients|safe }},
                     'bcc': {{ bcc_emails|safe }}
                 }),
