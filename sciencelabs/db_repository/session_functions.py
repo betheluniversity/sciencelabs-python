@@ -893,15 +893,15 @@ class Session:
         db_session.commit()
 
     def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
-                     actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses):
+                     actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses, in_person):
         self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
-                               actual_end, room, comments, anon_students, name)
+                               actual_end, room, comments, anon_students, name, in_person)
         self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
         self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
         self.edit_session_courses(session_id, courses)
 
     def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
-                          actual_start, actual_end, room, comments, anon_students, name):
+                          actual_start, actual_end, room, comments, anon_students, name, in_person):
         session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_edit.semester_id = semester_id
         session_to_edit.date = date
@@ -915,6 +915,7 @@ class Session:
         session_to_edit.comments = comments
         session_to_edit.anonStudents = anon_students
         session_to_edit.name = name
+        session_to_edit.in_person = in_person
         db_session.commit()
 
     def edit_session_leads(self, scheduled_start, scheduled_end, leads, session_id):

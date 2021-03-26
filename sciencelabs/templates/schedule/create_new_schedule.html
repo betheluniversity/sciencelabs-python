@@ -18,9 +18,13 @@
                         <label for="schedule-name">Schedule Name</label>
                         <input type="text" class="form-control chosen-container chosen-format" id="schedule-name" name="name" required autocomplete="off">
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="room">Room</label>
                         <input type="text" class="form-control chosen-container chosen-format" id="room" name="room" required autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>In Person</label>
+                        <input class="zoom-2" type="checkbox" name="in-person" onchange="toggle_online_vars(this)">
                     </div>
                 </div>
                 <div class="form-row">
@@ -46,7 +50,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-12">
+                    <div id="capacity-div" class="form-group col-md-12">
                         <label for="capacity">Session Capacity</label>
                         <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
                     </div>
@@ -126,5 +130,15 @@
             placeholder: "Choose tutors...",
             closeOnSelect: false
         });
+
+        function toggle_online_vars(checkbox){
+            if(checkbox.checked){
+                $('#capacity-div').css("display", "none");
+                $('#capacity').removeAttr("required");
+            } else {
+                $('#capacity-div').css("display", "block");
+                $('#capacity').attr("required", "true");
+            }
+        }
     </script>
 {% endblock %}

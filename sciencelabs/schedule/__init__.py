@@ -139,6 +139,13 @@ class ScheduleView(FlaskView):
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
         courses = form.getlist('courses')
+        in_person = form.get('in-person')
+        if in_person is None:
+            in_person = 0
+        else:
+            in_person = 1
+            capacity = 0
+
         sessions = self.schedule.get_sessions_by_schedule(schedule_id)
         for session in sessions:
             if room.lower() != 'virtual' and session.date >= datetime.now().date():
@@ -178,7 +185,7 @@ class ScheduleView(FlaskView):
         try:
             # This returns True if it executes successfully
             sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                                   start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+                                                   start_time, end_time, day_of_week, capacity, leads, tutors, courses, in_person)
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
@@ -223,8 +230,15 @@ class ScheduleView(FlaskView):
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
+            in_person = form.get('in-person')
+            if in_person is None:
+                in_person = 0
+            else:
+                in_person = 1
+                capacity = 0
+            print("sessions in person: ", in_person)
             sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                     start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+                                                     start_time, end_time, day_of_week, capacity, leads, tutors, courses, in_person)
 
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)

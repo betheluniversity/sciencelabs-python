@@ -67,6 +67,8 @@ class StudentView(FlaskView):
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
+            if session.in_person is True:
+                open_sessions.remove(session)
             signed_in = self.session.student_currently_signed_in(session.id, student.id)
             if signed_in:
                 signed_in_sessions.append(session)

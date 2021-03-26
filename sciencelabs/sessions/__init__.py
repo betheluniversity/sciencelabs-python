@@ -264,6 +264,12 @@ class SessionView(FlaskView):
         courses = form.getlist('courses')
         comments = form.get('comments')
         anon_students = form.get('anon-students')
+        in_person = form.get('in-person')
+        if in_person is None:
+            in_person = 0
+        else:
+            in_person = 1
+            capacity = 0
 
         session = self.session.get_session(session_id)
 
@@ -303,7 +309,7 @@ class SessionView(FlaskView):
         try:
             self.session.edit_session(session_id, semester_id, db_date, scheduled_start, scheduled_end, capacity,
                                       zoom_url, actual_start, actual_end, room, comments, anon_students, name, leads,
-                                      tutors, courses)
+                                      tutors, courses, in_person)
             if room.lower() != 'virtual':
                 self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
             self.session.delete_extra_room_groupings()
@@ -501,6 +507,7 @@ class SessionView(FlaskView):
             in_person = 0
         else:
             in_person = 1
+            capacity = 0
 
         # Check to see if the session being created is a past session with no actual times. This shouldn't be allowed.
         active_semester = self.schedule.get_active_semester()
@@ -882,7 +889,7 @@ class SessionView(FlaskView):
 
     @route('/no-cas/confirm-close', methods=['POST'])
     def confirm_close(self):
-        self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
+        #self.slc.check_roles_and_route(['Administrator', 'Lead Tutor'])
 
         form = request.form
         session_id = form.get('session-id')
