@@ -77,10 +77,10 @@ class EmailController:
 
         if not deleted:
             subject = 'Math Lab reservation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
-            return self.send_message(subject, render_template('email_tab/reservation_cancel_email.html', **locals()), recipient.email, None, True)
+            return self.send_message(subject, render_template('email_tab/reservation_success_email.html', **locals()), recipient.email, None, True)
         else:
             subject = 'Math Lab reservation cancellation: {0} ({1})'.format(sess.name, sess.date.strftime('%m/%d/%Y'))
-            return self.send_message(subject, render_template('email_tab/reservation_success_email.html', **locals()), recipient.email, None, True)
+            return self.send_message(subject, render_template('email_tab/reservation_cancel_email.html', **locals()), recipient.email, None, True)
 
     def send_message(self, subject, body, recipients, bcc, html=False):
         if app.config['ENVIRON'] != 'prod':
