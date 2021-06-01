@@ -89,7 +89,7 @@ class User:
 
 
     def get_students_in_course(self, course_id):
-        return db_session.query(User_Table, func.count(User_Table.id))\
+        return db_session.query(User_Table, func.count(distinct(StudentSession_Table.sessionId)))\
             .filter(Course_Table.id == course_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\

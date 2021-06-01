@@ -339,14 +339,14 @@ class Session:
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .distinct()
 
-    def get_session_attendees_with_dup(self, course_id, session_id):
-        return db_session.query(StudentSession_Table, func.count(distinct(StudentSession_Table.id)))\
+    def get_session_attendees_for_course(self, course_id, session_id):
+        return db_session.query(StudentSession_Table.studentId) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .group_by(StudentSession_Table.id)\
-            .all()
+            .distinct()
 
     def get_student_sessions_for_course(self, course_id, session_id):
         return db_session.query(StudentSession_Table)\
