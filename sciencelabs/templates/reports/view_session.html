@@ -25,6 +25,18 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-6">
+
+                        {% if session_info.deletedAt %}
+                            <ul class="no-bullet">
+                                <li><b><span class="button-labels" id="red">Session Deleted On:</span></b></li>
+                                <li>
+                                    <ul class="no-bullet">
+                                        <li>{{ session_info.deletedAt.strftime('%B %d, %Y') }}</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% endif %}
+
                         <ul class="no-bullet">
                             <li><b>Date:</b></li>
                             <li>

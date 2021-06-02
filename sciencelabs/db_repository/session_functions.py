@@ -345,6 +345,7 @@ class Session:
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
             .filter(SessionCourses_Table.course_id == course_id)\
+            .filter(Session_Table.deletedAt == None)\
             .group_by(StudentSession_Table.id)\
             .distinct()
 
@@ -562,6 +563,7 @@ class Session:
         return db_session.query(User_Table, func.count(distinct(User_Table.id)))\
             .filter(User_Table.id == StudentSession_Table.studentId)\
             .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(Session_Table.deletedAt == None)\
             .group_by(User_Table.id)\
             .all()
 

@@ -147,7 +147,7 @@ class ReportView(FlaskView):
         unscheduled_sessions_and_attendance = {}
         for unscheduled_session in unscheduled_sessions:
             unscheduled_sessions_and_attendance[unscheduled_session] = {
-                'attendance': len(self.user.get_session_students(unscheduled_session.id)),
+                'attendance': len(self.user.get_session_students(unscheduled_session.id)), # I don't believe this is ever used 6/1/2021
                 'unscheduled-attendance': self.session_.get_unscheduled_unique_attendance(unscheduled_session.id)
             }
 

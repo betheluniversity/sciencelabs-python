@@ -93,7 +93,9 @@ class User:
             .filter(Course_Table.id == course_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(StudentSession_Table.studentId == User_Table.id)\
+            .filter(StudentSession_Table.studentId == User_Table.id) \
+            .filter(Session_Table.deletedAt == None) \
+            .filter(Session_Table.id == StudentSession_Table.sessionId) \
             .group_by(User_Table.id)\
             .all()
 
