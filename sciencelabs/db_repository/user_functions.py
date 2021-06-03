@@ -76,6 +76,7 @@ class User:
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
+            .filter(Session_Table.deletedAt == None) \
             .group_by(StudentSession_Table.sessionId)\
             .all()
 
@@ -106,6 +107,8 @@ class User:
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .filter(User_Table.id == student_id) \
+            .filter(Session_Table.id == StudentSession_Table.sessionId) \
+            .filter(Session_Table.deletedAt == None) \
             .all()
 
     def get_student(self, student_id):

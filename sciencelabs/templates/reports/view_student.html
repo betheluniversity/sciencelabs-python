@@ -179,6 +179,9 @@
                                     {% else %}
                                         {{ info['session'].name }}
                                     {% endif %}
+                                    {% if info['session'].deletedAt is not none %}
+                                        <span id="red" class="button-labels">Deleted</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% for course in info['courses'] %}
