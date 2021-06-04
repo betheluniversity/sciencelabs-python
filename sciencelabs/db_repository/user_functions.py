@@ -100,6 +100,21 @@ class User:
             .group_by(User_Table.id)\
             .all()
 
+    def get_student_attended_sessions(self, student_id, semester):
+        return db_session.query(Session_Table, StudentSession_Table) \
+            .filter(Session_Table.semester_id == semester) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(StudentSession_Table.studentId == student_id) \
+            .all()
+
+    def get_student_attended_session_course_names(self, student_id, semester):
+        return db_session.query(StudentSession_Table, SessionCourses_Table, Session_Table) \
+            .filter(Session_Table.semester_id == semester) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(StudentSession_Table.studentId == student_id) \
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
+            .all()
+
     def get_average_time_in_course(self, student_id, course_id):
         return db_session.query(StudentSession_Table, User_Table) \
             .filter(Course_Table.id == course_id) \

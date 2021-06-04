@@ -745,8 +745,22 @@ class ReportView(FlaskView):
                 or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
-            other_info = self.courses.get_other_info(flask_session['SELECTED-SEMESTER'])
             course_viewer_info = None
+
+            student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
+            duplicate_sessions = 0
+            unnamed_session = 0
+            for student in student_info:
+                student_session_attendance = len(self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER']))
+                student_session_course_names = len(self.user.get_student_attended_session_course_names(student.id, flask_session['SELECTED-SEMESTER']))
+                # Subtracting these will either give us a zero (attendance is correct),
+                # a negative number (the student attended more than one course per session)
+                # or a positive number (the student attended a session but the course name wasn't recorded)
+                adjustment = student_session_attendance - student_session_course_names
+                if adjustment < 0:
+                    duplicate_sessions -= adjustment
+                if adjustment > 0:
+                    unnamed_session += adjustment
 
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])

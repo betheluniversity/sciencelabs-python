@@ -38,6 +38,7 @@ class Course:
                 .filter(Semester_Table.id == semester_id)
                 .all())
 
+    # Replaced with get_student_attended_sessions() and get_student_attended_session_course_names 6/4/2021
     def get_other_info(self, semester_id):
         return db_session.query(StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\

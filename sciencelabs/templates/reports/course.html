@@ -104,15 +104,15 @@
                             {% endfor %}
                         </tbody>
                         <tfoot>
-                            {% if other_info %}
+                            {% if unnamed_session != 0 %}
                                 <tr>
-                                    <th class="no-border-top" colspan="4">Other</th>
-                                    <th class="no-border-top">{{ other_info|length }}</th>
+                                    <th class="no-border-top" colspan="4">Courses Attended Without Names</th>
+                                    <th class="no-border-top">{{ unnamed_session }}</th>
                                 </tr>
                             {% endif %}
                             <tr>
-                                <th class="no-border-top" colspan="4">Total</th>
-                                <th class="no-border-top">{{ total_attendance[0] + other_info|length }}</th>
+                                <th class="no-border-top" colspan="4">Total ({{ duplicate_sessions }} Session Duplicates)</th>
+                                <th class="no-border-top">{{ total_attendance[0] + unnamed_session }}</th>
                                 <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
                             </tr>
                         </tfoot>
