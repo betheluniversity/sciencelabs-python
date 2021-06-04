@@ -105,6 +105,7 @@ class User:
             .filter(Session_Table.semester_id == semester) \
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(StudentSession_Table.studentId == student_id) \
+            .filter(Session_Table.deletedAt == None) \
             .all()
 
     def get_student_attended_session_course_names(self, student_id, semester):
@@ -113,6 +114,7 @@ class User:
             .filter(StudentSession_Table.sessionId == Session_Table.id) \
             .filter(StudentSession_Table.studentId == student_id) \
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
+            .filter(Session_Table.deletedAt == None) \
             .all()
 
     def get_average_time_in_course(self, student_id, course_id):
