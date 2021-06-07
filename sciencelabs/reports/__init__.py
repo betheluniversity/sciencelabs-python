@@ -750,6 +750,8 @@ class ReportView(FlaskView):
             student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
             duplicate_sessions = 0
             unnamed_session = 0
+            unnamed_list = []
+            duplicate_list = []
             for student in student_info:
                 student_session_attendance = len(self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER']))
                 student_session_course_names = len(self.user.get_student_attended_session_course_names(student.id, flask_session['SELECTED-SEMESTER']))
@@ -757,10 +759,14 @@ class ReportView(FlaskView):
                 # a negative number (the student attended more than one course per session)
                 # or a positive number (the student attended a session but the course name wasn't recorded)
                 adjustment = student_session_attendance - student_session_course_names
+
                 if adjustment < 0:
                     duplicate_sessions -= adjustment
+                    duplicate_list.append(str(student.id) + " " + student.lastName + " " + str(adjustment))
+
                 if adjustment > 0:
                     unnamed_session += adjustment
+                    unnamed_list.append(str(student.id) + " " + student.lastName + " " + str(adjustment))
 
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
