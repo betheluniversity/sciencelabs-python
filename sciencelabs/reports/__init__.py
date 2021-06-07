@@ -777,14 +777,14 @@ class ReportView(FlaskView):
         for course, course_user in course_info:
             courses_and_attendance[course] = {
                 'user': course_user,
-                'attendance': self.user.get_students_in_course(course.id)
+                'attendance': self.user.get_students_in_course(course.id, flask_session['SELECTED-SEMESTER'])
             }
 
         if course_viewer_info:
             for course, course_user in course_viewer_info:
                 courses_and_attendance[course] = {
                     'user': course_user,
-                    'attendance': self.user.get_students_in_course(course.id)
+                    'attendance': self.user.get_students_in_course(course.id, flask_session['SELECTED-SEMESTER'])
                 }
 
         return render_template('reports/course.html', **locals())
@@ -819,14 +819,14 @@ class ReportView(FlaskView):
         for course, course_user in course_info:
             courses_and_attendance[course] = {
                 'user': course_user,
-                'attendance': self.user.get_students_in_course(course.id)
+                'attendance': self.user.get_students_in_course(course.id, flask_session['SELECTED-SEMESTER'])
             }
 
         if course_viewer_info:
             for course, course_user in course_viewer_info:
                 courses_and_attendance[course] = {
                     'user': course_user,
-                    'attendance': self.user.get_students_in_course(course.id)
+                    'attendance': self.user.get_students_in_course(course.id, flask_session['SELECTED-SEMESTER'])
                 }
 
         ##### Adding data to CSV #####
@@ -874,10 +874,11 @@ class ReportView(FlaskView):
     @route('/course/<int:course_id>')
     def view_course(self, course_id):
         self.slc.check_roles_and_route(['Professor', 'Administrator', 'Academic Counselor'])
+        sem = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
 
         course = self.courses.get_course(course_id)
         course_profs = self.courses.get_course_profs(course_id)
-        students = self.user.get_students_in_course(course_id)
+        students = self.user.get_students_in_course(course_id, flask_session['SELECTED-SEMESTER'])
 
         students_and_time = {}
         for student, attendance in students:
@@ -886,7 +887,7 @@ class ReportView(FlaskView):
                 'time': self.user.get_average_time_in_course(student.id, course.id)
             }
 
-        sessions = self.session_.get_sessions(course_id)
+        sessions = self.session_.get_sessions(course_id, sem.id)
         sessions_and_attendance = {}
         for lab_session in sessions:
             sessions_and_attendance[lab_session] = {
@@ -906,7 +907,7 @@ class ReportView(FlaskView):
         course = self.courses.get_course(course_id)
         course_profs = self.courses.get_course_profs(course_id)
 
-        sessions = self.session_.get_sessions(course_id)
+        sessions = self.session_.get_sessions(course_id, sem.id)
 
         student_sessions = self.session_.get_student_sessions_for_course(course_id, session_id)
 
@@ -939,7 +940,7 @@ class ReportView(FlaskView):
 
         my_list = [['Date', 'DOW', 'Time', 'Attendees']]
 
-        sessions = self.session_.get_sessions(course_id)
+        sessions = self.session_.get_sessions(course_id, sem.id)
         course = self.courses.get_course(course_id)
         csv_course_info = '{0}{1} ({2})'.format(course.dept, course.course_num, course.title)
 
@@ -973,7 +974,7 @@ class ReportView(FlaskView):
 
         my_list = [['First Name', 'Last Name', 'Sessions', 'Avg Time']]
 
-        students = self.user.get_students_in_course(course_id)
+        students = self.user.get_students_in_course(course_id, sem.id)
 
         total_attendance = 0
         total_time = 0

@@ -315,12 +315,13 @@ class Session:
             .filter(StudentSession_Table.id == student_session_id)\
             .one()
 
-    def get_sessions(self, course_id):
+    def get_sessions(self, course_id, semester):
         return db_session.query(Session_Table)\
             .filter(Session_Table.id == StudentSession_Table.sessionId)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(Course_Table.id == course_id)\
+            .filter(Session_Table.semester_id == semester)\
             .all()
 
     def get_course_session(self, course_id, session_id):

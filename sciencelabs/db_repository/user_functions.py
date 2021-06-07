@@ -89,7 +89,7 @@ class User:
             .all()
 
 
-    def get_students_in_course(self, course_id):
+    def get_students_in_course(self, course_id, semester):
         return db_session.query(User_Table, func.count(distinct(StudentSession_Table.sessionId)))\
             .filter(Course_Table.id == course_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
@@ -97,6 +97,7 @@ class User:
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .filter(Session_Table.deletedAt == None) \
             .filter(Session_Table.id == StudentSession_Table.sessionId) \
+            .filter(Session_Table.semester_id == semester) \
             .group_by(User_Table.id)\
             .all()
 
