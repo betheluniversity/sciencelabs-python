@@ -106,13 +106,13 @@
                         <tfoot>
                             {% if unnamed_session != 0 %}
                                 <tr>
-                                    <th class="no-border-top" colspan="4">Courses Attended Without Names</th>
-                                    <th class="no-border-top">{{ unnamed_session }}</th>
+                                    <th class="no-border-top" colspan="4">Other</th>
+                                    <th class="no-border-top">{{ unnamed_session + anon_attendance }}</th>
                                 </tr>
                             {% endif %}
                             <tr>
                                 <th class="no-border-top" colspan="4">Total ({{ duplicate_sessions }} Session Duplicates)</th>
-                                <th class="no-border-top">{{ total_attendance[0] + unnamed_session }}</th>
+                                <th class="no-border-top">{{ total_attendance[0] + unnamed_session + anon_attendance }}</th>
                                 <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
                             </tr>
                         </tfoot>
@@ -152,6 +152,12 @@
                     <p class="card-text">
                         To view course report data from a different term, choose an option from the term menu in the
                         upper right hand corner of the page and press the <span class="button-labels">Set</span> button.
+                    </p>
+
+                    <p class="card-text">
+                        The <Strong>Other</Strong> row at the bottom of the course report shows the anonymous
+                        attendance as well as attendance where students sign in to a session
+                        but forget to select which course they are signing in for (so the course is not recorded).
                     </p>
 
                     <p class="card-text">

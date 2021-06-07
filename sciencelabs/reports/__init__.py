@@ -768,6 +768,12 @@ class ReportView(FlaskView):
                     unnamed_session += adjustment
                     unnamed_list.append(str(student.id) + " " + student.lastName + " " + str(adjustment))
 
+            anon_attendance = 0
+            sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
+            for sess in sessions:
+                session_info = self.session_.get_session(sess.id)
+                anon_attendance += session_info.anonStudents
+
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
             course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
