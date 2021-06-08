@@ -753,8 +753,8 @@ class ReportView(FlaskView):
             unnamed_list = []
             duplicate_list = []
             for student in student_info:
-                student_session_attendance = len(self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER']))
-                student_session_course_names = len(self.user.get_student_attended_session_course_names(student.id, flask_session['SELECTED-SEMESTER']))
+                student_session_attendance = (self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER'])).count()
+                student_session_course_names = (self.user.get_student_attended_session_course_names(student.id, flask_session['SELECTED-SEMESTER'])).count()
                 # Subtracting these will either give us a zero (attendance is correct),
                 # a negative number (the student attended more than one course per session)
                 # or a positive number (the student attended a session but the course name wasn't recorded)
@@ -762,11 +762,9 @@ class ReportView(FlaskView):
 
                 if adjustment < 0:
                     duplicate_sessions -= adjustment
-                    duplicate_list.append(str(student.id) + " " + student.lastName + " " + str(adjustment))
 
                 if adjustment > 0:
                     unnamed_session += adjustment
-                    unnamed_list.append(str(student.id) + " " + student.lastName + " " + str(adjustment))
 
             anon_attendance = 0
             sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])

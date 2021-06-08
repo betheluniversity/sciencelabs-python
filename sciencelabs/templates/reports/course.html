@@ -104,26 +104,29 @@
                             {% endfor %}
                         </tbody>
                         <tfoot>
-                            {% if unnamed_session != 0 %}
+                            {% if unnamed_session or unnamed_session == 0%}
                                 <tr>
                                     <th class="no-border-top" colspan="4">Other</th>
                                     <th class="no-border-top">{{ unnamed_session + anon_attendance }}</th>
                                 </tr>
+                                <tr>
+                                    <th class="no-border-top" colspan="4">Total ({{ duplicate_sessions }} Session Duplicates)</th>
+                                    <th class="no-border-top">{{ total_attendance[0] + unnamed_session + anon_attendance }}</th>
+                                    <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <th class="no-border-top" colspan="4">Total</th>
+                                    <th class="no-border-top">{{ total_attendance[0] }}</th>
+                                    <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
+                                </tr>
                             {% endif %}
-                            <tr>
-                                <th class="no-border-top" colspan="4">Total ({{ duplicate_sessions }} Session Duplicates)</th>
-                                <th class="no-border-top">{{ total_attendance[0] + unnamed_session + anon_attendance }}</th>
-                                <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
-                            </tr>
+
                         </tfoot>
                     </table>
                 {% else %}
                     <p>No {{ lab_title }} courses for {{ semester.term }} {{ semester.year }}</p>
                 {% endif %}
-                dup
-                {{ duplicate_list }} <br>
-                unnamed
-                {{ unnamed_list }}
             </form>
         </div>
         <div class="col-md-4">
