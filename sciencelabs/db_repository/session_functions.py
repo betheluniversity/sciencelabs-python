@@ -146,6 +146,13 @@ class Session:
             .order_by(Session_Table.date) \
             .all()
 
+    def get_all_deleted_sessions(self, semester_id):
+        return db_session.query(Session_Table) \
+            .filter(Session_Table.semester_id == semester_id) \
+            .filter(Session_Table.deletedAt != None) \
+            .order_by(Session_Table.date) \
+            .all()
+
     def get_session(self, session_id):
         return db_session.query(Session_Table)\
             .filter(Session_Table.id == session_id)\

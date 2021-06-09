@@ -60,6 +60,7 @@ class SessionView(FlaskView):
         sessions = self.session.get_deleted_sessions(flask_session['SELECTED-SEMESTER'])
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
         sessions_and_tutors = {deleted_session: self.session.get_session_tutors(deleted_session.id) for deleted_session in sessions}
+        include_all_sessions = False
         return render_template('sessions/restore_session.html', **locals())
 
     @route('/edit/<int:session_id>')
@@ -909,6 +910,14 @@ class SessionView(FlaskView):
         except Exception as error:
             self.slc.set_alert('danger', 'Failed to restore session: {0}'.format(str(error)))
             return redirect(url_for('SessionView:deleted'))
+
+    def deleted_all(self):
+        sessions = self.session.get_all_deleted_sessions(flask_session['SELECTED-SEMESTER'])
+        semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
+        sessions_and_tutors = {deleted_session: self.session.get_session_tutors(deleted_session.id) for deleted_session
+                               in sessions}
+        include_all_sessions = True
+        return render_template('sessions/restore_session.html', **locals())
 
     # START OF ROOM GROUP UPDATES #
 

@@ -608,6 +608,12 @@ select:invalid {
     cursor: pointer;
 }
 
+.session-selector {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
 #show-hide {
     background-color: #0F2C52;
     border-color: #0F2C52;
