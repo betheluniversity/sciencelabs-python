@@ -2,8 +2,13 @@
 
 {% block header %}
     <div class="header card">
-        <div class="card-body">
-            <p class="card-text">Deleted Sessions for {{ semester.term }} {{ semester.year }}</p>
+        <div class="card-body session-selector">
+            Deleted Sessions for {{ semester.term }} {{ semester.year }}
+            {% if include_all_sessions == False %}
+                <a href='{{ url_for('SessionView:deleted_all') }}' id="blue" class="session-selector btn btn-primary border-white">Show All Sessions</a>
+            {% else %}
+                <a href='{{ url_for('SessionView:deleted') }}' id="blue" class="session-selector btn btn-primary border-white">Show Only Closed Sessions</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
