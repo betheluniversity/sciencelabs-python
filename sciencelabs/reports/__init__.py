@@ -38,7 +38,10 @@ class ReportView(FlaskView):
 
         student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
 
-        student_and_attendance = {student: len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER'])) for student in student_info}
+        student_and_attendance = {
+            student: len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))
+            for student in student_info
+        }
 
         return render_template('reports/student.html', **locals())
 
@@ -54,22 +57,29 @@ class ReportView(FlaskView):
         # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
         if 'Administrator' in flask_session['USER-ROLES'] \
                 or 'Academic Counselor' in flask_session['USER-ROLES'] \
-                or ('Professor' in flask_session['USER-ROLES'] and flask_session['NAME'] and self.courses.student_is_in_prof_course(student_id, viewer.id)) \
-                or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+                or ('Professor' in flask_session['USER-ROLES'] and flask_session['NAME']
+                    and self.courses.student_is_in_prof_course(student_id, viewer.id)) \
+                or ('ADMIN-VIEWER' in flask_session.keys()
+                    and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             role_can_view = True
             if self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER']):
-                student_info, attendance = self.user.get_student_attendance(student_id, flask_session['SELECTED-SEMESTER'])
+                student_info, attendance = self.user.get_student_attendance(student_id,
+                                                                            flask_session['SELECTED-SEMESTER'])
             else:
-                self.slc.set_alert('info','Notice: ' + student.firstName + ' ' + student.lastName + ' has not attended any labs for ' + sem.term + ' ' + str(year) + '')
+                self.slc.set_alert('info', 'Notice: ' + student.firstName + ' ' + student.lastName
+                                   + ' has not attended any labs for ' + sem.term + ' ' + str(year) + '')
 
                 attendance = 0
             total_sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
             courses = self.user.get_student_courses(student_id, flask_session['SELECTED-SEMESTER'])
             sessions = self.user.get_studentsession(student_id, flask_session['SELECTED-SEMESTER'])
-            sessions_attended = len(self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
+            sessions_attended = len(
+                self.user.get_unique_sessions_attended(student_id, flask_session['SELECTED-SEMESTER']))
 
-            course_and_avg_time = {course: self.user.get_average_time_in_course(student.id, course.id) for course in courses}
+            course_and_avg_time = {
+                course: self.user.get_average_time_in_course(student.id, course.id) for course in courses
+            }
 
             sessions_and_courses = {}
             for studentsession, lab_session in sessions:
@@ -98,7 +108,8 @@ class ReportView(FlaskView):
         my_list = [['Last', 'First', 'Email', 'Attendance']]
 
         for student in self.user.get_student_info(flask_session['SELECTED-SEMESTER']):
-            my_list.append([student.lastName, student.firstName, student.email, len(self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))])
+            my_list.append([student.lastName, student.firstName, student.email, len(
+                self.user.get_unique_sessions_attended(student.id, flask_session['SELECTED-SEMESTER']))])
 
         return self.export_csv(my_list, csv_name)
 
@@ -147,7 +158,8 @@ class ReportView(FlaskView):
         unscheduled_sessions_and_attendance = {}
         for unscheduled_session in unscheduled_sessions:
             unscheduled_sessions_and_attendance[unscheduled_session] = {
-                'attendance': len(self.user.get_session_students(unscheduled_session.id)), # I don't believe this is ever used 6/1/2021
+                'attendance': len(self.user.get_session_students(unscheduled_session.id)),
+                # I don't believe attendance is ever used 6/1/2021
                 'unscheduled-attendance': self.session_.get_unscheduled_unique_attendance(unscheduled_session.id)
             }
 
@@ -270,7 +282,10 @@ class ReportView(FlaskView):
         schedule_info = self.schedule.get_yearly_schedule_tab_info(selected_year, term)
         sessions = self.session_.get_semester_closed_sessions(selected_year, term)
         unscheduled_sessions = self.session_.get_unscheduled_sessions(selected_year, term)
-        unscheduled_sessions_and_attendance = {unscheduled_session: len(self.user.get_session_students(unscheduled_session.id)) for unscheduled_session in unscheduled_sessions}
+        unscheduled_sessions_and_attendance = {
+            unscheduled_session: len(self.user.get_session_students(unscheduled_session.id)) for unscheduled_session in
+            unscheduled_sessions
+        }
         monthly_sessions = self.session_.get_monthly_sessions((str(year) + '-' + str(month) + '-01'), (str(year) + '-' +
                                                                                                        str(month) +
                                                                                                        '-31'))
@@ -309,6 +324,10 @@ class ReportView(FlaskView):
                                                                                                        str(month) +
                                                                                                        '-31'))
 
+        # makes sure there is no division by zero
+        def divide_by_zero(num, den):
+            return num / den if den else 0
+
         total_attendance = 0
         for schedule in schedule_info:
             for session_info in monthly_sessions:
@@ -330,7 +349,8 @@ class ReportView(FlaskView):
                             self._datetimeformatter(schedule.startTime) + ' - ' +
                             self._datetimeformatter(schedule.endTime),
                             total_attendance_per_schedule,
-                            str(round((total_attendance_per_schedule/total_attendance)*100, 1)) + '%'])
+                            str(round((divide_by_zero(total_attendance_per_schedule, total_attendance)) * 100,
+                                      1)) + '%'])
 
         unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
         total_unscheduled = 0
@@ -340,7 +360,7 @@ class ReportView(FlaskView):
             total_attendance += total_unscheduled
 
         my_list.append(['Unscheduled Sessions', '', '', total_unscheduled,
-                        str(round((total_unscheduled / total_attendance) * 100, 1)) + '%'])
+                        str(round((divide_by_zero(total_unscheduled, total_attendance)) * 100, 1)) + '%'])
 
         my_list.append(['', '', 'Total', total_attendance])
 
@@ -598,7 +618,10 @@ class ReportView(FlaskView):
         tutors = self.session_.get_session_tutors(session_id)
         student_session_list = self.session_.get_student_session_from_session(session_id)
         session_courses = self.session_.get_session_course_codes(session_id)
-        session_courses_and_attendance = {course: self.session_.get_course_code_attendance(session_id, course.id) for course in session_courses}
+        session_courses_and_attendance = {
+            course: self.session_.get_course_code_attendance(session_id, course.id) for
+            course in session_courses
+        }
         opener = None
         if session_info.openerId:
             opener = self.user.get_user(session_info.openerId)
@@ -645,7 +668,8 @@ class ReportView(FlaskView):
                 time_in = 'N/A'
             if not time_out:
                 time_out = 'N/A'
-            my_list.append([student.lastName, student.firstName, student.email, time_in, time_out, virtual, seat_number])
+            my_list.append(
+                [student.lastName, student.firstName, student.email, time_in, time_out, virtual, seat_number])
 
         return self.export_csv(my_list, csv_name)
 
@@ -659,7 +683,6 @@ class ReportView(FlaskView):
         lab_acronym = ''
         for letter in app.config['LAB_TITLE'].split():
             lab_acronym += letter[0]
-
 
         csv_name = '{0}_{1}_RoomGroupReport'.format(sessions[0].date.strftime('%m-%d-%Y'), lab_acronym)
 
@@ -692,7 +715,8 @@ class ReportView(FlaskView):
                     time_in = 'N/A'
                 if not time_out:
                     time_out = 'N/A'
-                my_list.append([student.lastName, student.firstName, student.email, time_in, time_out, virtual, seat_number])
+                my_list.append(
+                    [student.lastName, student.firstName, student.email, time_in, time_out, virtual, seat_number])
 
         return self.export_csv(my_list, csv_name)
 
@@ -741,8 +765,10 @@ class ReportView(FlaskView):
         semester = self.schedule.get_semester(flask_session['SELECTED-SEMESTER'])
 
         # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
-        if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES']\
-                or ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+        if 'Administrator' in flask_session['USER-ROLES'] \
+                or 'Academic Counselor' in flask_session['USER-ROLES'] \
+                or ('ADMIN-VIEWER' in flask_session.keys()
+                    and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
 
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
             course_viewer_info = None
@@ -750,11 +776,11 @@ class ReportView(FlaskView):
             student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
             duplicate_sessions = 0
             unnamed_session = 0
-            unnamed_list = []
-            duplicate_list = []
             for student in student_info:
-                student_session_attendance = (self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER'])).count()
-                student_session_course_names = (self.user.get_student_attended_session_course_names(student.id, flask_session['SELECTED-SEMESTER'])).count()
+                student_session_attendance = (self.user.get_student_attended_sessions(student.id,
+                                                flask_session['SELECTED-SEMESTER'])).count()
+                student_session_course_names = (self.user.get_student_attended_session_course_names(student.id,
+                                                flask_session['SELECTED-SEMESTER'])).count()
                 # Subtracting these will either give us a zero (attendance is correct),
                 # a negative number (the student attended more than one course per session)
                 # or a positive number (the student attended a session but the course name wasn't recorded)
@@ -775,7 +801,8 @@ class ReportView(FlaskView):
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
             course_info = self.courses.get_selected_prof_course_info(flask_session['SELECTED-SEMESTER'], prof.id)
-            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'], prof.id)
+            course_viewer_info = self.courses.get_selected_course_viewer_info(flask_session['SELECTED-SEMESTER'],
+                                                                              prof.id)
 
         courses_and_attendance = {}
         for course, course_user in course_info:
@@ -802,9 +829,13 @@ class ReportView(FlaskView):
         csv_name = '%s%s_%s_CourseReport' % (semester.term, semester.year, lab_acronym)
 
         csv_data = []
-        csv_data.append(['Course', 'Section', 'Professor', 'Total Attendance', 'Unique Attendance', '% of Lab Attendance'])
+        csv_data.append(
+            ['Course', 'Section', 'Professor', 'Total Attendance', 'Unique Attendance', '% of Lab Attendance'])
 
         ##### Gathering data #####
+        duplicate_sessions = 0
+        unnamed_session = 0
+        anon_attendance = 0
         # The last check in the following if is to see if we are viewing the prof role, but not a specific prof user
         if 'Administrator' in flask_session['USER-ROLES'] or 'Academic Counselor' in flask_session['USER-ROLES'] \
                 or (
@@ -812,6 +843,28 @@ class ReportView(FlaskView):
 
             course_info = self.courses.get_selected_course_info(flask_session['SELECTED-SEMESTER'])
             course_viewer_info = None
+
+            student_info = self.user.get_student_info(flask_session['SELECTED-SEMESTER'])
+            for student in student_info:
+                student_session_attendance = (
+                    self.user.get_student_attended_sessions(student.id, flask_session['SELECTED-SEMESTER'])).count()
+                student_session_course_names = (self.user.get_student_attended_session_course_names(student.id,
+                                                flask_session['SELECTED-SEMESTER'])).count()
+                # Subtracting these will either give us a zero (attendance is correct),
+                # a negative number (the student attended more than one course per session)
+                # or a positive number (the student attended a session but the course name wasn't recorded)
+                adjustment = student_session_attendance - student_session_course_names
+
+                if adjustment < 0:
+                    duplicate_sessions -= adjustment
+
+                if adjustment > 0:
+                    unnamed_session += adjustment
+
+            sessions = self.session_.get_closed_sessions(flask_session['SELECTED-SEMESTER'])
+            for sess in sessions:
+                session_info = self.session_.get_session(sess.id)
+                anon_attendance += session_info.anonStudents
 
         else:  # They must be a professor
             prof = self.user.get_user_by_username(flask_session['USERNAME'])
@@ -848,9 +901,15 @@ class ReportView(FlaskView):
             csv_data.append([course.title + " ({0}{1})".format(course.dept, course.course_num), course.section,
                              "{0} {1}".format(info['user'].firstName, info['user'].lastName), course_total_attendance,
                              len(info['attendance']),
-                             "{0}%".format(round((course_total_attendance/total_attendance)*100, 2))])
-
-        csv_data.append(['', '', 'Total', total_attendance, total_unique_attendance])
+                             "{0}%".format(round((len(info['attendance']) / course.num_attendees) * 100, 2))])
+        if 'Administrator' in flask_session['USER-ROLES'] \
+            or 'Academic Counselor' in flask_session['USER-ROLES'] or \
+                ('ADMIN-VIEWER' in flask_session.keys() and flask_session['ADMIN-VIEWER'] and not flask_session['NAME']):
+            csv_data.append(['', '', 'Other', unnamed_session + anon_attendance])
+            csv_data.append(['', '', 'Total ' + '(' + str(duplicate_sessions) + ' duplicate sessions)',
+                             total_attendance + unnamed_session + anon_attendance, total_unique_attendance])
+        else:
+            csv_data.append(['', '', 'Total', total_attendance, total_unique_attendance])
 
         return self.export_csv(csv_data, csv_name)
 
@@ -954,8 +1013,8 @@ class ReportView(FlaskView):
                         self._datetimeformatter(sess.schedStartTime) + ' - ' +
                         self._datetimeformatter(sess.schedEndTime)]
             attendance_per_session = self.session_.get_session_attendees_for_course(course_id, sess.id)
-            sub_list.append(len(attendance_per_session))
-            total_attendance += len(attendance_per_session)
+            sub_list.append(attendance_per_session.count())
+            total_attendance += attendance_per_session.count()
             my_list.append(sub_list)
 
         my_list.append(['', '', 'Total', total_attendance])
@@ -991,13 +1050,13 @@ class ReportView(FlaskView):
             avg_time = 0
             for times, user in time:
                 if times.timeOut and times.timeIn:
-                    avg_time += (((times.timeOut - times.timeIn).total_seconds())/60)
+                    avg_time += (((times.timeOut - times.timeIn).total_seconds()) / 60)
 
-            total_time += avg_time/len(time)
-            sub_list.append(str(round(avg_time/len(time))) + ' min')
+            total_time += avg_time / len(time)
+            sub_list.append(str(round(avg_time / len(time))) + ' min')
             my_list.append(sub_list)
 
-        my_list.append(['', 'Total:', total_attendance, total_time/index])
+        my_list.append(['', 'Total:', total_attendance, total_time / index])
 
         return self.export_csv(my_list, csv_name)
 
@@ -1068,4 +1127,3 @@ class ReportView(FlaskView):
         flask_session['SELECTED-SEMESTER'] = int(sem.id)
         # Lets the session know it was modified
         flask_session.modified = True
-
