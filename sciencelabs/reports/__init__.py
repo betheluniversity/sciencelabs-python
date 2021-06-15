@@ -324,10 +324,6 @@ class ReportView(FlaskView):
                                                                                                        str(month) +
                                                                                                        '-31'))
 
-        # makes sure there is no division by zero
-        def divide_by_zero(num, den):
-            return num / den if den else 0
-
         total_attendance = 0
         for schedule in schedule_info:
             for session_info in monthly_sessions:
@@ -349,7 +345,7 @@ class ReportView(FlaskView):
                             self._datetimeformatter(schedule.startTime) + ' - ' +
                             self._datetimeformatter(schedule.endTime),
                             total_attendance_per_schedule,
-                            str(round((divide_by_zero(total_attendance_per_schedule, total_attendance)) * 100,
+                            str(round((self.divide_by_zero(total_attendance_per_schedule, total_attendance)) * 100,
                                       1)) + '%'])
 
         unscheduled_sessions = self.session_.get_unscheduled_sessions(year, term)
@@ -360,7 +356,7 @@ class ReportView(FlaskView):
             total_attendance += total_unscheduled
 
         my_list.append(['Unscheduled Sessions', '', '', total_unscheduled,
-                        str(round((divide_by_zero(total_unscheduled, total_attendance)) * 100, 1)) + '%'])
+                        str(round((self.divide_by_zero(total_unscheduled, total_attendance)) * 100, 1)) + '%'])
 
         my_list.append(['', '', 'Total', total_attendance])
 
@@ -1052,11 +1048,11 @@ class ReportView(FlaskView):
                 if times.timeOut and times.timeIn:
                     avg_time += (((times.timeOut - times.timeIn).total_seconds()) / 60)
 
-            total_time += avg_time / len(time)
-            sub_list.append(str(round(avg_time / len(time))) + ' min')
+            total_time += self.divide_by_zero(avg_time, len(time))
+            sub_list.append(str(round(self.divide_by_zero(avg_time, len(time)))) + ' min')
             my_list.append(sub_list)
 
-        my_list.append(['', 'Total:', total_attendance, total_time / index])
+        my_list.append(['', 'Total:', total_attendance, self.divide_by_zero(total_time, index)])
 
         return self.export_csv(my_list, csv_name)
 
@@ -1127,3 +1123,7 @@ class ReportView(FlaskView):
         flask_session['SELECTED-SEMESTER'] = int(sem.id)
         # Lets the session know it was modified
         flask_session.modified = True
+
+    # makes sure there is no division by zero
+    def divide_by_zero(self, num, den):
+        return num / den if den else 0
