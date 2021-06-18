@@ -21,10 +21,10 @@
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group separate-btn">
-                                    <p class="no-margin-padding">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
+                                <p class="no-margin-padding">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
                                 <div>
-                                <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Summary Export</a>
-                                <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Detail Export</a>
+                                    <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Summary Export</a>
+                                    <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Detail Export</a>
                                 </div>
                             </div>
                         </div>
@@ -111,9 +111,9 @@
                             <td data-th="Schedule Time">{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td data-th="Total Attendance">{{ total_attendance_per_schedule[0] }}</td>
                             {% if total_attendance[0] %}
-                            <td data-th="Percent of Total Attendance">{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
+                                <td data-th="Percent of Total Attendance">{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
                             {% else %}
-                            <td data-th="Percent of Total Attendance">???</td>
+                                <td data-th="Percent of Total Attendance">???</td>
                             {% endif %}
 
                         </tr>
