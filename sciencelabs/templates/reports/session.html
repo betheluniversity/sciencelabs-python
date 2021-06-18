@@ -63,19 +63,25 @@
                         {% for session, info in sessions_info.items() %}
                             {% if session.date and (session.date.strftime('%m')) == date %}
                                 <tr>
-                                    <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                                    <td>{{ session.name }}</td>
-                                    <td>
+                                    <td data-th="Session Date">
+                                        {{ session.date.strftime('%m/%d/%Y') }}
+                                    </td>
+                                    <td data-th="Session Name">
+                                        {{ session.name }}
+                                    </td>
+                                    <td data-th="Day of Week">
                                         {% set schedule = info['DOW'] %}
                                         {{ macros.day_abbr(schedule.dayofWeek) }}
                                     </td>
-                                    <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
-                                    <td>
+                                    <td data-th="Session Time">
+                                        {{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}
+                                    </td>
+                                    <td data-th="Session Student Attendance">
                                         {% set attendance = info['attendance'] %}
                                         {{ attendance|length + session.anonStudents }}
                                         {% if total_attendance.append(total_attendance.pop() + (attendance|length) + session.anonStudents) %}{% endif %}
                                     </td>
-                                    <td>
+                                    <td data-th="Session Tutors">
                                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                                         <div class="tutor-td text-left margin-top-10">
                                             {% for tutor in info['tutors'] %}
@@ -87,7 +93,7 @@
                                             {% endfor %}
                                         </div>
                                     </td>
-                                    <td>
+                                    <td data-th="Show Session Report">
                                         <a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a>
                                     </td>
                                 </tr>
@@ -96,12 +102,12 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="no-border-top" colspan="4" >
-                                    Total
-                                </th>
-                                <th class="no-border-top">
-                                    {{ total_attendance[0] }}
-                                </th>
+                                <td class="no-border-top hide-mobile" colspan="4" >
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="no-border-top" data-th="Total Attendance">
+                                    <strong>{{ total_attendance[0] }}</strong>
+                                </td>
                             </tr>
                         </tfoot>
                     </table>

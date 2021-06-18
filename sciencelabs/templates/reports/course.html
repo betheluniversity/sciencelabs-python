@@ -20,9 +20,9 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
-                            <div class="card-body btn-group">
+                            <div class="card-body btn-group separate-btn">
                                 <p class="no-margin-padding">Active Courses for {{ semester.term }} {{ semester.year }}</p>
-                                <a href="{{ url_for('ReportView:export_course_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+                                <a href="{{ url_for('ReportView:export_course_csv') }}" class=" btn btn-primary">CSV Export</a>
                             </div>
                         </div>
                     </div>
@@ -58,20 +58,21 @@
                             {% set total_unique_attendance = [0] %}
                             {% for course, info in courses_and_attendance.items() %}
                                 <tr>
-                                    <td>
+                                    <td data-th="Course Code">
                                         {{ course.dept + course.course_num }}
                                     </td>
-                                    <td>
+                                    <td data-th="Course Name">
                                         {{ course.title }}
                                     </td>
-                                    <td>
+                                    <td data-th="Course Section">
                                         {{ course.section }}
                                     </td>
-                                    <td>
+                                    <td data-th="Course Professor">
                                         {{ info['user'].firstName }}
                                         {{ info['user'].lastName }}
+
                                     </td>
-                                    <td>
+                                    <td data-th="Total Student Attendance">
                                         {% set attendance = info['attendance'] %}
                                         {% set total_attendees = [0] %}
                                         {% for attendees, attend in attendance %}
@@ -79,25 +80,25 @@
                                         {% endfor %}
                                         {{ total_attendees[0] }}
                                     </td>
-                                    <td>
+                                    <td data-th="Unique Student Attendance">
                                         {{ attendance|length }}
                                         {% if total_unique_attendance.append(total_unique_attendance.pop() + (attendance|length)) %}{% endif %}
                                     </td>
-                                    <td>
+                                    <td data-th="Number of Students Enrolled in Course">
                                         {% if course.num_attendees %}
                                             {{ course.num_attendees }}
                                         {% else %}
                                             N/A
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td data-th="Percent of Enrolled Students of Specific Class That Have Attended {{ lab_title }}">
                                         {% if course.num_attendees %}
                                             {{ (((attendance|length)/course.num_attendees)*100)|round(2) }}%
                                         {% else %}
                                             N/A
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td data-th="View Course Report">
                                         <a href='{{ url_for('ReportView:view_course', course_id=course.id) }}' id="darkblue" class="btn btn-primary">View</a>
                                     </td>
                                 </tr>
@@ -106,21 +107,20 @@
                         <tfoot>
                             {% if other_info %}
                                 <tr>
-                                    <th class="no-border-top" colspan="4">Other</th>
-                                    <th class="no-border-top">{{ other_info|length }}</th>
+                                    <td class="no-border-top hide-mobile" colspan="4"><strong>Other</strong></td>
+                                    <td class="no-border-top" data-th="Other"><strong>{{ other_info|length }}</strong></td>
                                 </tr>
                             {% endif %}
                             <tr>
-                                <th class="no-border-top" colspan="4">Total</th>
-                                <th class="no-border-top">{{ total_attendance[0] + other_info|length }}</th>
-                                <th class="no-border-top">{{ total_unique_attendance[0] }}</th>
+                                <td class="no-border-top hide-mobile" colspan="4"><strong>Total</strong></td>
+                                <td class="no-border-top" data-th="Total Attendance"><strong>{{ total_attendance[0] + other_info|length }}</strong></td>
+                                <td class="no-border-top" data-th="Total Unique Attendance"><strong>{{ total_unique_attendance[0] }}</strong></td>
                             </tr>
                         </tfoot>
                     </table>
                 {% else %}
                     <p>No {{ lab_title }} courses for {{ semester.term }} {{ semester.year }}</p>
                 {% endif %}
-
             </form>
         </div>
         <div class="col-md-4">

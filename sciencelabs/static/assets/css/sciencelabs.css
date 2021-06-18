@@ -63,10 +63,6 @@ div.available-sessions{
     margin-bottom:15px;
 }
 
-div.session_info_left {
-    padding-left: 5.2%;
-}
-
 div.centered {
     text-align:center;
 }
@@ -168,6 +164,11 @@ nav.navbar{
     padding: 0 10px;
 }
 
+.overflow-table {
+    display: inherit;
+    overflow:auto;
+}
+
 p {
     margin-bottom: 1.25rem;
     line-height: 1.6;
@@ -209,10 +210,6 @@ table.dataTable thead th, table.dataTable thead td, .table-bordered td, .table-b
 
 table {
     border: 1px solid #ddd !important;
-}
-
-td.no-space{
-    white-space: nowrap;
 }
 
 thead {
@@ -348,6 +345,15 @@ ul.no-margin {
 
 .col-md-4 {
     margin-right: none;
+}
+
+.col-sm-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+    .col-sm-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
 }
 
 .csv-button.btn.btn-primary {
@@ -608,7 +614,7 @@ select:invalid {
     cursor: pointer;
 }
 
-.session-selector {
+.separate-btn {
     align-items: center;
     display: flex;
     justify-content: space-between;
@@ -634,4 +640,45 @@ select:invalid {
 #yellow {
     color: black;
     background-color: #FFC600;
+}
+
+@media screen and (max-width: 1155px) {
+  table thead, .hide-mobile {
+      display: none;
+  }
+
+  .side-borders, .right-side-borders, .left-side-borders {
+      border-right: none !important;
+      border-left: none !important;
+  }
+
+  table td, th {
+      background: #e9e9e9;
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+  }
+
+  #table, .table {
+      width: 100% !important;
+  }
+
+  td:nth-child(even) {
+      background-color: white;
+  }
+
+  td[data-th]:before  {
+      content: attr(data-th);
+      font-weight: bold;
+  }
+
+  td[data-th]:first-child {
+      color: white;
+      background-color: #0F2C52;
+      font-size: larger;
+  }
+
+  td:last-child {
+      padding-bottom: 2em !important;
+  }
 }

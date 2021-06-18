@@ -149,11 +149,11 @@
                                     <tbody>
                                         {% for student, student_session in student_session_list %}
                                             <tr>
-                                                <td>
+                                                <td data-th="Student Name">
                                                     <a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a>
                                                 </td>
                                                 {% set courses = get_courses(student_session.id) %}
-                                                <td>
+                                                <td data-th="Courses Attended For">
                                                     <ul>
                                                         {% for course in courses %}
                                                             <li><a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.dept }}{{ course.course_num }}</a></li>
@@ -163,20 +163,20 @@
                                                         {% endif %}
                                                     </ul>
                                                 </td>
-                                                <td>
+                                                <td data-th="Time Signed Into Session">
                                                     {{ student_session.timeIn|datetimeformat }}
                                                 </td>
-                                                <td>
+                                                <td data-th="Time Signed Out of Session">
                                                     {{ student_session.timeOut|datetimeformat}}
                                                 </td>
-                                                <td>
+                                                <td data-th="Attended Session Virtually">
                                                     {% if student_session.online %}
                                                         Yes
                                                     {% else %}
                                                         No
                                                     {% endif %}
                                                 </td>
-                                                <td>
+                                                <td data-th="Seat Number Assigned">
                                                     {% if student_session.online %}
                                                         N/A
                                                     {% else %}
@@ -188,11 +188,11 @@
                                                     {% endif %}
                                                 </td>
                                                 {% if student_session.timeOut and student_session.timeIn %}
-                                                    <td>
+                                                    <td data-th="Total Time in Session">
                                                         {{ ((student_session.timeOut - student_session.timeIn).total_seconds()/60)|round|int }} min
                                                     </td>
                                                 {% else %}
-                                                    <td>
+                                                    <td data-th="Total Time in Session">
                                                         0 min
                                                     </td>
                                                 {% endif %}
@@ -201,10 +201,10 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <th class="no-border-top">Anonymous Students</th>
+                                        <td class="no-border-top hide-mobile"><strong>Anonymous Students</strong></td>
                                     </tr>
                                     <tr>
-                                        <th class="no-border-top">{{ session_info.anonStudents }}</th>
+                                        <td class="no-border-top" data-th="Anonymous Students"><strong>{{ session_info.anonStudents }}</strong></td>
                                     </tr>
                                     </tfoot>
                                 </table>
@@ -225,15 +225,15 @@
                                                     {% set course_ids = get_course_ids(student_session.id) %}
                                                     {% if course.id in course_ids %}
                                                         <tr>
-                                                            <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
-                                                            <td>
+                                                            <td data-th="Student Name"><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }} {{ student.lastName }}</a></td>
+                                                            <td data-th="Time Signed Into Session">
                                                                 {{ student_session.timeIn|datetimeformat }}
                                                             </td>
-                                                            <td>
+                                                            <td data-th="Time Signed Out of Session">
                                                                 {{ student_session.timeOut|datetimeformat }}
                                                             </td>
-                                                            {% if student_session.timeOut and student.timeIn %}<td>{{ ((student_session.timeOut - student_session.timeIn).total_seconds()/60)|round|int }} min</td>
-                                                            {% else %}<td>0 min</td>
+                                                            {% if student_session.timeOut and student.timeIn %}<td data-th="Total Time in Session">{{ ((student_session.timeOut - student_session.timeIn).total_seconds()/60)|round|int }} min</td>
+                                                            {% else %}<td data-th="Total Time in Session">0 min</td>
                                                             {% endif %}
                                                         </tr>
                                                     {% endif %}

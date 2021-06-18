@@ -32,19 +32,19 @@
                                 <td>
                                     {{ schedule.dayofWeek }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Name">
                                     {{ schedule.name }}
                                 </td>
-                                <td>
+                                <td data-th="Day of Week">
                                     {{ macros.day_abbr(schedule.dayofWeek) }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Time">
                                     {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Room">
                                     {{ schedule.room }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Courses">
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
                                     <div class="course-td text-left margin-top-10">
                                         <ul>
@@ -56,7 +56,7 @@
                                         </ul>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-th="Schedule Tutors">
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
                                     <div class="tutor-td text-left margin-top-10">
                                         {% for tutor in tutors_and_courses['tutors'] %}
@@ -68,7 +68,7 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center" data-th="Room Group">
                                     <input type="checkbox" name="{{ schedule.id }}" {% if room_group_check[schedule.id] %}checked{% endif %}>
                                 </td>
                             </tr>

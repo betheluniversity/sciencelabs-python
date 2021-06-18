@@ -32,19 +32,19 @@
                                 <td>
                                     {{ schedule.dayofWeek }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Name">
                                     {{ schedule.name }}
                                 </td>
-                                <td>
+                                <td data-th="Day of Week">
                                     {{ macros.day_abbr(schedule.dayofWeek) }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Time">
                                     {{ schedule.startTime|datetimeformat + ' - ' + schedule.endTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Room">
                                     {{ schedule.room }}
                                 </td>
-                                <td>
+                                <td data-th="Schedule Courses">
                                     <button id="show-courses" type="button" class="show-courses blue btn btn-primary">Show</button>
                                     <div class="course-td text-left margin-top-10">
                                         <ul>
@@ -56,7 +56,7 @@
                                         </ul>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-th="Schedule Tutors">
                                     <button id="show-tutors" type="button" class="show-tutors blue btn btn-primary">Show</button>
                                     <div class="tutor-td text-left margin-top-10">
                                         {% for tutor in tutors_and_courses['tutors'] %}
@@ -68,13 +68,15 @@
                                             {% endfor %}
                                     </div>
                                 </td>
-                                <td class="text-center btn-group">
-                                    {% set session_info = get_zoom(schedule.id) %}
-                                    <input type="url" class="form-control chosen-container chosen-format"
-                                           value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}"
-                                           name="{{ schedule.id }}" {% if ('Lead Tutor' in session['USER-ROLES']
-                                           or 'Tutor' in session['USER-ROLES']
-                                           or 'Professor' in session['USER-ROLES']) and 'Administrator' not in session['USER-ROLES'] %}readonly{% endif %}>
+                                <td class="text-center" data-th="Zoom Url">
+                                    <div>
+                                        {% set session_info = get_zoom(schedule.id) %}
+                                        <input type="url" class="form-control chosen-container chosen-format"
+                                               value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}"
+                                               name="{{ schedule.id }}" {% if ('Lead Tutor' in session['USER-ROLES']
+                                               or 'Tutor' in session['USER-ROLES']
+                                               or 'Professor' in session['USER-ROLES']) and 'Administrator' not in session['USER-ROLES'] %}readonly{% endif %}>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}

@@ -3,6 +3,7 @@
 {% block semester_switch %}{% endblock %}
 
 {% block header %}
+
     <div class="header card">
         <div class="card-body btn-group">
             {% set month = (((course.end_date).strftime('%m'))|int) %}
@@ -52,16 +53,16 @@
                             {% if total_attendees.append(total_attendees.pop() + 1) %}{% endif %}
                             {% if total_time.append(total_time.pop() + student.total_time|round|int) %}{% endif %}
                             <tr>
-                                <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
-                                <td><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
-                                <td>{{ student.total_time|round|int }} mins</td>
+                                <td data-th="Student Last Name"><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.lastName }}</a></td>
+                                <td data-th="Student First Name"><a class="no-decoration" href='{{ url_for('ReportView:view_student', student_id=student.id) }}'>{{ student.firstName }}</a></td>
+                                <td data-th="Time Signed In">{{ student.total_time|round|int }} mins</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="no-border-top" colspan="2" class="text-right">Total</th>
-                            <th class="no-border-top"> {{ total_attendees[0] }}</th>
+                            <td class="no-border-top hide-mobile" colspan="2" class="text-right">Total</td>
+                            <td class="no-border-top" data-th="Total Attendance"> {{ total_attendees[0] }}</td>
                         </tr>
                     </tfoot>
                 </table>

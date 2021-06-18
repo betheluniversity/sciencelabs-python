@@ -2,19 +2,27 @@
 
 {% block header %}
     <div class="header card">
-        <div class="card-body session-selector">
+        <div class="card-body separate-btn">
             Deleted Sessions for {{ semester.term }} {{ semester.year }}
             {% if include_all_sessions == False %}
-                <a href='{{ url_for('SessionView:deleted_all') }}' id="blue" class="session-selector btn btn-primary border-white">Show All Sessions</a>
+                <a href="{{ url_for('SessionView:deleted_all') }}" id="blue" class="btn btn-primary border-white">Show All Sessions</a>
             {% else %}
-                <a href='{{ url_for('SessionView:deleted') }}' id="blue" class="session-selector btn btn-primary border-white">Show Only Closed Sessions</a>
+                <a href="{{ url_for('SessionView:deleted') }}" id="blue" class="btn btn-primary border-white">Show Only Closed Sessions</a>
             {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block semester_switch %}
-    {% include "macros/semester_selector.html" %}
+    <div class="form-row">
+    <div class="form-group col-md-12 text-right">
+        <div class="semester-selector">
+            <div class="btn-group">
+                {% include "macros/semester_selector.html" %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block body_content %}
@@ -34,16 +42,16 @@
             <tbody>
             {% for session, tutors in sessions_and_tutors.items() %}
                 <tr>
-                    <td>{{ session.name }}</td>
-                    <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                    <td>{{ session.deletedAt.strftime('%m/%d/%Y') }}</td>
-                    <td>{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
+                    <td data-th="Session Name">{{ session.name }}</td>
+                    <td data-th="Session Date">{{ session.date.strftime('%m/%d/%Y') }}</td>
+                    <td data-th="Date That the Session Was Deleted">{{ session.deletedAt.strftime('%m/%d/%Y') }}</td>
+                    <td data-th="Session Time">{{ session.startTime|datetimeformat }} - {{ session.endTime|datetimeformat }}</td>
                     {% if session.room %}
-                        <td>{{ session.room }}</td>
+                        <td data-th="Session Room">{{ session.room }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}
-                    <td>
+                    <td data-th="Session Tutors">
                         <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                         <div class="tutor-td text-left margin-top-10">
                             {% for tutor in tutors %}
@@ -55,7 +63,7 @@
                             {% endfor %}
                         </div>
                     </td>
-                    <td>
+                    <td data-th="Control Session">
                         <div class="btn-group">
                             <a href='{{ url_for('SessionView:edit_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">View/Edit Session</a>
                             <a href='{{ url_for('SessionView:restore_deleted_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary border-white">Restore</a>

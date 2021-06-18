@@ -33,19 +33,19 @@
                     <tbody>
                         {% for user, roles in users_info.items() %}
                             <tr>
-                                <td class="no-space">
+                                <td data-th="User Last Name">
                                     {{ user.lastName }}
                                 </td>
-                                <td class="no-space">
+                                <td data-th="User First Name">
                                     {{ user.firstName }}
                                 </td>
-                                <td class="no-space">
+                                <td data-th="User Email">
                                     {{ user.email }}
                                 </td>
-                                <td>
+                                <td data-th="User Role">
                                     {{ roles }}
                                 </td>
-                                <td>
+                                <td data-th="Change User">
                                     {% if user.username == session['USERNAME'] %}
                                         Current User
                                     {% elif session['ADMIN-VIEWER'] or user.username == session['USERNAME'] %}
@@ -54,10 +54,10 @@
                                         <a id="darkblue" href='{{ url_for('UsersView:act_as_user', user_id=user.id) }}' class="btn btn-primary">Act As User</a>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-th="Edit User">
                                     <a id="darkblue" href='{{ url_for('UsersView:edit_user', user_id=user.id) }}' class="btn btn-primary">Edit</a>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center hide-mobile">
                                     <input type="checkbox" value="{{ user.id }}" class="deactivate-checkbox">
                                 </td>
                             </tr>

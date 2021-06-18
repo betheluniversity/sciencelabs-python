@@ -14,28 +14,30 @@
                         <div class="col-md-4 text-left">
                             <h3>{{ session_info.name }} ({{ session_info.date.strftime('%m/%d/%Y') }})</h3>
                         </div>
-                        <div class="col-md-8 text-right session_info_left">
-                            <div class="row">
-                                <div class="btn-group">
-                                    <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
-                                       id="gray" class="btn btn-primary hover-bright">View Session</a>
-                                    <a href='{% if not session_info.room_group_id %}
-                                       {{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}
-                                       {% else %}{{ url_for('SessionView:view_room_group_reservations', room_group_id=session_info.room_group_id) }}{% endif %}'
-                                       class="btn btn-primary">Session Control</a>
-                                    {% if 'Administrator' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] %}
-                                        <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
-                                           id="edit" class="btn btn-primary hover-bright">Edit Session</a>
-                                        <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                           id="delete" class="btn btn-primary hover-bright">Close Session</a>
-                                        {% if not session_info.room_group_id %}
-                                            <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
-                                               class="btn btn-primary sign-in">Enter Session</a>
-                                        {% else %}
-                                                <a href="{{ url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=session_info.room_group_id) }}"
-                                               class="btn btn-primary sign-in">Enter Room Group</a>
+                        <div class="overflow-table">
+                            <div class="col-md-8 text-righT">
+                                <div class="row">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
+                                           id="gray" class="btn btn-primary hover-bright">View Session</a>
+                                        <a href='{% if not session_info.room_group_id %}
+                                           {{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}
+                                           {% else %}{{ url_for('SessionView:view_room_group_reservations', room_group_id=session_info.room_group_id) }}{% endif %}'
+                                           class="btn btn-primary">Session Control</a>
+                                        {% if 'Administrator' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] %}
+                                            <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
+                                               id="edit" class="btn btn-primary hover-bright">Edit Session</a>
+                                            <a href="{{ url_for('SessionView:close_open_session', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                               id="delete" class="btn btn-primary hover-bright">Close Session</a>
+                                            {% if not session_info.room_group_id %}
+                                                <a href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}"
+                                                   class="btn btn-primary sign-in">Enter Session</a>
+                                            {% else %}
+                                                    <a href="{{ url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=session_info.room_group_id) }}"
+                                                   class="btn btn-primary sign-in">Enter Room Group</a>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -81,19 +83,19 @@
                     <tbody>
                         {% for session_info, tutors in sessions_and_tutors.items() %}
                             <tr>
-                                <td>
+                                <td data-th="Session Name">
                                     {{ session_info.name }}
                                 </td>
-                                <td>
+                                <td data-th="Session Date">
                                     {{ session_info.date.strftime('%m/%d/%Y') }}
                                 </td>
-                                <td>
+                                <td data-th="Session Time">
                                     {{ session_info.schedStartTime|datetimeformat + ' - ' + session_info.schedEndTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Session Room">
                                     {{ session_info.room }}
                                 </td>
-                                <td>
+                                <td data-th="Session Tutors">
                                     <button type="button" class="show-tutors blue btn btn-primary">Show</button>
                                     <div class="tutor-td text-left margin-top-10">
                                     {% for tutor in tutors %}
@@ -105,7 +107,7 @@
                                     {% endfor %}
                                     </div>
                                 </td>
-                                <td>
+                                <td data-th="View Session Reservations">
                                     {% if are_reservations(session_info.id) %}
                                         <a href='{{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}'
                                            class="btn btn-primary">View Reservations</a>
@@ -117,7 +119,7 @@
                                         There are no reservations for this session at this time.
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-th="Control Session">
                                     <div class="btn-group">
                                         {% if 'Administrator' in session['USER-ROLES'] %}
                                             <a href='{{ url_for('SessionView:edit_session', session_id=session_info.id) }}'
@@ -134,7 +136,7 @@
                                         {% endif %}
                                     </div>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center hide-mobile">
                                     {% if 'Administrator' in session['USER-ROLES'] %}
                                         <input type="checkbox" value="{{ session_info.id }}" class="delete-checkbox">
                                     {% endif %}

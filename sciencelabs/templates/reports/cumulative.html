@@ -64,8 +64,8 @@
         {% for row in cumulative_list[1:(cumulative_list|length - 1)] %}
             <tr>
                 {% set year = row[0][:4] %}
-                <td class="no-space">{{ row[0] }}</td>
-                <td>
+                <td data-th="Academic Year">{{ row[0] }}</td>
+                <td data-th="August">
                     {% if row[1] <= 0 %}
                         {{ row[1] }}
                     {% else %}
@@ -77,7 +77,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="September">
                     {% if row[2] <= 0 %}
                         {{ row[2] }}
                     {% else %}
@@ -89,7 +89,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="October">
                     {% if row[3] <= 0 %}
                         {{ row[3] }}
                     {% else %}
@@ -101,7 +101,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="November">
                     {% if row[4] <= 0 %}
                         {{ row[4] }}
                     {% else %}
@@ -113,7 +113,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="December">
                     {% if row[5] <= 0 %}
                         {{ row[5] }}
                     {% else %}
@@ -125,8 +125,8 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td class="side-borders"><b>{{ row[6] }}</b></td>
-                <td class="right-side-borders">
+                <td class="side-borders" data-th="Fall Semester Totals"><b>{{ row[6] }}</b></td>
+                <td class="right-side-borders" data-th="January (Interim Totals)">
                     {% if row[7] <= 0 %}
                         {{ row[7] }}
                     {% else %}
@@ -139,7 +139,7 @@
                     {% endif %}
                 </td>
                 {% set year = row[0][5:] %}
-                <td>
+                <td data-th="February">
                     {% if row[8] <= 0 %}
                         {{ row[8] }}
                     {% else %}
@@ -151,7 +151,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="March">
                     {% if row[9] <= 0 %}
                         {{ row[9] }}
                     {% else %}
@@ -163,7 +163,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="April">
                     {% if row[10] <= 0 %}
                         {{ row[10] }}
                     {% else %}
@@ -175,7 +175,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="May">
                     {% if row[11] <= 0 %}
                         {{ row[11] }}
                     {% else %}
@@ -187,8 +187,8 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td class="side-borders"><b>{{ row[12] }}</b></td>
-                <td>
+                <td class="side-borders" data-th="Spring Semester Totals"><b>{{ row[12] }}</b></td>
+                <td data-th="June">
                     {% if row[13] <= 0 %}
                         {{ row[13] }}
                     {% else %}
@@ -200,7 +200,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="July">
                     {% if row[14] <= 0 %}
                         {{ row[14] }}
                     {% else %}
@@ -212,8 +212,8 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td class="side-borders"><b>{{ row[15] }}</b></td>
-                <td class="right-side-borders"><b>{{ row[16] }}</b></td>
+                <td class="side-borders" data-th="Summer Totals"><b>{{ row[15] }}</b></td>
+                <td class="right-side-borders" data-th="Academic Year Totals"><b>{{ row[16] }}</b></td>
             </tr>
         {% endfor %}
         </tbody>

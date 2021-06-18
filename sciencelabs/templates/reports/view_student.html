@@ -45,13 +45,11 @@
                         </li>
                     </ul>
                     <table class="table table-striped table-bordered">
-                        <thead>
+                        <tbody>
                         <tr>
                             <td><b>Sessions Attended</b></td>
                             <td>{{ sessions_attended }}</td>
                         </tr>
-                        </thead>
-                        <tbody>
                         <tr>
                             <td><b>Sessions Held for courses user was enrolled in</b></td>
                             <td>
@@ -172,30 +170,32 @@
                         <tbody>
                         {% for studentsession, info in sessions_and_courses.items() %}
                             <tr>
-                                <td>{{ info['session'].date.strftime('%m/%d/%Y') }}</td>
-                                <td>
+                                <td data-th="Session Date">{{ info['session'].date.strftime('%m/%d/%Y') }}</td>
+                                <td data-th="Session Name">
                                     {% if 'Administrator' in session['USER-ROLES'] %}
                                         <a class="no-decoration" href="{{ url_for('ReportView:view_session', session_id=info['session'].id) }}">{{ info['session'].name }}</a>
                                     {% else %}
                                         {{ info['session'].name }}
                                     {% endif %}
                                 </td>
-                                <td>
-                                    {% for course in info['courses'] %}
-                                        <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
-                                    {% endfor %}
+                                <td data-th="Courses Student Attended Session for">
+                                    <div>
+                                        {% for course in info['courses'] %}
+                                            <a href="{{ url_for('ReportView:view_course', course_id=course.id) }}"><span class="button-labels">{{ course.title }} (Section {{ course.section }})</span></a>
+                                        {% endfor %}
+                                    </div>
                                 </td>
-                                <td>{{ studentsession.timeIn|datetimeformat }}</td>
-                                <td>{{ studentsession.timeOut|datetimeformat }}</td>
-                                <td>
+                                <td data-th="Time Signed Into Session">{{ studentsession.timeIn|datetimeformat }}</td>
+                                <td data-th="Time Signed Out of Session">{{ studentsession.timeOut|datetimeformat }}</td>
+                                <td data-th="Attended Session Virtually">
                                     {% if studentsession.online %}
                                         Yes
                                     {% else %}
                                         No
                                     {% endif %}
                                 </td>
-                                {% if studentsession.timeOut and studentsession.timeIn %}<td>{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
-                                {% else %} <td>???</td>
+                                {% if studentsession.timeOut and studentsession.timeIn %}<td data-th="Total Time in Session">{{ ((studentsession.timeOut - studentsession.timeIn).total_seconds()/60)|round|int }} min</td>
+                                {% else %} <td data-th="Total Time in Session">???</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}

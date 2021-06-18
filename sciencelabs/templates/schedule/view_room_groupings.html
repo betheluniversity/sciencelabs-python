@@ -21,16 +21,16 @@
                         {% for room_group in room_groupings %}
                             {% set session = get_session(room_group.id) %}
                             <tr>
-                                <td>
+                                <td data-th="Room Group Date">
                                     {{ session.date.strftime('%m/%d/%Y') }}
                                 </td>
-                                <td>
+                                <td data-th="Room Group Time">
                                     {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Room Group Room">
                                     {{ session.room }}
                                 </td>
-                                <td>
+                                <td data-th="Room Group Sessions">
                                     <button type="button" class="show-sessions blue btn btn-primary">Show</button>
                                     <div class="session-td text-left margin-top-10">
                                         {% for session in sessions[room_group.id] %}
@@ -39,8 +39,10 @@
                                         {% endfor %}
                                     </div>
                                 </td>
-                                <td>
-                                    <input type="number" min="0" class="form-control chosen-container chosen-format capacity" id="{{ room_group.id }}" name="capacity" value="{% if room_group.capacity %}{{ room_group.capacity }}{% else %}0{% endif %}" required>
+                                <td data-th="Room Group Capacity">
+                                    <div>
+                                        <input type="number" min="0" class="form-control chosen-container chosen-format capacity" id="{{ room_group.id }}" name="capacity" value="{% if room_group.capacity %}{{ room_group.capacity }}{% else %}0{% endif %}" required>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}

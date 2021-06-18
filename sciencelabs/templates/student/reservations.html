@@ -31,19 +31,19 @@
                     <tbody>
                         {% for session in signed_in_sessions %}
                             <tr>
-                                <td>
+                                <td data-th="Session Name">
                                     {{ session.name }}
                                 </td>
-                                <td>
+                                <td data-th="Session Date">
                                     {{ session.date.strftime('%m/%d/%Y') }}
                                 </td>
-                                <td>
+                                <td data-th="Session Time">
                                     {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Session Room">
                                     {{ session.room }}
                                 </td>
-                                <td>
+                                <td data-th="Courses Signed Up For">
                                     <div class="text-left margin-top-10">
                                         {% for course in signed_in_courses[session.id] %}
                                                 {{ course.title }} ({{ course.dept }}{{ course.course_num }})
@@ -51,7 +51,7 @@
                                         {% endfor %}
                                     </div>
                                 </td>
-                                <td>
+                                <td data-th="Zoom Url">
                                     {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
                                 </td>
                             </tr>
@@ -97,19 +97,19 @@
                 <tbody>
                     {% for session in sessions %}
                         <tr>
-                            <td>
+                            <td data-th="Session Name">
                                 {{ session.name }}
                             </td>
-                            <td>
+                            <td data-th="Session Date">
                                 {{ session.date.strftime('%m/%d/%Y') }}
                             </td>
-                            <td>
+                            <td data-th="Session Time">
                                 {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                             </td>
-                            <td>
+                            <td data-th="Session Room">
                                 {{ session.room }}
                             </td>
-                            <td>
+                            <td data-th="Courses Available">
                                 <div class="text-left margin-top-10">
                                     {% for course in student_session_courses[session.id] %}
                                             {{ course.title }} ({{ course.dept }}{{ course.course_num }})
@@ -117,7 +117,7 @@
                                     {% endfor %}
                                 </div>
                             </td>
-                            <td>
+                            <td data-th="Seats Remaining">
                             {% set seats_avail = get_seats_available(session.id) %}
                                 {% if session.room_group_id and seats_avail == 0 %}
                                     {{ get_room_group_seats_available(session.room_group_id) }}
@@ -125,7 +125,7 @@
                                     {{ seats_avail }}
                                 {% endif %}
                             </td>
-                            <td>
+                            <td data-th="Reserve or Cancel">
                                 {% if seats_avail != 0 %}
                                     <div id="reserve-cancel">
                                         {% if is_reserved(session.id, student.id) %}

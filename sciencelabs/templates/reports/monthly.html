@@ -20,10 +20,12 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
-                            <div class="card-body btn-group">
+                            <div class="card-body btn-group separate-btn">
                                     <p class="no-margin-padding">Attendance for {{ months[selected_month|int - 1] }} {{ selected_year }}</p>
-                                <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" class="csv-button csv-right-1 btn btn-primary">CSV Summary Export</a>
-                                <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="csv-button btn btn-primary">CSV Detail Export</a>
+                                <div>
+                                <a href="{{ url_for('ReportView:export_monthly_summary_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Summary Export</a>
+                                <a href="{{ url_for('ReportView:export_monthly_detail_csv', year=selected_year, month=selected_month) }}" class="btn btn-primary">CSV Detail Export</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -104,14 +106,14 @@
                             {% endif %}
                         {% endfor %}
                         <tr>
-                            <td>{{ schedule.name }}</td>
-                            <td>{{ macros.day_abbr(schedule.dayofWeek) }}</td>
-                            <td>{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
-                            <td>{{ total_attendance_per_schedule[0] }}</td>
+                            <td data-th="Schedule Name">{{ schedule.name }}</td>
+                            <td data-th="Day of Week">{{ macros.day_abbr(schedule.dayofWeek) }}</td>
+                            <td data-th="Schedule Time">{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
+                            <td data-th="Total Attendance">{{ total_attendance_per_schedule[0] }}</td>
                             {% if total_attendance[0] %}
-                                <td>{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
+                            <td data-th="Percent of Total Attendance">{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
                             {% else %}
-                                <td>???</td>
+                            <td data-th="Percent of Total Attendance">???</td>
                             {% endif %}
 
                         </tr>
@@ -125,21 +127,21 @@
                             {% endfor %}
                             {% if total_attendance.append(total_attendance.pop() + total_unscheduled[0]) %}{% endif %}
                             <tr>
-                                <th class="no-border-top" colspan="3">Unscheduled Sessions</th>
-                                <th class="no-border-top">{{ total_unscheduled[0] }}</th>
-                                <th class="no-border-top">{{ ((total_unscheduled[0] / total_attendance[0])*100)|round(2) if total_attendance[0] > 0 else '0.0' }}%</th>
+                                <td class="no-border-top hide-mobile" colspan="3"><strong>Unscheduled Sessions</strong></td>
+                                <td class="no-border-top" data-th="Unscheduled Sessions Attendance"><strong>{{ total_unscheduled[0] }}</strong></td>
+                                <td class="no-border-top" data-th="Percent Unscheduled to Scheduled Attendance"><strong>{{ ((total_unscheduled[0] / total_attendance[0])*100)|round(2) if total_attendance[0] > 0 else '0.0' }}%</strong></td>
                             </tr>
                         {% else %}
                             <tr>
-                                <th class="no-border-top" colspan="3">Unscheduled Sessions</th>
-                                <th class="no-border-top">0</th>
-                                <th class="no-border-top">0.0%</th>
+                                <td class="no-border-top" colspan="3"><strong>Unscheduled Sessions</strong></td>
+                                <td class="no-border-top"><strong>0</strong></td>
+                                <td class="no-border-top"><strong>0.0%</strong></td>
                             </tr>
                         {% endif %}
 
                         <tr>
-                            <th class="no-border-top" colspan="3">Total</th>
-                            <th class="no-border-top">{{ total_attendance[0] }}</th>
+                            <td class="no-border-top hide-mobile" colspan="3"><strong>Total</strong></td>
+                            <td class="no-border-top" data-th="Total Attendance"><strong>{{ total_attendance[0] }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -164,22 +166,30 @@
                     {% set total_attendance = [0] %}
                     {% for session, info in monthly_sessions_schedule_and_attendance.items() %}
                         <tr>
-                            <td>{{ session.name }}</td>
-                            <td>{{ session.date.strftime('%m/%d/%Y') }}</td>
-                            <td>{{ macros.day_abbr((cal.weekday((session.date.strftime('%Y'))|int, (session.date.strftime('%m'))|int, (session.date.strftime('%d'))|int) + 1) % 7) }}</td>
-                            <td>{{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}</td>
-                            <td>
+                            <td data-th="Session Name">
+                                {{ session.name }}
+                            </td>
+                            <td data-th="Session Date">
+                                {{ session.date.strftime('%m/%d/%Y') }}
+                            </td>
+                            <td data-th="Day of Week">
+                                {{ macros.day_abbr((cal.weekday((session.date.strftime('%Y'))|int, (session.date.strftime('%m'))|int, (session.date.strftime('%d'))|int) + 1) % 7) }}
+                            </td>
+                            <td data-th="Session Scheduled Time">
+                                {{ session.schedStartTime|datetimeformat }} - {{ session.schedEndTime|datetimeformat }}
+                            </td>
+                            <td data-th="Session Student Attendance">
                                 {% set attendance = info['attendance'] %}
                                 {% if total_attendance.append(total_attendance.pop() + (attendance.count() + session.anonStudents)) %}{% endif %}
                                 {{ attendance.count() + session.anonStudents }}
                             </td>
-                            <td><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
+                            <td data-th="View Session Report"><a href='{{ url_for('ReportView:view_session', session_id=session.id) }}' id="darkblue" class="btn btn-primary">View</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <th class="no-border-top" colspan="4">Total</th>
-                        <th class="no-border-top">{{ total_attendance[0] }}</th>
+                        <td class="no-border-top hide-mobile" colspan="4"><strong>Total</strong></td>
+                        <td class="no-border-top" data-th="Total Attendance"><strong>{{ total_attendance[0] }}</strong></td>
                     </tfoot>
                 </table>
 
