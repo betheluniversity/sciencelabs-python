@@ -19,22 +19,22 @@
         <tbody>
             {% for student, courses in students_and_courses.items() %}
                 <tr>
-                    <td>{{ student.firstName }} {{ student.lastName }}</td>
-                    <td>
+                    <td data-th="Student Name">{{ student.firstName }} {{ student.lastName }}</td>
+                    <td data-th="Time Signed Into Session">
                         {% if student.timeIn %}
                             {{ student.timeIn|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Time Signed Out of Session">
                         {% if student.timeOut %}
                             {{ student.timeOut|datetimeformat}}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Courses Attended For">
                         <ul>
                             {% for course in courses %}
                                 <li>{{ course.dept }}{{ course.course_num }}</li>
@@ -44,7 +44,7 @@
                             {% endif %}
                         </ul>
                     </td>
-                    <td>
+                    <td data-th="Attended Session Virtually">
                         {% if student.online %}
                             Yes
                         {% else %}
@@ -72,22 +72,22 @@
         <tbody>
             {% for tutor in session_tutors %}
                 <tr>
-                    <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                    <td>
+                    <td data-th="Tutor Name">{{ tutor.firstName }} {{ tutor.lastName }}</td>
+                    <td data-th="Time Signed Into Session">
                         {% if tutor.timeIn %}
                             {{ tutor.timeIn|datetimeformat }}
                         {% else %}
                              ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Time Signed Out of Session">
                         {% if tutor.timeOut %}
                             {{ tutor.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Did Tutor Serve as Lead for Session?">
                         {% if tutor.isLead %}
                             Yes
                         {% else %}

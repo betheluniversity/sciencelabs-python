@@ -41,19 +41,19 @@
                     <th colspan="3" class="text-center">Tutors</th>
                 </tr>
                 <tr>
-                    <th data-toggle="tooltip" data-placement="top" title="Tutor Name">Name</th>
-                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
-                    <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
+                    <td data-toggle="tooltip" data-placement="top" title="Tutor Name" class="hide-mobile"><strong>Name</strong></td>
+                    <td data-toggle="tooltip" data-placement="top" title="Time Signed Into Session" class="hide-mobile"><strong>Time In</strong></td>
+                    <td data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session" class="hide-mobile"><strong>Time Out</strong></td>
                 </tr>
                 {% for tutor in tutors %}
                     {% if tutor.timeIn != None %}
                         <tr>
-                            <td>{{ tutor.firstName }} {{ tutor.lastName }}</td>
-                            <td>{{ tutor.timeIn|datetimeformat }}</td>
+                            <td data-th="Tutor Name">{{ tutor.firstName }} {{ tutor.lastName }}</td>
+                            <td data-th="Time Signed Into Session">{{ tutor.timeIn|datetimeformat }}</td>
                             {% if tutor.timeOut %}
-                                <td>{{ tutor.timeOut|datetimeformat }}</td>
+                                <td data-th="Time Signed Out of Session">{{ tutor.timeOut|datetimeformat }}</td>
                             {% else %}
-                                <td>
+                                <td data-th="Sign Out">
                                     <a href="{{ url_for('SessionView:tutor_sign_out', session_id=session_info.id, tutor_id=tutor.id, session_hash=session_info.hash, room_group_id=False) }}"
                                        class="delete btn btn-primary">Scan ID or Click Here to Sign Out</a>
                                 </td>
@@ -114,19 +114,19 @@
                     <th colspan="3" class="text-center">Course Information</th>
                 </tr>
                 <tr>
-                    <th data-toggle="tooltip" data-placement="top" title="Course Name and Section">Course</th>
-                    <th data-toggle="tooltip" data-placement="top" title="Course Professor">Professor</th>
-                    <th data-toggle="tooltip" data-placement="top" title="Professor Email">Email</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Name and Section" class="hide-mobile">Course</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Course Professor" class="hide-mobile">Professor</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Professor Email" class="hide-mobile">Email</th>
                 </tr>
                 {% for course, user in course_info %}
                     <tr>
-                        <td>
+                        <td data-th="Course Name and Section">
                             {{ course.title }} (Section {{ course.section }})
                         </td>
-                        <td>
+                        <td data-th="Course Professor">
                             {{ user.firstName }} {{ user.lastName }}
                         </td>
-                        <td>
+                        <td data-th="Professor Email">
                             {{ user.email }}
                         </td>
                     </tr>

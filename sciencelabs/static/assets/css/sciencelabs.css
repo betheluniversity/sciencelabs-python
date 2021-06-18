@@ -317,6 +317,10 @@ ul.no-margin {
     white-space: nowrap;
 }
 
+.break-word {
+    word-break: break-word;
+}
+
 .chosen-comments {
     border: 1px solid #aaa !important;
     border-radius: 0 !important;
