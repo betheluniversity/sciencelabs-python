@@ -69,7 +69,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center" data-th="Control Schedule">
-                                    <div>
+                                    <div class="btn-group">
                                         <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
                                            class="btn btn-primary hover-bright">Edit</a>
                                         <a id="duplicate" href="{{ url_for('ScheduleView:duplicate_schedule', schedule_id=schedule.id) }}"

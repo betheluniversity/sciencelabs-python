@@ -212,6 +212,10 @@ table {
     border: 1px solid #ddd !important;
 }
 
+td {
+    word-break: break-word;
+}
+
 thead {
     background-color: #fff;
 }

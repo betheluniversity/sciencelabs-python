@@ -106,9 +106,9 @@
                             {% endif %}
                         {% endfor %}
                         <tr>
-                            <td data-th="Schedule Name">{{ schedule.name }}</td>
+                            <td data-th="Schedule / Session Name">{{ schedule.name }}</td>
                             <td data-th="Day of Week">{{ macros.day_abbr(schedule.dayofWeek) }}</td>
-                            <td data-th="Schedule Time">{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
+                            <td data-th="Schedule / Session Time">{{ schedule.startTime|datetimeformat }} - {{ schedule.endTime|datetimeformat }}</td>
                             <td data-th="Total Attendance">{{ total_attendance_per_schedule[0] }}</td>
                             {% if total_attendance[0] %}
                                 <td data-th="Percent of Total Attendance">{{ ((total_attendance_per_schedule[0] / total_attendance[0])*100)|round(1) if total_attendance[0] > 0 else '0.0' }}%</td>
