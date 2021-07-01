@@ -39,7 +39,7 @@
                     </td>
                     <td data-th="Activate User">
                         <a href="{{ url_for('UsersView:select_user_roles', username=user.username, first_name=user.firstName, last_name=user.lastName) }}"
-                        id="add-user" class="btn btn-primary">Activate {{ user.username }}</a>
+                        class="btn btn-primary">Activate {{ user.username }}</a>
                     </td>
                 </tr>
             {% endfor %}
