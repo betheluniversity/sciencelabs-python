@@ -142,6 +142,14 @@ class User:
             .filter(User_Table.deletedAt == None)\
             .all()
 
+    def get_all_deactivated_users(self):
+        return db_session.query(User_Table)\
+            .filter(User_Table.deletedAt != None)\
+            .filter(User_Table.firstName != None).filter(User_Table.firstName != "")\
+            .filter(User_Table.lastName != None).filter(User_Table.lastName != "")\
+            .order_by(User_Table.lastName.asc())\
+            .all()
+
     def get_all_current_students(self):
         return db_session.query(User_Table).filter(User_Table.deletedAt == None)\
             .filter(User_Table.id == user_role_Table.user_id).filter(user_role_Table.role_id == Role_Table.id)\
