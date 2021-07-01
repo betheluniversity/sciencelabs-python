@@ -5,4 +5,6 @@
            href="{{ url_for('UsersView:index') }}">Users</a>
         <a id="add" class="nav-item nav-link {{ 'active' if 'search' in request.path else 'disabled'}}"
            href="{{ url_for('UsersView:add_user') }}">Add</a>
+        <a id="reactivate" class="nav-item nav-link {{ 'active' if 'reactivate' in request.path else 'disabled'}}"
+           href="{{ url_for('UsersView:reactivate_user') }}">Reactivate</a>
 {% endblock %}

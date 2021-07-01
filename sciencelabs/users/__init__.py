@@ -41,6 +41,14 @@ class UsersView(FlaskView):
 
         return render_template('users/add_user.html')
 
+    @route('/reactivate')
+    def reactivate_user(self):
+        self.slc.check_roles_and_route(['Administrator'])
+
+        users_info = self.user.get_all_deactivated_users()
+
+        return render_template('users/reactivate_user.html', **locals())
+
     @route("/admin/<int:user_id>")
     def edit_user(self, user_id):
         self.slc.check_roles_and_route(['Administrator'])
