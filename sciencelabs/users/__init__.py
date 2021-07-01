@@ -42,7 +42,7 @@ class UsersView(FlaskView):
 
         return render_template('users/add_user.html')
 
-    @route('reactivate')
+    @route('/reactivate')
     def reactivate_user(self):
         self.slc.check_roles_and_route(['Administrator'])
 
