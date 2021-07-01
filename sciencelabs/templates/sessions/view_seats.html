@@ -1,0 +1,177 @@
+{% extends 'sessions/base.html' %}
+
+{% block subnav %}
+    {% if not room_group %}
+        <a id="session-reservations" class="nav-link {{ 'active' if 'view-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_session_reservations', session_id=session.id) }}">View Reservations</a>
+        <a id="session-seats" class="nav-link {{ 'active' if 'view-session-seats' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_session_seats', session_id=session.id) }}">Assign Seats</a>
+    {% else %}
+        <a id="room-group-reservations" class="nav-link {{ 'active' if 'view-room-group-reservations' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_reservations', room_group_id=room_group.id) }}">View Reservations</a>
+        <a id="room-group-seats" class="nav-link {{ 'active' if 'view-room-group-seats' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_seats', room_group_id=room_group.id) }}">Assign Seats</a>
+        <a id="room-group-capacities" class="nav-link {{ 'active' if 'view-room-group-capacities' in request.path else 'disabled' }}" href="{{ url_for('SessionView:view_room_group_capacities', room_group_id=room_group.id) }}">Edit Capacities</a>
+    {% endif %}
+{% endblock %}
+
+{% block body_content %}
+    <div class="form-group col-md-12">
+        {% if room_group %}
+            <h2 id="{{ room_group.id }}" class="room-cap">Room Group Capacity: {{ room_group.capacity }}</h2>
+        {% endif %}
+        <h4>Session Details:</h4>
+        <table id="student-table"  class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Capacity">Session Capacity</th>
+                    <th data-toggle="tooltip" data-placement="top" title="Session Zoom Url">Zoom Url</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if room_group %}
+                    {% for session in sessions %}
+                        <tr>
+                            <td>
+                                {{ session.name }}
+                            </td>
+                            <td>
+                                {{ session.date.strftime('%m/%d/%Y') }}
+                            </td>
+                            <td>
+                                {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                            </td>
+                            <td>
+                                {{ session.room }}
+                            </td>
+                            <td>
+                                {{ session.capacity }}
+                            </td>
+                            <td>
+                                <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>
+                            {{ session.name }}
+                        </td>
+                        <td>
+                            {{ session.date.strftime('%m/%d/%Y') }}
+                        </td>
+                        <td>
+                            {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
+                        </td>
+                        <td>
+                            {{ session.room }}
+                        </td>
+                        <td>
+                            {{ session.capacity }}
+                        </td>
+                        <td>
+                            <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <br/>
+        {% if not student_session_list %}
+            <h4>No students have signed in yet.</h4>
+        {% else %}
+            <h6><strong>Tutors:</strong> students can only be assigned one seat per session no matter how many times they have signed in.</h6>
+            <br/>
+            <h4>Signed In Students:</h4>
+            <table id="student-table"  class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th data-toggle="tooltip" data-placement="top" title="Student Name">Name</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Signed Up For</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Attending Session Virtually">Attending Virtually</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Seat Number Assigned">Seat Assigned (0 if unassigned - N/A if virtual)</th></tr>
+                </thead>
+                <tbody>
+                    {% for student, student_session in student_session_list %}
+                        <tr>
+                            <td>{{ student.firstName }} {{ student.lastName }}</td>
+                            {% set courses = get_courses(student_session.id) %}
+                            <td>
+                                <ul>
+                                    {% for course in courses %}
+                                        <li>{{ course.dept }}{{ course.course_num }}</li>
+                                    {% endfor %}
+                                    {% if student.otherCourse and student.otherCourseName %}
+                                        <li>{{ student.otherCourseName }} <span id="darkblue" class="button-labels">Other</span></li>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                            <td>
+                                {% if student_session.online %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not student_session.online %}
+                                    {% if not room_group %}
+                                        {% set reservation = get_reservation(session.id, student.id) %}
+                                    {% else %}
+                                        {% set reservation = get_reservation(sessions, student.id) %}
+                                    {% endif %}
+                                    <input id="{{ student.id }}" class="seats" type="number" min="0" max="{{ session.capacity }}" value="{% if reservation.seat_number %}{{ reservation.seat_number }}{% else %}0{% endif %}">
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" class="btn blue btn-primary margin-top-10" id="edit-seats">Save Seat Edits</button>
+        {% endif %}
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#edit-seats').click(function () {
+                let seats = document.getElementsByClassName('seats')
+                let seat_list = []
+                for (let i = 0; i < seats.length; i++) {
+                    seat_list.push({
+                        'user_id': seats[i].id,
+                        'seat_number': parseInt(seats[i].value)
+                    })
+                }
+                let room_id = $('.room-cap').attr("id");
+
+                if (room_id) {
+                    var url = "{{ url_for('SessionView:update_room_group_assigned_seats') }}";
+                    var data = {
+                        'seats': seat_list,
+                        'room_group_id': room_id
+                    };
+                } else {
+                    var url = "{{ url_for('SessionView:update_assigned_seats') }}";
+                    var data = {
+                        'seats': seat_list,
+                        'session_id': {{ session.id }}
+                    };
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        window.location.reload(true);
+                    },
+                    error: function (error) {
+                        window.location.reload(true);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

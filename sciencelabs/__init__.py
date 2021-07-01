@@ -20,6 +20,9 @@ from sciencelabs.db_repository.schedule_functions import Schedule
 if app.config['ENVIRON'] == 'prod' and app.config['SENTRY_URL']:
     from sentry_sdk.integrations.flask import FlaskIntegration
     sentry_sdk.init(dsn=app.config['SENTRY_URL'], integrations=[FlaskIntegration()])
+    from sentry_sdk import configure_scope
+    with configure_scope() as scope:
+        scope.set_tag('lab', app.config['LAB_BASE_URL'])
     from sciencelabs import error
 
 from sciencelabs.views import View

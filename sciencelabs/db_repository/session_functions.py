@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import func, distinct
 
 from sciencelabs.db_repository import db_session
 from sciencelabs.db_repository.db_tables import Session_Table, Semester_Table, User_Table, TutorSession_Table,\
     Course_Table, SessionCourses_Table, StudentSession_Table, Schedule_Table, CourseCode_Table, \
-    SessionCourseCodes_Table
+    SessionCourseCodes_Table, SessionReservations_Table, ReservationCourses_Table, RoomGrouping_Table
+
 from sciencelabs.sciencelabs_controller import ScienceLabsController
 from sciencelabs import app
 
@@ -12,6 +13,115 @@ from sciencelabs import app
 class Session:
     def __init__(self):
         self.base = ScienceLabsController()
+
+    def check_all_room_groupings(self, sessions):
+        for session in sessions:
+            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+
+    def check_room_grouping(self, date, start_time, end_time, room):
+        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
+        if len(sessions) > 1:
+            room_group_id = None
+            for session in sessions:
+                if session.room_group_id:
+                    room_group_id = session.room_group_id
+
+            if room.lower() != 'virtual':
+                if room_group_id:
+                    self.update_room_grouping(room_group_id, sessions)
+                else:
+                    self.create_room_grouping(sessions)
+
+    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
+        return db_session.query(Session_Table) \
+            .filter(Session_Table.date == date) \
+            .filter(Session_Table.schedStartTime == start_time) \
+            .filter(Session_Table.schedEndTime == end_time) \
+            .filter(Session_Table.room == room) \
+            .filter(Session_Table.deletedAt == None) \
+            .filter(Session_Table.openerId == None) \
+            .all()
+
+    def create_room_grouping(self, sessions):
+        room_group = RoomGrouping_Table(capacity=0)
+        db_session.add(room_group)
+        db_session.commit()
+        capacity = 0
+        for session in sessions:
+            capacity += session.capacity
+            session.room_group_id = room_group.id
+
+        room_group.capacity = capacity
+        db_session.commit()
+
+    def update_room_grouping(self, room_group_id, sessions):
+        room_group = self.get_room_group_by_id(room_group_id)
+        capacity = 0
+        for session in sessions:
+            capacity += session.capacity
+            session.room_group_id = room_group_id
+
+        if room_group.capacity == 0 or room_group.capacity < capacity:
+            room_group.capacity = capacity
+
+        db_session.commit()
+
+    def delete_extra_room_groupings(self):
+        room_groups = self.get_all_future_room_groupings()
+        for room_group in room_groups:
+            sessions = self.get_room_group_sessions(room_group.id)
+            if len(sessions) <= 1:
+                self.delete_session_room_grouping(room_group, sessions)
+            else:
+                for session in sessions:
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)) and session.openerId == None:
+                        self.delete_session_room_grouping(room_group, sessions)
+                        self.check_all_room_groupings(sessions)
+                        break
+
+    def delete_extra_room_grouping(self, room_group_id):
+        room_group = self.get_room_group_by_id(room_group_id)
+        self.delete_session_room_grouping(room_group, [])
+
+    def delete_session_room_grouping(self, room_group, sessions):
+        for session in sessions:
+            session.room_group_id = None
+        db_session.delete(room_group)
+        db_session.commit()
+
+    def get_room_group_sessions(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .all()
+
+    def get_one_room_group_session(self, room_group_id):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.room_group_id == room_group_id)\
+            .first()
+
+    def get_all_future_room_groupings(self):
+        today = datetime.now().date()
+        room_groups = db_session.query(RoomGrouping_Table).filter().all()
+        room_groupings = []
+        for room_group in room_groups:
+            session = self.get_one_room_group_session(room_group.id)
+            if not session:
+                self.delete_extra_room_grouping(room_group.id)
+            elif session.date >= today:
+                room_groupings.append(room_group)
+
+        return room_groupings
+
+    def get_all_room_groupings(self):
+        return db_session.query(RoomGrouping_Table).filter().all()
+
+    def update_room_group_capacity(self, room_group_id, capacity):
+        room_group = db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
+        room_group.capacity = capacity
+        db_session.commit()
+
+    def get_room_group_by_id(self, room_group_id):
+        return db_session.query(RoomGrouping_Table).filter(RoomGrouping_Table.id == room_group_id).one()
 
     def get_closed_sessions(self, semester_id):
         return db_session.query(Session_Table)\
@@ -32,6 +142,13 @@ class Session:
         return db_session.query(Session_Table) \
             .filter(Session_Table.semester_id == semester_id) \
             .filter(Session_Table.startTime).filter(Session_Table.endTime) \
+            .filter(Session_Table.deletedAt != None) \
+            .order_by(Session_Table.date) \
+            .all()
+
+    def get_all_deleted_sessions(self, semester_id):
+        return db_session.query(Session_Table) \
+            .filter(Session_Table.semester_id == semester_id) \
             .filter(Session_Table.deletedAt != None) \
             .order_by(Session_Table.date) \
             .all()
@@ -93,7 +210,7 @@ class Session:
     def get_session_students(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, StudentSession_Table.timeIn,
                              StudentSession_Table.timeOut, StudentSession_Table.otherCourse,
-                             StudentSession_Table.otherCourseName) \
+                             StudentSession_Table.otherCourseName, StudentSession_Table.online) \
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == User_Table.id)\
             .all()
@@ -121,6 +238,24 @@ class Session:
     def get_student_session_courses(self, session_id, student_id):
         return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
                                 Course_Table.course_code_id, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.sessionId == session_id)\
+            .filter(StudentSession_Table.studentId == student_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
+
+    def get_student_session_courses_by_student_session(self, student_session_id):
+        return db_session.query(Course_Table.id, Course_Table.dept, Course_Table.course_num,
+                                Course_Table.course_code_id, CourseCode_Table.courseName)\
+            .filter(StudentSession_Table.id == student_session_id)\
+            .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
+            .filter(SessionCourses_Table.course_id == Course_Table.id)\
+            .filter(CourseCode_Table.id == Course_Table.course_code_id)\
+            .all()
+
+    def get_signed_in_courses(self, session_id, student_id):
+        return db_session.query(Course_Table)\
             .filter(StudentSession_Table.sessionId == session_id)\
             .filter(StudentSession_Table.studentId == student_id)\
             .filter(StudentSession_Table.id == SessionCourses_Table.studentsession_id)\
@@ -158,6 +293,15 @@ class Session:
         courses = self.get_student_session_courses(session_id, student_id)
         for course in courses:
             course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName)\
+                .filter(CourseCode_Table.id == course.course_code_id).one()
+            course_ids.append(course_code.id)
+        return course_ids
+
+    def get_stududent_session_coure_ids_by_student_session(self, student_session_id):
+        course_ids = []
+        courses = self.get_student_session_courses_by_student_session(student_session_id)
+        for course in courses:
+            course_code = db_session.query(CourseCode_Table).filter(CourseCode_Table.courseName == course.courseName) \
                 .filter(CourseCode_Table.id == course.course_code_id).one()
             course_ids.append(course_code.id)
         return course_ids
@@ -241,7 +385,7 @@ class Session:
                 prof_students.append(student)
         return prof_students
 
-    def get_studentsession_from_session(self, session_id):
+    def get_student_session_from_session(self, session_id):
         return db_session.query(User_Table, StudentSession_Table)\
             .filter(User_Table.id == StudentSession_Table.studentId)\
             .filter(StudentSession_Table.sessionId == session_id)\
@@ -264,9 +408,42 @@ class Session:
             .first()
 
     def delete_session(self, session_id):
+        self.delete_session_reservations(session_id)
         session_to_delete = self.get_session(session_id)
         session_to_delete.deletedAt = datetime.now()
         db_session.commit()
+
+    def delete_session_reservations(self, session_id):
+        reservations = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .all()
+        for reservation in reservations:
+            self.delete_reservation_courses(reservation.id)
+            db_session.delete(reservation)
+        db_session.commit()
+
+    def delete_reservation_courses(self, reservation_id):
+        reservation_courses = db_session.query(ReservationCourses_Table)\
+            .filter(ReservationCourses_Table.reservation_id == reservation_id)\
+            .all()
+        for course in reservation_courses:
+            db_session.delete(course)
+        db_session.commit()
+
+    def delete_session_reservation(self, reservation_id):
+        reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
+            .one_or_none()
+        student_id = reservation.user_id
+        session_id = reservation.session_id
+        self.delete_reservation_courses(reservation.id)
+        db_session.delete(reservation)
+        db_session.commit()
+
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('Tutor deleted {0} {1}\'s reservation for session {3} at {4}'.format(student.firstName, student.lastName,
+                                                                                              session_id,
+                                                                                              datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def add_anonymous_to_session(self, session_id, anon_students):
         session_to_edit = db_session.query(Session_Table)\
@@ -282,8 +459,26 @@ class Session:
         db_session.commit()
 
     def add_student_to_session(self, session_id, student_id):
-        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id)
+        new_student_session = StudentSession_Table(studentId=student_id, sessionId=session_id, online=0)
         db_session.add(new_student_session)
+        db_session.commit()
+
+    def add_student_to_reservation(self, session_id, student_id, seat_number):
+        session = self.get_session(session_id)
+        open_reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == None)\
+            .first()
+
+        if not open_reservation:
+            self.create_seats(session_id, session.capacity + 1, session.capacity + 1, True)
+            open_reservation = db_session.query(SessionReservations_Table) \
+                .filter(SessionReservations_Table.session_id == session_id) \
+                .filter(SessionReservations_Table.user_id == None) \
+                .first()
+
+        open_reservation.user_id = student_id
+        open_reservation.seat_number = seat_number
         db_session.commit()
 
     def delete_student_from_session(self, student_session_id):
@@ -387,6 +582,218 @@ class Session:
             .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None)\
             .filter(StudentSession_Table.timeOut == None).one_or_none()
 
+    def student_previously_signed_in(self, session_id, student_id):
+        return db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id) \
+            .filter(StudentSession_Table.studentId == student_id).filter(StudentSession_Table.timeIn != None) \
+            .filter(StudentSession_Table.timeOut != None).all()
+
+    def get_reservation_sessions(self):
+        future_sessions = db_session.query(Session_Table)\
+            .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.endTime == None)\
+            .all()
+        valid_sessions = []
+        for session in future_sessions:
+            start_time = session.schedStartTime
+            end_time = session.schedEndTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
+
+        return valid_sessions
+
+    def get_upcoming_sessions(self):
+        future_sessions = db_session.query(Session_Table)\
+            .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.deletedAt == None)\
+            .filter(Session_Table.endTime == None)\
+            .filter(Session_Table.openerId == None)\
+            .all()
+        valid_sessions = []
+        for session in future_sessions:
+            time = session.schedStartTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
+
+        return valid_sessions
+
+    def is_reservation_after_10_minutes(self, session_id):
+        session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
+
+        if not session:
+            return False
+        time = session.schedStartTime
+        reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time + timedelta(minutes=10)),
+                                                                                 '%H:%M:%S').time())
+        if reservations_end_time <= datetime.now():
+            return True
+        return False
+
+    def get_reservation(self, session_id, student_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
+
+    def get_reservation_by_id(self, reservation_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
+            .one_or_none()
+
+    def get_reservation_from_sessions(self, sessions, student_id):
+        for session in sessions:
+            session_reservations = self.get_session_reservations(session.id)
+            for reservation in session_reservations:
+                if reservation.user_id == student_id:
+                    return reservation
+
+    def get_session_reservations(self, session_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id != None)\
+            .all()
+
+    def get_all_session_reservations(self, session_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .all()
+
+    def get_reservation_courses(self, reservation_id):
+        return db_session.query(ReservationCourses_Table.course_id)\
+            .filter(ReservationCourses_Table.reservation_id == reservation_id)\
+            .all()
+
+    def is_reserved(self, session_id, student_id):
+        return db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == student_id)\
+            .one_or_none()
+
+    def reserve_session(self, session_id, student_id, student_courses):
+        session = self.get_session(session_id)
+
+        if session.room_group_id and self.get_num_seats_available(session_id) == 0 \
+                and self.get_room_group_num_seats_available(session.room_group_id) != 0:
+            self.create_seats(session_id, session.capacity + 1, session.capacity + 1, True)
+
+        first_open_reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.session_id == session_id)\
+            .filter(SessionReservations_Table.user_id == None)\
+            .first()
+
+        first_open_reservation.user_id = student_id
+        db_session.commit()
+        self.create_reservation_courses(first_open_reservation.id, student_courses)
+
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('{0} {1} reserved a space for session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                  session_id,
+                                                                                  datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        return first_open_reservation
+
+    def cancel_reservation(self, session_id, student_id):
+        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == student_id).one()
+        self.delete_reservation_courses(reservation.id)
+        reservation.user_id = None
+        reservation.seat_number = None
+
+        session = self.get_session(session_id)
+        reservations = self.get_session_reservations(session_id)
+        if session.capacity < len(reservations):
+            db_session.delete(reservation)
+
+        db_session.commit()
+
+        student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
+        self.log_session('{0} {1} cancelled a reservation for session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                         session_id,
+                                                                                         datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        return reservation
+
+    def create_reservation_courses(self, reservation_id, student_coures):
+        for course_id in student_coures:
+            new_reservation_course = ReservationCourses_Table(reservation_id=reservation_id, course_id=course_id)
+            db_session.add(new_reservation_course)
+        db_session.commit()
+
+    def get_num_reserved_seats(self, session_id):
+        reserved_count = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .filter(SessionReservations_Table.user_id != None) \
+            .all()
+        reserved_count = len(reserved_count)
+
+        return reserved_count
+
+    def get_num_seats_available(self, session_id):
+        available_count = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .filter(SessionReservations_Table.user_id == None) \
+            .all()
+        available_count = len(available_count)
+
+        return available_count
+
+    def get_room_group_num_seats_available(self, room_group_id):
+        room_group = self.get_room_group_by_id(room_group_id)
+        sessions = self.get_room_group_sessions(room_group_id)
+
+        available_count = room_group.capacity
+
+        for session in sessions:
+            reservations = self.get_session_reservations(session.id)
+            available_count -= session.capacity
+            available_count -= len(reservations)
+
+        return available_count
+
+    def get_total_seats(self, session_id):
+        total_seats = db_session.query(SessionReservations_Table.session_id) \
+            .filter(SessionReservations_Table.session_id == session_id) \
+            .all()
+        total_seats = len(total_seats)
+
+        return total_seats
+
+    def update_seat_number(self, session_id, student_id, seat_number=-1):
+        seat_num = ''
+        reservation = db_session.query(SessionReservations_Table).filter(SessionReservations_Table.session_id == session_id).filter(SessionReservations_Table.user_id == student_id).one_or_none()
+        if seat_number != -1:
+            reservation.seat_number = seat_number
+            db_session.commit()
+        else:
+            for i in range(1, self.get_total_seats(session_id) + 1):
+                filled = db_session.query(SessionReservations_Table)\
+                    .filter(SessionReservations_Table.session_id == session_id)\
+                    .filter(SessionReservations_Table.seat_number == i)\
+                    .one_or_none()
+                if not filled:
+                    reservation.seat_number = i
+                    seat_num = i
+                    db_session.commit()
+                    break
+
+        return seat_num
+
+    def update_reservation_seat_number(self, reservation_id, seat_number):
+        reservation = db_session.query(SessionReservations_Table)\
+            .filter(SessionReservations_Table.id == reservation_id)\
+            .one()
+
+        reservation.seat_number = seat_number
+        db_session.commit()
+
+    def update_zoom_url(self, session_id, zoom_url):
+        session = db_session.query(Session_Table).filter(Session_Table.id == session_id).one_or_none()
+        session.zoom_url = zoom_url
+
+        db_session.commit()
+
+
     ######################### EDIT STUDENT METHODS #########################
 
     def edit_student_session(self, student_session_id, time_in, time_out, other_course, student_courses, virtual):
@@ -421,23 +828,44 @@ class Session:
 
     ######################### CREATE SESSION METHODS #########################
 
-    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
-                           comments, anon_students, name, leads, tutors, courses):
-        new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, actual_start,
-                                          actual_end, room, comments, anon_students, name)
+    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+                           actual_end, room, comments, anon_students, name, leads, tutors, courses):
+        new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                                          actual_start, actual_end, room, comments, anon_students, name)
+        if room.lower() != 'virtual':
+            self.create_seats(new_session.id, capacity)
         self.create_lead_sessions(scheduled_start, scheduled_end, leads, new_session.id)
         self.create_tutor_sessions(scheduled_start, scheduled_end, tutors, new_session.id)
         self.create_session_courses(new_session.id, courses)
 
-    def create_session(self, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end, room,
-                           comments, anon_students, name):
+        return new_session
+
+    def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+                       actual_end, room, comments, anon_students, name):
         new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
-                                    schedEndTime=scheduled_end, startTime=actual_start, endTime=actual_end, room=room,
-                                    open=0, comments=comments, anonStudents=anon_students, name=name,
-                                    hash=self.base.get_hash())
+                                    schedEndTime=scheduled_end, capacity=capacity, zoom_url=zoom_url,
+                                    startTime=actual_start, endTime=actual_end, room=room, open=0, comments=comments,
+                                    anonStudents=anon_students, name=name, hash=self.base.get_hash())
         db_session.add(new_session)
         db_session.commit()
         return new_session
+
+    def create_seats(self, session_id, capacity, start=1, commit=True):
+        capacity = capacity + 1
+        for i in range(start, capacity):
+            new_session_reservation = SessionReservations_Table(session_id=session_id)
+            db_session.add(new_session_reservation)
+        if commit:
+            db_session.commit()
+
+    def delete_seats(self, session_id, start, end):
+        for i in range(start + 1, end + 1):
+            seat = db_session.query(SessionReservations_Table)\
+                .filter(SessionReservations_Table.session_id == session_id)\
+                .filter(SessionReservations_Table.user_id == None)\
+                .first()
+            db_session.delete(seat)
+            db_session.commit()
 
     def create_lead_sessions(self, scheduled_start, scheduled_end, leads, session_id):
         for lead in leads:
@@ -463,21 +891,30 @@ class Session:
 
     ######################### EDIT SESSION METHODS #########################
 
-    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-                     room, comments, anon_students, name, leads, tutors, courses):
-        self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, actual_start,
+    def edit_session_capacity(self, session_id, capacity):
+        session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
+
+        session_to_edit.capacity = capacity
+
+        db_session.commit()
+
+    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                     actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses):
+        self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                                actual_end, room, comments, anon_students, name)
         self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
         self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
         self.edit_session_courses(session_id, courses)
 
-    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, actual_start, actual_end,
-                     room, comments, anon_students, name):
+    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                          actual_start, actual_end, room, comments, anon_students, name):
         session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
         session_to_edit.semester_id = semester_id
         session_to_edit.date = date
         session_to_edit.schedStartTime = scheduled_start
         session_to_edit.schedEndTime = scheduled_end
+        session_to_edit.capacity = capacity
+        session_to_edit.zoom_url = zoom_url
         session_to_edit.startTime = actual_start
         session_to_edit.endTime = actual_end
         session_to_edit.room = room
@@ -539,7 +976,12 @@ class Session:
                                                           datetime.now().strftime("%H:%M:%S")))
 
     def close_open_session(self, session_id, comments):
-        session_to_close = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_close = db_session.query(Session_Table)\
+            .filter(Session_Table.id == session_id)\
+            .filter(Session_Table.open == 1)\
+            .one_or_none()
+        if not session_to_close:
+            return False
         session_to_close.open = 0
         session_to_close.endTime = datetime.now().strftime('%H:%M:%S')
         session_to_close.comments = comments
@@ -547,6 +989,7 @@ class Session:
         self.log_session('{0} ({1}) closed at {2}'.format(session_to_close.name,
                                                           session_to_close.date.strftime("%m/%d/%Y"),
                                                           datetime.now().strftime("%H:%M:%S")))
+        return True
 
     def tutor_sign_in(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -557,8 +1000,9 @@ class Session:
         else:
             self.add_tutor_to_session(session_id, tutor_id, datetime.now().strftime("%H:%M:%S"), None, 0)
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
-        self.log_session('{0} {1} signed in as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
-                                                                      datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        self.log_session('{0} {1} signed in as a tutor for session {2} at {3}'.format(tutor.firstName, tutor.lastName,
+                                                                                      session_id,
+                                                                                      datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def tutor_sign_out(self, session_id, tutor_id):
         tutor_session = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session_id)\
@@ -568,9 +1012,26 @@ class Session:
         tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
-        self.log_session('{0} {1} signed out as a tutor at {2}'.format(tutor.firstName, tutor.lastName,
-                                                                       datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        self.log_session('{0} {1} signed out as a tutor of session {2} at {3}'.format(tutor.firstName, tutor.lastName,
+                                                                                      session_id,
+                                                                                      datetime.now()
+                                                                                      .strftime("%m/%d/%Y %H:%M:%S")))
         return True
+
+    def tutor_room_group_sign_out(self, room_group_id, tutor_id):
+        room_group_sessions = self.get_room_group_sessions(room_group_id)
+        for session in room_group_sessions:
+            tutor_sessions = db_session.query(TutorSession_Table).filter(TutorSession_Table.sessionId == session.id)\
+                .filter(TutorSession_Table.tutorId == tutor_id).filter(TutorSession_Table.timeOut == None).all()
+            for tutor_session in tutor_sessions:
+                tutor_session.timeOut = datetime.now().strftime('%H:%M:%S')
+                db_session.commit()
+                tutor = db_session.query(User_Table).filter(User_Table.id == tutor_id).one()
+                self.log_session('{0} {1} signed out as a tutor of session {2} at {3}'.format(tutor.firstName,
+                                                                                              tutor.lastName,
+                                                                                              session.id,
+                                                                                              datetime.now()
+                                                                                              .strftime("%m/%d/%Y %H:%M:%S")))
 
     def student_sign_in(self, session_id, student_id, student_course_ids, other_course, other_name, time_in, virtual):
         db_time = datetime.strptime(time_in, "%I:%M%p").strftime("%H:%M:%S")
@@ -586,8 +1047,9 @@ class Session:
             db_session.add(new_student_course)
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
-        self.log_session('{0} {1} signed in as a student at {2}'.format(student.firstName, student.lastName,
-                                                                        datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        self.log_session('{0} {1} signed in as a student of session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                       session_id,
+                                                                                       datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def student_sign_out(self, session_id, student_id):
         student_session = db_session.query(StudentSession_Table).filter(StudentSession_Table.sessionId == session_id)\
@@ -596,8 +1058,9 @@ class Session:
             single_student_session.timeOut = datetime.now().strftime('%H:%M:%S')
         db_session.commit()
         student = db_session.query(User_Table).filter(User_Table.id == student_id).one()
-        self.log_session('{0} {1} signed out as a student at {2}'.format(student.firstName, student.lastName,
-                                                                         datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
+        self.log_session('{0} {1} signed out as a student of session {2} at {3}'.format(student.firstName, student.lastName,
+                                                                                        session_id,
+                                                                                        datetime.now().strftime("%m/%d/%Y %H:%M:%S")))
 
     def close_open_sessions_cron(self):
         open_sessions = self.get_open_sessions()

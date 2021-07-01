@@ -9,16 +9,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="modal-title">Check the class(es) you are here for today, or check "Other" if no classes are listed or apply to this
-        visit. When you are finished in this help session, don't forget to sign out or your time will be
-        recorded as 0 minutes.</p>
-
-
-
+                <p class="modal-title">Check the class(es) you wish to be helped with. When you are finished in this help
+                    session, don't forget to sign out or your time will be recorded as 0 minutes.</p>
                 <br/>
                 <div class="custom-default row">
                     <div class="col-md-12">
-                        {% for course in student_courses %}
+                        {% for course in matched_courses %}
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="course-checkbox custom-control-input" id="{{ course.id }}"
                                        value="{{ course.id }}" name="course">
@@ -28,19 +24,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="custom-default row">
-                    <div class="col-md-7">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="other" name="other-check">
-                            <label class="custom-control-label" for="other">Other</label>
-                        </div>
-                        <label class="hidden" id="other-label" for="course-name">Course Name or Reason</label>
-                        <input type="text" class="form-control hidden" id="course-name" name="other-name" autocomplete="off">
-                    </div>
-                </div>
-
-
-
             </div>
             <div class="modal-footer">
                 <button id="save-courses" type="button" class="btn btn-primary">Save</button>
@@ -52,30 +35,27 @@
 
 <script type="text/javascript">
     $(document).ready( function () {
-        $('#other').change(function(){
-            $('#other-label').toggleClass('hidden');
-            $('#course-name').toggleClass('hidden');
-        });
-
         $('#save-courses').click(function () {
             let courseIDs = [];
             $('.course-checkbox:checked').each(function(){
                 courseIDs.push($(this).val());
             });
             let jsonCourseIDs = JSON.stringify(courseIDs);
-            let otherCourseCheck = $('#other').prop('checked');
             let signInInfo = {
                 'sessionID': {{ session_id }},
                 'username': '{{ student.username }}',
                 'cardID': '{{ card_id }}',
                 'studentID': {{ student.id }},
                 'jsonCourseIDs': jsonCourseIDs,
-                'otherCourseCheck': otherCourseCheck,
-                'otherCourseName': $('#course-name').val(),
                 'timeIn': '{{ time_in }}',
                 'virtual': 1
             };
-            let url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
+            let url = ''
+            if (/reservations/.test(window.location.pathname)) {
+                url = '{{ url_for('StudentView:reservation_confirm') }}'
+            } else if (/virtual-sign-on/.test(window.location.pathname)) {
+                url = '{{ url_for('SessionView:student_sign_in_confirm') }}';
+            }
             $.post(url, signInInfo, function(result){
                 // The 'true' in this forces the reload no matter what
                 window.location.reload(true);

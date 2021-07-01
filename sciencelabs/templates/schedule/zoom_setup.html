@@ -2,13 +2,13 @@
 
 {% block body_content %}
     <div class="custom-default row">
-        <div class="col-md-10">
-            <form>
+        <div class="col-md-8">
+            <form role="form" action="{{ url_for('ScheduleView:save_zoom_urls') }}" method="POST">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
                             <div class="card-body btn-group">
-                                <p class="no-margin-padding">Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
+                                <p class="no-margin-padding">Change Zoom Urls for Schedules for {{ active_semester.term }} {{ active_semester.year }}</p>
                             </div>
                         </div>
                     </div>
@@ -23,7 +23,7 @@
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Room">Room</th>
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Courses">Courses</th>
                             <th data-toggle="tooltip" data-placement="top" title="Schedule Tutors">Tutors</th>
-                            <th></th>
+                            <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,35 +69,41 @@
                                     </div>
                                 </td>
                                 <td class="text-center btn-group">
-                                    <a id="edit" href='{{ url_for('ScheduleView:edit_schedule', schedule_id=schedule.id) }}'
-                                       class="btn btn-primary hover-bright">Edit</a>
-                                    <a id="duplicate" href="{{ url_for('ScheduleView:duplicate_schedule', schedule_id=schedule.id) }}"
-                                       class="btn btn-primary hover-bright">Duplicate</a>
-                                    <a id="delete" href="{{ url_for('ScheduleView:delete_schedule', schedule_id=schedule.id) }}"
-                                       class="btn btn-primary hover-bright">Delete</a>
+                                    {% set session_info = get_zoom(schedule.id) %}
+                                    <input type="url" class="form-control chosen-container chosen-format"
+                                           value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}"
+                                           name="{{ schedule.id }}" {% if ('Lead Tutor' in session['USER-ROLES']
+                                           or 'Tutor' in session['USER-ROLES']
+                                           or 'Professor' in session['USER-ROLES']) and 'Administrator' not in session['USER-ROLES'] %}readonly{% endif %}>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-
+                {% if 'Administrator' in session['USER-ROLES'] %}
+                    <button type="submit" class="btn blue btn-primary margin-top-10" id="submit-zoom-urls">Save Zoom Urls</button>
+                {% endif %}
             </form>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-4">
             <div class="sub-info card info">
                 <div class="card-body">
                     <p class="card-text">
-                        To view specific schedule information including courses and tutors, click the
-                        <span class="button-labels">Show</span> buttons.
+                        This page is used to add zoom urls to sessions in a schedule so that when a student joins a virtual
+                        help session, they have access to the session zoom url.
                     </p>
                     <p class="card-text">
-                        To edit schedule information, click the
-                        <span id="darkblue" class="button-labels">Edit</span> button.
+                        To <strong>add</strong> a zoom url to a schedule, simply type or paste the zoom url into the zoom
+                        url section and hit the <span class="button-labels">Save Zoom Urls</span> button to save the url.
+                        You can either do all urls at once and then hit save or do them one at a time.
                     </p>
                     <p class="card-text">
-                        To delete all future instances of a schedule, click the
-                        <span id="red" class="button-labels">Delete</span> button (past occurrences of the schedule
-                        will remain in the reports section).
+                        To <strong>delete</strong> a zoom url, simply delete the zoom url for that course and hit
+                        <span class="button-labels">Save Zoom Urls</span>.
+                    </p>
+                    <p class="card-text">
+                        To <strong>change</strong> a zoom url, simply paste a new zoom url where the previous one was
+                        and hit <span class="button-labels">Save Zoom Urls</span>.
                     </p>
                 </div>
             </div>

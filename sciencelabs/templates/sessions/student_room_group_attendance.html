@@ -2,9 +2,9 @@
 
 {% block subnav %}
     <a id="student" class="nav-item nav-link active"
-       href="{{ url_for('SessionView:student_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Student</a>
+       href="{{ url_for('SessionView:student_room_group_attendance_passthrough', room_group_id=room_group_id) }}">Student</a>
     <a id="tutor" class="nav-item nav-link disabled"
-       href="{{ url_for('SessionView:tutor_attendance_passthrough', session_id=session_info.id, session_hash=session_info.hash) }}">Tutor</a>
+       href="{{ url_for('SessionView:tutor_room_group_attendance_passthrough', room_group_id=room_group_id) }}">Tutor</a>
 {% endblock %}
 
 {% block header %}
@@ -73,7 +73,7 @@
                         {% if student.online %}
                             N/A
                         {% else %}
-                            <a href="{{ url_for('SessionView:student_sign_out', session_id=session_info.id, student_id=student.id, session_hash=session_info.hash, room_group_id=False) }}"
+                            <a href="{{ url_for('SessionView:student_room_group_sign_out_helper', student_id=student.id, room_group_id=room_group_id) }}"
                                class="delete btn btn-primary">Scan ID or Click Here to Sign Out</a>
                         {% endif %}
                     {% endif %}
@@ -105,7 +105,6 @@
                 audio.play();
             }
 
-
             var input = "";
 
             $(document).on('keydown', function(key) {
@@ -114,9 +113,9 @@
                     var scannedInput = {
                         'scan': input
                     };
-                    $.post(url, scannedInput, function(success) {
-                        if(success != 'failed'){
-                            window.location.replace("{{ lab_base_url }}/session/no-cas/checkin/{{ session_info.id }}/{{ session_info.hash }}/" + success);
+                    $.post(url, scannedInput, function(success){
+                        if(success != 'failed') {
+                            window.location.replace("{{ lab_base_url }}/session/no-cas/checkin/room-group/{{ room_group_id }}/" + success);
                         }else{
                             input = "";
                         }

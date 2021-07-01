@@ -49,6 +49,16 @@
                     </div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="capacity">Session Capacity</label>
+                        <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="zoom-url">Zoom Url</label>
+                        <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="" required>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="choose-leads">Lead Tutors</label>
                         <select required="required" id="choose-leads" multiple="true" name="choose-leads">
@@ -101,6 +111,13 @@
         <div class="col-md-4">
             <div class="card info">
                 <div class="card-body">
+                    <p class="card-text"><strong>NEW FALL 2020!</strong></p>
+                    <p class="card-text">
+                        <ol>
+                            <li>Please be careful when entering rooms. HC 113, hc 113, and HC113 are all different rooms. Spacing and capitalization matter!</li>
+                            <li>Use "virtual" (without the quotes) as the room number if you want a session to only be attended virtually. Also enter 0 for the session capacity.</li>
+                        </ol>
+                    </p>
                     <p class="card-text">This section can be used to create a past or a future session that is separate from
                     those created using the Schedule tab.</p>
                     <p class="card-text">For future sessions, actual start and end times will be left blank.</p>

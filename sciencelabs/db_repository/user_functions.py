@@ -182,9 +182,13 @@ class User:
             student_courses = self.wsapi.get_student_courses(student.username)
             for key, course in student_courses.items():
                 # Check if CourseCode exists since banner will pull in ALL courses not just lab courses
-                if db_session.query(CourseCode_Table).filter(CourseCode_Table.courseNum == course['cNumber'])\
-                        .filter(CourseCode_Table.dept == course['subject'])\
-                        .filter(CourseCode_Table.active == 1).one_or_none():
+                course_code = db_session.query(CourseCode_Table) \
+                    .filter(CourseCode_Table.courseNum == course['cNumber']) \
+                    .filter(CourseCode_Table.dept == course['subject']) \
+                    .filter(CourseCode_Table.courseName == course['title']) \
+                    .filter(CourseCode_Table.active == 1) \
+                    .one_or_none()
+                if course_code:
                     course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn)\
                         .filter(Course_Table.semester_id == active_semester.id).one_or_none()
                     if course_entry:
@@ -436,13 +440,16 @@ class User:
     def create_user_courses(self, username, user_id, semester_id):
         user_courses = self.wsapi.get_student_courses(username)
         for key, course in user_courses.items():
-            if db_session.query(CourseCode_Table) \
-                    .filter(CourseCode_Table.courseNum == course['cNumber']) \
-                    .filter(CourseCode_Table.dept == course['subject']) \
-                    .filter(CourseCode_Table.courseName == course['title']) \
-                    .filter(CourseCode_Table.active == 1) \
-                    .one_or_none():
+            course_code = db_session.query(CourseCode_Table)\
+                .filter(CourseCode_Table.courseNum == course['cNumber'])\
+                .filter(CourseCode_Table.dept == course['subject'])\
+                .filter(CourseCode_Table.courseName == course['title'])\
+                .filter(CourseCode_Table.active == 1)\
+                .one_or_none()
+
+            if course_code:
                 course_entry = db_session.query(Course_Table).filter(course['crn'] == Course_Table.crn) \
+                    .filter(course['section'] == Course_Table.section) \
                     .filter(Course_Table.semester_id == semester_id).one_or_none()
                 if course_entry:
                     user_course_entry = db_session.query(user_course_Table)\

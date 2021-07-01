@@ -1,0 +1,56 @@
+
+<div class="modal fade" id="email-send" tabindex="-1" role="dialog" aria-labelledby="email-send" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-default row">
+                    <div class="col-md-12">
+                        Review your email. If all information is correct, press send.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="send-email" type="button" class="btn btn-primary">Send</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready( function () {
+        $('#send-email').click(function () {
+            let url = '';
+            let redirect_url = '';
+            if (/email-all-reservations/.test(window.location.pathname)) {
+                url = '{{ url_for('SessionView:send_email_all_reservations') }}';
+                redirect_url = '{{ url_for('SessionView:index') }}';
+            } else if (/create/.test(window.location.pathname)) {
+                url = '{{ url_for('EmailView:send') }}';
+                redirect_url = '{{ url_for('EmailView:index') }}';
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: JSON.stringify({
+                    'subject': '{{ subject }}',
+                    'message': {{ message|safe }},
+                    'recipients': {{ recipients|safe }},
+                    'bcc': {{ bcc_emails|safe }}
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    window.location.href = redirect_url;
+                },
+                error: function (error) {
+                }
+            });
+        });
+    });
+</script>

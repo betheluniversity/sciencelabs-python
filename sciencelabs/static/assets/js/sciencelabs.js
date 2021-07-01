@@ -18,4 +18,12 @@ $(document).ready(function(){
         else
             $(this).text('Hide');
     });
+
+    $(".show-sessions").click(function() {
+        $(this).next().toggle();
+        if($(this).text() !== 'Show')
+            $(this).text('Show');
+        else
+            $(this).text('Hide');
+    });
 });

@@ -4,84 +4,32 @@
     <div class="form-group col-md-12">
         <h3>Welcome {{ student.firstName }} {{ student.lastName }}</h3>
         <br/>
-        {% if not open_sessions %}
-            <h4>There are no virtual sessions currently running. Please check back later. You will not be able to sign
-                into a virtual session until it has started.</h4>
-        {% else %}
+        <div>
             {% if signed_in_sessions %}
-                <div>
-                    <h6>
-                        Make sure to sign out after you are done with the session or else your time attending will not be
-                        counted.
-                        <br/>
-                        <br/>
-                        Make sure you don't bookmark the Zoom url, since it changes daily. After you're done with your
-                        Zoom session, don't forget to return to this page to sign out, so your attendance record
-                        is accurate.
-                    </h6>
+                <h4>Session you are currently attending:</h4>
+                <h6>
+                    Make sure to sign out after you are done with the session or else your time attending will not be
+                    counted.
                     <br/>
-                    <h4>Your current virtual session information:</h4>
-                    <table id="signed-in-table" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Reserved</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
-                                <th data-toggle="tooltip" data-placement="top" title="Sign Out of a Virtual Session">Sign Out of a Virtual Session</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for session in signed_in_sessions %}
-                                <tr>
-                                    <td>
-                                        {{ session.name }}
-                                    </td>
-                                    <td>
-                                        {{ session.date.strftime('%m/%d/%Y') }}
-                                    </td>
-                                    <td>
-                                        {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
-                                    </td>
-                                    <td>
-                                        {{ session.room }}
-                                    </td>
-                                    <td>
-                                        <div class="text-left margin-top-10">
-                                            {% for course in signed_in_courses[session.id] %}
-                                                    {{ course.title }} ({{ course.dept }}{{ course.course_num }})
-                                                    <br />
-                                            {% endfor %}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
-                                    </td>
-                                    <td>
-                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary sign-out">Sign out</button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <h4>Sign in to a virtual session</h4>
-                <table id="available-table"  class="table table-striped table-bordered">
+                    <br/>
+                    Make sure you don't bookmark the Zoom url, since it changes daily. After you're done with your Zoom
+                    session, don't forget to return to this page to sign out, so your attendance record is accurate.
+                </h6>
+                <br/>
+
+                <table id="signed-in-table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
                             <th data-toggle="tooltip" data-placement="top" title="Session Date">Date</th>
                             <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
                             <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Courses Available">Courses Available</th>
-                            <th data-toggle="tooltip" data-placement="top" title="Sign In to a Virtual Session">Sign In to a Virtual Session</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Courses Signed Up For">Courses Reserved</th>
+                            <th data-toggle="tooltip" data-placement="top" title="Zoom Url">Zoom Url</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for session in open_sessions %}
+                        {% for session in signed_in_sessions %}
                             <tr>
                                 <td>
                                     {{ session.name }}
@@ -97,28 +45,44 @@
                                 </td>
                                 <td>
                                     <div class="text-left margin-top-10">
-                                        {% for course in open_student_session_courses[session.id] %}
+                                        {% for course in signed_in_courses[session.id] %}
                                                 {{ course.title }} ({{ course.dept }}{{ course.course_num }})
                                                 <br />
                                         {% endfor %}
                                     </div>
                                 </td>
                                 <td>
-                                    <div id="sign-in-sign-out">
-                                        <button type="button" id="{{ session.id }}" class="blue btn btn-primary sign-in">Sign in</button>
-                                    </div>
+                                    {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% endif %}
-            <div id="course-selector"></div>
-        {% endif %}
-        {% if sessions %}
+        </div>
+        {% if not sessions %}
+            <h4>There are no sessions available for your course(s) in the next 3 days.</h4>
             <br/>
-            <h4>Upcoming Sessions (next 3 days):</h4>
-            <table id="upcoming-table"  class="table table-striped table-bordered">
+            <br/>
+            <br/>
+        {% else %}
+            <br/>
+            <h4>{{ lab_title }} Reservations</h4>
+            <p><b>To make a reservation</b>:  Select a session from the list of sessions available for your course(s),
+                within the next 3 days.</p>
+            <p><b>To cancel a reservation</b>:  Use the red “Cancel” button to cancel a reservation,
+                so others can use your spot.</p>
+            <p><b>Attending a Face-to-Face Session:</b>
+                <ul>
+                    <li>Check your email before a session to assure there have not been any last minute cancellations.
+                    </li>
+                    <li>Bring your ID to the session when you attend, as your reservation will be checked.</li>
+                    <li>Please try to arrive at the start of the session, as it's easier to work through problems
+                        together as a group. However, you may arrive at any time during the session, as long as there
+                        is space.</li>
+                </ul>
+            </p>
+            <table id="available-table"  class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th data-toggle="tooltip" data-placement="top" title="Session Name">Name</th>
@@ -126,6 +90,8 @@
                         <th data-toggle="tooltip" data-placement="top" title="Session Time">Time</th>
                         <th data-toggle="tooltip" data-placement="top" title="Session Room">Room</th>
                         <th data-toggle="tooltip" data-placement="top" title="Courses Available">Courses Available</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Seats Remaining">Seats Available</th>
+                        <th data-toggle="tooltip" data-placement="top" title="Reserve or cancel">Reserve or Cancel a Session</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,19 +117,51 @@
                                     {% endfor %}
                                 </div>
                             </td>
+                            <td>
+                            {% set seats_avail = get_seats_available(session.id) %}
+                                {% if session.room_group_id and seats_avail == 0 %}
+                                    {{ get_room_group_seats_available(session.room_group_id) }}
+                                {% else %}
+                                    {{ seats_avail }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if seats_avail != 0 %}
+                                    <div id="reserve-cancel">
+                                        {% if is_reserved(session.id, student.id) %}
+                                            <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
+                                        {% else %}
+                                            <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    {% if is_reserved(session.id, student.id) %}
+                                        <button type="button" id="{{ session.id }}" class="btn btn-danger cancel">Cancel</button>
+                                    {% else %}
+                                        {% if session.room_group_id and seats_avail == 0 and get_room_group_seats_available(session.room_group_id) != 0 %}
+                                            <button type="button" id="{{ session.id }}" class="blue btn btn-primary reserve">Reserve</button>
+                                        {% else %}
+                                            No seats remaining. Please check back later or attend the session
+                                            <a class="no-decoration" href="{{ url_for('StudentView:virtual_sign_on') }}">virtually</a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% endif %}
+        <div id="course-selector"></div>
     </div>
-
     <script type="text/javascript">
-        $(document).ready( function () {
-            var table = $('#upcoming-table').DataTable( {
+        $(document).ready(function () {
+            var table = $('#available-table').DataTable( {
                 "aoColumns": [
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ "asc", "desc" ] },
+                    { "orderSequence": [ null ] },
+                    { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
                     { "orderSequence": [ null ] },
@@ -175,7 +173,7 @@
                 "bInfo": false
             });
 
-            $('.sign-in').click(function () {
+            $('.reserve').click(function () {
                 $.ajax({
                     type: "POST",
                     url: "{{ url_for('StudentView:load_course_selector_modal') }}",
@@ -192,12 +190,13 @@
                 });
             });
 
-            $('.sign-out').click(function () {
+            $('.cancel').click(function () {
                 $.ajax({
                     type: "POST",
-                    url: "{{ url_for('StudentView:virtual_sign_out') }}",
+                    url: "{{ url_for('StudentView:cancel_reservation') }}",
                     data: JSON.stringify({
-                        'session_id': this.id
+                        'session_id': this.id,
+                        'student_id': {{ student.id }},
                     }),
                     contentType: 'application/json;charset=UTF-8',
                     success: function (response) {
@@ -205,8 +204,8 @@
                     },
                     error: function (error) {
                     }
-                });
-            })
-        });
+               })
+            });
+        })
     </script>
 {% endblock %}

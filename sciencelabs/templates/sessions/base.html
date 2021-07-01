@@ -10,5 +10,9 @@
            href="{{ url_for('SessionView:create') }}">Create a Session</a>
         <a id="restore" class="nav-item nav-link {{ 'active' if 'delete' in request.path else 'disabled'}}"
            href="{{ url_for('SessionView:deleted') }}">Restore a Deleted Session</a>
+        {% if 'bam95899' in session['USERNAME'] %}
+            <a id="admin-room-groups" class="nav-item nav-link {{ 'active' if 'admin' in request.path else 'disabled' }}"
+            href="{{ url_for('SessionView:view_room_groupings') }}">View All Room Groups</a>
+        {% endif %}
     {% endif %}
 {% endblock %}

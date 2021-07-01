@@ -37,7 +37,6 @@ class Course_Table(base):
     course_code_id = Column(Integer)
     num_attendees = Column(Integer)
     room = Column(String)
-    zoom_url = Column(String)
 
 
 class CourseViewer_Table(base):
@@ -46,12 +45,25 @@ class CourseViewer_Table(base):
     user_id = Column(Integer)
 
 
+class ReservationCourses_Table(base):
+    __tablename__ = 'ReservationCourses'
+    id = Column(Integer, primary_key=True)
+    reservation_id = Column(Integer)
+    course_id = Column(Integer)
+
+
 class Role_Table(base):
     __tablename__ = 'Role'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     role = Column(String)
     sort = Column(Integer)
+
+
+class RoomGrouping_Table(base):
+    __tablename__ = 'RoomGrouping'
+    id = Column(Integer, primary_key=True)
+    capacity = Column(Integer)
 
 
 class ScheduleCourseCodes_Table(base):
@@ -112,8 +124,19 @@ class Session_Table(base):
     openerId = Column(Integer)
     anonStudents = Column(Integer)
     name = Column(String)
+    zoom_url = Column(String)
+    capacity = Column(Integer)
+    room_group_id = Column(Integer)
 
-    
+
+class SessionReservations_Table(base):
+    __tablename__ = 'SessionReservations'
+    id = Column(Integer, primary_key=True)
+    session_id = Column(Integer)
+    user_id = Column(Integer)
+    seat_number = Column(Integer)
+
+
 class StudentSession_Table(base):
     __tablename__ = 'StudentSession'
     id = Column(Integer, primary_key=True)

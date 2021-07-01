@@ -63,6 +63,10 @@ div.available-sessions{
     margin-bottom:15px;
 }
 
+div.session_info_left {
+    padding-left: 5.2%;
+}
+
 div.centered {
     text-align:center;
 }
@@ -127,7 +131,7 @@ div.semester-selector {
     direction: rtl;
 }
 
-div.tutor-td, div.course-td{
+div.tutor-td, div.course-td, div.session-td{
     display: none;
     white-space: nowrap;
 }
@@ -423,7 +427,7 @@ ul.no-margin {
 .margins {
     width: 100%;
     margin: 20px auto;
-    max-width: 70rem;
+    max-width: 72rem;
 }
 
 .margin-0 {
@@ -567,7 +571,7 @@ select:invalid {
     background-color: #0F2C52;
 }
 
-#deactivate-users {
+#deactivate-users, #delete-sessions {
     color: white !important;
     background-color: #DA1736;
     border-color: #DA1736;
@@ -602,6 +606,12 @@ select:invalid {
     padding: 0!important;
     font: inherit;
     cursor: pointer;
+}
+
+.session-selector {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
 }
 
 #show-hide {

@@ -1,9 +1,15 @@
 {% extends 'sciencelabs_base.html' %}
 
 {% block subnav %}
-        <a id="schedule-home" class="nav-link {{ 'active' if '/schedule/' == request.path else 'disabled'}}"
+    {% if 'Administrator' in session['USER-ROLES'] %}
+        <a id="schedule-home" class="nav-link {{ 'active' if '/schedule/' == request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:index') }}">Schedules</a>
-        <a id="create" class="nav-link {{ 'active' if 'create' in request.path else 'disabled'}}"
+        <a id="create" class="nav-link {{ 'active' if 'create' in request.path else 'disabled' }}"
            href="{{ url_for('ScheduleView:create_new_schedule') }}">Create New Schedule</a>
+        <a id="room-group" class="nav-link {{ 'active' if 'view-room-groupings' in request.path else 'disabled' }}"
+           href="{{ url_for('ScheduleView:room_groupings') }}">Room Group Setup</a>
+    {% endif %}
+        <a id="zoom" class="nav-link {{ 'active' if 'zoom-setup' in request.path else 'disabled' }}"
+           href="{{ url_for('ScheduleView:zoom_setup') }}">Zoom Setup</a>
 {% endblock %}
 
