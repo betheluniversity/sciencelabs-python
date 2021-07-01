@@ -46,7 +46,7 @@
                                                     {% if total_unique_unscheduled_attendance.append(total_unique_unscheduled_attendance.pop() + unscheduled_attendance[1]) %}{% endif %}
                                                 {% endif %}
                                             {% endfor %}
-                                            {% if total_unscheduled.append(total_unscheduled.pop() + info['attendance'] + sessions.anonStudents) %}{% endif %}
+                                            {% if total_unscheduled.append(total_unscheduled.pop() + info['unscheduled-attendance'] | length + sessions.anonStudents) %}{% endif %}
                                         {% endfor %}
                                     {% endif %}
                                     {% set total_anon_attendance = [0] %}
@@ -173,8 +173,8 @@
                         <td>{{ sessions.date.strftime('%m/%d/%Y') }}</td>
                         <td>{{ sessions.startTime|datetimeformat }}</td>
                         <td>{{ sessions.endTime|datetimeformat }}</td>
-                        <td>{{ info['attendance'] + sessions.anonStudents }}</td>
-                        {% if total_unscheduled.append(total_unscheduled.pop() + info['attendance'] + sessions.anonStudents) %}{% endif %}
+                        <td>{{ info['unscheduled-attendance'] | length + sessions.anonStudents }}</td>
+                        {% if total_unscheduled.append(total_unscheduled.pop() + info['unscheduled-attendance'] | length + sessions.anonStudents) %}{% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>

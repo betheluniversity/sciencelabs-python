@@ -76,6 +76,7 @@ class User:
             .filter(StudentSession_Table.sessionId == Session_Table.id)\
             .filter(Session_Table.semester_id == Semester_Table.id)\
             .filter(Semester_Table.id == semester_id)\
+            .filter(Session_Table.deletedAt == None) \
             .group_by(StudentSession_Table.sessionId)\
             .all()
 
@@ -88,14 +89,34 @@ class User:
             .all()
 
 
-    def get_students_in_course(self, course_id):
-        return db_session.query(User_Table, func.count(User_Table.id))\
+    def get_students_in_course(self, course_id, semester):
+        return db_session.query(User_Table, func.count(distinct(StudentSession_Table.sessionId)))\
             .filter(Course_Table.id == course_id)\
             .filter(SessionCourses_Table.course_id == course_id)\
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id)\
-            .filter(StudentSession_Table.studentId == User_Table.id)\
+            .filter(StudentSession_Table.studentId == User_Table.id) \
+            .filter(Session_Table.deletedAt == None) \
+            .filter(Session_Table.id == StudentSession_Table.sessionId) \
+            .filter(Session_Table.semester_id == semester) \
             .group_by(User_Table.id)\
             .all()
+
+    def get_student_attended_sessions(self, student_id, semester):
+        return db_session.query(StudentSession_Table.sessionId) \
+            .filter(Session_Table.semester_id == semester) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(StudentSession_Table.studentId == student_id) \
+            .filter(Session_Table.deletedAt == None) \
+            .distinct()
+
+    def get_student_attended_session_course_names(self, student_id, semester):
+        return db_session.query(StudentSession_Table.sessionId, SessionCourses_Table.course_id) \
+            .filter(Session_Table.semester_id == semester) \
+            .filter(StudentSession_Table.sessionId == Session_Table.id) \
+            .filter(StudentSession_Table.studentId == student_id) \
+            .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
+            .filter(Session_Table.deletedAt == None) \
+            .distinct()
 
     def get_average_time_in_course(self, student_id, course_id):
         return db_session.query(StudentSession_Table, User_Table) \
@@ -104,6 +125,8 @@ class User:
             .filter(SessionCourses_Table.studentsession_id == StudentSession_Table.id) \
             .filter(StudentSession_Table.studentId == User_Table.id) \
             .filter(User_Table.id == student_id) \
+            .filter(Session_Table.id == StudentSession_Table.sessionId) \
+            .filter(Session_Table.deletedAt == None) \
             .all()
 
     def get_student(self, student_id):
