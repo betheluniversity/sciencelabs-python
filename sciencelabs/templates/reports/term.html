@@ -20,9 +20,9 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <div class="header card">
-                            <div class="card-body btn-group">
+                            <div class="card-body btn-group separate-btn">
                                 <p class="no-margin-padding">Report for {{ semester.term }} {{ semester.year }}</p>
-                                <a href="{{ url_for('ReportView:export_semester_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+                                <a href="{{ url_for('ReportView:export_semester_csv') }}" class="btn btn-primary">CSV Export</a>
                             </div>
                         </div>
                     </div>
@@ -109,19 +109,19 @@
                     {% set total_anon_attendance = [0] %}
                     {% for schedule, sessions in term_info %}
                         <tr>
-                            <td>
+                            <td data-th="Schedule / Session Name">
                                 {{ schedule.name }}
                             </td>
-                            <td>
+                            <td data-th="Day of Week">
                                 {{ macros.day_abbr(schedule.dayofWeek) }}
                             </td>
-                            <td>
+                            <td data-th="Session Scheduled Start Time">
                                 {{ (schedule.startTime|datetimeformat) }}
                             </td>
-                            <td>
+                            <td data-th="Session Scheduled End Time">
                                 {{ schedule.endTime|datetimeformat }}
                             </td>
-                            <td>
+                            <td data-th="Sessions Held for Schedule">
                                 {{ sessions }}
                             </td>
                             {% set anonStudents = [0] %}
@@ -130,7 +130,7 @@
                                     {% if anonStudents.append(anonStudents.pop() + sess.anonStudents) %}{% endif %}
                                 {% endif %}
                             {% endfor %}
-                            <td>
+                            <td data-th="Student Attendance for Schedule">
                                 {% set attendance = [0] %}
                                 {% for sess, info in anon_attendance_info.items() %}
                                     {% if info['schedule'].id == schedule.id %}
@@ -139,7 +139,7 @@
                                 {% endfor %}
                                 {{ attendance[0] + anonStudents[0] }}
                             </td>
-                            <td>
+                            <td data-th="Percent of Total Attendance">
                                 {{ ((attendance[0] + anonStudents[0]) / all_total_attendance * 100)|round|int  }}%
                             </td>
                         </tr>
@@ -148,10 +148,10 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="no-border-top" colspan="4" class="text-right">Total</th>
-                            <th class="no-border-top">{{ total_sessions }}</th>
-                            <th class="no-border-top">{{ total_attendance + total_anon_attendance[0] }}</th>
-                            <th class="no-border-top">100%</th>
+                            <td class="no-border-top hide-mobile" colspan="4" class="text-right"><strong>Total</strong></td>
+                            <td class="no-border-top" data-th="Total Sessions"><strong>{{ total_sessions }}</strong></td>
+                            <td class="no-border-top" data-th="Total Attendance"><strong>{{ total_attendance + total_anon_attendance[0] }}</strong></td>
+                            <td class="no-border-top" data-th="Percentage Total"><strong>100%</strong></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -170,18 +170,26 @@
                     {% set total_unscheduled = [0] %}
                     {% for sessions, info in unscheduled_sessions_and_attendance.items() %}
                     <tr>
-                        <td>{{ sessions.date.strftime('%m/%d/%Y') }}</td>
-                        <td>{{ sessions.startTime|datetimeformat }}</td>
-                        <td>{{ sessions.endTime|datetimeformat }}</td>
-                        <td>{{ info['attendance'] + sessions.anonStudents }}</td>
+                        <td data-th="Date">
+                            {{ sessions.date.strftime('%m/%d/%Y') }}
+                        </td>
+                        <td data-th="Start Time">
+                            {{ sessions.startTime|datetimeformat }}
+                        </td>
+                        <td data-th="Stop Time">
+                            {{ sessions.endTime|datetimeformat }}
+                        </td>
+                        <td data-th="Attendance">
+                            {{ info['attendance'] + sessions.anonStudents }}
+                        </td>
                         {% if total_unscheduled.append(total_unscheduled.pop() + info['attendance'] + sessions.anonStudents) %}{% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="no-border-top" colspan="3" class="text-right">Total</th>
-                            <th class="no-border-top">{{ total_unscheduled[0] }}</th>
+                            <td class="no-border-top hide-mobile" colspan="3" class="text-right"><strong>Total</strong></td>
+                            <td class="no-border-top" data-th="Total Attendance"><strong>{{ total_unscheduled[0] }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>

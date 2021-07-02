@@ -42,19 +42,19 @@
                             <tbody>
                             {% for student, attendance in student_and_attendance.items() %}
                                 <tr>
-                                    <td>
+                                    <td data-th="Student Last Name">
                                         {{ student.lastName }}
                                     </td>
-                                    <td>
+                                    <td data-th="Student First Name">
                                         {{ student.firstName }}
                                     </td>
-                                    <td>
+                                    <td data-th="Student Email">
                                         {{ student.email }}
                                     </td>
-                                    <td>
+                                    <td data-th="Sessions Attended">
                                         {{ attendance }}
                                     </td>
-                                    <td>
+                                    <td data-th="View Student Report">
                                         <a href='{{ url_for('ReportView:view_student', student_id=student.id) }}' id="darkblue" class="btn btn-primary">View</a>
                                     </td>
                                 </tr>
@@ -63,7 +63,6 @@
                         </table>
                     </div>
                 </div>
-
             </form>
         </div>
 

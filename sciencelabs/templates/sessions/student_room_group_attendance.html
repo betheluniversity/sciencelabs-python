@@ -54,8 +54,8 @@
         </tr>
         {% for student, courses in students_and_courses.items() %}
             <tr>
-                <td>{{ student.firstName }} {{ student.lastName }}</td>
-                <td>
+                <td data-th="Student Name">{{ student.firstName }} {{ student.lastName }}</td>
+                <td data-th="Courses Attended For">
                     <ul>
                         {% for course in courses %}
                             <li>{{ course.dept }}{{ course.course_num }}</li>
@@ -65,8 +65,8 @@
                         {% endif %}
                     </ul>
                 </td>
-                <td>{{ student.timeIn|datetimeformat }}</td>
-                <td>
+                <td data-th="Time Signed Into Session">{{ student.timeIn|datetimeformat }}</td>
+                <td data-th="Time Signed Out of Session">
                     {% if student.timeOut %}
                         {{ student.timeOut|datetimeformat}}
                     {% else %}
@@ -78,7 +78,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
+                <td data-th="Attended Session Virtually">
                     {% if student.online %}
                         Yes
                     {% else %}

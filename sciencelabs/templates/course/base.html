@@ -25,22 +25,22 @@
                         <tbody>
                             {% for course, profs in courses_and_profs.items() %}
                                 <tr>
-                                    <td>
+                                    <td data-th="Course Name">
                                         <a class="no-decoration" href='{{ url_for('CourseView:view_course', course_id=course.id) }}'>{{ course.title }}</a>
                                     </td>
-                                    <td>
+                                    <td data-th="Course Section">
                                         {{ course.section }}
                                     </td>
-                                    <td>
+                                    <td data-th="Course Code">
                                         {{ course.dept + course.course_num }}
                                     </td>
-                                    <td>
+                                    <td data-th="Course Professor">
                                         {% for prof in profs %}
                                             {{ prof.firstName }}
                                             {{ prof.lastName }}
                                         {% endfor %}
                                     </td>
-                                    <td>
+                                    <td data-th="Students Enrolled">
                                         {{ course.num_attendees }}
                                     </td>
                                 </tr>

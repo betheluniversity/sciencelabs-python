@@ -32,13 +32,13 @@
                 <tbody>
                     {% for course, user in course_info %}
                         <tr>
-                            <td>
+                            <td data-th="Course Name and Section">
                                 {{ course.title }} (Section {{ course.section }})
                             </td>
-                            <td>
+                            <td data-th="Course Professor">
                                 {{ user.firstName }} {{ user.lastName }}
                             </td>
-                            <td>
+                            <td data-th="Professor Email">
                                 {{ user.email }}
                             </td>
                         </tr>

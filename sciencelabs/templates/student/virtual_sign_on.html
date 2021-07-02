@@ -36,30 +36,30 @@
                         <tbody>
                             {% for session in signed_in_sessions %}
                                 <tr>
-                                    <td>
+                                    <td data-th="Session Name">
                                         {{ session.name }}
                                     </td>
-                                    <td>
+                                    <td data-th="Session Date">
                                         {{ session.date.strftime('%m/%d/%Y') }}
                                     </td>
-                                    <td>
+                                    <td data-th="Session Time">
                                         {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                                     </td>
-                                    <td>
+                                    <td data-th="Session Room">
                                         {{ session.room }}
                                     </td>
-                                    <td>
-                                        <div class="text-left margin-top-10">
+                                    <td data-th="Courses Signed Up For">
+                                        <div class="text-left">
                                             {% for course in signed_in_courses[session.id] %}
                                                     {{ course.title }} ({{ course.dept }}{{ course.course_num }})
                                                     <br />
                                             {% endfor %}
                                         </div>
                                     </td>
-                                    <td>
+                                    <td data-th="Zoom Url">
                                         {% if session.zoom_url %}<a href="{{ session.zoom_url }}">Zoom Url</a>{% else %}N/A{% endif %}
                                     </td>
-                                    <td>
+                                    <td data-th="Sign Out of a Virtual Session">
                                         <button type="button" id="{{ session.id }}" class="blue btn btn-primary sign-out">Sign out</button>
                                     </td>
                                 </tr>
@@ -83,27 +83,27 @@
                     <tbody>
                         {% for session in open_sessions %}
                             <tr>
-                                <td>
+                                <td data-th="Session Name">
                                     {{ session.name }}
                                 </td>
-                                <td>
+                                <td data-th="Session Date">
                                     {{ session.date.strftime('%m/%d/%Y') }}
                                 </td>
-                                <td>
+                                <td data-th="Session Time">
                                     {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                                 </td>
-                                <td>
+                                <td data-th="Session Room">
                                     {{ session.room }}
                                 </td>
-                                <td>
-                                    <div class="text-left margin-top-10">
+                                <td data-th="Courses Available">
+                                    <div class="text-left">
                                         {% for course in open_student_session_courses[session.id] %}
                                                 {{ course.title }} ({{ course.dept }}{{ course.course_num }})
                                                 <br />
                                         {% endfor %}
                                     </div>
                                 </td>
-                                <td>
+                                <td data-th="Sign In to a Virtual Session">
                                     <div id="sign-in-sign-out">
                                         <button type="button" id="{{ session.id }}" class="blue btn btn-primary sign-in">Sign in</button>
                                     </div>
@@ -131,20 +131,20 @@
                 <tbody>
                     {% for session in sessions %}
                         <tr>
-                            <td>
+                            <td data-th="Session Name">
                                 {{ session.name }}
                             </td>
-                            <td>
+                            <td data-th="Session Date">
                                 {{ session.date.strftime('%m/%d/%Y') }}
                             </td>
-                            <td>
+                            <td data-th="Session Time">
                                 {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                             </td>
-                            <td>
+                            <td data-th="Session Room">
                                 {{ session.room }}
                             </td>
-                            <td>
-                                <div class="text-left margin-top-10">
+                            <td data-th="Courses Available">
+                                <div class="text-left">
                                     {% for course in student_session_courses[session.id] %}
                                             {{ course.title }} ({{ course.dept }}{{ course.course_num }})
                                             <br />

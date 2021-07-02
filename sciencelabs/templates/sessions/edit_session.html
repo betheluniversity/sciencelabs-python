@@ -142,24 +142,24 @@
             <tbody>
                 {% for student_session, info in student_info.items() %}
                     <tr>
-                        <td>
+                        <td data-th="Student Name">
                             {{ info['student'].firstName }} {{ info['student'].lastName }}
                         </td>
-                        <td>
+                        <td data-th="Time Signed Into Session">
                             {% if student_session.timeIn %}
                                 {{ student_session.timeIn|datetimeformat }}
                             {% else %}
                                 ???
                             {% endif %}
                         </td>
-                        <td>
+                        <td data-th="Time Signed Out of Session">
                             {% if student_session.timeOut %}
                                 {{ student_session.timeOut|datetimeformat}}
                             {% else %}
                                 ???
                             {% endif %}
                         </td>
-                        <td>
+                        <td data-th="Courses Attended For">
                             <ul>
                                 {% for course in info['courses'] %}
                                     <li>{{ course.dept }}{{ course.course_num }}</li>
@@ -169,21 +169,21 @@
                                 {% endif %}
                             </ul>
                         </td>
-                        <td>
+                        <td data-th="Attended Session Virtually">
                             {% if student_session.online %}
                                 Yes
                             {% else %}
                                 No
                             {% endif %}
                         </td>
-                        <td>
+                        <td data-th="Seat Assigned">
                             {% if student_session.online %}
                                 N/A
                             {% else %}
                                 {{ get_reservation(session_info.id, info['student'].id).seat_number }}
                             {% endif %}
                         </td>
-                        <td>
+                        <td data-th="Edit Student">
                             <div class="btn-group">
                                 <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                    class="btn btn-primary hover-bright">Edit</a>
@@ -216,32 +216,32 @@
                     {% for student_session, info in student_info.items() %}
                         {% if course in info['courses'] %}
                             <tr>
-                                <td><a href="{{ url_for('ReportView:view_student', student_id=info['student'].id) }}">{{ info['student'].firstName }} {{ info['student'].lastName }}</a></td>
-                                <td>
+                                <td data-th="Student Name"><a href="{{ url_for('ReportView:view_student', student_id=info['student'].id) }}">{{ info['student'].firstName }} {{ info['student'].lastName }}</a></td>
+                                <td data-th="Time Signed Into Session">
                                     {% if student_session.timeIn %}
                                         {{ student_session.timeIn|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-th="Time Signed Out of Session">
                                     {% if student_session.timeOut %}
                                         {{ student_session.timeOut|datetimeformat }}
                                     {% else %}
                                         ???
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-th="Attended Session Virtually">
                                     {% if student_session.online %}
                                         Yes
                                     {% else %}
                                         No
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-th="Seat Assigned">
                                     {{ get_reservation(session_info.id, info['student'].id).seat_number }}
                                 </td>
-                                <td>
+                                <td data-th="Edit Student">
                                     <div class="btn-group">
                                         <a id="edit" href="{{ url_for('SessionView:edit_student', student_session_id=student_session.id) }}"
                                            class="btn btn-primary hover-bright">Edit</a>
@@ -279,31 +279,31 @@
         <tbody>
             {% for tutor_session, tutor in tutor_info.items() %}
                 <tr>
-                    <td>
+                    <td data-th="Tutor Name">
                         {{ tutor.firstName }} {{ tutor.lastName }}
                     </td>
-                    <td>
+                    <td data-th="Time Signed Into Session">
                         {% if tutor_session.timeIn %}
                             {{ tutor_session.timeIn|datetimeformat }}
                         {% else %}
                              ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Time Signed Out of Session">
                         {% if tutor_session.timeOut %}
                             {{ tutor_session.timeOut|datetimeformat }}
                         {% else %}
                             ???
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Did Tutor Serve as Lead for Session?">
                         {% if tutor_session.isLead %}
                             Yes
                         {% else %}
                             No
                         {% endif %}
                     </td>
-                    <td>
+                    <td data-th="Edit Tutor">
                         <div class="btn-group">
                             <a id="edit" href='{{ url_for('SessionView:edit_tutor', tutor_session_id=tutor_session.id) }}'
                                class="btn btn-primary hover-bright">Edit</a>

@@ -32,45 +32,47 @@
                 {% if room_group %}
                     {% for session in sessions %}
                         <tr>
-                            <td>
+                            <td data-th="Session Name">
                                 {{ session.name }}
                             </td>
-                            <td>
+                            <td data-th="Session Date">
                                 {{ session.date.strftime('%m/%d/%Y') }}
                             </td>
-                            <td>
+                            <td data-th="Session Time">
                                 {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                             </td>
-                            <td>
+                            <td data-th="Session Room">
                                 {{ session.room }}
                             </td>
-                            <td>
+                            <td data-th="Session Capacity">
                                 {{ session.capacity }}
                             </td>
-                            <td>
+                            <td data-th="Session Zoom Url" class="break-word">
                                 <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
                             </td>
                         </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td>
+                        <td data-th="Session Name">
                             {{ session.name }}
                         </td>
-                        <td>
+                        <td data-th="Session Date">
                             {{ session.date.strftime('%m/%d/%Y') }}
                         </td>
-                        <td>
+                        <td data-th="Session Time">
                             {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                         </td>
-                        <td>
+                        <td data-th="Session Room">
                             {{ session.room }}
                         </td>
-                        <td>
+                        <td data-th="Session Capacity">
                             {{ session.capacity }}
                         </td>
-                        <td>
-                            <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                        <td data-th="Session Zoom Url">
+                            <div class="break-word">
+                                <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                            </div>
                         </td>
                     </tr>
                 {% endif %}

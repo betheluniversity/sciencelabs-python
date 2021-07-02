@@ -2,9 +2,9 @@
 
 {% block header %}
     <div class="header card">
-        <div class="card-body btn-group">
+        <div class="card-body btn-group separate-btn">
             <p class="no-margin-padding">{{ lab_title }} Enrollment vs. Attendance Report</p>
-            <a href="{{ url_for('ReportView:export_enrollment_csv') }}" class="csv-button btn btn-primary">CSV Export</a>
+            <a href="{{ url_for('ReportView:export_enrollment_csv') }}" class="btn btn-primary">CSV Export</a>
         </div>
     </div>
 {% endblock %}
@@ -27,11 +27,11 @@
                 <tbody>
                     {% for semester, attendance_info in semesters_and_attendance.items() %}
                         <tr>
-                            <td class="no-space">{{ semester.term }} {{ semester.year }}</td>
-                            <td>{{ attendance_info['totalAttendance'] }}</td>
-                            <td>{{ attendance_info['uniqueAttendance'] }}</td>
-                            <td>{{ 'N/A' if attendance_info['enrolled'] == 0 else attendance_info['enrolled'] }}</td>
-                            <td>{{ 'N/A' if attendance_info['percent'] == '0%' else attendance_info['percent'] }}</td>
+                            <td data-th="Semester Term and Year">{{ semester.term }} {{ semester.year }}</td>
+                            <td data-th="Total Attendance for Semester">{{ attendance_info['totalAttendance'] }}</td>
+                            <td data-th="Total Unique Attendance for Semester">{{ attendance_info['uniqueAttendance'] }}</td>
+                            <td data-th="Total Enrolled for Lab Courses">{{ 'N/A' if attendance_info['enrolled'] == 0 else attendance_info['enrolled'] }}</td>
+                            <td data-th="Percent of Enrolled">{{ 'N/A' if attendance_info['percent'] == '0%' else attendance_info['percent'] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

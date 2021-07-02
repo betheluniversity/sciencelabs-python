@@ -32,45 +32,47 @@
                 {% if room_group %}
                     {% for session in sessions %}
                         <tr>
-                            <td>
+                            <td data-th="Session Name">
                                 {{ session.name }}
                             </td>
-                            <td>
+                            <td data-th="Session Date">
                                 {{ session.date.strftime('%m/%d/%Y') }}
                             </td>
-                            <td>
+                            <td data-th="Session Time">
                                 {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                             </td>
-                            <td>
+                            <td data-th="Session Room">
                                 {{ session.room }}
                             </td>
-                            <td>
+                            <td data-th="Session Capacity">
                                 {{ session.capacity }}
                             </td>
-                            <td>
+                            <td data-th="Session Zoom Url">
                                 <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
                             </td>
                         </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td>
+                        <td data-th="Session Name">
                             {{ session.name }}
                         </td>
-                        <td>
+                        <td data-th="Session Date">
                             {{ session.date.strftime('%m/%d/%Y') }}
                         </td>
-                        <td>
+                        <td data-th="Session Time">
                             {{ session.schedStartTime|datetimeformat + ' - ' + session.schedEndTime|datetimeformat }}
                         </td>
-                        <td>
+                        <td data-th="Session Room">
                             {{ session.room }}
                         </td>
-                        <td>
+                        <td data-th="Session Capacity">
                             {{ session.capacity }}
                         </td>
-                        <td>
-                            <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                        <td data-th="Session Zoom Url">
+                            <div class="break-word">
+                                <a href="{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}">{% if session.zoom_url %}{{ session.zoom_url }}{% endif %}</a>
+                            </div>
                         </td>
                     </tr>
                 {% endif %}
@@ -94,10 +96,10 @@
                     {% for reservation in reservation_sessions %}
                         {% set user = get_user(reservation.user_id) %}
                         <tr>
-                            <td>
+                            <td data-th="Session Name">
                                 {{ user.firstName }} {{ user.lastName }}
                             </td>
-                            <td>
+                            <td data-th="Courses Signed Up For">
                                 <div class="text-left margin-top-10">
                                     {% for course in get_reservation_courses(reservation.id) %}
                                         {% set c = get_course(course[0]) %}
@@ -106,7 +108,7 @@
                                     {% endfor %}
                                 </div>
                             </td>
-                            <td>
+                            <td data-th="Is User Currently Signed In to Session">
                                 {% if is_signed_in(reservation.session_id, reservation.user_id) %}
                                     Yes
                                 {% else %}
