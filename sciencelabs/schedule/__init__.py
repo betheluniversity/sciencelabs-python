@@ -53,6 +53,7 @@ class ScheduleView(FlaskView):
         tutor_ids = self.schedule.get_scheduled_tutor_ids(schedule_id)
         lead_list = self.schedule.get_registered_leads()  # used for adding tutors to session
         tutor_list = self.schedule.get_registered_tutors()
+        schedule_capacity = self.schedule.get_schedule_capacity(schedule_id)
         return render_template('schedule/edit_schedule.html', **locals(), get_session=self.schedule.get_first_session_by_schedule)
 
     @route("/duplicate/<int:schedule_id>")
@@ -81,6 +82,7 @@ class ScheduleView(FlaskView):
             term_start_date = active_semester.startDate
             term_end_date = active_semester.endDate
             term_id = active_semester.id
+            reservation_pref = schedule.reservationPref
             name = schedule.name
             room = schedule.room
             start_time = schedule.startTime
@@ -90,9 +92,9 @@ class ScheduleView(FlaskView):
             leads = leads
             tutors = tutors
             courses = schedule_courses
-            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                     start_time, end_time, day_of_week, capacity, leads, tutors,
-                                                     courses)
+            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, reservation_pref,
+                                                     name, room, start_time, end_time, day_of_week, capacity, leads,
+                                                     tutors, courses)
 
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
@@ -100,7 +102,7 @@ class ScheduleView(FlaskView):
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
 
-            if capacity == 0:
+            if capacity == 0 and reservation_pref != 'non-reservation-sys':
                 self.slc.set_alert('success',
                                    '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
 
@@ -130,12 +132,18 @@ class ScheduleView(FlaskView):
         term_id = active_semester.id
         form = request.form
         schedule_id = form.get('schedule-id')
+        reservation_pref = form.get('reservation-pref')
         name = form.get('name')
         room = form.get('room')
         start_time = form.get('start-time')
         end_time = form.get('end-time')
         day_of_week = int(form.get('day-of-week'))
-        capacity = int(form.get('capacity'))
+        if form.get('capacity').isdigit():
+            capacity = int(form.get('capacity'))
+        else:
+            capacity = 0
+        if reservation_pref == 'non-reservation-sys':
+            capacity = 0
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
         courses = form.getlist('courses')
@@ -177,14 +185,15 @@ class ScheduleView(FlaskView):
                 self.schedule.delete_session_reservations(session.id)
         try:
             # This returns True if it executes successfully
-            sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, name, room,
-                                                   start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, reservation_pref,
+                                                   name, room, start_time, end_time, day_of_week, capacity, leads,
+                                                   tutors, courses)
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
 
-            if capacity == 0:
+            if capacity == 0 and reservation_pref != 'non-reservation-sys':
                 self.slc.set_alert('success', '{0} Schedule edited successfully! Be aware capacity set to 0.'.format(name))
 
             return redirect(url_for('ScheduleView:index'))
@@ -214,6 +223,7 @@ class ScheduleView(FlaskView):
             term_end_date = active_semester.endDate
             term_id = active_semester.id
             form = request.form
+            reservation_pref = form.get('reservation-pref')
             name = form.get('name')
             room = form.get('room')
             start_time = form.get('start-time')
@@ -223,8 +233,9 @@ class ScheduleView(FlaskView):
             leads = form.getlist('leads')
             tutors = form.getlist('tutors')
             courses = form.getlist('courses')
-            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, name, room,
-                                                     start_time, end_time, day_of_week, capacity, leads, tutors, courses)
+            sessions = self.schedule.create_schedule(term, term_start_date, term_end_date, term_id, reservation_pref,
+                                                     name, room, start_time, end_time, day_of_week, capacity, leads,
+                                                     tutors, courses)
 
             if room.lower() != 'virtual':
                 self.session.check_all_room_groupings(sessions)
@@ -232,7 +243,7 @@ class ScheduleView(FlaskView):
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
 
-            if capacity == 0:
+            if capacity == 0 and reservation_pref != 'non-reservation-sys':
                 self.slc.set_alert('success', '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
 
             return redirect(url_for('ScheduleView:index'))

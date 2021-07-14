@@ -15,6 +15,25 @@
                     </div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="reservation-preference">Type of Schedule</label>
+                        <div id="reservation-preference">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline1" class="custom-control-input"
+                                       name="reservation-pref" value="reservation-sys"
+                                       {% if schedule.reservationPref=="reservation-sys" %} checked {% endif %}>
+                                <label class="custom-control-label" for="customRadioInline1">Use Reservation System</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline2" class="custom-control-input"
+                                       name="reservation-pref" value="non-reservation-sys"
+                                       {% if schedule.reservationPref=="non-reservation-sys" %} checked {% endif %}>
+                                <label class="custom-control-label" for="customRadioInline2">Use Non-Reservation System</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
                         <input type="text" class="form-control chosen-container chosen-format" id="schedule-name" value="{{ schedule.name }}"
@@ -50,10 +69,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row hide-non-reservation-sys">
                     <div class="form-group col-md-12">
                         <label for="capacity">Session Capacity</label>
-                        <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ get_session(schedule.id).capacity }}" required>
+                        <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ schedule_capacity }}" required>
                     </div>
                 </div>
                 <div class="form-row">
@@ -104,6 +123,22 @@
         </div>
     </div>
     <script>
+        window.onload = (event) => {
+            if(document.getElementById('customRadioInline2').checked) {
+                $("div.hide-non-reservation-sys").hide();
+            }
+        }
+        $(document).ready(function() {
+            $("input[value='non-reservation-sys']").click(function() {
+                $("div.hide-non-reservation-sys").hide();
+                $("#capacity").prop({'required':false,'type':'text'});
+            });
+            $("input[value='reservation-sys']").click(function() {
+                $("div.hide-non-reservation-sys").show();
+                $("#capacity").prop({'required':true,'type':'number'});
+            });
+        });
+
         var leads = new SlimSelect({
             select: "#choose-leads",
             placeholder: "Choose lead tutors...",

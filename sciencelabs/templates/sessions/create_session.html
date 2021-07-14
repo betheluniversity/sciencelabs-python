@@ -13,6 +13,23 @@
         <div class="col-md-8">
             <form class="create-session-form" action="{{ url_for('SessionView:create_session_submit') }}" method="post">
                 <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="reservation-preference">Type of Session</label>
+                        <div id="reservation-preference">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline1" class="custom-control-input"
+                                       name="reservation-pref" value="reservation-sys" checked>
+                                <label class="custom-control-label" for="customRadioInline1">Use Reservation System</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline2" class="custom-control-input"
+                                       name="reservation-pref" value="non-reservation-sys">
+                                <label class="custom-control-label" for="customRadioInline2">Use Non-Reservation System</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="session-name">Name of Session</label>
                         <input type="text" class="form-control chosen-container chosen-format" id="session-name" name="name" required autocomplete="off">
@@ -48,12 +65,12 @@
                         <input type="time" class="form-control chosen-container chosen-format" id="scheduled-end" name="scheduled-end" required>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row hide-non-reservation-sys">
                     <div class="form-group col-md-6">
                         <label for="capacity">Session Capacity</label>
                         <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6 hide-non-reservation-sys">
                         <label for="zoom-url">Zoom Url</label>
                         <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="" required>
                     </div>
@@ -135,6 +152,19 @@
             var picker = new Pikaday({
                 field: document.getElementById('session-date'),
                 format: 'MM/DD/YYYY'
+            });
+
+            $("input[value='non-reservation-sys']").click(function() {
+                $("div.hide-non-reservation-sys").hide();
+                $("#capacity").prop({'required':false,'type':'text'});
+                $("#capacity").val('0');
+                $("#zoom-url").prop('required',false);
+                $("#zoom-url").val('');
+            });
+            $("input[value='reservation-sys']").click(function() {
+                $("div.hide-non-reservation-sys").show();
+                $("#capacity").prop({'required':true,'type':'number'});
+                $("#zoom-url").prop('required',true);
             });
         });
 

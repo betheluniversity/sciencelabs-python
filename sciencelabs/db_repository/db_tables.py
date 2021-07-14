@@ -75,6 +75,7 @@ class ScheduleCourseCodes_Table(base):
 class Schedule_Table(base):
     __tablename__ = 'Schedule'
     id = Column(Integer, primary_key=True)
+    reservationPref = Column(String)
     name = Column(String)
     room = Column(String)
     startTime = Column(String)
@@ -111,6 +112,7 @@ class Session_Table(base):
     id = Column(Integer, primary_key=True)
     semester_id = Column(Integer)
     schedule_id = Column(Integer)
+    reservationPref = Column(String)
     date = Column(String)
     schedStartTime = Column(String)
     schedEndTime = Column(String)
