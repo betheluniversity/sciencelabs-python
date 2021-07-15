@@ -16,19 +16,19 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label for="reservation-preference">Type of Schedule</label>
+                        <label for="reservation-preference">Use Reservation System for Session?</label>
                         <div id="reservation-preference">
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline1" class="custom-control-input"
-                                       name="reservation-pref" value="reservation-sys"
-                                       {% if schedule.reservationPref=="reservation-sys" %} checked {% endif %}>
-                                <label class="custom-control-label" for="customRadioInline1">Use Reservation System</label>
+                                <input type="radio" id="reserve-radio" class="custom-control-input"
+                                       name="using-reservation-system" value="1"
+                                       {% if schedule.usingReserveSys == 1 %} checked {% endif %}>
+                                <label class="custom-control-label" for="reserve-radio">Yes</label>
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline2" class="custom-control-input"
-                                       name="reservation-pref" value="non-reservation-sys"
-                                       {% if schedule.reservationPref=="non-reservation-sys" %} checked {% endif %}>
-                                <label class="custom-control-label" for="customRadioInline2">Use Non-Reservation System</label>
+                                <input type="radio" id="non-reserve-radio" class="custom-control-input"
+                                       name="using-reservation-system" value="0"
+                                       {% if schedule.usingReserveSys == 0 %} checked {% endif %}>
+                                <label class="custom-control-label" for="non-reserve-radio">No</label>
                             </div>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-row hide-non-reservation-sys">
+                <div class="form-row hide-non-reservation-system">
                     <div class="form-group col-md-12">
                         <label for="capacity">Session Capacity</label>
                         <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ schedule_capacity }}" required>
@@ -124,18 +124,20 @@
     </div>
     <script>
         window.onload = (event) => {
-            if(document.getElementById('customRadioInline2').checked) {
-                $("div.hide-non-reservation-sys").hide();
+            if ($('#non-reserve-radio').is(':checked')) {
+                $("div.hide-non-reservation-system").hide();
+                $("#capacity").prop({'required':false,'type':'text'});
             }
         }
         $(document).ready(function() {
-            $("input[value='non-reservation-sys']").click(function() {
-                $("div.hide-non-reservation-sys").hide();
-                $("#capacity").prop({'required':false,'type':'text'});
-            });
-            $("input[value='reservation-sys']").click(function() {
-                $("div.hide-non-reservation-sys").show();
-                $("#capacity").prop({'required':true,'type':'number'});
+            $('#reservation-preference').click(function() {
+                if ($('#non-reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").hide();
+                    $("#capacity").prop({'required':false,'type':'text'});
+                } else if ($('#reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").show();
+                    $("#capacity").prop({'required':true,'type':'number'});
+                }
             });
         });
 

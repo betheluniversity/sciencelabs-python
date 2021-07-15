@@ -37,7 +37,7 @@ class StudentView(FlaskView):
             if session.room.lower() != 'virtual':
                 sessions.append(session)
 
-        open_sessions, valid_session_courses = self.check_session_courses(self.session.get_reservation_sys_open_sessions())
+        open_sessions, valid_session_courses = self.check_session_courses(self.session.get_reservation_system_open_sessions())
         signed_in_sessions = []
         signed_in_courses = {}
         for session in open_sessions:
@@ -62,7 +62,7 @@ class StudentView(FlaskView):
 
         sessions, student_session_courses = self.check_session_courses(self.session.get_upcoming_sessions())
 
-        open_sessions, open_student_session_courses = self.check_session_courses(self.session.get_reservation_sys_open_sessions())
+        open_sessions, open_student_session_courses = self.check_session_courses(self.session.get_reservation_system_open_sessions())
 
         signed_in_sessions = []
         signed_in_courses = {}

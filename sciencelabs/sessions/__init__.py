@@ -246,7 +246,7 @@ class SessionView(FlaskView):
 
         form = request.form
         session_id = form.get('session-id')
-        reservation_pref = form.get('reservation-pref')
+        using_reservation_system = int(form.get('using-reservation-system'))
         name = form.get('name')
         room = form.get('room')
         semester_id = form.get('semester-select')
@@ -262,7 +262,7 @@ class SessionView(FlaskView):
         else:
             capacity = 0
         zoom_url = form.get('zoom-url') or None
-        if reservation_pref == 'non-reservation-sys':
+        if using_reservation_system == 0:
             capacity = 0
             zoom_url = None
         leads = form.getlist('leads')
@@ -312,7 +312,7 @@ class SessionView(FlaskView):
         else:
             self.session.delete_session_reservations(session_id)
         try:
-            self.session.edit_session(session_id, reservation_pref, semester_id, db_date, scheduled_start,
+            self.session.edit_session(session_id, using_reservation_system, semester_id, db_date, scheduled_start,
                                       scheduled_end, capacity, zoom_url, actual_start, actual_end, room, comments,
                                       anon_students, name, leads, tutors, courses)
             if room.lower() != 'virtual':
@@ -320,7 +320,7 @@ class SessionView(FlaskView):
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
 
-            if capacity == 0 and reservation_pref != 'non-reservation-sys':
+            if capacity == 0 and using_reservation_system != 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
@@ -491,7 +491,7 @@ class SessionView(FlaskView):
         self.slc.check_roles_and_route(['Administrator'])
 
         form = request.form
-        reservation_pref = form.get('reservation-pref')
+        using_reservation_system = int(form.get('using-reservation-system'))
         name = form.get('name')
         room = form.get('room')
         semester_id = form.get('semester-select')
@@ -518,7 +518,7 @@ class SessionView(FlaskView):
             return redirect(url_for('SessionView:create'))
 
         try:
-            new_session = self.session.create_new_session(semester_id, reservation_pref, db_date, scheduled_start,
+            new_session = self.session.create_new_session(semester_id, using_reservation_system, db_date, scheduled_start,
                                                           scheduled_end, capacity, zoom_url, actual_start, actual_end,
                                                           room, comments, anon_students, name, leads, tutors, courses)
             if room.lower() != 'virtual':
@@ -526,7 +526,7 @@ class SessionView(FlaskView):
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
 
-            if capacity == 0 and reservation_pref != 'non-reservation-sys':
+            if capacity == 0 and using_reservation_system != 0:
                 self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
                                    .format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view

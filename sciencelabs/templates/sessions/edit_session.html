@@ -13,19 +13,19 @@
         <input type="hidden" name="session-id" value="{{ session_id }}">
         <div class="form-row">
             <div class="form-group col-md-12">
-                <label for="reservation-preference">Type of Session</label>
+                <label for="reservation-preference">Use Reservation System for Session?</label>
                 <div id="reservation-preference">
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="customRadioInline1" class="custom-control-input"
-                               name="reservation-pref" value="reservation-sys"
-                               {% if session_info.reservationPref=="reservation-sys" %} checked {% endif %}>
-                        <label class="custom-control-label" for="customRadioInline1">Use Reservation System</label>
+                        <input type="radio" id="reserve-radio" class="custom-control-input"
+                               name="using-reservation-system" value="1"
+                               {% if session_info.usingReserveSys == 1 %} checked {% endif %}>
+                        <label class="custom-control-label" for="reserve-radio">Yes</label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="customRadioInline2" class="custom-control-input"
-                               name="reservation-pref" value="non-reservation-sys"
-                               {% if session_info.reservationPref=="non-reservation-sys" %} checked {% endif %}>
-                        <label class="custom-control-label" for="customRadioInline2">Use Non-Reservation System</label>
+                        <input type="radio" id="non-reserve-radio" class="custom-control-input"
+                               name="using-reservation-system" value="0"
+                               {% if session_info.usingReserveSys == 0 %} checked {% endif %}>
+                        <label class="custom-control-label" for="non-reserve-radio">No</label>
                     </div>
                 </div>
             </div>
@@ -72,12 +72,12 @@
                        value="{{ session_info.schedEndTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
-        <div class="form-row hide-non-reservation-sys">
+        <div class="form-row hide-non-reservation-system">
             <div class="form-group col-md-6">
                 <label for="capacity">Session Capacity</label>
                 <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ session_info.capacity }}" required>
             </div>
-            <div class="form-group col-md-6 hide-non-reservation-sys">
+            <div class="form-group col-md-6 hide-non-reservation-system">
                 <label for="zoom-url">Zoom Url</label>
                 <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}" required>
             </div>
@@ -345,21 +345,24 @@
     <script src="{{ url_for('static', filename='pikaday.jquery.js') }}"></script>
     <script>
         window.onload = (event) => {
-            if(document.getElementById('customRadioInline2').checked) {
-                $("div.hide-non-reservation-sys").hide();
+            if ($('#non-reserve-radio').is(':checked')) {
+                $("div.hide-non-reservation-system").hide();
+                $("#capacity").prop({'required':false,'type':'text'});
+                $("#zoom-url").prop({'required':false,'type':'text'});
             }
         }
         $(document).ready( function () {
 
-            $("input[value='non-reservation-sys']").click(function() {
-                $("div.hide-non-reservation-sys").hide();
-                $("#capacity").prop({'required':false,'type':'text'});
-                $("#zoom-url").prop({'required':false,'type':'text'});
-            });
-            $("input[value='reservation-sys']").click(function() {
-                $("div.hide-non-reservation-sys").show();
-                $("#capacity").prop({'required':true,'type':'number'});
-                $("#zoom-url").prop({'required':true,'type':'url'});
+            $('#reservation-preference').click(function() {
+                if ($('#non-reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").hide();
+                    $("#capacity").prop({'required':false,'type':'text'});
+                    $("#zoom-url").prop({'required':false,'type':'text'});
+                } else if ($('#reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").show();
+                    $("#capacity").prop({'required':true,'type':'number'});
+                    $("#zoom-url").prop({'required':true,'type':'url'});
+                }
             });
 
             $('#view-by-course').hide();
