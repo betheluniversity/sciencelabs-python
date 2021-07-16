@@ -96,8 +96,8 @@ class ScheduleView(FlaskView):
                                                      name, room, start_time, end_time, day_of_week, capacity, leads,
                                                      tutors, courses)
 
-            if room.lower() != 'virtual':
-                self.session.check_all_room_groupings(sessions)
+            if room.lower() != 'virtual' and using_reservation_system == 1:
+                self.session.check_all_room_groupings(sessions, using_reservation_system)
             self.session.delete_extra_room_groupings()
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
@@ -188,8 +188,8 @@ class ScheduleView(FlaskView):
             sessions = self.schedule.edit_schedule(term_start_date, term_end_date, term_id, schedule_id, using_reservation_system,
                                                    name, room, start_time, end_time, day_of_week, capacity, leads,
                                                    tutors, courses)
-            if room.lower() != 'virtual':
-                self.session.check_all_room_groupings(sessions)
+            if room.lower() != 'virtual' and using_reservation_system == 1:
+                self.session.check_all_room_groupings(sessions, using_reservation_system)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
 
@@ -237,8 +237,8 @@ class ScheduleView(FlaskView):
                                                      name, room, start_time, end_time, day_of_week, capacity, leads,
                                                      tutors, courses)
 
-            if room.lower() != 'virtual':
-                self.session.check_all_room_groupings(sessions)
+            if room.lower() != 'virtual' and using_reservation_system == 1:
+                self.session.check_all_room_groupings(sessions, using_reservation_system)
             self.session.delete_extra_room_groupings()
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))

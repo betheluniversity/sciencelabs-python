@@ -264,7 +264,6 @@ class SessionView(FlaskView):
         zoom_url = form.get('zoom-url') or None
         if using_reservation_system == 0:
             capacity = 0
-            zoom_url = None
         leads = form.getlist('leads')
         tutors = form.getlist('tutors')
         actual_start = form.get('actual-start') or None
@@ -315,8 +314,8 @@ class SessionView(FlaskView):
             self.session.edit_session(session_id, using_reservation_system, semester_id, db_date, scheduled_start,
                                       scheduled_end, capacity, zoom_url, actual_start, actual_end, room, comments,
                                       anon_students, name, leads, tutors, courses)
-            if room.lower() != 'virtual':
-                self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room)
+            if room.lower() != 'virtual' and using_reservation_system == 1:
+                self.session.check_room_grouping(db_date, scheduled_start, scheduled_end, room, using_reservation_system)
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
 
@@ -521,8 +520,8 @@ class SessionView(FlaskView):
             new_session = self.session.create_new_session(semester_id, using_reservation_system, db_date, scheduled_start,
                                                           scheduled_end, capacity, zoom_url, actual_start, actual_end,
                                                           room, comments, anon_students, name, leads, tutors, courses)
-            if room.lower() != 'virtual':
-                self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room)
+            if room.lower() != 'virtual' and using_reservation_system == 1:
+                self.session.check_room_grouping(new_session.date, new_session.schedStartTime, new_session.schedEndTime, new_session.room, using_reservation_system)
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
 
@@ -542,6 +541,7 @@ class SessionView(FlaskView):
         session_students = self.session.get_session_students(session_id)
         students_and_courses = {student: self.session.get_student_session_courses(session_id, student.id) for student in session_students}
         session_tutors = self.session.get_session_tutors(session_id)
+        session_info = self.session.get_session(session_id)
         return render_template('sessions/view_session.html', **locals())
 
     @route('/view-session-reservations/<int:session_id>')
@@ -913,8 +913,8 @@ class SessionView(FlaskView):
         try:
             self.session.restore_deleted_session(session_id)
             session = self.session.get_session(session_id)
-            if session.room.lower() != 'virtual':
-                self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+            if session.room.lower() != 'virtual' and session.usingReserveSys == 1:
+                self.session.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room, session.usingReserveSys)
 
             self.slc.set_alert('success', 'Session restored successfully!')
             return redirect(url_for('SessionView:index'))
@@ -1146,7 +1146,12 @@ class SessionView(FlaskView):
 
         # START OF COVID CHANGES #
 
-        reservation_based = True
+        session_info = self.session.get_session(session_id)
+        if session_info and session_info.usingReserveSys == 0:
+            reservation_based = False
+        else:
+            reservation_based = True
+
         if reservation_based:
             reservations = self.session.get_session_reservations(session_id)
             valid_reservation = False

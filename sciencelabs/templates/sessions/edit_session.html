@@ -72,14 +72,14 @@
                        value="{{ session_info.schedEndTime|datetimeformat('%H:%M') }}">
             </div>
         </div>
-        <div class="form-row hide-non-reservation-system">
-            <div class="form-group col-md-6">
+        <div class="form-row">
+            <div class="form-group col-md-6 hide-non-reservation-system">
                 <label for="capacity">Session Capacity</label>
                 <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="{{ session_info.capacity }}" required>
             </div>
-            <div class="form-group col-md-6 hide-non-reservation-system">
+            <div class="form-group col-md-6">
                 <label for="zoom-url">Zoom Url</label>
-                <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}" required>
+                <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="{% if session_info.zoom_url %}{{ session_info.zoom_url }}{% endif %}">
             </div>
         </div>
         <div class="form-row">
@@ -348,7 +348,6 @@
             if ($('#non-reserve-radio').is(':checked')) {
                 $("div.hide-non-reservation-system").hide();
                 $("#capacity").prop({'required':false,'type':'text'});
-                $("#zoom-url").prop({'required':false,'type':'text'});
             }
         }
         $(document).ready( function () {
@@ -357,11 +356,9 @@
                 if ($('#non-reserve-radio').is(':checked')) {
                     $("div.hide-non-reservation-system").hide();
                     $("#capacity").prop({'required':false,'type':'text'});
-                    $("#zoom-url").prop({'required':false,'type':'text'});
                 } else if ($('#reserve-radio').is(':checked')) {
                     $("div.hide-non-reservation-system").show();
                     $("#capacity").prop({'required':true,'type':'number'});
-                    $("#zoom-url").prop({'required':true,'type':'url'});
                 }
             });
 

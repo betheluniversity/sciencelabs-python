@@ -14,30 +14,31 @@ class Session:
     def __init__(self):
         self.base = ScienceLabsController()
 
-    def check_all_room_groupings(self, sessions):
+    def check_all_room_groupings(self, sessions, using_reservation_system):
         for session in sessions:
-            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room, using_reservation_system)
 
-    def check_room_grouping(self, date, start_time, end_time, room):
-        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
+    def check_room_grouping(self, date, start_time, end_time, room, using_reservation_system):
+        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room, using_reservation_system)
         if len(sessions) > 1:
             room_group_id = None
             for session in sessions:
                 if session.room_group_id:
                     room_group_id = session.room_group_id
 
-            if room.lower() != 'virtual':
+            if room.lower() != 'virtual' and using_reservation_system == 1:
                 if room_group_id:
                     self.update_room_grouping(room_group_id, sessions)
                 else:
                     self.create_room_grouping(sessions)
 
-    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
+    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room, using_reservation_system):
         return db_session.query(Session_Table) \
             .filter(Session_Table.date == date) \
             .filter(Session_Table.schedStartTime == start_time) \
             .filter(Session_Table.schedEndTime == end_time) \
             .filter(Session_Table.room == room) \
+            .filter(Session_Table.usingReserveSys == 1) \
             .filter(Session_Table.deletedAt == None) \
             .filter(Session_Table.openerId == None) \
             .all()
@@ -74,9 +75,9 @@ class Session:
                 self.delete_session_room_grouping(room_group, sessions)
             else:
                 for session in sessions:
-                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)) and session.openerId == None:
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room, session.usingReserveSys)) and session.openerId == None:
                         self.delete_session_room_grouping(room_group, sessions)
-                        self.check_all_room_groupings(sessions)
+                        self.check_all_room_groupings(sessions, session.usingReserveSys)
                         break
 
     def delete_extra_room_grouping(self, room_group_id):
@@ -165,6 +166,12 @@ class Session:
         return db_session.query(Session_Table)\
             .filter(Session_Table.open == 1)\
             .filter(Session_Table.usingReserveSys != 0)\
+            .all()
+
+    def get_online_open_sessions(self):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.open == 1)\
+            .filter(Session_Table.zoom_url != None)\
             .all()
 
     def get_session_tutors(self, session_id):

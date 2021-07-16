@@ -19,10 +19,12 @@
                                 <div class="btn-group">
                                     <a href="{{ url_for('SessionView:view_session', session_id=session_info.id) }}"
                                        id="gray" class="btn btn-primary hover-bright">View Session</a>
-                                    <a href='{% if not session_info.room_group_id %}
-                                       {{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}
-                                       {% else %}{{ url_for('SessionView:view_room_group_reservations', room_group_id=session_info.room_group_id) }}{% endif %}'
-                                       class="btn btn-primary">Session Control</a>
+                                    {% if session_info.usingReserveSys != 0 %}
+                                        <a href='{% if not session_info.room_group_id %}
+                                           {{ url_for('SessionView:view_session_reservations', session_id=session_info.id) }}
+                                           {% else %}{{ url_for('SessionView:view_room_group_reservations', room_group_id=session_info.room_group_id) }}{% endif %}'
+                                           class="btn btn-primary">Session Control</a>
+                                    {% endif %}
                                     {% if 'Administrator' in session['USER-ROLES'] or 'Lead Tutor' in session['USER-ROLES'] %}
                                         <a href="{{ url_for('SessionView:edit_session', session_id=session_info.id) }}"
                                            id="edit" class="btn btn-primary hover-bright">Edit Session</a>
@@ -114,7 +116,7 @@
                                                id="email_all" class="btn btn-primary hover-bright">Email All</a>
                                         {% endif %}
                                     {% elif session_info.usingReserveSys == 0 %}
-                                        This type of session does not support reservations.
+                                        Session type does not support reservations.
                                     {% else %}
                                         There are no reservations for this session at this time.
                                     {% endif %}

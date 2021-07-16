@@ -65,14 +65,14 @@
                         <input type="time" class="form-control chosen-container chosen-format" id="scheduled-end" name="scheduled-end" required>
                     </div>
                 </div>
-                <div class="form-row hide-non-reservation-system">
-                    <div class="form-group col-md-6">
+                <div class="form-row">
+                    <div class="form-group col-md-6 hide-non-reservation-system">
                         <label for="capacity">Session Capacity</label>
                         <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
                     </div>
-                    <div class="form-group col-md-6 hide-non-reservation-system">
+                    <div class="form-group col-md-6">
                         <label for="zoom-url">Zoom Url</label>
-                        <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="" required>
+                        <input type="url" class="form-control chosen-container chosen-format" id="zoom-url" name="zoom-url" value="">
                     </div>
                 </div>
                 <div class="form-row">
@@ -159,12 +159,9 @@
                     $("div.hide-non-reservation-system").hide();
                     $("#capacity").prop({'required':false,'type':'text'});
                     $("#capacity").val('0');
-                    $("#zoom-url").prop('required',false);
-                    $("#zoom-url").val('');
                 } else if ($('#reserve-radio').is(':checked')) {
                     $("div.hide-non-reservation-system").show();
                     $("#capacity").prop({'required':true,'type':'number'});
-                    $("#zoom-url").prop('required',true);
                 }
             });
         });

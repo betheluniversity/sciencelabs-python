@@ -50,7 +50,9 @@
             <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
             <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
             <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
-            <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+            {% if session_info.zoom_url %}
+                <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+            {% endif %}
         </tr>
         {% for student, courses in students_and_courses.items() %}
             <tr>
@@ -78,13 +80,15 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td>
-                    {% if student.online %}
-                        Yes
-                    {% else %}
-                        No
-                    {% endif %}
-                </td>
+                {% if session_info.zoom_url %}
+                    <td>
+                        {% if student.online %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>
