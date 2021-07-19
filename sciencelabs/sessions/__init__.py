@@ -319,7 +319,7 @@ class SessionView(FlaskView):
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', 'Session {0} ({1}) edited successfully!'.format(name, date))
 
-            if capacity == 0 and using_reservation_system != 0:
+            if capacity == 0 and using_reservation_system == 1:
                 self.slc.set_alert('success', 'Session {0} ({1}) edited successfully! Be aware capacity set to 0.'.format(name, date))
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
         except Exception as error:
@@ -525,7 +525,7 @@ class SessionView(FlaskView):
 
             self.slc.set_alert('success', 'Session {0} ({1}) created successfully!'.format(name, date))
 
-            if capacity == 0 and using_reservation_system != 0:
+            if capacity == 0 and using_reservation_system == 1:
                 self.slc.set_alert('success', 'Session {0} ({1}) created successfully! Be aware capacity set to 0.'
                                    .format(name, date))
             if actual_start or actual_end:  # Past session, so go to closed to view

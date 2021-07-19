@@ -60,7 +60,7 @@ class StudentView(FlaskView):
 
         semester = self.schedule.get_active_semester()
 
-        sessions, student_session_courses = self.check_session_courses(self.session.get_upcoming_sessions())
+        sessions, student_session_courses = self.check_session_courses(self.session.get_upcoming_online_sessions())
 
         open_sessions, open_student_session_courses = self.check_session_courses(self.session.get_online_open_sessions())
 

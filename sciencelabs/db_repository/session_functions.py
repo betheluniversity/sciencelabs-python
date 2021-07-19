@@ -165,7 +165,7 @@ class Session:
     def get_reservation_system_open_sessions(self):
         return db_session.query(Session_Table)\
             .filter(Session_Table.open == 1)\
-            .filter(Session_Table.usingReserveSys != 0)\
+            .filter(Session_Table.usingReserveSys == 1)\
             .all()
 
     def get_online_open_sessions(self):
@@ -603,36 +603,36 @@ class Session:
     def get_reservation_sessions(self):
         future_sessions = db_session.query(Session_Table)\
             .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.usingReserveSys == 1)\
             .filter(Session_Table.deletedAt == None)\
             .filter(Session_Table.endTime == None)\
             .all()
         valid_sessions = []
         for session in future_sessions:
-            if session.usingReserveSys != 0:
-                start_time = session.schedStartTime
-                end_time = session.schedEndTime
-                reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
-                reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
-                if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
-                    valid_sessions.append(session)
+            start_time = session.schedStartTime
+            end_time = session.schedEndTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(end_time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(start_time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
 
         return valid_sessions
 
-    def get_upcoming_sessions(self):
+    def get_upcoming_online_sessions(self):
         future_sessions = db_session.query(Session_Table)\
             .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.zoom_url != None)\
             .filter(Session_Table.deletedAt == None)\
             .filter(Session_Table.endTime == None)\
             .filter(Session_Table.openerId == None)\
             .all()
         valid_sessions = []
         for session in future_sessions:
-            if session.usingReserveSys != 0:
-                time = session.schedStartTime
-                reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-                reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
-                if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
-                    valid_sessions.append(session)
+            time = session.schedStartTime
+            reservations_end_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            reservations_start_time = datetime.combine(session.date, datetime.strptime(str(time), '%H:%M:%S').time())
+            if (reservations_start_time - timedelta(days=3)) <= datetime.now() <= reservations_end_time:
+                valid_sessions.append(session)
 
         return valid_sessions
 

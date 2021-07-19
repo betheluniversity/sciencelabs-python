@@ -102,7 +102,7 @@ class ScheduleView(FlaskView):
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
 
-            if capacity == 0 and using_reservation_system != 0:
+            if capacity == 0 and using_reservation_system == 1:
                 self.slc.set_alert('success',
                                    '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
 
@@ -193,7 +193,7 @@ class ScheduleView(FlaskView):
             self.session.delete_extra_room_groupings()
             self.slc.set_alert('success', '{0} Schedule edited successfully!'.format(name))
 
-            if capacity == 0 and using_reservation_system != 0:
+            if capacity == 0 and using_reservation_system == 1:
                 self.slc.set_alert('success', '{0} Schedule edited successfully! Be aware capacity set to 0.'.format(name))
 
             return redirect(url_for('ScheduleView:index'))
@@ -243,7 +243,7 @@ class ScheduleView(FlaskView):
 
             self.slc.set_alert('success', '{0} Schedule created successfully!'.format(name))
 
-            if capacity == 0 and using_reservation_system != 0:
+            if capacity == 0 and using_reservation_system == 1:
                 self.slc.set_alert('success', '{0} Schedule created successfully! Be aware capacity set to 0.'.format(name))
 
             return redirect(url_for('ScheduleView:index'))
