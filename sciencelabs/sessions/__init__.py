@@ -101,6 +101,7 @@ class SessionView(FlaskView):
         other_course = self.session.get_other_course(student_session_id)
         studentsession = self.session.get_studentsession_by_id(student_session_id)
         reservation = self.session.get_reservation(studentsession.sessionId, studentsession.studentId)
+        session_info = self.session.get_session(studentsession.sessionId)
         return render_template('sessions/edit_student.html', **locals())
 
     @route('/attendance/student/<int:session_id>')
@@ -280,6 +281,7 @@ class SessionView(FlaskView):
         capacity_issue = False
         if room.lower() != 'virtual':
             reserved_seats = self.session.get_num_reserved_seats(session.id)
+            test = self.session.get_session_reservations(session.id)
             if session.capacity > capacity:
                 # If the session capacity is greater than the new capacity and more seats are reserved than the new
                 # capacity error out
@@ -340,7 +342,7 @@ class SessionView(FlaskView):
         other_check = form.get('other-check')
         other_course = form.get('other-name')
         virtual = form.get('virtual-check')
-        seat_number = int(form.get('seat-number'))
+        seat_number = 0
         if not other_check:
             other_course = None
         if virtual:
@@ -351,19 +353,22 @@ class SessionView(FlaskView):
         session = self.session.get_session(session_id)
         student_sesssion = self.session.get_studentsession_by_id(student_session_id)
         student_id = student_sesssion.studentId
-        current_reservation = self.session.get_reservation(session_id, student_id)
 
-        session_reservations = self.session.get_session_reservations(session_id)
-        for reservation in session_reservations:
-            if reservation.seat_number != 0 and reservation.seat_number == seat_number and reservation.user_id != student_id:
-                self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
-                                             'again with a different seat number')
-                return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
+        if session.usingReserveSys == 1:
+            seat_number = int(form.get('seat-number'))
+
+            session_reservations = self.session.get_session_reservations(session_id)
+            for reservation in session_reservations:
+                if reservation.seat_number != 0 and reservation.seat_number == seat_number and reservation.user_id != student_id:
+                    self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
+                                                 'again with a different seat number')
+                    return redirect(url_for('SessionView:edit_student', student_session_id=student_session_id))
         try:
             # Returns True if successful
             self.session.edit_student_session(student_session_id, time_in, time_out, other_course,
                                                         student_courses, virtual)
-            if session.room.lower() != 'virtual' and virtual == 0:
+            if session.room.lower() != 'virtual' and virtual == 0 and session.usingReserveSys == 1:
+                current_reservation = self.session.get_reservation(session_id, student_id)
                 self.session.update_reservation_seat_number(current_reservation.id, seat_number)
             self.slc.set_alert('success', 'Edited student successfully!')
             return redirect(url_for('SessionView:edit_session', session_id=session_id))
@@ -417,29 +422,30 @@ class SessionView(FlaskView):
         form = request.form
         session_id = int(form.get('session-id'))
         student_id = int(form.get('choose-student'))
-        seat_number = int(form.get('seat'))
-
+        seat_number = 0
         session = self.session.get_session(session_id)
-
-        session_reservations = self.session.get_session_reservations(session_id)
-
         already_reserved = None
-        for reservation in session_reservations:
-            if reservation.user_id == student_id:
-                already_reserved = reservation
-            if reservation.seat_number != 0 and reservation.seat_number == seat_number:
-                self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
-                                             'again with a different seat number')
+
+        if session.usingReserveSys == 1:
+            seat_number = int(form.get('seat'))
+            session_reservations = self.session.get_session_reservations(session_id)
+
+            for reservation in session_reservations:
+                if reservation.user_id == student_id:
+                    already_reserved = reservation
+                if reservation.seat_number != 0 and reservation.seat_number == seat_number:
+                    self.slc.set_alert('danger', 'Failed to add student since that seat number is already taken. Please try '
+                                                 'again with a different seat number')
+                    return redirect(url_for('SessionView:add_student', session_id=session_id))
+            seats_available = self.session.get_num_seats_available(session_id)
+            if session.room_group_id:
+                seats_available = self.session.get_room_group_num_seats_available(session.room_group_id)
+            if seats_available == 0 and session.room.lower() != 'virtual' and session.usingReserveSys == 1:
+                self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
+                                             'wish to add another student')
                 return redirect(url_for('SessionView:add_student', session_id=session_id))
-        seats_available = self.session.get_num_seats_available(session_id)
-        if session.room_group_id:
-            seats_available = self.session.get_room_group_num_seats_available(session.room_group_id)
-        if seats_available == 0 and session.room.lower() != 'virtual':
-            self.slc.set_alert('danger', 'Failed to add student as capacity is full. Please increase capacity if you '
-                                         'wish to add another student')
-            return redirect(url_for('SessionView:add_student', session_id=session_id))
         try:
-            if session.room.lower() != 'virtual':
+            if session.room.lower() != 'virtual' and session.usingReserveSys == 1:
                 if not already_reserved:
                     self.session.add_student_to_reservation(session_id, student_id, seat_number)
                 else:

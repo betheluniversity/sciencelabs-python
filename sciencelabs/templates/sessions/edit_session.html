@@ -18,13 +18,13 @@
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" id="reserve-radio" class="custom-control-input"
                                name="using-reservation-system" value="1"
-                               {% if session_info.usingReserveSys == 1 %} checked {% endif %}>
+                               {% if session_info.usingReserveSys == 1 %} checked {% endif %} required>
                         <label class="custom-control-label" for="reserve-radio">Yes</label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" id="non-reserve-radio" class="custom-control-input"
                                name="using-reservation-system" value="0"
-                               {% if session_info.usingReserveSys == 0 %} checked {% endif %}>
+                               {% if session_info.usingReserveSys == 0 %} checked {% endif %} required>
                         <label class="custom-control-label" for="non-reserve-radio">No</label>
                     </div>
                 </div>
