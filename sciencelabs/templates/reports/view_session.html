@@ -141,7 +141,9 @@
                                         <th data-toggle="tooltip" data-placement="top" title="Courses Attended For">Courses</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Time Signed Into Session">Time In</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Time Signed Out of Session">Time Out</th>
-                                        <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+                                        {% if session_info.zoom_url %}
+                                            <th data-toggle="tooltip" data-placement="top" title="Attended Session Virtually">Attended Virtually</th>
+                                        {% endif %}
                                         <th data-toggle="tooltip" data-placement="top" title="Seat Number Assigned">Seat Number</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Total Time in Session">Total Time</th>
                                     </tr>
@@ -176,17 +178,19 @@
                                                         No
                                                     {% endif %}
                                                 </td>
-                                                <td>
-                                                    {% if student_session.online %}
-                                                        N/A
-                                                    {% else %}
-                                                        {% if get_reservation(session_info.id, student.id) != None and get_reservation(session_info.id, student.id).seat_number != None %}
-                                                            {{ get_reservation(session_info.id, student.id).seat_number }}
-                                                        {% else %}
+                                                {% if session_info.zoom_url %}
+                                                    <td>
+                                                        {% if student_session.online %}
                                                             N/A
+                                                        {% else %}
+                                                            {% if get_reservation(session_info.id, student.id) != None and get_reservation(session_info.id, student.id).seat_number != None %}
+                                                                {{ get_reservation(session_info.id, student.id).seat_number }}
+                                                            {% else %}
+                                                                N/A
+                                                            {% endif %}
                                                         {% endif %}
-                                                    {% endif %}
-                                                </td>
+                                                    </td>
+                                                {% endif %}
                                                 {% if student_session.timeOut and student_session.timeIn %}
                                                     <td>
                                                         {{ ((student_session.timeOut - student_session.timeIn).total_seconds()/60)|round|int }} min

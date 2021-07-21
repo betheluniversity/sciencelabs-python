@@ -22,14 +22,16 @@
                        {% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="seat">Seat Number (0 if unassigned)</label>
-                    {% if session.room_group_id %}
-                        <input id="seat" name="seat" type="number" min="0" max="{{ room_group.capacity }}" value="0"\>
-                    {% else %}
-                        <input id="seat" name="seat" type="number" min="0" max="{{ session.capacity }}" value="0"\>
-                    {% endif %}
-                </div>
+                {% if session.usingReserveSys == 1 %}
+                    <div class="form-group">
+                        <label for="seat">Seat Number (0 if unassigned)</label>
+                        {% if session.room_group_id %}
+                            <input id="seat" name="seat" type="number" min="0" max="{{ room_group.capacity }}" value="0"\>
+                        {% else %}
+                            <input id="seat" name="seat" type="number" min="0" max="{{ session.capacity }}" value="0"\>
+                        {% endif %}
+                    </div>
+                {% endif %}
                 <button id="add-student" type="submit" class="btn blue btn-primary">Submit</button>
             </form>
         </div>

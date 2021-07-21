@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, date
+from statistics import mode
+
 from sqlalchemy import func, or_
 
 from sciencelabs.db_repository import db_session
@@ -192,14 +194,14 @@ class Schedule:
 
         return course_list
 
-    def create_schedule(self, term, term_start_date, term_end_date, term_id, name, room, start_time, end_time,
-                        day_of_week, capacity, leads, tutors, courses):
+    def create_schedule(self, term, term_start_date, term_end_date, term_id, using_reservation_system, name, room, start_time,
+                        end_time, day_of_week, capacity, leads, tutors, courses):
         # Creates the schedule and returns it
-        new_schedule = self.create_new_schedule(name, room, start_time, end_time, day_of_week, term)
+        new_schedule = self.create_new_schedule(using_reservation_system, name, room, start_time, end_time, day_of_week, term)
         # Creates the recurring sessions for the schedule and returns them in an array
         scheduled_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                            new_schedule.id, start_time, end_time, capacity, None, room,
-                                                            name)
+                                                            new_schedule.id, using_reservation_system, start_time, end_time,
+                                                            capacity, None, room, name)
         # Creates leads tutor schedules
         self.create_new_lead_schedules(new_schedule.id, start_time, end_time, leads)
         # Creates leads recurring tutor sessions
@@ -215,8 +217,8 @@ class Schedule:
 
         return scheduled_sessions
 
-    def create_new_schedule(self, name, room, start_time, end_time, day_of_week, term):
-        new_schedule = Schedule_Table(name=name, room=room, startTime=start_time, endTime=end_time,
+    def create_new_schedule(self, using_reservation_system, name, room, start_time, end_time, day_of_week, term):
+        new_schedule = Schedule_Table(usingReserveSys=using_reservation_system, name=name, room=room, startTime=start_time, endTime=end_time,
                                       dayofWeek=day_of_week, term=term)
         db_session.add(new_schedule)
         db_session.commit()
@@ -242,15 +244,16 @@ class Schedule:
             db_session.add(new_schedule_course)
         db_session.commit()
 
-    def create_scheduled_sessions(self, term_start_date, term_end_date, day_of_week, term_id, schedule_id, start_time,
-                                  end_time, capacity, zoom_url, room, name):
+    def create_scheduled_sessions(self, term_start_date, term_end_date, day_of_week, term_id, schedule_id,
+                                  using_reservation_system, start_time, end_time, capacity, zoom_url, room, name):
         sessions = []
         session_date = self.get_first_session_date(day_of_week, term_start_date)
         while session_date <= term_end_date:  # Loop through until our session date is after the end date of the term
             schedule_session = Session_Table(semester_id=term_id, schedule_id=schedule_id,
-                                             date=session_date, schedStartTime=start_time,
-                                             schedEndTime=end_time, room=room, open=0, hash=self.base.get_hash(),
-                                             anonStudents=0, name=name, capacity=capacity, zoom_url=zoom_url)
+                                             usingReserveSys=using_reservation_system, date=session_date,
+                                             schedStartTime=start_time, schedEndTime=end_time, room=room, open=0,
+                                             hash=self.base.get_hash(), anonStudents=0, name=name, capacity=capacity,
+                                             zoom_url=zoom_url)
             db_session.add(schedule_session)
             db_session.commit()
             sessions.append(schedule_session)
@@ -305,8 +308,8 @@ class Schedule:
 
     ######################## EDIT SCHEDULE METHODS #########################
 
-    def edit_schedule(self, term_start_date, term_end_date, term_id, schedule_id, name, room, start_time,
-                      end_time, day_of_week, capacity, leads, tutors, courses):
+    def edit_schedule(self, term_start_date, term_end_date, term_id, schedule_id, using_reservation_system, name, room,
+                      start_time, end_time, day_of_week, capacity, leads, tutors, courses):
         # Gets an array of sessions based on the schedule id
         scheduled_sessions = self.get_sessions_by_schedule(schedule_id)
 
@@ -320,10 +323,11 @@ class Schedule:
         # Deletes the old TutorSchedule and ScheduleCourseCodes entries
         self.delete_old_schedule_tutors_and_courses(schedule_id)
         # Edits the schedule
-        self.edit_schedule_info(schedule_id, name, room, start_time, end_time, day_of_week)
+        self.edit_schedule_info(schedule_id, using_reservation_system, name, room, start_time, end_time, day_of_week)
         # Creates the new recurring sessions for the schedule
         new_sessions = self.create_scheduled_sessions(term_start_date, term_end_date, day_of_week, term_id,
-                                                      schedule_id, start_time, end_time, capacity, zoom_url, room, name)
+                                                      schedule_id, using_reservation_system, start_time, end_time, capacity,
+                                                      zoom_url, room, name)
         # Edits the lead's schedule
         self.create_new_lead_schedules(schedule_id, start_time, end_time, leads)
         # Creates the new recurring sessions for the lead
@@ -384,8 +388,9 @@ class Schedule:
             .filter(Session_Table.date >= now)\
             .first()
 
-    def edit_schedule_info(self, schedule_id, name, room, start_time, end_time, day_of_week):
+    def edit_schedule_info(self, schedule_id, using_reservation_system, name, room, start_time, end_time, day_of_week):
         schedule_to_edit = db_session.query(Schedule_Table).filter(Schedule_Table.id == schedule_id).one()
+        schedule_to_edit.usingReserveSys = using_reservation_system
         schedule_to_edit.name = name
         schedule_to_edit.room = room
         schedule_to_edit.startTime = start_time
@@ -432,3 +437,11 @@ class Schedule:
         if semester_exists:
             return True
         return False
+
+    def get_schedule_capacity(self, schedule_id):
+        sessions = self.get_sessions_by_schedule(schedule_id)
+        capacities = []
+        for session in sessions:
+            capacities.append(session.capacity)
+        most_common_capacity = mode(capacities)
+        return most_common_capacity

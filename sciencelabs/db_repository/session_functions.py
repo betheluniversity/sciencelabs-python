@@ -14,30 +14,31 @@ class Session:
     def __init__(self):
         self.base = ScienceLabsController()
 
-    def check_all_room_groupings(self, sessions):
+    def check_all_room_groupings(self, sessions, using_reservation_system):
         for session in sessions:
-            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room)
+            self.check_room_grouping(session.date, session.schedStartTime, session.schedEndTime, session.room, using_reservation_system)
 
-    def check_room_grouping(self, date, start_time, end_time, room):
-        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room)
+    def check_room_grouping(self, date, start_time, end_time, room, using_reservation_system):
+        sessions = self.get_sessions_by_date_time_and_room(date, start_time, end_time, room, using_reservation_system)
         if len(sessions) > 1:
             room_group_id = None
             for session in sessions:
                 if session.room_group_id:
                     room_group_id = session.room_group_id
 
-            if room.lower() != 'virtual':
+            if room.lower() != 'virtual' and using_reservation_system == 1:
                 if room_group_id:
                     self.update_room_grouping(room_group_id, sessions)
                 else:
                     self.create_room_grouping(sessions)
 
-    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room):
+    def get_sessions_by_date_time_and_room(self, date, start_time, end_time, room, using_reservation_system):
         return db_session.query(Session_Table) \
             .filter(Session_Table.date == date) \
             .filter(Session_Table.schedStartTime == start_time) \
             .filter(Session_Table.schedEndTime == end_time) \
             .filter(Session_Table.room == room) \
+            .filter(Session_Table.usingReserveSys == 1) \
             .filter(Session_Table.deletedAt == None) \
             .filter(Session_Table.openerId == None) \
             .all()
@@ -74,9 +75,9 @@ class Session:
                 self.delete_session_room_grouping(room_group, sessions)
             else:
                 for session in sessions:
-                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room)) and session.openerId == None:
+                    if len(sessions) != len(self.get_sessions_by_date_time_and_room(session.date, session.schedStartTime, session.schedEndTime, session.room, session.usingReserveSys)) and session.openerId == None:
                         self.delete_session_room_grouping(room_group, sessions)
-                        self.check_all_room_groupings(sessions)
+                        self.check_all_room_groupings(sessions, session.usingReserveSys)
                         break
 
     def delete_extra_room_grouping(self, room_group_id):
@@ -160,6 +161,18 @@ class Session:
 
     def get_open_sessions(self):
         return db_session.query(Session_Table).filter(Session_Table.open == 1).all()
+
+    def get_reservation_system_open_sessions(self):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.open == 1)\
+            .filter(Session_Table.usingReserveSys == 1)\
+            .all()
+
+    def get_online_open_sessions(self):
+        return db_session.query(Session_Table)\
+            .filter(Session_Table.open == 1)\
+            .filter(Session_Table.zoom_url != None)\
+            .all()
 
     def get_session_tutors(self, session_id):
         return db_session.query(User_Table.id, User_Table.firstName, User_Table.lastName, TutorSession_Table.isLead,
@@ -590,6 +603,7 @@ class Session:
     def get_reservation_sessions(self):
         future_sessions = db_session.query(Session_Table)\
             .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.usingReserveSys == 1)\
             .filter(Session_Table.deletedAt == None)\
             .filter(Session_Table.endTime == None)\
             .all()
@@ -604,9 +618,10 @@ class Session:
 
         return valid_sessions
 
-    def get_upcoming_sessions(self):
+    def get_upcoming_online_sessions(self):
         future_sessions = db_session.query(Session_Table)\
             .filter(Session_Table.date >= datetime.now().date())\
+            .filter(Session_Table.zoom_url != None)\
             .filter(Session_Table.deletedAt == None)\
             .filter(Session_Table.endTime == None)\
             .filter(Session_Table.openerId == None)\
@@ -828,9 +843,9 @@ class Session:
 
     ######################### CREATE SESSION METHODS #########################
 
-    def create_new_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+    def create_new_session(self, semester_id, using_reservation_system, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                            actual_end, room, comments, anon_students, name, leads, tutors, courses):
-        new_session = self.create_session(semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+        new_session = self.create_session(semester_id, using_reservation_system, date, scheduled_start, scheduled_end, capacity, zoom_url,
                                           actual_start, actual_end, room, comments, anon_students, name)
         if room.lower() != 'virtual':
             self.create_seats(new_session.id, capacity)
@@ -840,12 +855,12 @@ class Session:
 
         return new_session
 
-    def create_session(self, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
-                       actual_end, room, comments, anon_students, name):
-        new_session = Session_Table(semester_id=semester_id, date=date, schedStartTime=scheduled_start,
-                                    schedEndTime=scheduled_end, capacity=capacity, zoom_url=zoom_url,
-                                    startTime=actual_start, endTime=actual_end, room=room, open=0, comments=comments,
-                                    anonStudents=anon_students, name=name, hash=self.base.get_hash())
+    def create_session(self, semester_id, using_reservation_system, date, scheduled_start, scheduled_end, capacity, zoom_url,
+                       actual_start, actual_end, room, comments, anon_students, name):
+        new_session = Session_Table(semester_id=semester_id, usingReserveSys=using_reservation_system, date=date,
+                                    schedStartTime=scheduled_start, schedEndTime=scheduled_end, capacity=capacity,
+                                    zoom_url=zoom_url, startTime=actual_start, endTime=actual_end, room=room, open=0,
+                                    comments=comments, anonStudents=anon_students, name=name, hash=self.base.get_hash())
         db_session.add(new_session)
         db_session.commit()
         return new_session
@@ -898,17 +913,18 @@ class Session:
 
         db_session.commit()
 
-    def edit_session(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+    def edit_session(self, session_id, using_reservation_system, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
                      actual_start, actual_end, room, comments, anon_students, name, leads, tutors, courses):
-        self.edit_session_info(session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
+        self.edit_session_info(session_id, using_reservation_system, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url, actual_start,
                                actual_end, room, comments, anon_students, name)
         self.edit_session_leads(scheduled_start, scheduled_end, leads, session_id)
         self.edit_session_tutors(scheduled_start, scheduled_end, tutors, session_id)
         self.edit_session_courses(session_id, courses)
 
-    def edit_session_info(self, session_id, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
+    def edit_session_info(self, session_id, using_reservation_system, semester_id, date, scheduled_start, scheduled_end, capacity, zoom_url,
                           actual_start, actual_end, room, comments, anon_students, name):
         session_to_edit = db_session.query(Session_Table).filter(Session_Table.id == session_id).one()
+        session_to_edit.usingReserveSys = using_reservation_system
         session_to_edit.semester_id = semester_id
         session_to_edit.date = date
         session_to_edit.schedStartTime = scheduled_start

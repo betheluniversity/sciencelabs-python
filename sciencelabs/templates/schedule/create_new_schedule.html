@@ -14,6 +14,23 @@
                     </div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="reservation-preference">Use Reservation System for Schedule?</label>
+                        <div id="reservation-preference">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="reserve-radio" class="custom-control-input"
+                                       name="using-reservation-system" value="1" checked>
+                                <label class="custom-control-label" for="reserve-radio">Yes</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="non-reserve-radio" class="custom-control-input"
+                                       name="using-reservation-system" value="0">
+                                <label class="custom-control-label" for="non-reserve-radio">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="schedule-name">Schedule Name</label>
                         <input type="text" class="form-control chosen-container chosen-format" id="schedule-name" name="name" required autocomplete="off">
@@ -45,7 +62,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row hide-non-reservation-system">
                     <div class="form-group col-md-12">
                         <label for="capacity">Session Capacity</label>
                         <input type="number" min="0" class="form-control chosen-container chosen-format" id="capacity" name="capacity" value="0" required>
@@ -82,12 +99,19 @@
         <div class="col-md-4">
             <div class="sub-info card info">
                 <div class="card-body">
-                    <p class="card-text"><strong>NEW FALL 2020!</strong></p>
+                    <p class="card-text"><strong>NEW FALL 2021!</strong></p>
                     <p class="card-text">
                         <ol>
-                            <li>Please be careful when entering rooms. HC 113, hc 113, and HC113 are all different rooms. Spacing and capitalization matter!</li>
-                            <li>Use "virtual" (without the quotes) as the room number if you want a session to only be attended virtually. Also enter 0 for the session capacity.</li>
+                            <li>Using the Reservation System means that students will need to reserve a spot to attend a session in person.</li>
+                            <li>Capacity is only used when using the Reservation System.</li>
                         </ol>
+                    </p>
+                    <hr>
+                    <p class="card-text">
+                        Please be careful when entering rooms. HC 113, hc 113, and HC113 are all different rooms. Spacing and capitalization matter!
+                    </p>
+                    <p class="card-text">
+                        Use "virtual" (without the quotes) as the room number if you want a session to only be attended virtually. Also enter 0 for the session capacity.
                     </p>
                     <p class="card-text">
                         To create a new schedule for the listed term, enter the schedule information in the given
@@ -115,6 +139,19 @@
         </div>
     </div>
     <script>
+        $(document).ready(function() {
+            $('#reservation-preference').click(function() {
+                if ($('#non-reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").hide();
+                    $("#capacity").prop({'required':false,'type':'text'});
+                    $("#capacity").val('0');
+                } else if ($('#reserve-radio').is(':checked')) {
+                    $("div.hide-non-reservation-system").show();
+                    $("#capacity").prop({'required':true,'type':'number'});
+                }
+            });
+        });
+
         var leads = new SlimSelect({
             select: "#choose-leads",
             placeholder: "Choose lead tutors...",
